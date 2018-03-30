@@ -23,7 +23,6 @@
       real*8    fdn(n2ft3d,3)
       real*8    x_parameter, c_parameter
 
-
       real*8 ETA,ETA2,DNS_CUT
       parameter (ETA = 0.0d0)
       parameter (ETA2 = 1.0d-20)
@@ -40,10 +39,15 @@
       parameter (beta = 0.0042d0)
       
       real*8 thrd
-      parameter (thrd = 1.0d0/3.0d0)
-
-      integer j
       real*8 twthrd,frthrd,fvthrd,snthrd,etthrd
+      parameter (thrd = 1.0d0/3.0d0)
+      parameter (twthrd = 2.0d0/3.0d0)
+      parameter (frthrd = 4.0d0/3.0d0)
+      parameter (fvthrd = 5.0d0/3.0d0)
+      parameter (snthrd = 7.0d0/3.0d0)
+      parameter (etthrd = 8.0d0/3.0d0)
+      
+      integer j
       real*8 pi, Cf,lda_c
 
       real*8 nup,ndn,n,agrup,agrdn,agr
@@ -78,11 +82,11 @@
       real*8   ndn_etthrd,ndn_fvthrd
  
       
-      twthrd = thrd*2.0d0
-      frthrd = thrd*4.0d0
-      fvthrd = thrd*5.0d0
-      snthrd = thrd*7.0d0
-      etthrd = thrd*8.0d0
+      !twthrd = thrd*2.0d0
+      !frthrd = thrd*4.0d0
+      !fvthrd = thrd*5.0d0
+      !snthrd = thrd*7.0d0
+      !etthrd = thrd*8.0d0
 
       pi = 4.0d0*datan(1.0d0)
       Cf = dble(3.0d0*pi*pi)
@@ -305,12 +309,12 @@
 
 
 *      ******DEBUG*********
-       fc = fclda + 0.001d0*agr2 + 0.002d0*(agrup2 + agrdn2)
-       fc_u = fclda_u
-       fc_d = fclda_d
-       fc_agr   = 2.0d0*agr  *0.001d0
-       fc_agrup = 2.0d0*agrup*0.002d0
-       fc_agrdn = 2.0d0*agrdn*0.002d0
+c       fc = fclda + 0.001d0*agr2 + 0.002d0*(agrup2 + agrdn2)
+c       fc_u = fclda_u
+c       fc_d = fclda_d
+c       fc_agr   = 2.0d0*agr  *0.001d0
+c       fc_agrup = 2.0d0*agrup*0.002d0
+c       fc_agrdn = 2.0d0*agrdn*0.002d0
 *      ******DEBUG*********
    
 *    ***correlation energy dentsity

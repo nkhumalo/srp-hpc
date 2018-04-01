@@ -447,10 +447,10 @@ c
       ne_b = wfn1_param%neb
 c
       if (.not. bas_numcont(wfn1_inst%basis, nshell)) call errquit
-     &     ('wfn1_e_g_2el: bas_numcont failed for basis',
+     &     ('wfn1_e_g_2el_mx: bas_numcont failed for basis',
      &      wfn1_inst%basis, BASIS_ERR)
       if (.not. bas_nbf_cn_max(wfn1_inst%basis, maxsbf)) call errquit
-     &     ('wfn1_e_g_2el: bas_nbf_cn_max failed for basis',
+     &     ('wfn1_e_g_2el_mx: bas_nbf_cn_max failed for basis',
      &      wfn1_inst%basis, BASIS_ERR)
 c
       call ga_distribution(g_x_aa,0,ii_lo,ii_hi,jj_lo,jj_hi)
@@ -575,7 +575,7 @@ c
 c
       do ld = 1, nshell
         if (.not. bas_cn2bfr(wfn1_inst%basis, ld, id_lo, id_hi))
-     &      call errquit('wfn1_e_g_2el: bas_cn2bfr',
+     &      call errquit('wfn1_e_g_2el_mx: bas_cn2bfr',
      &                   wfn1_inst%basis, BASIS_ERR)
 c
         nd = id_hi-id_lo+1
@@ -586,7 +586,7 @@ c
 c
         do lb = 1, nshell
           if (.not. bas_cn2bfr(wfn1_inst%basis, lb, ib_lo, ib_hi))
-     &        call errquit('wfn1_e_g_2el: bas_cn2bfr',
+     &        call errquit('wfn1_e_g_2el_mx: bas_cn2bfr',
      &                     wfn1_inst%basis, BASIS_ERR)
 c
           nb = ib_hi-ib_lo+1
@@ -622,7 +622,7 @@ c
 c
           do lc = 1, nshell 
             if (.not. bas_cn2bfr(wfn1_inst%basis, lc, ic_lo, ic_hi))
-     &          call errquit('wfn1_e_g_2el: bas_cn2bfr',
+     &          call errquit('wfn1_e_g_2el_mx: bas_cn2bfr',
      &                       wfn1_inst%basis, BASIS_ERR)
 c
             nc = ic_hi-ic_lo+1
@@ -654,7 +654,7 @@ c
               itask = itask + 1
               if (mod(itask,nproc).ne.iproc) cycle
               if (.not. bas_cn2bfr(wfn1_inst%basis, la, ia_lo, ia_hi))
-     &            call errquit('wfn1_e_g_2el: bas_cn2bfr',
+     &            call errquit('wfn1_e_g_2el_mx: bas_cn2bfr',
      &                         wfn1_inst%basis, BASIS_ERR)
 c
               na = ia_hi-ia_lo+1

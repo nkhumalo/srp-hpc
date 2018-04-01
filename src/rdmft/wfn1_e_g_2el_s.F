@@ -347,12 +347,12 @@ c
 c
 c     Calculate exchange alpha-alpha-occupation number derivative
 c
-      call wfn1_calc_docx2(wfn1_wave%g_ca,nmo,nea,wfn1_wave%icnfa,
+      call wfn1_calc_docx(wfn1_wave%g_ca,nmo,nea,wfn1_wave%icnfa,
      &                     wfn1_wave%dcnta,g_x2aa)
 c
 c     Calculate exchange beta-beta-occupation number derivative
 c
-      call wfn1_calc_docx2(wfn1_wave%g_cb,nmo,neb,wfn1_wave%icnfb,
+      call wfn1_calc_docx(wfn1_wave%g_cb,nmo,neb,wfn1_wave%icnfb,
      &                     wfn1_wave%dcntb,g_x2bb)
 c
       call ga_sync()

@@ -278,7 +278,7 @@ c
       if (.not.rtdb_cget(wfn1_inst%rtdb,"wfn1:corr_expr",
      &                   len(wfn1_param%corr_expr),
      &                   wfn1_param%corr_expr)) then
-         wfn1_param%corr_expr="wfn1"
+         wfn1_param%corr_expr="wfn1_mx"
       endif
 c
 c     == Get the convergence criterion and maximum number of iterations

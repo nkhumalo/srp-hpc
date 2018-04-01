@@ -17,6 +17,7 @@ C>   natural orbital basis (nmo x nmo)
 C> - The Fock matrix for the correlation functions will be returned in
 C>   the correlation function basis (nmo x nmo)
 C>
+#include "mafdecls.fh"
 #include "errquit.fh"
 #include "global.fh"
 #include "wfn1_matcnst.fh"
@@ -89,10 +90,16 @@ c
 c
 c     The 2-electron terms
 c
-      if (wfn1_param%corr_expr == "wfn1") then
-        call wfn1_e_g_2el(wfn1_param,wfn1_inst,wfn1_wave,wfn1_deriv,
-     &                    v_dca,v_dcb,g_momo,g_momo2,g_momo3,g_momo4,
-     &                    wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+      if (wfn1_param%corr_expr == "wfn1_mx") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       wfn1_deriv,v_dca,v_dcb,
+     &                       g_momo,g_momo2,g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+      else if (wfn1_param%corr_expr == "wfn1_vx") then
+        call wfn1_e_g_2el_vx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       wfn1_deriv,v_dca,v_dcb,
+     &                       g_momo,g_momo2,g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
       else if (wfn1_param%corr_expr == "wfn1s") then
         call wfn1_e_g_2el_s(wfn1_param,wfn1_inst,wfn1_wave,wfn1_deriv,
      &                      v_dca,v_dcb,g_momo,g_momo2,g_momo3,g_momo4,
@@ -109,32 +116,47 @@ c
 c     Transform the correlation function Fock matrices from natural
 c     orbital to correlation function basis
 c
-      call ga_copy(wfn1_wave%g_ca,g_momo)
-      call ga_distribution(g_momo,iproc,ilo,ihi,jlo,jhi)
+c     First add v_dca to the diagonal of the correlation function
+c     Fock matrix in the natural orbital basis.
+c
+      call ga_distribution(wfn1_deriv%g_dca,iproc,ilo,ihi,jlo,jhi)
       allocate(buf(ilo:ihi,jlo:jhi))
-      call ga_get(g_momo,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      do jj = jlo, jhi
-        do ii = ilo, ihi
-          buf(ii,jj) = buf(ii,jj)*v_dca(ii)
-        enddo
+      call ga_get(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      do ii = max(ilo,jlo), min(ihi,jhi)
+        buf(ii,ii) = buf(ii,ii) + v_dca(ii)
       enddo
+      call ga_put(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      deallocate(buf)
+c
+c     Second transform the correlation function Fock matrix from the
+c     natural orbital to the correlation function basis.
+c
       nmo = wfn1_param%nmo
-      call ga_put(g_momo,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      call ga_dgemm('T','N',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,g_momo,
+      call ga_dgemm('T','N',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,
+     &              wfn1_deriv%g_dca,0.0d0,g_momo)
+      call ga_dgemm('N','N',nmo,nmo,nmo,1.0d0,g_momo,wfn1_wave%g_ca,
      &              0.0d0,wfn1_deriv%g_dca)
 c
-      call ga_copy(wfn1_wave%g_cb,g_momo)
-      call ga_get(g_momo,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      do jj = jlo, jhi
-        do ii = ilo, ihi
-          buf(ii,jj) = buf(ii,jj)*v_dcb(ii)
-        enddo
+c     First add v_dcb to the diagonal of the correlation function
+c     Fock matrix in the natural orbital basis.
+c
+      call ga_distribution(wfn1_deriv%g_dcb,iproc,ilo,ihi,jlo,jhi)
+      allocate(buf(ilo:ihi,jlo:jhi))
+      call ga_get(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      do ii = max(ilo,jlo), min(ihi,jhi)
+        buf(ii,ii) = buf(ii,ii) + v_dcb(ii)
       enddo
-      nmo = wfn1_param%nmo
-      call ga_put(g_momo,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      call ga_dgemm('T','N',nmo,nmo,nmo,1.0d0,wfn1_wave%g_cb,g_momo,
-     &              0.0d0,wfn1_deriv%g_dcb)
+      call ga_put(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
       deallocate(buf)
+c
+c     Second transform the correlation function Fock matrix from the
+c     natural orbital to the correlation function basis.
+c
+      nmo = wfn1_param%nmo
+      call ga_dgemm('T','N',nmo,nmo,nmo,1.0d0,wfn1_wave%g_cb,
+     &              wfn1_deriv%g_dcb,0.0d0,g_momo)
+      call ga_dgemm('N','N',nmo,nmo,nmo,1.0d0,g_momo,wfn1_wave%g_cb,
+     &              0.0d0,wfn1_deriv%g_dcb)
 c
 c     Clean up memory
 c
@@ -184,6 +206,9 @@ c
       deallocate(bufji)
       deallocate(buf)
 c
+      v_dca = 0.0d0
+      v_dcb = 0.0d0
+c
       call ga_distribution(wfn1_deriv%g_dca,iproc,ilo,ihi,jlo,jhi)
       allocate(buf(ilo:ihi,jlo:jhi))
       allocate(bufji(jlo:jhi,ilo:ihi))
@@ -194,6 +219,7 @@ c
           if      (ii.lt.jj) then
             buf(ii,jj) = -0.5d0*(buf(ii,jj)+bufji(jj,ii))
           else if (ii.eq.jj) then
+            v_dca(ii)  =  buf(ii,jj)
             buf(ii,jj) =  0.0d0
           else if (ii.gt.jj) then
             buf(ii,jj) = +0.5d0*(buf(ii,jj)+bufji(jj,ii))
@@ -215,6 +241,7 @@ c
           if      (ii.lt.jj) then
             buf(ii,jj) = -0.5d0*(buf(ii,jj)+bufji(jj,ii))
           else if (ii.eq.jj) then
+            v_dcb(ii)  =  buf(ii,jj)
             buf(ii,jj) =  0.0d0
           else if (ii.gt.jj) then
             buf(ii,jj) = +0.5d0*(buf(ii,jj)+bufji(jj,ii))
@@ -225,6 +252,9 @@ c
       call ga_put(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
       deallocate(bufji)
       deallocate(buf)
+c
+      call ga_dgop(MT_DBL,v_dca,wfn1_param%nmo,"+")
+      call ga_dgop(MT_DBL,v_dcb,wfn1_param%nmo,"+")
 c
       wfn1_energy%E_tot = wfn1_energy%E_1el + wfn1_energy%E_2el
      &                  + wfn1_energy%E_nuc + wfn1_energy%E_ent

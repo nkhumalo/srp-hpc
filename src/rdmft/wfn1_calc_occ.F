@@ -1,11 +1,11 @@
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_calc_occ(g_c,nmo,ne,icnf,dcnt,occ)
-      implicit none
 C>
 C> \brief Calculate occupation numbers from a set of correlation
 C> functions
 C>
+      subroutine wfn1_calc_occ(g_c,nmo,ne,icnf,dcnt,occ)
+      implicit none
 #include "global.fh"
 #include "mafdecls.fh"
 c
@@ -117,15 +117,20 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_calc_docx2(g_c,nmo,ne,icnf,dcnt,g_ocx)
+C>
+C> \brief Calculate the 2-electron exchange occupation numbers
+C>
+C> These quantities are the
+C> \f$-\sum_{s,t}C_{is}C_{it}^*C_{jt}C_{js}^*\f$ terms in the 2-electron
+C> occupation numbers.
+C>
+C> Note that for the 2-electron density matrix the Coulomb and
+C> exchange terms are separated. The reason is that the correlation
+C> function Fock matrices for the Coulomb and exchange terms have to be
+C> handled differently because of their nature.
+C>
+      subroutine wfn1_calc_ocx(g_c,nmo,ne,icnf,dcnt,g_ocx)
       implicit none
-C>
-C> \brief Calculate the derivative of the 2-electron exchange 
-C> occupation numbers
-C>
-C> These quantities are the sum_s Cjs Cks terms in the derivative of 
-C> the 2-electron density matrix.
-C>
 #include "global.fh"
 #include "mafdecls.fh"
 c
@@ -136,8 +141,77 @@ c
 c
       double precision, intent(in) :: dcnt(1:ne)! the electron fraction
 c
-      integer, intent(inout) :: g_ocx  ! the 2-electron occupation 
-                                       ! numbers
+      integer, intent(inout) :: g_ocx  ! the 2-electron exchange 
+                                       ! occupation numbers
+c
+      integer :: iolo, iohi, jolo, johi ! block limits of occupation GA
+c
+      double precision, allocatable :: bocc(:,:)  ! buffer for 
+                                                  ! occupation numbers
+      double precision, allocatable :: bcori(:,:) ! buffer for 
+                                                  ! correlation function
+      double precision, allocatable :: bcorj(:,:) ! buffer for 
+                                                  ! correlation function
+c
+      integer iproc ! the current processor rank
+      integer nproc ! the number of processor ranks
+c
+      integer is, it ! counters for the correlation functions
+      integer ii, ij ! counters for the natural orbitals
+c
+      nproc = ga_nnodes()
+      iproc = ga_nodeid()
+c
+      call ga_distribution(g_ocx,iproc,iolo,iohi,jolo,johi)
+      allocate(bocc(iolo:iohi,jolo:johi))
+      allocate(bcori(iolo:iohi,1:nmo))
+      allocate(bcorj(jolo:johi,1:nmo))
+      bocc = 0.0d0
+      call ga_get(g_c,iolo,iohi,1,nmo,bcori,iohi-iolo+1)
+      call ga_get(g_c,jolo,johi,1,nmo,bcorj,johi-jolo+1)
+      do ij = jolo, johi
+        do ii = iolo, iohi
+          do is = 1, ne
+            do it = 1, ne
+              bocc(ii,ij) = bocc(ii,ij) 
+     +                    - bcori(ii,icnf(is)) * bcori(ii,icnf(it))
+     +                    * bcorj(ij,icnf(it)) * bcorj(ij,icnf(is))
+     +                    * dcnt(is) * dcnt(it)
+            enddo
+          enddo
+        enddo
+      enddo
+      call ga_put(g_ocx,iolo,iohi,jolo,johi,bocc,iohi-iolo+1)
+c
+      deallocate(bcorj)
+      deallocate(bcori)
+      deallocate(bocc)
+c
+      end subroutine wfn1_calc_ocx
+c
+c-----------------------------------------------------------------------
+c
+C>
+C> \brief Calculate the derivative of the 2-electron exchange 
+C> occupation numbers
+C>
+C> These quantities are the \f$-sum_s C_{js}C_{ks} terms in the
+C> derivative of the 2-electron density matrix.
+C>
+      subroutine wfn1_calc_docx(g_c,nmo,ne,icnf,dcnt,g_docx)
+      implicit none
+#include "global.fh"
+#include "mafdecls.fh"
+c
+      integer, intent(in) :: g_c       ! the correlation functions
+      integer, intent(in) :: nmo       ! the number of molecular orbitals
+      integer, intent(in) :: ne        ! the number of electrons
+      integer, intent(in) :: icnf(1:ne)! the electron configuration
+c
+      double precision, intent(in) :: dcnt(1:ne)! the electron fraction
+c
+      integer, intent(inout) :: g_docx  ! the 2-electron occupation 
+                                        ! numbers derivative
 c
       integer :: iolo, iohi, jolo, johi ! block limits of occupation GA
 c
@@ -157,7 +231,7 @@ c
       nproc = ga_nnodes()
       iproc = ga_nodeid()
 c
-      call ga_distribution(g_ocx,iproc,iolo,iohi,jolo,johi)
+      call ga_distribution(g_docx,iproc,iolo,iohi,jolo,johi)
       allocate(bocc(iolo:iohi,jolo:johi))
       allocate(bcori(iolo:iohi,1:nmo))
       allocate(bcorj(jolo:johi,1:nmo))
@@ -168,17 +242,17 @@ c
         do ii = iolo, iohi
           do is = 1, ne
             bocc(ii,ij) = bocc(ii,ij) 
-     +                    + bcori(ii,icnf(is))*bcorj(ij,icnf(is))
-     +                    * dcnt(is)
+     +                  - bcori(ii,icnf(is))*bcorj(ij,icnf(is))
+     +                  * dcnt(is)
           enddo
         enddo
       enddo
-      call ga_put(g_ocx,iolo,iohi,jolo,johi,bocc,iohi-iolo+1)
+      call ga_put(g_docx,iolo,iohi,jolo,johi,bocc,iohi-iolo+1)
 c
       deallocate(bcorj)
       deallocate(bcori)
       deallocate(bocc)
 c
-      end subroutine wfn1_calc_docx2
+      end subroutine wfn1_calc_docx
 c
 c-----------------------------------------------------------------------

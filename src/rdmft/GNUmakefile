@@ -12,6 +12,7 @@
          wfn1_configuration.o \
          wfn1_df1df2df3.o \
          wfn1_dnrm2.o \
+         wfn1_element.o \
          wfn1_entropy.o \
          wfn1_e_g.o \
          wfn1_e_g_2el_mx.o \
@@ -37,7 +38,7 @@
          wfn1_print_occ.o \
          wfn1_size.o \
          wfn1_test_rdms.o \
-         wfn1_trace.o \
+	 wfn1_trace.o \
          wfn1_zero_vv.o 
 
    LIBRARY = librdmft.a

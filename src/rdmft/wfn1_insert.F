@@ -6,24 +6,29 @@ C>
 C> The table is sorted in increasing order. This routine adds another
 C> data point to the table.
 C>
-      subroutine wfn1_insert(mxpts,npts,xx,fx,df,xnew,fnew,dfnew)
+      subroutine wfn1_insert(mxpts,npts,xx,fx,df,xnew,fnew,dfnew,ipos)
       implicit none
 c
 #include "errquit.fh"
 c
-      integer, intent(in)    :: mxpts !< The dimension of the table
-      integer, intent(inout) :: npts  !< The number of points already in
-                                      !< the table, must be greater
-                                      !< than 0
-      double precision, intent(inout) :: xx(mxpts) !< The coordinates
-      double precision, intent(inout) :: fx(mxpts) !< The function values
-      double precision, intent(inout) :: df(mxpts) !< The function values
-      double precision, intent(in)    :: xnew  !< The coordinate of the
-                                               !< new point
-      double precision, intent(in)    :: fnew  !< The function value of
-                                               !< the new point
-      double precision, intent(in)    :: dfnew !< The function value of
-                                               !< the new point
+!<    The dimension of the table
+      integer, intent(in)    :: mxpts 
+!<    The number of points in the table (must be greater than 0)
+      integer, intent(inout) :: npts
+!<    The coordinates \f$x_i\f$
+      double precision, intent(inout) :: xx(mxpts)
+!<    The function values \f$f(x_i)\f$
+      double precision, intent(inout) :: fx(mxpts)
+!<    The function derivative values \f$\mathrm{d}f(x_i)\f$
+      double precision, intent(inout) :: df(mxpts)
+!<    The coordinate of the new point
+      double precision, intent(in)    :: xnew
+!<    The function value of the new point
+      double precision, intent(in)    :: fnew
+!<    The function derivative value of the new point
+      double precision, intent(in)    :: dfnew
+!<    The position of the new value in table
+      integer, intent(out) :: ipos
 c
       integer ii, jj !< Counters
 c
@@ -42,6 +47,7 @@ c
         xx(ii) = xnew
         fx(ii) = fnew
         df(ii) = dfnew
+        ipos   = ii
       else
         do jj = npts, ii+1, -1
           xx(jj+1) = xx(jj)
@@ -51,6 +57,7 @@ c
         xx(ii+1) = xnew
         fx(ii+1) = fnew
         df(ii+1) = dfnew
+        ipos     = ii+1
       endif
       npts = npts + 1
 c

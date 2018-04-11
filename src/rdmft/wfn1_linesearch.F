@@ -1,12 +1,5 @@
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_linesearch(wfn1_param,wfn1_inst,wfn1_mat,
-     &                           wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                           wfn1_trial_wv,wfn1_trial_drv,
-     &                           wfn1_trial_en,
-     &                           g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                           v_dca,v_dcb)
-      implicit none
 C>
 C> \brief Perform a linesearch for the minimum total energy
 C>
@@ -24,6 +17,13 @@ C> current energies, the current wavefunction, and the current gradients
 C> for the next linesearch (or the final solution if the calculation
 C> is converged).
 C>
+      subroutine wfn1_linesearch(wfn1_param,wfn1_inst,wfn1_mat,
+     &                           wfn1_wave,wfn1_deriv,wfn1_energy,
+     &                           wfn1_trial_wv,wfn1_trial_drv,
+     &                           wfn1_trial_en,
+     &                           g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                           v_dca,v_dcb)
+      implicit none
 #include "global.fh"
 #include "errquit.fh"
 #include "wfn1_trace.fh"
@@ -43,8 +43,6 @@ c
       type(wfn1_drv),     intent(inout) :: wfn1_trial_drv
       type(wfn1_en),      intent(inout) :: wfn1_trial_en
 c
-      type(wfn1_error) :: error
-c
       integer, intent(inout) :: g_bfmo  ! nbf x nmo scratch GA
       integer, intent(inout) :: g_momo1 ! nmo x nmo scratch GA
       integer, intent(inout) :: g_momo2 ! nmo x nmo scratch GA
@@ -56,7 +54,12 @@ c
       double precision, intent(out) :: v_dca(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcb(1:wfn1_param%nmo)
 c
-      integer, external :: wfn1_idmin
+      type(wfn1_error) :: error
+c
+      integer,          external :: wfn1_idmin
+      type(wfn1_error), external :: wfn1_select_max
+      type(wfn1_error), external :: wfn1_fetch_max
+      type(wfn1_error), external :: wfn1_limit_max
 c
       integer             npts        !< The number of points
       integer             mxpts       !< The maximum number of points
@@ -73,6 +76,7 @@ c
 c
       integer indxmin
       integer ix1, ix2, ix3
+      integer ipos          !< The position where xm was inserted
       logical o_eminimized  !< If b=0 then only redundant
                             !< transformations remain.
                             !< Interestingly even if a!=0 and b=0 the
@@ -80,6 +84,8 @@ c
                             !< the critical condition beyond which no
                             !< progress can be made minimizing the 
                             !< energy.
+      logical o_reduced     !< Whether the gradient has been reduced
+                            !< sufficiently
 c
       character*17 pname
       parameter(pname = "wfn1_linesearch: ")
@@ -94,7 +100,8 @@ c
       fx(npts) = wfn1_energy%E_tot
       error = wfn1_etrace(wfn1_param,wfn1_wave,wfn1_deriv,wfn1_deriv)
       de = error%total
-      error = wfn1_trace(wfn1_deriv,wfn1_deriv)
+c     error = wfn1_trace(wfn1_deriv,wfn1_deriv)
+      error = wfn1_select_max(wfn1_deriv)
       dnrm = error%total**2
       dnrm = 1.0d0/dnrm
       df(npts) = 1.0d0
@@ -112,13 +119,15 @@ c     call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
      &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,v_dca,v_dcb)
 c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_trial_drv)
       fx(npts) = wfn1_trial_en%E_tot
-      error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
+c     error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
+c     error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
+      error = wfn1_fetch_max(wfn1_trial_drv)
       df(npts) = dnrm*(error%total**2)
       call wfn1_f0df0f1(xx(2),fx(1),de,fx(2),tr,aa,bb,cc,xm,fxm)
       if (xm.lt.-tr) then
         xm = -tr
-      else if (xm.gt.tr) then
-        xm =  tr
+      else if (xm.gt.1.0d0+tr) then
+        xm =  1.0d0+tr
       endif
       call wfn1_fix_xm(npts,xx,xm)
 c
@@ -132,28 +141,30 @@ c     call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
      &              wfn1_trial_drv,wfn1_trial_en,
      &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,v_dca,v_dcb)
-      error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
+c     error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
+      error = wfn1_fetch_max(wfn1_trial_drv)
       dfm = dnrm*(error%total**2)
-      call wfn1_insert(mxpts,npts,xx,fx,df,xm,wfn1_trial_en%E_tot,dfm)
+      call wfn1_insert(mxpts,npts,xx,fx,df,xm,wfn1_trial_en%E_tot,dfm,
+     &                 ipos)
 c
       o_eminimized = .false.
+      o_reduced    = .false.
 c
 c     Minimize the energy
 c
-      do while (.not.o_eminimized .and. 
-     &          wfn1_trial_en%E_tot > wfn1_energy%E_tot)
+      do while ((.not.o_eminimized).and.(.not.o_reduced))
+c    & .or. 
+c    &          wfn1_trial_en%E_tot > wfn1_energy%E_tot*(1.0d0+1.0d-8))
+c
+c       Predict a new xm
+c
         indxmin = wfn1_idmin(npts,fx,1)
         call wfn1_closest_three(npts,xx,indxmin,ix1,ix2,ix3)
-        call wfn1_f1f2f3(xx(ix1),xx(ix2),xx(ix3),
+        call wfn1_f1f2f3(xx(1)-tr,xx(npts)+tr,
+     &                   xx(ix1),xx(ix2),xx(ix3),
      &                   fx(ix1),fx(ix2),fx(ix3),
-     &                   tr,aa,bb,cc,xm,fxm)
+     &                   aa,bb,cc,xm,fxm)
         call wfn1_fix_xm(npts,xx,xm)
-c
-c       Shrink the trust region to avoid getting trapped generating
-c       the same unsuitable answer over and over
-c
-        tr = tr*0.95d0
-c
         call wfn1_gen_trial_wfn(xm,wfn1_param,wfn1_wave,wfn1_deriv,
      &                          wfn1_trial_wv,g_momo1,g_momo2)
         call wfn1_ortho(wfn1_mat,wfn1_trial_wv)
@@ -163,38 +174,59 @@ c       call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
      &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                v_dca,v_dcb)
 c       call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_trial_drv)
-        error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
+c       error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
+        error = wfn1_fetch_max(wfn1_trial_drv)
         dfm = dnrm*(error%total**2)
-        o_eminimized = (abs(bb).lt.tol)
-        call wfn1_insert(mxpts,npts,xx,fx,df,xm,wfn1_trial_en%E_tot,dfm)
+        call wfn1_insert(mxpts,npts,xx,fx,df,xm,wfn1_trial_en%E_tot,dfm,
+     &                   ipos)
+c
+c       Xm=xx(ipos) was predicted to be the minimum, test this
+c       prediction
+c
+        call wfn1_closest_three(npts,xx,ipos,ix1,ix2,ix3)
+        call wfn1_f1f2f3(xx(1)-tr,xx(npts)+tr,
+     &                   xx(ix1),xx(ix2),xx(ix3),
+     &                   fx(ix1),fx(ix2),fx(ix3),
+     &                   aa,bb,cc,xm,fxm)
+        o_reduced = (abs((2.0d0*aa*xx(ipos)+bb)/bb).lt.0.1d0)
+        o_eminimized = (abs(bb).lt.tol*0.01d0).and..not.o_reduced
+cDEBUG
+c       write(*,*)'HVD: ',npts,xx(ix1),fx(ix1),aa,tol
+c       write(*,*)'HVD: ',npts,xx(ix2),fx(ix2),bb,2*aa*xm+bb
+c       write(*,*)'HVD: ',npts,xx(ix3),fx(ix3),cc
+c       write(*,*)'HVD: ',o_eminimized,o_reduced,
+c    &                    wfn1_trial_en%E_tot .le. wfn1_energy%E_tot
+cDEBUG
       enddo
 c
 c     If the energy is minimized already and only redundant
 c     transformations remain then minimize the norm of the Fock 
 c     matrices
 c
-      do while (o_eminimized .and. dfm>=1.0d0 .and. npts.lt.mxpts)
+c     do while (o_eminimized .and. dfm>=1.0d0 .and. npts.lt.mxpts)
+      o_reduced = .false.
+      do while (o_eminimized .and. npts.lt.mxpts .and. .not.o_reduced)
         indxmin = wfn1_idmin(npts,df,1)
         call wfn1_closest_three(npts,xx,indxmin,ix1,ix2,ix3)
         call wfn1_df1df2df3(xx(ix1),xx(ix2),xx(ix3),
      &                      df(ix1),df(ix2),df(ix3),
      &                      tr,aa,bb,cc,xm,fxm)
-        if (aa.lt.0.0d0) then
-          if (indxmin.eq.ix1) then
-            xm = 0.5d0*(xx(ix1)+xx(ix2))
-          else if (indxmin.eq.ix3) then
-            xm = 0.5d0*(xx(ix2)+xx(ix3))
-          else
-            call errquit(pname//" messed up",0,UERR)
-          endif
-        else
-          call wfn1_fix_xm(npts,xx,xm)
-        endif
+c       if (aa.lt.0.0d0) then
+c         if (indxmin.eq.ix1) then
+c           xm = 0.5d0*(xx(ix1)+xx(ix2))
+c         else if (indxmin.eq.ix3) then
+c           xm = 0.5d0*(xx(ix2)+xx(ix3))
+c         else
+c           call errquit(pname//" messed up",0,UERR)
+c         endif
+c       else
+        call wfn1_fix_xm(npts,xx,xm)
+c       endif
 c
 c       Shrink the trust region to avoid getting trapped generating
 c       the same unsuitable answer over and over
 c
-        tr = tr*0.95d0
+c       tr = tr*0.95d0
 c
         call wfn1_gen_trial_wfn(xm,wfn1_param,wfn1_wave,wfn1_deriv,
      &                          wfn1_trial_wv,g_momo1,g_momo2)
@@ -205,9 +237,19 @@ c       call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
      &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                v_dca,v_dcb)
 c       call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_trial_drv)
-        error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
+c       error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
+        error = wfn1_limit_max(wfn1_trial_drv)
         dfm = dnrm*(error%total**2)
-        call wfn1_insert(mxpts,npts,xx,fx,df,xm,wfn1_trial_en%E_tot,dfm)
+        call wfn1_insert(mxpts,npts,xx,fx,df,xm,wfn1_trial_en%E_tot,dfm,
+     &                   ipos)
+c
+c       Test prediction
+c
+        call wfn1_closest_three(npts,xx,ipos,ix1,ix2,ix3)
+        call wfn1_df1df2df3(xx(ix1),xx(ix2),xx(ix3),
+     &                      df(ix1),df(ix2),df(ix3),
+     &                      tr,aa,bb,cc,xm,fxm)
+        o_reduced = (abs((2.0d0*aa*xx(ipos)+bb)/bb).lt.0.1d0)
       enddo
 c
       end subroutine wfn1_linesearch

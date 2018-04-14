@@ -190,22 +190,23 @@ c
      &                   aa,bb,cc,xm,fxm)
         o_reduced = (abs((2.0d0*aa*xx(ipos)+bb)/bb).lt.0.1d0)
         o_eminimized = (abs(bb).lt.tol*0.01d0).and..not.o_reduced
-cDEBUG
-c       write(*,*)'HVD: ',npts,xx(ix1),fx(ix1),aa,tol
-c       write(*,*)'HVD: ',npts,xx(ix2),fx(ix2),bb,2*aa*xm+bb
-c       write(*,*)'HVD: ',npts,xx(ix3),fx(ix3),cc
-c       write(*,*)'HVD: ',o_eminimized,o_reduced,
-c    &                    wfn1_trial_en%E_tot .le. wfn1_energy%E_tot
-cDEBUG
       enddo
 c
 c     If the energy is minimized already and only redundant
 c     transformations remain then minimize the norm of the Fock 
-c     matrices
+c     matrices.
 c
-c     do while (o_eminimized .and. dfm>=1.0d0 .and. npts.lt.mxpts)
+c     This works only when minimizing one matrix element. So we need
+c     to change the search direction to make this possible.
+c     The change of search direction is effected by wfn1_limit_max.
+c
       o_reduced = .false.
       error = wfn1_limit_max(wfn1_deriv)
+cDEBUG
+c     if (o_eminimized) then
+c       write(*,*)'HvD: minimize Fock: ',npts,error%total
+c     endif
+cDEBUG
       do while (o_eminimized .and. npts.lt.mxpts .and. .not.o_reduced)
         indxmin = wfn1_idmin(npts,df,1)
         call wfn1_closest_three(npts,xx,indxmin,ix1,ix2,ix3)
@@ -252,6 +253,11 @@ c
      &                      tr,aa,bb,cc,xm,fxm)
         o_reduced = (abs((2.0d0*aa*xx(ipos)+bb)/bb).lt.0.1d0)
       enddo
+cDEBUG
+c     if (o_eminimized) then
+c       write(*,*)'HvD: minimize Fock: ',npts,error%total
+c     endif
+cDEBUG
 c
       end subroutine wfn1_linesearch
 c

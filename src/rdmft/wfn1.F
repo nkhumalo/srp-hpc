@@ -284,7 +284,7 @@ c
 c     == Get the convergence criterion and maximum number of iterations
 c
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:conv_tol",MT_DBL,
-     &                  1,conv_tol)) conv_tol = 1.0d-4
+     &                  1,conv_tol)) conv_tol = 1.0d-6
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:maxit",MT_INT,
      &                  1,maxit)) maxit = 50
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:t_bath",MT_DBL,

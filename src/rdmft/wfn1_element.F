@@ -154,7 +154,9 @@ c
 !>
       function wfn1_limit_max(wfn1_deriv)
       implicit none
+#include "mafdecls.fh"
 #include "errquit.fh"
+#include "global.fh"
 #include "wfn1_max.fh"
 #include "wfn1_error.fh"
 #include "wfn1_drv.fh"
@@ -170,54 +172,141 @@ c
       integer :: elm_pos_ij(2)
       integer :: elm_pos_ji(2)
 c
+      double precision, allocatable :: bufa(:,:)
+      double precision, allocatable :: bufb(:,:)
+      double precision :: dmax, fmax
+      integer :: ialo, iahi, jalo, jahi, nia
+      integer :: iblo, ibhi, jblo, jbhi, nib
+      integer :: ii, jj ! counters
+c
+      integer :: iproc ! this process rank
+c
       error%total = 0.0d0
       error%errna = 0.0d0
       error%errnb = 0.0d0
       error%errca = 0.0d0
       error%errcb = 0.0d0
 c
+      iproc = ga_nodeid()
+c
       elm_pos_ij    = elm_pos
       elm_pos_ji(1) = elm_pos(2)
       elm_pos_ji(2) = elm_pos(1)
       if      (mat_kind.eq.MAT_N) then
-        if      (spin_kind.eq.SPIN_A) then
+        call ga_distribution(wfn1_deriv%g_dna,iproc,ialo,iahi,jalo,jahi)
+        call ga_distribution(wfn1_deriv%g_dnb,iproc,iblo,ibhi,jblo,jbhi)
+        if (ialo.ne.iblo.or.iahi.ne.ibhi.or.
+     &      jalo.ne.jblo.or.jahi.ne.jbhi) then
+          call errquit(pname//" mismatching dimensions natural Fock",
+     &                 0,UERR)
+        endif
+        nia = iahi-ialo+1
+        nib = ibhi-iblo+1
+        allocate(bufa(ialo:iahi,jalo:jahi))
+        allocate(bufb(iblo:ibhi,jblo:jbhi))
+        call ga_get(wfn1_deriv%g_dna,ialo,iahi,jalo,jahi,bufa,nia)
+        call ga_get(wfn1_deriv%g_dnb,iblo,ibhi,jblo,jbhi,bufb,nib)
+        dmax = 0.0d0
+        fmax = 0.0d0
+        do jj = jalo, jahi
+          do ii = ialo, iahi
+            dmax = max(dmax,abs(bufa(ii,jj)-bufb(ii,jj)))
+            fmax = max(fmax,abs(bufa(ii,jj)),abs(bufb(ii,jj)))
+          enddo
+        enddo
+        call ga_dgop(MT_DBL,dmax,1,"max")
+        call ga_dgop(MT_DBL,fmax,1,"max")
+        if (dmax/fmax.lt.1.0d-10) then
+c
+c         The alpha and beta channels are identical so this is most
+c         likely a closed shell calculation and we should implement
+c         the limit function to respect the equivalence.
+c
           call nga_get(wfn1_deriv%g_dna,elm_pos,elm_pos,error%errna,1)
           call ga_zero(wfn1_deriv%g_dna)
-          call ga_zero(wfn1_deriv%g_dnb)
           call nga_put(wfn1_deriv%g_dna,elm_pos_ij,elm_pos_ij,
      &                 error%errna,1)
           call nga_put(wfn1_deriv%g_dna,elm_pos_ji,elm_pos_ji,
      &                 -error%errna,1)
-        else if (spin_kind.eq.SPIN_B) then
-          call nga_get(wfn1_deriv%g_dnb,elm_pos,elm_pos,error%errnb,1)
-          call ga_zero(wfn1_deriv%g_dna)
-          call ga_zero(wfn1_deriv%g_dnb)
-          call nga_put(wfn1_deriv%g_dnb,elm_pos_ij,elm_pos_ij,
-     &                 error%errnb,1)
-          call nga_put(wfn1_deriv%g_dnb,elm_pos_ji,elm_pos_ji,
-     &                 -error%errnb,1)
+          call ga_copy(wfn1_deriv%g_dna,wfn1_deriv%g_dnb)
         else
-          call errquit(pname//" invalid natural spin",0,UERR)
+          if      (spin_kind.eq.SPIN_A) then
+            call nga_get(wfn1_deriv%g_dna,elm_pos,elm_pos,error%errna,1)
+            call ga_zero(wfn1_deriv%g_dna)
+            call ga_zero(wfn1_deriv%g_dnb)
+            call nga_put(wfn1_deriv%g_dna,elm_pos_ij,elm_pos_ij,
+     &                   error%errna,1)
+            call nga_put(wfn1_deriv%g_dna,elm_pos_ji,elm_pos_ji,
+     &                   -error%errna,1)
+          else if (spin_kind.eq.SPIN_B) then
+            call nga_get(wfn1_deriv%g_dnb,elm_pos,elm_pos,error%errnb,1)
+            call ga_zero(wfn1_deriv%g_dna)
+            call ga_zero(wfn1_deriv%g_dnb)
+            call nga_put(wfn1_deriv%g_dnb,elm_pos_ij,elm_pos_ij,
+     &                   error%errnb,1)
+            call nga_put(wfn1_deriv%g_dnb,elm_pos_ji,elm_pos_ji,
+     &                   -error%errnb,1)
+          else
+            call errquit(pname//" invalid natural spin",0,UERR)
+          endif
         endif
       else if (mat_kind.eq.MAT_C) then
-        if      (spin_kind.eq.SPIN_A) then
+        call ga_distribution(wfn1_deriv%g_dca,iproc,ialo,iahi,jalo,jahi)
+        call ga_distribution(wfn1_deriv%g_dcb,iproc,iblo,ibhi,jblo,jbhi)
+        if (ialo.ne.iblo.or.iahi.ne.ibhi.or.
+     &      jalo.ne.jblo.or.jahi.ne.jbhi) then
+          call errquit(pname//" mismatching dimensions correlation Fock"
+     &                 ,0,UERR)
+        endif
+        nia = iahi-ialo+1
+        nib = ibhi-iblo+1
+        allocate(bufa(ialo:iahi,jalo:jahi))
+        allocate(bufb(iblo:ibhi,jblo:jbhi))
+        call ga_get(wfn1_deriv%g_dca,ialo,iahi,jalo,jahi,bufa,nia)
+        call ga_get(wfn1_deriv%g_dcb,iblo,ibhi,jblo,jbhi,bufb,nib)
+        dmax = 0.0d0
+        fmax = 0.0d0
+        do jj = jalo, jahi
+          do ii = ialo, iahi
+            dmax = max(dmax,abs(bufa(ii,jj)-bufb(ii,jj)))
+            fmax = max(fmax,abs(bufa(ii,jj)),abs(bufb(ii,jj)))
+          enddo
+        enddo
+        call ga_dgop(MT_DBL,dmax,1,"max")
+        call ga_dgop(MT_DBL,fmax,1,"max")
+        if (dmax/fmax.lt.1.0d-10) then
+c
+c         The alpha and beta channels are identical so this is most
+c         likely a closed shell calculation and we should implement
+c         the limit function to respect the equivalence.
+c
           call nga_get(wfn1_deriv%g_dca,elm_pos,elm_pos,error%errca,1)
           call ga_zero(wfn1_deriv%g_dca)
-          call ga_zero(wfn1_deriv%g_dcb)
           call nga_put(wfn1_deriv%g_dca,elm_pos_ij,elm_pos_ij,
      &                 error%errca,1)
           call nga_put(wfn1_deriv%g_dca,elm_pos_ji,elm_pos_ji,
      &                 -error%errca,1)
-        else if (spin_kind.eq.SPIN_B) then
-          call nga_get(wfn1_deriv%g_dcb,elm_pos,elm_pos,error%errcb,1)
-          call ga_zero(wfn1_deriv%g_dca)
-          call ga_zero(wfn1_deriv%g_dcb)
-          call nga_put(wfn1_deriv%g_dcb,elm_pos_ij,elm_pos_ij,
-     &                 error%errcb,1)
-          call nga_put(wfn1_deriv%g_dcb,elm_pos_ji,elm_pos_ji,
-     &                 -error%errcb,1)
+          call ga_copy(wfn1_deriv%g_dca,wfn1_deriv%g_dcb)
         else
-          call errquit(pname//" invalid correlation spin",0,UERR)
+          if      (spin_kind.eq.SPIN_A) then
+            call nga_get(wfn1_deriv%g_dca,elm_pos,elm_pos,error%errca,1)
+            call ga_zero(wfn1_deriv%g_dca)
+            call ga_zero(wfn1_deriv%g_dcb)
+            call nga_put(wfn1_deriv%g_dca,elm_pos_ij,elm_pos_ij,
+     &                   error%errca,1)
+            call nga_put(wfn1_deriv%g_dca,elm_pos_ji,elm_pos_ji,
+     &                   -error%errca,1)
+          else if (spin_kind.eq.SPIN_B) then
+            call nga_get(wfn1_deriv%g_dcb,elm_pos,elm_pos,error%errcb,1)
+            call ga_zero(wfn1_deriv%g_dca)
+            call ga_zero(wfn1_deriv%g_dcb)
+            call nga_put(wfn1_deriv%g_dcb,elm_pos_ij,elm_pos_ij,
+     &                   error%errcb,1)
+            call nga_put(wfn1_deriv%g_dcb,elm_pos_ji,elm_pos_ji,
+     &                   -error%errcb,1)
+          else
+            call errquit(pname//" invalid correlation spin",0,UERR)
+          endif
         endif
       else
         call errquit(pname//" invalid matrix kind",0,UERR)

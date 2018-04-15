@@ -43,7 +43,11 @@
 
    LIBRARY = librdmft.a
 
+ifdef TEST_RDMS
+ LIB_DEFINES = -DTEST_RDMS
+else
  LIB_DEFINES =
+endif
 
    SUBDIRS = 
 LIB_INCLUDES = 

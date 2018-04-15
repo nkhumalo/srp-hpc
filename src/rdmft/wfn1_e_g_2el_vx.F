@@ -1214,7 +1214,7 @@ c
 c
 #ifdef TEST_RDMS
       flush(6)
-      gaa = 0.25d0*gaa
+c     gaa = 0.25d0*gaa
       call wfn1_test_rdms(wfn1_param,wfn1_mat,da,db,gaa,gab,gbb,
      &                    1.0d-7)
 #endif

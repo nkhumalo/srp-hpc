@@ -71,6 +71,8 @@ c
       wfn1_energy%E_nuc = wfn1_param%Enuc
       wfn1_energy%E_ent = 0.0d0
 c
+      nmo = wfn1_param%nmo
+c
 c     Arrange memory for the diagonal correlation function Fock
 c     matrices in natural orbital basis
 c
@@ -107,11 +109,21 @@ c
       else
         call errquit("invalid correlation energy option",0,UERR)
       endif
+cDEBUG
+      do ii = 1,nmo
+        write(*,*)'HVD: 2 v_dc ',ii,v_dca(ii),v_dcb(ii)
+      enddo
+cDEBUG
 c
 c     The entropy term
 c
       call wfn1_e_g_ent(wfn1_param,wfn1_wave,v_dca,v_dcb,
      &                  wfn1_energy%E_ent)
+cDEBUG
+      do ii = 1,nmo
+        write(*,*)'HVD: E v_dc ',ii,v_dca(ii),v_dcb(ii)
+      enddo
+cDEBUG
 c
 c     Transform the correlation function Fock matrices from natural
 c     orbital to correlation function basis
@@ -459,43 +471,43 @@ c
 c
 c-----------------------------------------------------------------------
 c
+!>
+!> \brief Calculate the entropy derived energy contribution
+!>
+!> The entropy derived contribution is given by
+!> \f{eqnarray}{
+!>   E_{\mathrm{ent}} &=& -T_{\mathrm{bath}}S \\\\
+!>   S &=& -\sum_i \rho_i\ln(\rho_i) + (1-\rho_i)ln(1-\rho_i)
+!> \f}
+!> where \f$T_{\mathrm{bath}}\f$ is the bath temperature, \f$S\f$ is
+!> the entropy, and \f$\rho_i\f$ is the occupation number of the
+!> \f$i\f$-th natural orbital.
+!>
+!> The derivative of the entropy with respect to the occupation numbers
+!> is given by
+!> \f{eqnarray}{
+!>   \frac{\partial S}{\partial\rho_i}
+!>   &=& -\ln(\rho_i)+ln(1-\rho_i)
+!> \f}
+!> Obviously if \f$\rho_i = 1\f$ or \f$\rho_i = 0\f$ both the entropy
+!> and its derivative are undefined. Hence we need to introduce a 
+!> cut-off \f$\rho_c\f$. 
+!>
+!> If \f$\rho_i \lt \rho_c\f$ then 
+!> \f{eqnarray}{
+!>   S(\rho_i) &=& 0 \\\\
+!>   \frac{\partial S}{\partial\rho_i} 
+!>   &=& -\ln(\rho_c)
+!> \f}
+!> If \f$\rho_i \gt 1-\rho_c\f$ then 
+!> \f{eqnarray}{
+!>   S(\rho_i) &=& 0 \\\\
+!>   \frac{\partial S}{\partial\rho_i} 
+!>   &=& \ln(1-\rho_c)
+!> \f}
+!>
       subroutine wfn1_e_g_ent(wfn1_param,wfn1_wave,v_dca,v_dcb,E_ent)
       implicit none
-C>
-C> \brief Calculate the entropy derived energy contribution
-C>
-C> The entropy derived contribution is given by
-C> \f{eqnarray}{
-C>   E_{\mathrm{ent}} &=& -T_{\mathrm{bath}}S \\\\
-C>   S &=& -\sum_i \rho_i\ln(\rho_i) + (1-\rho_i)ln(1-\rho_i)
-C> \f}
-C> where \f$T_{\mathrm{bath}}\f$ is the bath temperature, \f$S\f$ is
-C> the entropy, and \f$\rho_i\f$ is the occupation number of the
-C> \f$i\f$-th natural orbital.
-C>
-C> The derivative of the entropy with respect to the occupation numbers
-C> is given by
-C> \f{eqnarray}{
-C>   \frac{\partial S}{\partial\rho_i}
-C>   &=& -\ln(\rho_i)+ln(1-\rho_i)
-C> \f}
-C> Obviously if \f$\rho_i = 1\f$ or \f$\rho_i = 0\f$ both the entropy
-C> and its derivative are undefined. Hence we need to introduce a 
-C> cut-off \f$\rho_c\f$. 
-C>
-C> If \f$\rho_i \lt \rho_c\f$ then 
-C> \f{eqnarray}{
-C>   S(\rho_i) &=& 0 \\\\
-C>   \frac{\partial S}{\partial\rho_i} 
-C>   &=& -\ln(\rho_c)
-C> \f}
-C> If \f$\rho_i \gt 1-\rho_c\f$ then 
-C> \f{eqnarray}{
-C>   S(\rho_i) &=& 0 \\\\
-C>   \frac{\partial S}{\partial\rho_i} 
-C>   &=& \ln(1-\rho_c)
-C> \f}
-C>
 #include "wfn1_param.fh"
 #include "wfn1_wfn.fh"
 #include "global.fh"
@@ -529,6 +541,10 @@ c
       integer iproc                  ! the current processor rank
       integer nproc                  ! the total number of processor
                                      ! ranks
+      integer :: ncorea ! the number of alpha core states
+      integer :: ncoreb ! the number of beta  core states
+      integer :: nvirta ! the number of alpha virtual states
+      integer :: nvirtb ! the number of beta  virtual states
 c
       if (wfn1_param%Tbath.le.0.0d0) return
 c
@@ -537,6 +553,11 @@ c
 c
       allocate(occa(1:wfn1_param%nmo),occb(1:wfn1_param%nmo))
       allocate(e1a(1:wfn1_param%nmo),e1b(1:wfn1_param%nmo))
+c
+      ncorea = wfn1_param%ncorea
+      ncoreb = wfn1_param%ncoreb
+      nvirta = wfn1_param%nvirta
+      nvirtb = wfn1_param%nvirtb
 c
       rho_c = 1.0d-10
       occa  = 0.0d0
@@ -568,7 +589,7 @@ c
 c
 c     Calculate the entropy
 c
-      do ii = 1, wfn1_param%nmo
+      do ii = ncorea+1, wfn1_param%nmo-nvirta
         if      (occa(ii).lt.rho_c) then
           dr      = log(rho_c)
           e1a(ii) = e1a(ii) + wfn1_param%Tbath*dr
@@ -608,7 +629,7 @@ c
 c
 c     Calculate the entropy
 c
-      do ii = 1, wfn1_param%nmo
+      do ii = ncoreb+1, wfn1_param%nmo-nvirtb
         if      (occb(ii).lt.rho_c) then
           dr      = log(rho_c)
           e1b(ii) = e1b(ii) + wfn1_param%Tbath*dr

@@ -195,3 +195,56 @@ c
       end subroutine wfn1_print_mat
 c
 c-----------------------------------------------------------------------
+c
+      subroutine wfn1_print_mat2(dmat,nbf)
+      implicit none
+c
+c     A simple serial 2RDM print routine
+c
+#include "global.fh"
+#include "stdio.fh"
+c
+      integer, intent(in) :: nbf ! the number of basis functions
+c
+      double precision, intent(in) :: dmat(nbf,nbf,nbf,nbf)
+c
+      integer :: ia, ib, ic, id, kk, ll, k2 ! counters
+      integer :: iproc, nproc
+c
+      integer, parameter :: mxc = 8 ! the maximum number of columns
+                                    ! printed at a time
+c
+      iproc = ga_nodeid()
+      nproc = ga_nnodes()
+      if (iproc.eq.0) then
+c
+        do kk = 1, nbf*nbf, mxc
+          write(LuOut,*)
+          write(LuOut,'("              ",$)')
+          do k2 = kk, min(kk+mxc-1,nbf*nbf)
+            id = mod(k2-1,nbf)+1
+            ic = (k2+nbf-1)/nbf
+            write(LuOut,'(" (",i3,",",i3,")    ",$)')ic,id
+          enddo
+          write(LuOut,10)
+10        format(" (r'1,r'2)")
+          write(LuOut,*)
+          do ll = 1, nbf*nbf
+            ib = mod(ll-1,nbf)+1
+            ia = (ll+nbf-1)/nbf
+            write(LuOut,'(" (",i3,",",i3,")   ",$)')ia,ib
+            do k2 = kk, min(kk+mxc-1,nbf*nbf)
+              id = mod(k2-1,nbf)+1
+              ic = (k2+nbf-1)/nbf
+              write(LuOut,'(e14.6,$)')dmat(ia,ic,ib,id)
+            enddo
+            write(LuOut,*)
+          enddo
+          write(LuOut,'(" ( r1, r2)")')
+        enddo
+c
+      endif
+c
+      end subroutine wfn1_print_mat2
+c
+c-----------------------------------------------------------------------

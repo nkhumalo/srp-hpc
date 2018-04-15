@@ -435,12 +435,12 @@ c
      &                      wfn1_param%nea+wfn1_param%neb,
      &                      wfn1_param%nbf,wfn1_param%nmo,1.0d-7,
      &                      g_bfbf,wfn1_wave%g_na,.false.,eig)
-        deallocate(eig)
         call ga_copy(wfn1_wave%g_na,wfn1_wave%g_nb)
 c
 c       == Set up correlation functions == 
 c
-        call wfn1_guess_corr(wfn1_param,wfn1_wave)
+        call wfn1_guess_corr(wfn1_param,wfn1_wave,eig,wfn1_param%nmo)
+        deallocate(eig)
 c
       else
         call wfn1_guess_movecs(wfn1_param,wfn1_wave)

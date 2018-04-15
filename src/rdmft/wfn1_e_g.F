@@ -109,21 +109,11 @@ c
       else
         call errquit("invalid correlation energy option",0,UERR)
       endif
-cDEBUG
-      do ii = 1,nmo
-        write(*,*)'HVD: 2 v_dc ',ii,v_dca(ii),v_dcb(ii)
-      enddo
-cDEBUG
 c
 c     The entropy term
 c
       call wfn1_e_g_ent(wfn1_param,wfn1_wave,v_dca,v_dcb,
      &                  wfn1_energy%E_ent)
-cDEBUG
-      do ii = 1,nmo
-        write(*,*)'HVD: E v_dc ',ii,v_dca(ii),v_dcb(ii)
-      enddo
-cDEBUG
 c
 c     Transform the correlation function Fock matrices from natural
 c     orbital to correlation function basis

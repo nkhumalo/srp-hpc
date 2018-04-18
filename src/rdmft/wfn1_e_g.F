@@ -536,6 +536,9 @@ c
       integer :: nvirta ! the number of alpha virtual states
       integer :: nvirtb ! the number of beta  virtual states
 c
+      double precision :: s  ! The entropy of a natural orbital
+      double precision :: ds ! The derivative
+c
       if (wfn1_param%Tbath.le.0.0d0) return
 c
       iproc = ga_nodeid()
@@ -580,19 +583,9 @@ c
 c     Calculate the entropy
 c
       do ii = ncorea+1, wfn1_param%nmo-nvirta
-        if      (occa(ii).lt.rho_c) then
-          dr      = log(rho_c)
-          e1a(ii) = e1a(ii) + wfn1_param%Tbath*dr
-        else if (occa(ii).gt.(1.0d0-rho_c)) then
-          d1r     = log(rho_c)
-          e1a(ii) = e1a(ii) + wfn1_param%Tbath*(-d1r)
-        else
-          dr      = log(occa(ii))
-          d1r     = log(1.0d0-occa(ii))
-          E_ent   = E_ent + wfn1_param%Tbath
-     &            * (occa(ii)*dr+(1.0d0-occa(ii))*d1r)
-          e1a(ii) = e1a(ii) + wfn1_param%Tbath*(dr-d1r)
-        endif
+        call wfn1_entropy1(occa(ii),s,ds)
+        E_ent   = E_ent   + wfn1_param%Tbath*s
+        e1a(ii) = e1a(ii) + wfn1_param%Tbath*ds
       enddo
 c
 c     Do the BETA spin channel
@@ -620,19 +613,9 @@ c
 c     Calculate the entropy
 c
       do ii = ncoreb+1, wfn1_param%nmo-nvirtb
-        if      (occb(ii).lt.rho_c) then
-          dr      = log(rho_c)
-          e1b(ii) = e1b(ii) + wfn1_param%Tbath*dr
-        else if (occb(ii).gt.(1.0d0-rho_c)) then
-          d1r     = log(rho_c)
-          e1b(ii) = e1b(ii) + wfn1_param%Tbath*(-d1r)
-        else
-          dr      = log(occb(ii))
-          d1r     = log(1.0d0-occb(ii))
-          E_ent   = E_ent + wfn1_param%Tbath
-     &            * (occb(ii)*dr+(1.0d0-occb(ii))*d1r)
-          e1b(ii) = e1b(ii) + wfn1_param%Tbath*(dr-d1r)
-        endif
+        call wfn1_entropy1(occb(ii),s,ds)
+        E_ent   = E_ent   + wfn1_param%Tbath*s
+        e1b(ii) = e1b(ii) + wfn1_param%Tbath*ds
       enddo
 c
 c     Store the results

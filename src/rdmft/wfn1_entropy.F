@@ -1,7 +1,5 @@
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_entropy1(p,s,ds)
-      implicit none
 C>
 C> \brief Calculate the 1-electron entropy associated with an 
 C> orbital and its derivative
@@ -10,13 +8,44 @@ C> The entropy of a natural orbital with occupation number \f$p\f$ is
 C> given by \f$S^1 = p\ln(p)+(1-p)\ln(1-p)\f$. As a result the
 C> derivative is given by
 C> \f$\frac{\mathrm{d}S_1}{\mathrm{d}p}=\ln(p)-\ln(1-p)\f$.
+C>
+C> The GSL parts are just to test a different approximation to the
+C> entropy. Obviously, this introduces a licensing conflict. Therefore
+C> if this expression does what I need, the solution is to expand it
+C> in a Taylor series (around 0.25 as the entropy is symmetric around
+C> 0.5).
 C> 
-      double precision, intent(in)  :: p  ! The occupation number
-      double precision, intent(out) :: s  ! The entropy
-      double precision, intent(out) :: ds ! The entropy derivative
+      subroutine wfn1_entropy1(p,s,ds)
+      implicit none
+!>    The occupation number
+      double precision, intent(in)  :: p
+!>    The entropy
+      double precision, intent(out) :: s
+!>    The entropy gradient
+      double precision, intent(out) :: ds
 c
-      s  = p*log(p) + (1.0d0-p)*log(1.0d0-p)
-      ds = log(p) - log(1.0d0-p)
+      double precision :: a
+      double precision :: tol
+c
+#ifdef USE_GSL
+      double precision, external :: gsl_sf_lngamma
+      double precision, external :: gsl_sf_psi
+      a = log(0.5d0)/(2.0d0*gsl_sf_lngamma(1.5d0))
+      s = a*(gsl_sf_lngamma(1.0d0+p) + gsl_sf_lngamma(2.0d0-p))
+      ds = a*(gsl_sf_psi(1.0d0+p) - gsl_sf_psi(2.0d0-p))
+#else
+      tol = 1.0d-10
+      if   (p.lt.tol) then
+        s  = 0.0d0
+        ds = log(tol)
+      else (p.gt.1.0d0-tol) then
+        s  = 0.0d0
+        ds = -log(tol)
+      else
+        s  = p*log(p) + (1.0d0-p)*log(1.0d0-p)
+        ds = log(p) - log(1.0d0-p)
+      endif
+#endif
 c
       end
 c

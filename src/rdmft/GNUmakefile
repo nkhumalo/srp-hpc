@@ -28,6 +28,7 @@
          wfn1_gen_trial_wfn.o \
          wfn1_guess_corr.o \
          wfn1_guess_movecs.o \
+         wfn1_gsl_wrap.o \
          wfn1_idmin.o \
          wfn1_insert.o \
          wfn1_lindep.o \
@@ -43,10 +44,12 @@
 
    LIBRARY = librdmft.a
 
-ifdef TEST_RDMS
- LIB_DEFINES = -DTEST_RDMS
-else
  LIB_DEFINES =
+ifdef TEST_RDMS
+ LIB_DEFINES += -DTEST_RDMS
+endif
+ifdef USE_GSL
+ LIB_DEFINES += -DUSE_GSL
 endif
 
    SUBDIRS = 

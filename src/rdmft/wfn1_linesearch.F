@@ -152,7 +152,8 @@ c
 c
 c     Minimize the energy
 c
-      do while ((.not.o_eminimized).and.(.not.o_reduced))
+      do while ((.not.o_eminimized).and.(.not.o_reduced).and.
+     &          npts.lt.mxpts)
 c    & .or. 
 c    &          wfn1_trial_en%E_tot > wfn1_energy%E_tot*(1.0d0+1.0d-8))
 c
@@ -165,6 +166,34 @@ c
      &                   fx(ix1),fx(ix2),fx(ix3),
      &                   aa,bb,cc,xm,fxm)
         call wfn1_fix_xm(npts,xx,xm)
+c
+c       There are three different scenarios here:
+c       1. INDXMIN.eq.1: Then XM must be XM < XX(2). If not then the
+c          fitted parabola is useless and we set XM to the edge of the 
+c          trust region XM = XX(1) - TR.
+c       2. INDXMIN.eq.NPTS: Then XM must be XM > XX(NPTS-1). If not
+c          then the fitted parabola is useless and we set XM to the 
+c          edge of the trust region XM = XX(NPTS) + TR.
+c       3. INDXMIN is anything else: Then XM must be XX(INDXMIN-1) < 
+c          XM < XX(INDXMIN+1). If not then the fitted parabola is 
+c          useless, instead we choose XM through bisecting the larger
+c          of the intervals XX(INDXMIN-1):XX(INDXMIN) and 
+c          XX(INDXMIN):XX(INDXMIN+1).
+c
+        if      (indxmin.eq.1.and.xm.ge.xx(2)) then
+          xm = xx(1) - tr
+        else if (indxmin.eq.npts.and.xm.le.xx(npts-1)) then
+          xm = xx(npts) + tr
+        else if (indxmin.gt.1.and.indxmin.lt.npts.and..not.
+     &           (xx(indxmin-1).lt.xm.and.xm.lt.xx(indxmin+1))) then
+          if (xx(indxmin)-xx(indxmin-1).gt.xx(indxmin+1)-xx(indxmin))
+     &    then
+            xm = 0.5d0*(xx(indxmin)+xx(indxmin-1))
+          else
+            xm = 0.5d0*(xx(indxmin+1)+xx(indxmin))
+          endif
+        endif
+c
         call wfn1_gen_trial_wfn(xm,wfn1_param,wfn1_wave,wfn1_deriv,
      &                          wfn1_trial_wv,g_momo1,g_momo2)
         call wfn1_ortho(wfn1_mat,wfn1_trial_wv)
@@ -191,6 +220,26 @@ c
         o_reduced = (abs((2.0d0*aa*xx(ipos)+bb)/bb).lt.0.1d0)
         o_eminimized = (abs(bb).lt.tol*0.01d0).and..not.o_reduced
       enddo
+c     if (npts.ge.mxpts) then
+c       write(*,*)"ipos   = ",ipos
+c       write(*,*)"ix     = ",ix1,ix2,ix3
+c       write(*,*)"a,b,c  = ",aa,bb,cc
+c       write(*,*)"x,f(x) = ",xm,fxm
+c       do ix1 = 1, mxpts
+c         write(*,*)ix1,xx(ix1),fx(ix1)
+c       enddo
+c       indxmin = wfn1_idmin(npts,fx,1)
+c       call wfn1_closest_three(npts,xx,indxmin,ix1,ix2,ix3)
+c       call wfn1_f1f2f3(xx(1)-tr,xx(npts)+tr,
+c    &                   xx(ix1),xx(ix2),xx(ix3),
+c    &                   fx(ix1),fx(ix2),fx(ix3),
+c    &                   aa,bb,cc,xm,fxm)
+c       write(*,*)"indxmin = ",indxmin
+c       write(*,*)"ix      = ",ix1,ix2,ix3
+c       write(*,*)"a,b,c   = ",aa,bb,cc
+c       write(*,*)"x,f(x)  = ",xm,fxm
+c       call errquit("too many steps in linesearch",0,UERR)
+c     endif
 c
 c     If the energy is minimized already and only redundant
 c     transformations remain then minimize the norm of the Fock 
@@ -202,11 +251,6 @@ c     The change of search direction is effected by wfn1_limit_max.
 c
       o_reduced = .false.
       error = wfn1_limit_max(wfn1_deriv)
-cDEBUG
-c     if (o_eminimized) then
-c       write(*,*)'HvD: minimize Fock: ',npts,error%total
-c     endif
-cDEBUG
       do while (o_eminimized .and. npts.lt.mxpts .and. .not.o_reduced)
         indxmin = wfn1_idmin(npts,df,1)
         call wfn1_closest_three(npts,xx,indxmin,ix1,ix2,ix3)
@@ -253,11 +297,6 @@ c
      &                      tr,aa,bb,cc,xm,fxm)
         o_reduced = (abs((2.0d0*aa*xx(ipos)+bb)/bb).lt.0.1d0)
       enddo
-cDEBUG
-c     if (o_eminimized) then
-c       write(*,*)'HvD: minimize Fock: ',npts,error%total
-c     endif
-cDEBUG
 c
       end subroutine wfn1_linesearch
 c

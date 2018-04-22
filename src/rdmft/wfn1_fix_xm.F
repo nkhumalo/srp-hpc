@@ -14,7 +14,7 @@ C>
       double precision, intent(in)    :: xx(npts)
       double precision, intent(inout) :: xm
 c
-      double precision, parameter :: tol = 1.0d-8
+      double precision, parameter :: tol = 1.0d-7
 c
       integer ii
 c

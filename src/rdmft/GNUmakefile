@@ -11,7 +11,11 @@
          wfn1_closest_three.o \
          wfn1_configuration.o \
          wfn1_df1df2df3.o \
+         wfn1_dlasyf.o \
          wfn1_dnrm2.o \
+         wfn1_dsytf2.o \
+         wfn1_dsytrf.o \
+         wfn1_dsytri.o \
          wfn1_element.o \
          wfn1_entropy.o \
          wfn1_e_g.o \

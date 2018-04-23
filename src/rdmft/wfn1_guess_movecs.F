@@ -1,6 +1,5 @@
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_guess_movecs(wfn1_param,wfn1_wave)
 !>
 !> \brief Load the guess vectors from the movecs files
 !>
@@ -12,13 +11,16 @@ c
 !> If no ".covecs" file is available we will use the default guess
 !> for the correlation functions.
 !>
+      subroutine wfn1_guess_movecs(wfn1_param,wfn1_wave)
       implicit none
 #include "wfn1_param.fh"
 #include "wfn1_wfn.fh"
 #include "errquit.fh"
 #include "stdio.fh"
 c
+!>    The calculation parameters
       type(wfn1_prm), intent(in)    :: wfn1_param
+!>    The wave function
       type(wfn1_wfn), intent(inout) :: wfn1_wave
 c
       character*256 :: movecs_in
@@ -93,7 +95,7 @@ c
           endif
         endif
       else
-        call wfn1_guess_corr(wfn1_param,wfn1_wave)
+        call wfn1_guess_corr(wfn1_param,wfn1_wave,eval,wfn1_param%nbf)
       endif
 c
       deallocate(occ,eval)

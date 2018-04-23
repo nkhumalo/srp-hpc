@@ -24,6 +24,7 @@ end
 
 task dft energy
 
+set wfn1:corr_expr "wfn1_vx"
 set wfn1:nopen 2
 set wfn1:maxit 100
 set wfn1:t_bath 0.0
@@ -33,8 +34,9 @@ set wfn1:print_error T
 
 task wfn1 energy
 
+set wfn1:corr_expr "wfn1_vx"
 set wfn1:nopen 2
-set wfn1:maxit 1000
+set wfn1:maxit 200
 set wfn1:t_bath 2.5
 
 task wfn1 energy

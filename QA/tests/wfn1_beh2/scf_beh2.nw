@@ -1,0 +1,18 @@
+echo
+start wfn1_beh2_dat
+
+geometry
+  symmetry c1
+  be     0.00000000     0.00000000     0.00000000
+  h      0.00000000     0.00000000     1.33420719
+  h      0.00000000     0.00000000    -1.33420719
+end
+basis
+  * library 6-31g*
+end
+
+dft
+  xc hfexch
+end
+
+task dft energy

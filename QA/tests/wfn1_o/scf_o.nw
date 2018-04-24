@@ -1,0 +1,18 @@
+echo
+start scf_o_dat
+
+geometry
+  o      0.00000000     0.00000000     0.00000000
+end
+basis
+  * library 6-31g*
+end
+
+dft
+  odft
+  mult 3
+  xc hfexch
+end
+
+task dft energy
+

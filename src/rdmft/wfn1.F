@@ -94,6 +94,8 @@ c
       double precision conv_tol ! the convergence tolerance
 c
       double precision, allocatable :: eig(:)
+      double precision, allocatable :: v_dna(:)
+      double precision, allocatable :: v_dnb(:)
       double precision, allocatable :: v_dca(:)
       double precision, allocatable :: v_dcb(:)
       type(wfn1_error)              :: error
@@ -404,6 +406,7 @@ c
 c
 c     == Allocate memory for the natural orbital energies
 c
+      allocate(v_dna(1:wfn1_param%nmo),v_dnb(1:wfn1_param%nmo))
       allocate(v_dca(1:wfn1_param%nmo),v_dcb(1:wfn1_param%nmo))
 c
 c     == Allocate memory for the derivatives wrt the wavefunctions ==
@@ -466,7 +469,7 @@ c
       endif
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
      &              wfn1_energy,g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dca,v_dcb)
+     &              v_dna,v_dnb,v_dca,v_dcb)
 c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
       error = wfn1_trace(wfn1_deriv,wfn1_deriv)
       oconverged = (error%total < conv_tol)
@@ -501,7 +504,7 @@ c
      &                       wfn1_deriv,wfn1_energy,
      &                       wfn1_trial_wv,wfn1_trial_drv,wfn1_trial_en,
      &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                       v_dca,v_dcb)
+     &                       v_dna,v_dnb,v_dca,v_dcb)
 c
         error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
         oconverged = (error%total < conv_tol)
@@ -563,7 +566,7 @@ c
         call wfn1_print_energy(wfn1_energy)
       endif
       call wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
-     &                         v_dca,v_dcb)
+     &                         v_dna,v_dnb,v_dca,v_dcb)
 c
 c     == Store results ==
 c
@@ -579,6 +582,7 @@ c
       call wfn1_deallocate_drv(wfn1_trial_drv)
       call wfn1_deallocate_drv(wfn1_deriv)
       deallocate(v_dca,v_dcb)
+      deallocate(v_dna,v_dnb)
       deallocate(wfn1_t_wv%dcntb)
       deallocate(wfn1_t_wv%dcnta)
       deallocate(wfn1_t_wv%icnfb)

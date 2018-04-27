@@ -2,7 +2,8 @@ c-----------------------------------------------------------------------
 c
       subroutine wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
      &                    wfn1_deriv,wfn1_energy,g_bfmo,g_momo,
-     &                    g_momo2,g_momo3,g_momo4,v_dca,v_dcb)
+     &                    g_momo2,g_momo3,g_momo4,
+     &                    v_dna,v_dnb,v_dca,v_dcb)
       implicit none
 C>
 C> \brief Calculate the energy and the derivative of the energy wrt
@@ -39,7 +40,13 @@ c
       integer, intent(in) :: g_momo3 ! nmo x nmo scratch GA
       integer, intent(in) :: g_momo4 ! nmo x nmo scratch GA
 c
+!>    The \$\alpha\f$ natural orbital energies
+      double precision, intent(out) :: v_dna(1:wfn1_param%nmo)
+!>    The \$\beta\f$ natural orbital energies
+      double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
+!>    The \$\alpha\f$ correlation function energies
       double precision, intent(out) :: v_dca(1:wfn1_param%nmo)
+!>    The \$\beta\f$ correlation function energies
       double precision, intent(out) :: v_dcb(1:wfn1_param%nmo)
       double precision, allocatable :: buf(:,:)
       double precision, allocatable :: bufji(:,:)
@@ -79,6 +86,8 @@ c
 c     allocate(v_dca(1:wfn1_param%nmo))
 c     allocate(v_dcb(1:wfn1_param%nmo))
 c
+      v_dna = 0.0d0
+      v_dnb = 0.0d0
       v_dca = 0.0d0
       v_dcb = 0.0d0
 c
@@ -176,6 +185,7 @@ c
           if      (ii.lt.jj) then
             buf(ii,jj) = -0.5d0*(buf(ii,jj)+bufji(jj,ii))
           else if (ii.eq.jj) then
+            v_dna(ii)  = buf(ii,jj)
             buf(ii,jj) =  0.0d0
           else if (ii.gt.jj) then
             buf(ii,jj) = +0.5d0*(buf(ii,jj)+bufji(jj,ii))
@@ -197,6 +207,7 @@ c
           if      (ii.lt.jj) then
             buf(ii,jj) = -0.5d0*(buf(ii,jj)+bufji(jj,ii))
           else if (ii.eq.jj) then
+            v_dnb(ii)  = buf(ii,jj)
             buf(ii,jj) =  0.0d0
           else if (ii.gt.jj) then
             buf(ii,jj) = +0.5d0*(buf(ii,jj)+bufji(jj,ii))
@@ -255,6 +266,8 @@ c
       deallocate(bufji)
       deallocate(buf)
 c
+      call ga_dgop(MT_DBL,v_dna,wfn1_param%nmo,"+")
+      call ga_dgop(MT_DBL,v_dnb,wfn1_param%nmo,"+")
       call ga_dgop(MT_DBL,v_dca,wfn1_param%nmo,"+")
       call ga_dgop(MT_DBL,v_dcb,wfn1_param%nmo,"+")
 c

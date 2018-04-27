@@ -1,7 +1,7 @@
 c-----------------------------------------------------------------------
 c
       subroutine wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
-     &                               e1a,e1b)
+     &                               en1a,en1b,ec1a,ec1b)
       implicit none
 C>
 C> \brief Print the wavefunction analysis
@@ -13,9 +13,15 @@ c
       type(wfn1_prm),     intent(in) :: wfn1_param
       type(wfn1_prminst), intent(in) :: wfn1_inst
       type(wfn1_wfn),     intent(in) :: wfn1_wave
-c
-      double precision, intent(inout) :: e1a(1:wfn1_param%nmo)
-      double precision, intent(inout) :: e1b(1:wfn1_param%nmo)
+!>    The \f$\alpha\f$ natural orbital energies
+      double precision, intent(inout) :: en1a(1:wfn1_param%nmo)
+!>    The \f$\alpha\f$ natural orbital energies
+      double precision, intent(inout) :: en1b(1:wfn1_param%nmo)
+!>    The \f$\alpha\f$ correlation function energies
+      double precision, intent(inout) :: ec1a(1:wfn1_param%nmo)
+!>    The \f$\alpha\f$ correlation function energies
+      double precision, intent(inout) :: ec1b(1:wfn1_param%nmo)
+!>    The natural orbital occupation numbers
       double precision, allocatable   :: occa(:), occb(:)
       double precision, allocatable   :: ci(:), cj(:)
 c
@@ -49,18 +55,40 @@ c
       call wfn1_calc_occ(wfn1_wave%g_cb,nmo,wfn1_param%neb,
      &                   wfn1_wave%icnfb,wfn1_wave%dcntb,occb)
 c
-      call wfn1_print_occ(nmo,occa,occb)
+c     call wfn1_print_occ(nmo,occa,occb)
+c
+      blob = "WFN1 Final Natural orbital energies and occupations"
+      write(LuOut,*)
+      call util_print_centered(LuOut,blob, 40, .true.)
+      write(LuOut,*)
+      write(LuOut,'(12x,"  Alpha ",4x,"  Beta  ",8x,
+     &                  "  Alpha ",4x,"  Beta  ")')
+      write(LuOut,'(12x,"--------",4x,"--------",8x,
+     &                  "--------",4x,"--------")')
+      do ii = 1, nmo
+        write(LuOut,'(i8,f12.4,f12.4,4x,f12.4,f12.4)')ii,
+     &        en1a(ii),en1b(ii),occa(ii),occb(ii)
+     &
+      enddo
 c
 c     Sort correlation functions by energy
 c
 c     Alpha
 c
+      occa = 0.0d0
+      occb = 0.0d0
+      do ii = 1, wfn1_param%nea
+        occa(wfn1_wave%icnfa(ii)) = wfn1_wave%dcnta(ii)
+      enddo
+      do ii = 1, wfn1_param%neb
+        occb(wfn1_wave%icnfb(ii)) = wfn1_wave%dcntb(ii)
+      enddo
       do ii = 1, nmo-1
-        valmin = e1a(ii)
+        valmin = ec1a(ii)
         imin   = ii
         do jj = ii+1, nmo
-          if (e1a(jj).lt.valmin) then
-            valmin = e1a(jj)
+          if (ec1a(jj).lt.valmin) then
+            valmin = ec1a(jj)
             imin   = jj
           endif
         enddo
@@ -69,19 +97,22 @@ c
           call ga_get(wfn1_wave%g_ca,1,nmo,imin,imin,cj,nmo)
           call ga_put(wfn1_wave%g_ca,1,nmo,ii,ii,cj,nmo)
           call ga_put(wfn1_wave%g_ca,1,nmo,imin,imin,ci,nmo)
-          e1a(imin) = e1a(ii)
-          e1a(ii)   = valmin
+          ec1a(imin) = ec1a(ii)
+          ec1a(ii)   = valmin
+          valmin     = occa(imin)
+          occa(imin) = occa(ii)
+          occa(ii)   = valmin
         endif
       enddo
 c
 c     Beta
 c
       do ii = 1, nmo-1
-        valmin = e1b(ii)
+        valmin = ec1b(ii)
         imin   = ii
         do jj = ii+1, nmo
-          if (e1b(jj).lt.valmin) then
-            valmin = e1b(jj)
+          if (ec1b(jj).lt.valmin) then
+            valmin = ec1b(jj)
             imin   = jj
           endif
         enddo
@@ -90,20 +121,27 @@ c
           call ga_get(wfn1_wave%g_cb,1,nmo,imin,imin,cj,nmo)
           call ga_put(wfn1_wave%g_cb,1,nmo,ii,ii,cj,nmo)
           call ga_put(wfn1_wave%g_cb,1,nmo,imin,imin,ci,nmo)
-          e1b(imin) = e1b(ii)
-          e1b(ii)   = valmin
+          ec1b(imin) = ec1b(ii)
+          ec1b(ii)   = valmin
+          valmin     = occb(imin)
+          occb(imin) = occb(ii)
+          occb(ii)   = valmin
         endif
       enddo
       call ga_sync()
 c
-      blob = "WFN1 Final Correlation function energies"
+      blob = "WFN1 Final Correlation function energies and occupations"
       write(LuOut,*)
       call util_print_centered(LuOut,blob, 40, .true.)
       write(LuOut,*)
-      write(LuOut,'(12x,"  alpha ",4x,"  beta  ")')
-      write(LuOut,'(12x,"--------",4x,"--------")')
+      write(LuOut,'(12x,"  Alpha ",4x,"  Beta  ",8x,
+     &                  "  Alpha ",4x,"  Beta  ")')
+      write(LuOut,'(12x,"--------",4x,"--------",8x,
+     &                  "--------",4x,"--------")')
       do ii = ilo, ihi
-        write(LuOut,'(i8,f12.4,f12.4)')ii,e1a(ii),e1b(ii)
+        write(LuOut,'(i8,f12.4,f12.4,4x,f12.4,f12.4)')ii,
+     &        ec1a(ii),ec1b(ii),occa(ii),occb(ii)
+     &
       enddo
 c
       blob = "WFN1 Final alpha Correlation Function Analysis"
@@ -124,12 +162,12 @@ c
 c
       blob = "WFN1 Final Alpha Natural Orbital Analysis"
       call movecs_print_anal(wfn1_inst%basis,ilo,ihi,tanalyze,
-     &                       wfn1_wave%g_na,blob,.true.,e1a,.false.,
+     &                       wfn1_wave%g_na,blob,.true.,ec1a,.false.,
      &                       irrep,.true.,occa)
 c
       blob = "WFN1 Final Beta Natural Orbital Analysis"
       call movecs_print_anal(wfn1_inst%basis,ilo,ihi,tanalyze,
-     &                       wfn1_wave%g_nb,blob,.true.,e1b,.false.,
+     &                       wfn1_wave%g_nb,blob,.true.,ec1b,.false.,
      &                       irrep,.true.,occb)
 c
       deallocate(occa,occb)

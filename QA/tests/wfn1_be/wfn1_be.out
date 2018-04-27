@@ -68,9 +68,9 @@ task wfn1 energy
 
     hostname        = erato
     program         = ../../../bin/LINUX64/nwchem
-    date            = Sun Apr 22 21:23:48 2018
+    date            = Thu Apr 26 22:08:32 2018
 
-    compiled        = Sun_Apr_22_21:22:26_2018
+    compiled        = Thu_Apr_26_22:08:27_2018
     source          = /home/hvandam/nwchem-1-wfn1
     nwchem branch   = Development
     nwchem revision = nwchem_on_git-51-gcccac83fc2a4226c5c513281d68ab773edcb0a0d
@@ -229,34 +229,47 @@ task wfn1 energy
  Total SCF energy  =         -14.5669441117
  2-Electron energy =           4.5453260473
 
+                WFN1 Final Natural orbital energies and occupations
+                ---------------------------------------------------
 
-      Natural orbital occupation numbers
+              Alpha       Beta            Alpha       Beta  
+            --------    --------        --------    --------
+       1     -4.7093     -4.7093          1.0000      1.0000
+       2     -0.3015     -0.3015          1.0000      1.0000
+       3      0.0000      0.0000          0.0000      0.0000
+       4      0.0000      0.0000          0.0000      0.0000
+       5      0.0000      0.0000          0.0000      0.0000
+       6      0.0000      0.0000          0.0000      0.0000
+       7      0.0000      0.0000          0.0000      0.0000
+       8      0.0000      0.0000          0.0000      0.0000
+       9      0.0000      0.0000          0.0000      0.0000
+      10      0.0000      0.0000          0.0000      0.0000
+      11      0.0000      0.0000          0.0000      0.0000
+      12      0.0000      0.0000          0.0000      0.0000
+      13      0.0000      0.0000          0.0000      0.0000
+      14      0.0000      0.0000          0.0000      0.0000
+      15      0.0000      0.0000          0.0000      0.0000
 
-          Alpha     Beta
-         ------   ------
-     2   1.0000   1.0000
-     3   0.0000   0.0000
+             WFN1 Final Correlation function energies and occupations
+             --------------------------------------------------------
 
-                     WFN1 Final Correlation function energies
-                     ----------------------------------------
-
-              alpha       beta  
-            --------    --------
-       1     -4.7093     -4.7093
-       2     -0.3015     -0.3015
-       3      0.0822      0.0822
-       4      0.0823      0.0823
-       5      0.2375      0.2375
-       6      0.4389      0.4389
-       7      0.4759      0.4759
-       8      0.5159      0.5159
-       9      0.7638      0.7638
-      10      0.7976      0.7976
-      11      0.9479      0.9479
-      12      0.9996      0.9996
-      13      1.0390      1.0390
-      14      1.0426      1.0426
-      15      2.8505      2.8505
+              Alpha       Beta            Alpha       Beta  
+            --------    --------        --------    --------
+       1     -4.7093     -4.7093          1.0000      1.0000
+       2     -0.3015     -0.3015          1.0000      1.0000
+       3      0.0822      0.0822          0.0000      0.0000
+       4      0.0823      0.0823          0.0000      0.0000
+       5      0.2375      0.2375          0.0000      0.0000
+       6      0.4389      0.4389          0.0000      0.0000
+       7      0.4759      0.4759          0.0000      0.0000
+       8      0.5159      0.5159          0.0000      0.0000
+       9      0.7638      0.7638          0.0000      0.0000
+      10      0.7976      0.7976          0.0000      0.0000
+      11      0.9479      0.9479          0.0000      0.0000
+      12      0.9996      0.9996          0.0000      0.0000
+      13      1.0390      1.0390          0.0000      0.0000
+      14      1.0426      1.0426          0.0000      0.0000
+      15      2.8505      2.8505          0.0000      0.0000
 
                   WFN1 Final alpha Correlation Function Analysis
                   ----------------------------------------------
@@ -394,21 +407,21 @@ task wfn1 energy
      6     -0.763981  1 Be s                  2     -0.252954  1 Be s          
      1      0.220946  1 Be s          
 
- Vector    3  Occ=0.000000D+00  E= 8.224766D-02
+ Vector    3  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -4.2D-13,  1.7D-12,  2.1D-12, r^2= 3.4D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      7     -0.802738  1 Be px                 3     -0.263804  1 Be px         
      8     -0.039189  1 Be py         
 
- Vector    4  Occ=0.000000D+00  E= 8.227036D-02
+ Vector    4  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  3.0D-04,  2.7D-03,  1.7D-03, r^2= 3.5D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      8     -0.803095  1 Be py                 4     -0.259451  1 Be py         
      9      0.066900  1 Be pz                 7      0.035420  1 Be px         
 
- Vector    5  Occ=0.000000D+00  E= 2.375025D-01
+ Vector    5  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  7.6D-02,  1.1D-01, -1.9D-01, r^2= 2.7D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -418,7 +431,7 @@ task wfn1 energy
     13     -0.267294  1 Be dyy                7     -0.208048  1 Be px         
     15      0.197185  1 Be dzz               12     -0.159970  1 Be dxz        
 
- Vector    6  Occ=0.000000D+00  E= 4.389441D-01
+ Vector    6  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  3.6D-13,  2.8D-12,  7.9D-13, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -426,7 +439,7 @@ task wfn1 energy
     10      0.050425  1 Be dxx               13      0.050425  1 Be dyy        
     15      0.050425  1 Be dzz        
 
- Vector    7  Occ=0.000000D+00  E= 4.759321D-01
+ Vector    7  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -1.2D-01, -5.4D-02, -7.8D-03, r^2= 2.0D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -436,7 +449,7 @@ task wfn1 energy
      8      0.262584  1 Be py                15      0.256669  1 Be dzz        
     11     -0.108730  1 Be dxy               13      0.096506  1 Be dyy        
 
- Vector    8  Occ=0.000000D+00  E= 5.158589D-01
+ Vector    8  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -1.8D-02, -8.1D-03,  5.0D-02, r^2= 3.5D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -446,7 +459,7 @@ task wfn1 energy
     12      0.104407  1 Be dxz               15     -0.093115  1 Be dzz        
      3      0.057123  1 Be px                 7     -0.049705  1 Be px         
 
- Vector    9  Occ=0.000000D+00  E= 7.637608D-01
+ Vector    9  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  4.0D-02,  1.3D-01, -7.0D-02, r^2= 2.6D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -456,7 +469,7 @@ task wfn1 energy
      9      0.269326  1 Be pz                15      0.235636  1 Be dzz        
     11     -0.129780  1 Be dxy               12     -0.115472  1 Be dxz        
 
- Vector   10  Occ=0.000000D+00  E= 7.975868D-01
+ Vector   10  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -9.6D-02, -3.1D-02, -3.1D-03, r^2= 2.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -466,7 +479,7 @@ task wfn1 energy
      9     -0.296059  1 Be pz                 8     -0.281958  1 Be py         
     10      0.122852  1 Be dxx               15     -0.092078  1 Be dzz        
 
- Vector   11  Occ=0.000000D+00  E= 9.479091D-01
+ Vector   11  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  9.7D-02,  3.3D-02,  6.2D-03, r^2= 1.4D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -476,7 +489,7 @@ task wfn1 energy
      9     -0.165955  1 Be pz                 4     -0.064264  1 Be py         
      5     -0.043999  1 Be pz                 8      0.034146  1 Be py         
 
- Vector   12  Occ=0.000000D+00  E= 9.995810D-01
+ Vector   12  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  1.2D-02, -6.2D-02,  2.2D-01, r^2= 1.4D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -486,7 +499,7 @@ task wfn1 energy
      3     -0.251052  1 Be px                 7      0.200711  1 Be px         
      9      0.143948  1 Be pz                11      0.130341  1 Be dxy        
 
- Vector   13  Occ=0.000000D+00  E= 1.039005D+00
+ Vector   13  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -5.7D-02, -4.5D-02, -4.5D-02, r^2= 1.3D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -496,7 +509,7 @@ task wfn1 energy
     15      0.101723  1 Be dzz                9     -0.093822  1 Be pz         
     13      0.083571  1 Be dyy                4     -0.051505  1 Be py         
 
- Vector   14  Occ=0.000000D+00  E= 1.042621D+00
+ Vector   14  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  6.5D-02, -6.9D-02,  3.5D-02, r^2= 1.3D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -506,7 +519,7 @@ task wfn1 energy
      3     -0.072598  1 Be px                 4     -0.072826  1 Be py         
      7      0.062539  1 Be px                10     -0.062123  1 Be dxx        
 
- Vector   15  Occ=0.000000D+00  E= 2.850475D+00
+ Vector   15  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -3.0D-15,  1.7D-14, -3.8D-15, r^2= 8.6D-01
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -531,21 +544,21 @@ task wfn1 energy
      6     -0.763981  1 Be s                  2     -0.252954  1 Be s          
      1      0.220946  1 Be s          
 
- Vector    3  Occ=0.000000D+00  E= 8.224766D-02
+ Vector    3  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -4.2D-13,  1.7D-12,  2.1D-12, r^2= 3.4D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      7     -0.802738  1 Be px                 3     -0.263804  1 Be px         
      8     -0.039189  1 Be py         
 
- Vector    4  Occ=0.000000D+00  E= 8.227036D-02
+ Vector    4  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  3.0D-04,  2.7D-03,  1.7D-03, r^2= 3.5D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      8     -0.803095  1 Be py                 4     -0.259451  1 Be py         
      9      0.066900  1 Be pz                 7      0.035420  1 Be px         
 
- Vector    5  Occ=0.000000D+00  E= 2.375025D-01
+ Vector    5  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  7.6D-02,  1.1D-01, -1.9D-01, r^2= 2.7D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -555,7 +568,7 @@ task wfn1 energy
     13     -0.267294  1 Be dyy                7     -0.208048  1 Be px         
     15      0.197185  1 Be dzz               12     -0.159970  1 Be dxz        
 
- Vector    6  Occ=0.000000D+00  E= 4.389441D-01
+ Vector    6  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  3.6D-13,  2.8D-12,  7.9D-13, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -563,7 +576,7 @@ task wfn1 energy
     10      0.050425  1 Be dxx               13      0.050425  1 Be dyy        
     15      0.050425  1 Be dzz        
 
- Vector    7  Occ=0.000000D+00  E= 4.759321D-01
+ Vector    7  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -1.2D-01, -5.4D-02, -7.8D-03, r^2= 2.0D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -573,7 +586,7 @@ task wfn1 energy
      8      0.262584  1 Be py                15      0.256669  1 Be dzz        
     11     -0.108730  1 Be dxy               13      0.096506  1 Be dyy        
 
- Vector    8  Occ=0.000000D+00  E= 5.158589D-01
+ Vector    8  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -1.8D-02, -8.1D-03,  5.0D-02, r^2= 3.5D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -583,7 +596,7 @@ task wfn1 energy
     12      0.104407  1 Be dxz               15     -0.093115  1 Be dzz        
      3      0.057123  1 Be px                 7     -0.049705  1 Be px         
 
- Vector    9  Occ=0.000000D+00  E= 7.637608D-01
+ Vector    9  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  4.0D-02,  1.3D-01, -7.0D-02, r^2= 2.6D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -593,7 +606,7 @@ task wfn1 energy
      9      0.269326  1 Be pz                15      0.235636  1 Be dzz        
     11     -0.129780  1 Be dxy               12     -0.115472  1 Be dxz        
 
- Vector   10  Occ=0.000000D+00  E= 7.975868D-01
+ Vector   10  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -9.6D-02, -3.1D-02, -3.1D-03, r^2= 2.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -603,7 +616,7 @@ task wfn1 energy
      9     -0.296059  1 Be pz                 8     -0.281958  1 Be py         
     10      0.122852  1 Be dxx               15     -0.092078  1 Be dzz        
 
- Vector   11  Occ=0.000000D+00  E= 9.479091D-01
+ Vector   11  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  9.7D-02,  3.3D-02,  6.2D-03, r^2= 1.4D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -613,7 +626,7 @@ task wfn1 energy
      9     -0.165955  1 Be pz                 4     -0.064264  1 Be py         
      5     -0.043999  1 Be pz                 8      0.034146  1 Be py         
 
- Vector   12  Occ=0.000000D+00  E= 9.995810D-01
+ Vector   12  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  1.2D-02, -6.2D-02,  2.2D-01, r^2= 1.4D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -623,7 +636,7 @@ task wfn1 energy
      3     -0.251052  1 Be px                 7      0.200711  1 Be px         
      9      0.143948  1 Be pz                11      0.130341  1 Be dxy        
 
- Vector   13  Occ=0.000000D+00  E= 1.039005D+00
+ Vector   13  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -5.7D-02, -4.5D-02, -4.5D-02, r^2= 1.3D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -633,7 +646,7 @@ task wfn1 energy
     15      0.101723  1 Be dzz                9     -0.093822  1 Be pz         
     13      0.083571  1 Be dyy                4     -0.051505  1 Be py         
 
- Vector   14  Occ=0.000000D+00  E= 1.042621D+00
+ Vector   14  Occ=0.000000D+00  E= 0.000000D+00
               MO Center=  6.5D-02, -6.9D-02,  3.5D-02, r^2= 1.3D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -643,7 +656,7 @@ task wfn1 energy
      3     -0.072598  1 Be px                 4     -0.072826  1 Be py         
      7      0.062539  1 Be px                10     -0.062123  1 Be dxx        
 
- Vector   15  Occ=0.000000D+00  E= 2.850475D+00
+ Vector   15  Occ=0.000000D+00  E= 0.000000D+00
               MO Center= -3.0D-15,  1.7D-14, -3.8D-15, r^2= 8.6D-01
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -856,42 +869,47 @@ task wfn1 energy
  Total SCF energy  =         -16.3329374796
  2-Electron energy =           4.6510810774
 
+                WFN1 Final Natural orbital energies and occupations
+                ---------------------------------------------------
 
-      Natural orbital occupation numbers
+              Alpha       Beta            Alpha       Beta  
+            --------    --------        --------    --------
+       1     -4.7548     -4.7548          1.0000      1.0000
+       2     -0.0712     -0.0712          0.2218      0.2218
+       3     -0.0323     -0.0323          0.1745      0.1745
+       4     -0.0323     -0.0323          0.1745      0.1745
+       5     -0.0323     -0.0323          0.1745      0.1745
+       6      0.0097      0.0097          0.0576      0.0576
+       7      0.0094      0.0094          0.0656      0.0656
+       8      0.0094      0.0094          0.0656      0.0656
+       9      0.0094      0.0094          0.0656      0.0656
+      10      0.0000      0.0000          0.0000      0.0000
+      11      0.0000      0.0000          0.0000      0.0000
+      12      0.0000      0.0000          0.0000      0.0000
+      13      0.0000      0.0000          0.0000      0.0000
+      14      0.0000      0.0000          0.0000      0.0000
+      15      0.0000      0.0000          0.0000      0.0000
 
-          Alpha     Beta
-         ------   ------
-     1   1.0000   1.0000
-     2   0.2218   0.2218
-     3   0.1745   0.1745
-     4   0.1745   0.1745
-     5   0.1745   0.1745
-     6   0.0576   0.0576
-     7   0.0656   0.0656
-     8   0.0656   0.0656
-     9   0.0656   0.0656
-    10   0.0000   0.0000
+             WFN1 Final Correlation function energies and occupations
+             --------------------------------------------------------
 
-                     WFN1 Final Correlation function energies
-                     ----------------------------------------
-
-              alpha       beta  
-            --------    --------
-       1     -3.3201     -3.3201
-       2     -1.0822     -1.0822
-       3     -0.8218     -0.8218
-       4     -0.8136     -0.8136
-       5     -0.8055     -0.8055
-       6     -0.8053     -0.8053
-       7     -0.7994     -0.7994
-       8     -0.7992     -0.7992
-       9     -0.7992     -0.7992
-      10     -0.4094     -0.4094
-      11     -0.4094     -0.4094
-      12     -0.4094     -0.4094
-      13     -0.4094     -0.4094
-      14     -0.4094     -0.4094
-      15      1.3820      1.3820
+              Alpha       Beta            Alpha       Beta  
+            --------    --------        --------    --------
+       1     -3.3201     -3.3201          1.0000      1.0000
+       2     -1.0822     -1.0822          1.0000      1.0000
+       3     -0.8218     -0.8218          0.0000      0.0000
+       4     -0.8136     -0.8136          0.0000      0.0000
+       5     -0.8055     -0.8055          0.0000      0.0000
+       6     -0.8053     -0.8053          0.0000      0.0000
+       7     -0.7994     -0.7994          0.0000      0.0000
+       8     -0.7992     -0.7992          0.0000      0.0000
+       9     -0.7992     -0.7992          0.0000      0.0000
+      10     -0.4094     -0.4094          0.0000      0.0000
+      11     -0.4094     -0.4094          0.0000      0.0000
+      12     -0.4094     -0.4094          0.0000      0.0000
+      13     -0.4094     -0.4094          0.0000      0.0000
+      14     -0.4094     -0.4094          0.0000      0.0000
+      15      1.3820      1.3820          0.0000      0.0000
 
                   WFN1 Final alpha Correlation Function Analysis
                   ----------------------------------------------
@@ -1016,27 +1034,27 @@ task wfn1 energy
                      WFN1 Final Alpha Natural Orbital Analysis
                      -----------------------------------------
 
- Vector    1  Occ=1.000000D+00  E=-3.320135D+00
+ Vector    1  Occ=1.000000D+00  E=-4.754839D+00
               MO Center=  2.6D-13,  5.0D-13,  3.6D-13, r^2= 6.6D-02
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      1     -0.997683  1 Be s          
 
- Vector    2  Occ=2.218465D-01  E=-1.082202D+00
+ Vector    2  Occ=2.218465D-01  E=-7.124446D-02
               MO Center=  8.4D-12,  1.2D-11,  5.9D-12, r^2= 2.1D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      6     -0.734384  1 Be s                  2     -0.281034  1 Be s          
      1      0.222518  1 Be s          
 
- Vector    3  Occ=1.745266D-01  E=-8.218447D-01
+ Vector    3  Occ=1.745266D-01  E=-3.227421D-02
               MO Center= -8.3D-12, -3.7D-10,  2.0D-10, r^2= 2.7D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      7     -0.598942  1 Be px                 3     -0.493247  1 Be px         
      8     -0.029235  1 Be py         
 
- Vector    4  Occ=1.745266D-01  E=-8.135613D-01
+ Vector    4  Occ=1.745266D-01  E=-3.227420D-02
               MO Center= -8.3D-10, -5.9D-12, -8.2D-10, r^2= 2.7D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1044,14 +1062,14 @@ task wfn1 energy
      9      0.054971  1 Be pz                 5      0.045266  1 Be pz         
      7      0.028240  1 Be px         
 
- Vector    5  Occ=1.745265D-01  E=-8.055251D-01
+ Vector    5  Occ=1.745265D-01  E=-3.227415D-02
               MO Center= -1.4D-11, -7.9D-11, -4.2D-11, r^2= 2.7D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      9     -0.597288  1 Be pz                 5     -0.491592  1 Be pz         
      8     -0.054456  1 Be py                 4     -0.044821  1 Be py         
 
- Vector    6  Occ=5.764894D-02  E=-8.053105D-01
+ Vector    6  Occ=5.764894D-02  E= 9.659930D-03
               MO Center=  3.0D-12,  4.7D-12,  2.1D-12, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1059,7 +1077,7 @@ task wfn1 energy
     10      0.078485  1 Be dxx               13      0.078486  1 Be dyy        
     15      0.078465  1 Be dzz        
 
- Vector    7  Occ=6.564149D-02  E=-7.993562D-01
+ Vector    7  Occ=6.564149D-02  E= 9.359647D-03
               MO Center=  8.8D-12,  3.9D-11,  3.7D-11, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1067,14 +1085,14 @@ task wfn1 energy
      4     -0.233603  1 Be py                 8      0.224801  1 Be py         
      5      0.027372  1 Be pz                 9     -0.026342  1 Be pz         
 
- Vector    8  Occ=6.564173D-02  E=-7.992494D-01
+ Vector    8  Occ=6.564173D-02  E= 9.359642D-03
               MO Center=  3.2D-10, -6.5D-10,  6.0D-11, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      5     -1.246747  1 Be pz                 9      1.199669  1 Be pz         
      4     -0.111372  1 Be py                 8      0.107167  1 Be py         
 
- Vector    9  Occ=6.564152D-02  E=-7.992406D-01
+ Vector    9  Occ=6.564152D-02  E= 9.359646D-03
               MO Center=  8.6D-11, -1.4D-10, -2.7D-10, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1082,7 +1100,7 @@ task wfn1 energy
      3     -0.235104  1 Be px                 7      0.226256  1 Be px         
      5      0.108153  1 Be pz                 9     -0.104079  1 Be pz         
 
- Vector   10  Occ=2.174716D-15  E=-4.094109D-01
+ Vector   10  Occ=2.174716D-15  E= 1.500808D-15
               MO Center= -1.7D-10,  3.8D-10,  2.8D-10, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1090,7 +1108,7 @@ task wfn1 energy
     12      0.537249  1 Be dxz               11     -0.473800  1 Be dxy        
     10     -0.401549  1 Be dxx               15     -0.283609  1 Be dzz        
 
- Vector   11  Occ=2.542030D-15  E=-4.094109D-01
+ Vector   11  Occ=2.542030D-15  E= 1.754298D-15
               MO Center=  4.8D-12, -2.2D-10,  4.0D-10, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1098,7 +1116,7 @@ task wfn1 energy
     10     -0.419554  1 Be dxx               11      0.340777  1 Be dxy        
     15     -0.269473  1 Be dzz               12     -0.070089  1 Be dxz        
 
- Vector   12  Occ=1.459496D-15  E=-4.094109D-01
+ Vector   12  Occ=1.459496D-15  E= 1.007223D-15
               MO Center=  2.0D-11,  7.2D-12, -4.9D-11, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1106,7 +1124,7 @@ task wfn1 energy
     13     -0.108097  1 Be dyy               12     -0.034039  1 Be dxz        
     11     -0.029925  1 Be dxy        
 
- Vector   13  Occ=1.930292D-15  E=-4.094109D-01
+ Vector   13  Occ=1.930292D-15  E= 1.332128D-15
               MO Center=  2.7D-10,  3.2D-12,  2.6D-11, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1114,7 +1132,7 @@ task wfn1 energy
     13     -0.099645  1 Be dyy               14      0.098328  1 Be dyz        
     15      0.062392  1 Be dzz               10      0.037198  1 Be dxx        
 
- Vector   14  Occ=1.831580D-15  E=-4.094108D-01
+ Vector   14  Occ=1.831580D-15  E= 1.264005D-15
               MO Center=  3.0D-10,  1.0D-09,  1.7D-10, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1122,7 +1140,7 @@ task wfn1 energy
     14      0.702113  1 Be dyz               13      0.184941  1 Be dyy        
     10     -0.104264  1 Be dxx               15     -0.080704  1 Be dzz        
 
- Vector   15  Occ=2.604806D-11  E= 1.381993D+00
+ Vector   15  Occ=2.604806D-11  E= 5.169259D-11
               MO Center=  5.5D-15,  3.6D-14,  1.8D-14, r^2= 8.7D-01
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1134,27 +1152,27 @@ task wfn1 energy
                      WFN1 Final Beta Natural Orbital Analysis
                      ----------------------------------------
 
- Vector    1  Occ=1.000000D+00  E=-3.320135D+00
+ Vector    1  Occ=1.000000D+00  E=-4.754839D+00
               MO Center=  2.6D-13,  5.0D-13,  3.6D-13, r^2= 6.6D-02
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      1     -0.997683  1 Be s          
 
- Vector    2  Occ=2.218465D-01  E=-1.082202D+00
+ Vector    2  Occ=2.218465D-01  E=-7.124446D-02
               MO Center=  8.4D-12,  1.2D-11,  5.9D-12, r^2= 2.1D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      6     -0.734384  1 Be s                  2     -0.281034  1 Be s          
      1      0.222518  1 Be s          
 
- Vector    3  Occ=1.745266D-01  E=-8.218447D-01
+ Vector    3  Occ=1.745266D-01  E=-3.227421D-02
               MO Center= -8.3D-12, -3.7D-10,  2.0D-10, r^2= 2.7D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      7     -0.598942  1 Be px                 3     -0.493247  1 Be px         
      8     -0.029235  1 Be py         
 
- Vector    4  Occ=1.745266D-01  E=-8.135613D-01
+ Vector    4  Occ=1.745266D-01  E=-3.227420D-02
               MO Center= -8.3D-10, -5.9D-12, -8.2D-10, r^2= 2.7D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1162,14 +1180,14 @@ task wfn1 energy
      9      0.054971  1 Be pz                 5      0.045266  1 Be pz         
      7      0.028240  1 Be px         
 
- Vector    5  Occ=1.745265D-01  E=-8.055251D-01
+ Vector    5  Occ=1.745265D-01  E=-3.227415D-02
               MO Center= -1.4D-11, -7.9D-11, -4.2D-11, r^2= 2.7D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      9     -0.597288  1 Be pz                 5     -0.491592  1 Be pz         
      8     -0.054456  1 Be py                 4     -0.044821  1 Be py         
 
- Vector    6  Occ=5.764894D-02  E=-8.053105D-01
+ Vector    6  Occ=5.764894D-02  E= 9.659930D-03
               MO Center=  3.0D-12,  4.7D-12,  2.1D-12, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1177,7 +1195,7 @@ task wfn1 energy
     10      0.078485  1 Be dxx               13      0.078486  1 Be dyy        
     15      0.078465  1 Be dzz        
 
- Vector    7  Occ=6.564149D-02  E=-7.993562D-01
+ Vector    7  Occ=6.564149D-02  E= 9.359647D-03
               MO Center=  8.8D-12,  3.9D-11,  3.7D-11, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1185,14 +1203,14 @@ task wfn1 energy
      4     -0.233603  1 Be py                 8      0.224801  1 Be py         
      5      0.027372  1 Be pz                 9     -0.026342  1 Be pz         
 
- Vector    8  Occ=6.564173D-02  E=-7.992494D-01
+ Vector    8  Occ=6.564173D-02  E= 9.359642D-03
               MO Center=  3.2D-10, -6.5D-10,  6.0D-11, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      5     -1.246747  1 Be pz                 9      1.199669  1 Be pz         
      4     -0.111372  1 Be py                 8      0.107167  1 Be py         
 
- Vector    9  Occ=6.564152D-02  E=-7.992406D-01
+ Vector    9  Occ=6.564152D-02  E= 9.359646D-03
               MO Center=  8.6D-11, -1.4D-10, -2.7D-10, r^2= 3.8D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1200,7 +1218,7 @@ task wfn1 energy
      3     -0.235104  1 Be px                 7      0.226256  1 Be px         
      5      0.108153  1 Be pz                 9     -0.104079  1 Be pz         
 
- Vector   10  Occ=2.174716D-15  E=-4.094109D-01
+ Vector   10  Occ=2.174716D-15  E= 1.500808D-15
               MO Center= -1.7D-10,  3.8D-10,  2.8D-10, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1208,7 +1226,7 @@ task wfn1 energy
     12      0.537249  1 Be dxz               11     -0.473800  1 Be dxy        
     10     -0.401549  1 Be dxx               15     -0.283609  1 Be dzz        
 
- Vector   11  Occ=2.542030D-15  E=-4.094109D-01
+ Vector   11  Occ=2.542030D-15  E= 1.754298D-15
               MO Center=  4.8D-12, -2.2D-10,  4.0D-10, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1216,7 +1234,7 @@ task wfn1 energy
     10     -0.419554  1 Be dxx               11      0.340777  1 Be dxy        
     15     -0.269473  1 Be dzz               12     -0.070089  1 Be dxz        
 
- Vector   12  Occ=1.459496D-15  E=-4.094109D-01
+ Vector   12  Occ=1.459496D-15  E= 1.007223D-15
               MO Center=  2.0D-11,  7.2D-12, -4.9D-11, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1224,7 +1242,7 @@ task wfn1 energy
     13     -0.108097  1 Be dyy               12     -0.034039  1 Be dxz        
     11     -0.029925  1 Be dxy        
 
- Vector   13  Occ=1.930292D-15  E=-4.094109D-01
+ Vector   13  Occ=1.930292D-15  E= 1.332128D-15
               MO Center=  2.7D-10,  3.2D-12,  2.6D-11, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1232,7 +1250,7 @@ task wfn1 energy
     13     -0.099645  1 Be dyy               14      0.098328  1 Be dyz        
     15      0.062392  1 Be dzz               10      0.037198  1 Be dxx        
 
- Vector   14  Occ=1.831580D-15  E=-4.094108D-01
+ Vector   14  Occ=1.831580D-15  E= 1.264005D-15
               MO Center=  3.0D-10,  1.0D-09,  1.7D-10, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1240,7 +1258,7 @@ task wfn1 energy
     14      0.702113  1 Be dyz               13      0.184941  1 Be dyy        
     10     -0.104264  1 Be dxx               15     -0.080704  1 Be dzz        
 
- Vector   15  Occ=2.604806D-11  E= 1.381993D+00
+ Vector   15  Occ=2.604806D-11  E= 5.169259D-11
               MO Center=  5.5D-15,  3.6D-14,  1.8D-14, r^2= 8.7D-01
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -1249,7 +1267,7 @@ task wfn1 energy
      6     -0.421000  1 Be s                  1     -0.312176  1 Be s          
 
 
- Task  times  cpu:       83.9s     wall:       90.5s
+ Task  times  cpu:       83.5s     wall:       90.0s
 
 
                                 NWChem Input Module
@@ -1321,4 +1339,4 @@ MA usage statistics:
    K. Glaesemann, G. Sandrone, M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe,
                                A. T. Wong, Z. Zhang.
 
- Total times  cpu:       84.4s     wall:       91.2s
+ Total times  cpu:       84.0s     wall:       90.7s

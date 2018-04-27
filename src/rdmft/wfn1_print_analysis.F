@@ -22,6 +22,7 @@ c
 !>    The \f$\alpha\f$ correlation function energies
       double precision, intent(inout) :: ec1b(1:wfn1_param%nmo)
 !>    The natural orbital occupation numbers
+      double precision, allocatable   :: ocna(:), ocnb(:)
       double precision, allocatable   :: occa(:), occb(:)
       double precision, allocatable   :: ci(:), cj(:)
 c
@@ -43,6 +44,7 @@ c
       nmo = wfn1_param%nmo
 c
 c     allocate(e1a(1:wfn1_param%nmo),e1b(1:wfn1_param%nmo))
+      allocate(ocna(1:nmo),ocnb(1:nmo))
       allocate(occa(1:nmo),occb(1:nmo))
       allocate(ci(1:nmo),cj(1:nmo))
       allocate(irrep(1:nmo))
@@ -51,9 +53,9 @@ c     e1b   = 0.0d0
       irrep = 0
 c
       call wfn1_calc_occ(wfn1_wave%g_ca,nmo,wfn1_param%nea,
-     &                   wfn1_wave%icnfa,wfn1_wave%dcnta,occa)
+     &                   wfn1_wave%icnfa,wfn1_wave%dcnta,ocna)
       call wfn1_calc_occ(wfn1_wave%g_cb,nmo,wfn1_param%neb,
-     &                   wfn1_wave%icnfb,wfn1_wave%dcntb,occb)
+     &                   wfn1_wave%icnfb,wfn1_wave%dcntb,ocnb)
 c
 c     call wfn1_print_occ(nmo,occa,occb)
 c
@@ -67,7 +69,7 @@ c
      &                  "--------",4x,"--------")')
       do ii = 1, nmo
         write(LuOut,'(i8,f12.4,f12.4,4x,f12.4,f12.4)')ii,
-     &        en1a(ii),en1b(ii),occa(ii),occb(ii)
+     &        en1a(ii),en1b(ii),ocna(ii),ocnb(ii)
      &
       enddo
 c
@@ -162,15 +164,16 @@ c
 c
       blob = "WFN1 Final Alpha Natural Orbital Analysis"
       call movecs_print_anal(wfn1_inst%basis,ilo,ihi,tanalyze,
-     &                       wfn1_wave%g_na,blob,.true.,ec1a,.false.,
-     &                       irrep,.true.,occa)
+     &                       wfn1_wave%g_na,blob,.true.,en1a,.false.,
+     &                       irrep,.true.,ocna)
 c
       blob = "WFN1 Final Beta Natural Orbital Analysis"
       call movecs_print_anal(wfn1_inst%basis,ilo,ihi,tanalyze,
-     &                       wfn1_wave%g_nb,blob,.true.,ec1b,.false.,
-     &                       irrep,.true.,occb)
+     &                       wfn1_wave%g_nb,blob,.true.,en1b,.false.,
+     &                       irrep,.true.,ocnb)
 c
       deallocate(occa,occb)
+      deallocate(ocna,ocnb)
       deallocate(ci,cj)
 c     deallocate(e1a,e1b)
 c

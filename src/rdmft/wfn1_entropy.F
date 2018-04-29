@@ -70,21 +70,76 @@ C>
 !>    The entropy gradient
       double precision, intent(out) :: ds
 c
-      double precision :: a
+      double precision :: a0, a
       double precision :: tol
+      double precision :: ss, dss
+      integer, parameter :: mxcc = 28
+      double precision, parameter :: cc(0:mxcc) = (/
+     &  -1.8267295744229717e-01, !   0
+     &  -4.7492598692312660e-01, !   1
+     &   1.9614310244009392e+00, !   2
+     &  -7.6584746194002107e-01, !   3
+     &   3.5824935810760326e+00, !   4
+     &  -6.7105852916520634e+00, !   5
+     &   3.7028427428299736e+01, !   6
+     &  -1.3867070561680774e+02, !   7
+     &   9.1270050624592193e+02, !   8
+     &  -5.1733200953013929e+03, !   9
+     &   4.0438498887562106e+04, !  10
+     &  -3.0445288613979606e+05, !  11
+     &   2.7940653844185043e+06, !  12
+     &  -2.6013424905976593e+07, !  13
+     &   2.7640984169809264e+08, !  14
+     &  -3.0480304585382962e+09, !  15
+     &   3.6979925453039085e+10, !  16
+     &  -4.6961506675232050e+11, !  17
+     &   6.4226726567984150e+12, !  18
+     &  -9.2114814596364359e+13, !  19
+     &   1.4041599596566502e+15, !  20
+     &  -2.2420499819440248e+16, !  21
+     &   3.7721542091731910e+17, !  22
+     &  -6.6320480845454735e+18, !  23
+     &   1.2212077163997869e+20, !  24
+     &  -2.3434678559572684e+21, !  25
+     &   4.6887208088579196e+22, !  26
+     &  -9.7498848636924539e+23, !  27
+     &   2.1063843942817377e+25/)!  28
+      integer :: ii ! counter
+      double precision :: x
 c
 #ifdef USE_GSL
       double precision, external :: gsl_sf_lngamma
       double precision, external :: gsl_sf_psi
-      a = log(0.5d0)/(2.0d0*gsl_sf_lngamma(1.5d0))
-      s = a*(gsl_sf_lngamma(1.0d0+p) + gsl_sf_lngamma(2.0d0-p))
+      a  = log(0.5d0)/(2.0d0*gsl_sf_lngamma(1.5d0))
+      s  = a*(gsl_sf_lngamma(1.0d0+p) + gsl_sf_lngamma(2.0d0-p))
       ds = a*(gsl_sf_psi(1.0d0+p) - gsl_sf_psi(2.0d0-p))
+c
+      ss  = 0.0d0
+      dss = 0.0d0
+      a0  = 0.25d0
+      if (p.le.0.5d0) then
+        x = p
+      else
+        x = 1.0d0-p
+      endif
+      do ii = mxcc-1, 0, -1
+        ss  = ss/dble(ii+1)*(x-a0) +cc(ii)
+        dss = dss/dble(ii+1)*(x-a0)+cc(ii+1)
+      enddo
+      if (p.le.0.5d0) then
+      else
+        dss = -dss
+      endif
+      ss  = a*ss
+      dss = a*dss
+c     write(*,*)"HVD s ",s, 2.0d0*abs(s-ss)/(abs(s)+abs(ss))
+c     write(*,*)"HVD ds",ds,2.0d0*abs(ds-dss)/(abs(ds)+abs(dss))
 #else
       tol = 1.0d-10
       if   (p.lt.tol) then
         s  = 0.0d0
         ds = log(tol)
-      else (p.gt.1.0d0-tol) then
+      else if (p.gt.1.0d0-tol) then
         s  = 0.0d0
         ds = -log(tol)
       else

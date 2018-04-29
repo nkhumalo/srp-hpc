@@ -13,14 +13,14 @@ This program generates Taylor coefficients of the function
   f(x) = ln(x!)+ln((1-x)!)
 
 where 0 <= x <= 1. The Taylor series in question is expanded around
-a=1/4. The program generates coefficients 0 through to 27.
+a=1/4. The program generates coefficients 0 through to 28.
 ----------------------------------------------------------------------*/
 #include "stdio.h"
 #include "gsl/gsl_sf_gamma.h"
 
 void main(void)
 {
-    int    mxcoeff = 27;
+    int    mxcoeff = 28;
     double coeff;
     double a   = 0.25e0;
     double one = 1.00e0;

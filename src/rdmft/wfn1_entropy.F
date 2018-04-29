@@ -14,6 +14,52 @@ C> entropy. Obviously, this introduces a licensing conflict. Therefore
 C> if this expression does what I need, the solution is to expand it
 C> in a Taylor series (around 0.25 as the entropy is symmetric around
 C> 0.5).
+C>
+C> An analytic function \f$f(x)\f$ may be approximated by its Taylor
+C> series as
+C> \f{eqnarray}{
+C> f(x) &\approx& \sum_{i=0}^{n}\frac{f^{(i)}(a)}{i!}(x-a)^i
+C>      + O\left(x^{n+1}\right)
+C> \f}
+C> Here we are interested in the entropy given by the function
+C> \f$f(x)=\ln(x!)+\ln((1-x)!)\f$ whereby \f$x \in [0,1]\f$. In order to
+C> optimize the free energy we also need its gradient given by
+C> \f{eqnarray}{
+C> f'(x) &\approx& \sum_{i=0}^{n}\frac{f^{(i+1)}(a)}{i!}(x-a)^i
+C>       + O\left(x^{n+1}\right)
+C> \f}
+C> Furthermore we make use of the fact that the entropy expression is
+C> symmetric around \f$x=1/2\f$. This means that if we expand \f$f(x)\f$
+C> around \f$a=1/4\f$ then for \f$0\le x\le 1/2\f$ we return
+C> \f{eqnarray}{
+C> f(x) && f'(x)
+C> \f}
+C> whereas for \f$1/2 \lt x \le 1\f$ we return
+C> \f{eqnarray}{
+C> f(1-x) && -f'(1-x)
+C> \f}
+C> Additionally this function is always evaluated on a finite 
+C> precision computer. Hence if the Taylor series has sufficiently 
+C> many terms to represent the result to machine precision then
+C> the Taylor is essentially equivalent to the function itself.
+C>
+C> In any case the main ingredients for evaluating the Taylor series
+C> of \f$f(x)\f$ and \f$f'(x)\f$ are the factors
+C> \f{eqnarray}{
+C> f^{(i)}(a), \; i=0,n+1
+C> \f}
+C> The required value of \f$n\f$ can be estimated from the form of
+C> the curve suggesting that at worst
+C> \f$f^{(i+1)}(x)\approx f^{(i)}(x)\f$. In addition we disregard
+C> the factorial in the denominator at which point the precision 
+C> achieved is determined by
+C> \f{eqnarray}{
+C> \max(x-a)^n < \epsilon \\\\
+C> n\ln(\max(x-a)) < \ln(\epsilon) \\\\
+C> n < \frac{\ln(\epsilon)}{\ln(\max(x-a))} \\\\
+C> n < \frac{\ln(\epsilon)}{\ln(1/4)} \\\\
+C> n \le 27
+C> \f}
 C> 
       subroutine wfn1_entropy1(p,s,ds)
       implicit none

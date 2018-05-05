@@ -150,13 +150,17 @@ c
           ideghi = ideghi + 1
         enddo ! ideghi
         ndeg = ideghi-ideglo+1
-        delta = pi/ndeg
+        if (ndeg.eq.1) then
+          delta = 0.0d0
+        else
+          delta = pi/ndeg
+        endif
         do jj = max(ideglo,jlo), min(ideghi,jhi)
           do ii = ilo, ihi
-            x = (ii-ideglo+0.5d0)*(jj-ideglo+1)*delta
-            if (abs(sin(x)).lt.0.1d0) then
+            x = (ii-ideglo+0.5d0)*(jj-ideglo)*delta
+            if (abs(cos(x)).lt.0.1d0) then
               buf(ii,jj) = 0.0d0
-            else if (sin(x).lt.0.0d0) then
+            else if (cos(x).lt.0.0d0) then
               buf(ii,jj) = -buf(ii,jj)
             endif
           enddo ! ii
@@ -240,13 +244,17 @@ c
           ideghi = ideghi + 1
         enddo ! ideghi
         ndeg = ideghi-ideglo+1
-        delta = pi/ndeg
+        if (ndeg.eq.1) then
+          delta = 0.0d0
+        else
+          delta = pi/ndeg
+        endif
         do jj = max(ideglo,jlo), min(ideghi,jhi)
           do ii = ilo, ihi
-            x = (ii-ideglo+0.5d0)*(jj-ideglo+1)*delta
-            if (abs(sin(x)).lt.0.1d0) then
+            x = (ii-ideglo+0.5d0)*(jj-ideglo)*delta
+            if (abs(cos(x)).lt.0.1d0) then
               buf(ii,jj) = 0.0d0
-            else if (sin(x).lt.0.0d0) then
+            else if (cos(x).lt.0.0d0) then
               buf(ii,jj) = -buf(ii,jj)
             endif
           enddo ! ii

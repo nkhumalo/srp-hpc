@@ -44,6 +44,7 @@
          wfn1_size.o \
          wfn1_test_rdms.o \
 	 wfn1_trace.o \
+         wfn1_write_movecs.o \
          wfn1_zero_vv.o 
 
    LIBRARY = librdmft.a

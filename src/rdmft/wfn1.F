@@ -573,7 +573,7 @@ c
         call wfn1_print_energy(wfn1_energy)
       endif
       call wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
-     &                         v_dna,v_dnb,v_dca,v_dcb)
+     &                         v_dna,v_dnb,v_dca,v_dcb,g_momo1,g_momo2)
 c
 c     == Store results ==
 c

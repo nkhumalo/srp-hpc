@@ -188,6 +188,57 @@ c
       deallocate(bocc)
 c
       end subroutine wfn1_calc_ocx
+c-----------------------------------------------------------------------
+c
+C>
+C> \brief Add the 2-electron direct occupation numbers
+C>
+C> These quantities are the
+C> \f$+\sum_{s,t}C_{is}C_{is}^*C_{jt}C_{jt}^*\f$ terms in the 2-electron
+C> occupation numbers.
+C>
+C> Note that for the 2-electron density matrix the Coulomb and
+C> exchange terms are separated. The reason is that the correlation
+C> function Fock matrices for the Coulomb and exchange terms have to be
+C> handled differently because of their nature.
+C>
+      subroutine wfn1_add_occd(nmo,occ,g_occ)
+      implicit none
+#include "global.fh"
+#include "mafdecls.fh"
+c
+!>    The number of molecular orbitals
+      integer, intent(in) :: nmo
+!>    The 1-electron occupation numbers
+      double precision, intent(in) :: occ(nmo)
+!>    The 2-electron occupation numbers
+      integer, intent(inout) :: g_occ
+c
+      integer :: iolo, iohi, jolo, johi ! block limits of occupation GA
+c
+      double precision, allocatable :: bocc(:,:)  ! buffer for 
+                                                  ! occupation numbers
+c
+      integer iproc ! the current processor rank
+      integer nproc ! the number of processor ranks
+c
+      integer ii, ij ! counters for the natural orbitals
+c
+      nproc = ga_nnodes()
+      iproc = ga_nodeid()
+c
+      call ga_distribution(g_occ,iproc,iolo,iohi,jolo,johi)
+      allocate(bocc(iolo:iohi,jolo:johi))
+      do ij = jolo, johi
+        do ii = iolo, iohi
+          bocc(ii,ij) = occ(ii)*occ(ij)
+        enddo
+      enddo
+      call ga_acc(g_occ,iolo,iohi,jolo,johi,bocc,iohi-iolo+1,1.0d0)
+c
+      deallocate(bocc)
+c
+      end subroutine wfn1_add_occd
 c
 c-----------------------------------------------------------------------
 c

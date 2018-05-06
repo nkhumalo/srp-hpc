@@ -8,6 +8,30 @@
 !>
 !>----------------------------------------------------------------------
 !>
+!> \brief Minimize the free energy
+!>
+!> The wavefunction we are using is outlined in [1]. The energy
+!> expression is quite different though. The reason is that attempts to
+!> reconstruct a valid 2-electron density matrix from an arbitrary
+!> 1-electron density matrix never work. Instead when starting from 
+!> any wavefunction the 2-electron density matrix is N-representable
+!> by construction (this includes the wavefunction from [1]). Hence
+!> it would seem that the correlation energy can be more easily
+!> formulated in other ways than in terms of 1-electron density
+!> matrices. For this reason RDMFT was abandoned and we explore a
+!> rather different approach here.
+!>
+!> \return `true`: if the energy minimization converged, and `false`
+!> otherwise.
+!>
+!> ### References ###
+!>
+!> [1] Hubertus van Dam,
+!>     "Generalization of the Kohn-Sham system enabling representing
+!>     arbitary one electron density matrices",
+!>     arXiv: <a href="http://arxiv.org/abs/1512.06120">
+!>     http://arxiv.org/abs/1512.06120</a>
+!>
       logical function wfn1_task_energy(rtdb)
       implicit none
 #include "wfn1_param.fh"
@@ -27,33 +51,8 @@
 #include "util.fh"
 ! For filesize and memsize
 #include "cfock.fh"
-!>
-!> \brief Minimize the free energy
-!>
-!> The wavefunction we are using is outlined in [1]. The energy
-!> expression is quite different though. The reason is that attempts to
-!> reconstruct a valid 2-electron density matrix from an arbitrary
-!> 1-electron density matrix never work. Instead when starting from 
-!> any wavefunction the 2-electron density matrix is N-representable
-!> by construction (this includes the wavefunction from [1]). Hence
-!> it would seem that the correlation energy can be more easily
-!> formulated in other ways than in terms of 1-electron density
-!> matrices. For this reason RDMFT was abandoned and we explore a
-!> rather different approach here.
-!>
       integer rtdb !> [Input] The runtime database
-!>
-!> \return `true`: if the energy minimizartion converged, and `false`
-!> !otherwise.
-!>
-!> ### References ###
-!>
-!> [1] Hubertus van Dam,
-!>     "Generalization of the Kohn-Sham system enabling representing
-!>     arbitary one electron density matrices",
-!>     arXiv: <a href="http://arxiv.org/abs/1512.06120">
-!>     http://arxiv.org/abs/1512.06120</a>
-!>
+c
 c     Local variables
 c
       logical lstatus ! the status of the runtime database
@@ -293,6 +292,14 @@ c
      &                  1,wfn1_param%Tbath)) wfn1_param%Tbath = 0.0d0
       if (wfn1_param%Tbath < 0.0d0) then
         call errquit(pname//" Bath temperature must be at least 0.0",
+     &               0,INPUT_ERR)
+      endif
+      if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:t_initial",MT_DBL,
+     &                  1,wfn1_param%Tinitial)) then
+        wfn1_param%Tinitial = wfn1_param%Tbath
+      endif
+      if (wfn1_param%Tinitial < 0.0d0) then
+        call errquit(pname//" Initial temperature must be at least 0.0",
      &               0,INPUT_ERR)
       endif
       wfn1_param%convergence = conv_tol
@@ -576,6 +583,8 @@ c
       if (.not.rtdb_put(rtdb,'wfn1:converged',MT_LOG,1,oconverged))
      &  call errquit(pname//' failed to store converged in rtdb', 
      &               0, RTDB_ERR)
+      call wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave,
+     &                       v_dna,v_dnb,v_dca,v_dcb)
 c
 c     == Clean up ==
 c

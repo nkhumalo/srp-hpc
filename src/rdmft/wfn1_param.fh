@@ -14,6 +14,7 @@ C>
          character*16     :: corr_expr   ! correlation energy expression
          double precision :: convergence ! convergence criterion
          double precision :: enuc        ! nuclear repulsion energy
+         double precision :: Tinitial    ! initial guess temperature
          double precision :: Tbath       ! the bath temperature
          double precision :: fraca       ! fraction of alpha electron
          double precision :: fracb       ! fraction of beta electron

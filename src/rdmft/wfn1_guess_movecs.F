@@ -37,6 +37,8 @@ c
       double precision, allocatable :: occ(:)
       double precision, allocatable :: eval(:)
 c
+      integer :: ii, nn ! counters
+c
       logical, external :: movecs_read_header
       logical, external :: movecs_read
 c
@@ -64,7 +66,8 @@ c
             call errquit('wfn1_guess_movecs: movecs_read Na failed',
      &                   0,DISK_ERR)
           endif
-          if (file_scftype.eq."UHF") then
+          if (file_scftype.eq."UHF".or.
+     &        file_scftype.eq."WFN1") then
             if (.not.movecs_read(movecs_in, 2, occ, eval,
      &          wfn1_wave%g_nb)) then
               call errquit('wfn1_guess_movecs: movecs_read Nb failed',
@@ -87,11 +90,37 @@ c
      &        wfn1_wave%g_ca)) then
             call errquit('wfn1_guess_movecs: movecs_read Ca failed',
      &                   0,DISK_ERR)
+          else
+            nn = 0
+            do ii = 1, wfn1_param%nmo
+              if (occ(ii).gt.0.0d0) then
+                nn = nn + 1
+                if (nn.gt.wfn1_param%nea) then
+                  call errquit('wfn1_guess_movecs: inconsistent no. '//
+     &                         'of electrons',nn,UERR)
+                endif
+                wfn1_wave%icnfa(nn) = ii
+                wfn1_wave%dcnta(nn) = occ(ii)
+              endif
+            enddo
           endif
           if (.not.movecs_read(covecs_in, 2, occ, eval,
      &        wfn1_wave%g_cb)) then
             call errquit('wfn1_guess_movecs: movecs_read Cb failed',
      &                   0,DISK_ERR)
+          else
+            nn = 0
+            do ii = 1, wfn1_param%nmo
+              if (occ(ii).gt.0.0d0) then
+                nn = nn + 1
+                if (nn.gt.wfn1_param%neb) then
+                  call errquit('wfn1_guess_movecs: inconsistent no. '//
+     &                         'of electrons',nn,UERR)
+                endif
+                wfn1_wave%icnfb(nn) = ii
+                wfn1_wave%dcntb(nn) = occ(ii)
+              endif
+            enddo
           endif
         endif
       else

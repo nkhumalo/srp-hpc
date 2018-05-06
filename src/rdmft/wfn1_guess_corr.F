@@ -74,7 +74,7 @@ c
       integer nvirta  ! local number of alpha virtual orbitals
       integer nvirtb  ! local number of beta virtual orbitals
 c
-      double precision :: Tbath
+      double precision :: Tinitial
 c
       double precision, allocatable :: buf(:,:)
       double precision, allocatable :: dnrm(:)
@@ -93,12 +93,12 @@ c
       nea = wfn1_param%nea
       neb = wfn1_param%neb
       nmo = wfn1_param%nmo
-      ncorea = wfn1_param%ncorea
-      ncoreb = wfn1_param%ncoreb
-      nvirta = wfn1_param%nvirta
-      nvirtb = wfn1_param%nvirtb
-      Tbath  = wfn1_param%Tbath
-      delta = 0.0d0
+      ncorea   = wfn1_param%ncorea
+      ncoreb   = wfn1_param%ncoreb
+      nvirta   = wfn1_param%nvirta
+      nvirtb   = wfn1_param%nvirtb
+      Tinitial = wfn1_param%Tinitial
+      delta    = 0.0d0
 c
 c     Setup the alpha correlation functions
 c
@@ -119,7 +119,7 @@ c
             buf(jj,jj) = 1.0d0
           endif
         else
-          if (Tbath.lt.1.0d-10) then
+          if (Tinitial.lt.1.0d-10) then
             do ii = max(ncorea+1,ilo), min(ihi,nmo-nvirta)
               if (ii.eq.jj) then
                 buf(ii,jj) = 1.0d0
@@ -129,7 +129,7 @@ c
             enddo
           else
             do ii = max(ncorea+1,ilo), min(ihi,nmo-nvirta)
-              buf(ii,jj) = exp(-abs(eig(ii)-eig(jj))/(2*Tbath))
+              buf(ii,jj) = exp(-abs(eig(ii)-eig(jj))/(2*Tinitial))
             enddo
           endif
         endif
@@ -144,9 +144,10 @@ c
         ideglo = ideglo + 1
         ideghi = ideglo
         do while(ideghi.gt.ncorea.and.ideghi.le.nmo-nvirta.and.
-     &           (-abs(eig(ideghi+1)-eig(ideglo)).gt.Tbath*log(0.5d0)
+     &           (-abs(eig(ideghi+1)-eig(ideglo)).gt.Tinitial*log(0.5d0)
      &            .or.
-     &            -abs(eig(ideghi+1)-eig(ideghi)).gt.Tbath*log(0.5d0)))
+     &            -abs(eig(ideghi+1)-eig(ideghi)).gt.Tinitial*log(0.5d0)
+     &          ))
           ideghi = ideghi + 1
         enddo ! ideghi
         ndeg = ideghi-ideglo+1
@@ -213,7 +214,7 @@ c
             buf(jj,jj) = 1.0d0
           endif
         else
-          if (Tbath.lt.1.0d-10) then
+          if (Tinitial.lt.1.0d-10) then
             do ii = max(ncoreb+1,ilo), min(ihi,nmo-nvirtb)
               if (ii.eq.jj) then
                 buf(ii,jj) = 1.0d0
@@ -223,7 +224,7 @@ c
             enddo
           else
             do ii = max(ncoreb+1,ilo), min(ihi,nmo-nvirtb)
-              buf(ii,jj) = exp(-abs(eig(ii)-eig(jj))/(2*Tbath))
+              buf(ii,jj) = exp(-abs(eig(ii)-eig(jj))/(2*Tinitial))
             enddo
           endif
         endif
@@ -238,9 +239,10 @@ c
         ideglo = ideglo + 1
         ideghi = ideglo
         do while(ideghi.gt.ncoreb.and.ideghi.le.nmo-nvirtb.and.
-     &           (-abs(eig(ideghi+1)-eig(ideglo)).gt.Tbath*log(0.5d0)
+     &           (-abs(eig(ideghi+1)-eig(ideglo)).gt.Tinitial*log(0.5d0)
      &            .or.
-     &            -abs(eig(ideghi+1)-eig(ideghi)).gt.Tbath*log(0.5d0)))
+     &            -abs(eig(ideghi+1)-eig(ideghi)).gt.Tinitial*log(0.5d0)
+     &          ))
           ideghi = ideghi + 1
         enddo ! ideghi
         ndeg = ideghi-ideglo+1

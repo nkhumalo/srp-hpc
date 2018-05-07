@@ -5,7 +5,7 @@ geometry
   he 0 0 0
 end
 basis
-  * library 6-31g*
+  * library 6-31g**
 end
 
 set wfn1:print_error T
@@ -14,8 +14,9 @@ set wfn1:t_bath 0.0
 
 task wfn1 energy
 
+set wfn1:conv_tol 1.0d-8
 set wfn1:print_error T
 set wfn1:maxit 50
-set wfn1:t_bath 0.5
+set wfn1:t_bath 0.55
 
 task wfn1 energy

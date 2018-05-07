@@ -5,7 +5,7 @@ geometry
   h 0 0 0
 end
 basis
-  * library 6-31g*
+  * library 6-31g**
 end
 
 set wfn1:corr_expr "wfn1_vx"
@@ -20,6 +20,6 @@ set wfn1:corr_expr "wfn1_vx"
 set wfn1:print_error T
 set wfn1:nopen  1
 set wfn1:maxit  1000
-set wfn1:t_bath 0.5
+set wfn1:t_bath 0.6
 
 task wfn1 energy

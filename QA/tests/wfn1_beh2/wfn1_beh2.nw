@@ -3,8 +3,8 @@ start wfn1_beh2_dat
 
 geometry
   be     0.00000000     0.00000000     0.00000000
-  h      0.00000000     0.00000000     1.33420719
-  h      0.00000000     0.00000000    -1.33420719
+  h      0.00000000     0.00000000     1.33749627
+  h      0.00000000     0.00000000    -1.33749627
 end
 basis
   * library 6-31g*
@@ -16,7 +16,8 @@ set wfn1:print_error T
 
 task wfn1 energy
 
-set wfn1:t_bath 0.5
+set wfn1:t_initial 0.5
+set wfn1:t_bath    0.0475
 set wfn1:maxit  2000
 set wfn1:print_error T
 

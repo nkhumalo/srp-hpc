@@ -1262,6 +1262,9 @@ c
       E_2el     = 0.5d0*E_2el
       E_2el_chf = 0.5d0*E_2el_chf
 c
+      call ga_dgop(MT_DBL,E_2el,1,"+")
+      call ga_dgop(MT_DBL,E_2el_chf,1,"+")
+c
 #ifdef TEST_RDMS
       flush(6)
 c     gaa = 0.25d0*gaa

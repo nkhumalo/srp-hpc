@@ -32,7 +32,11 @@ c
       occ = 0.0d0
       call ga_distribution(g_c,iproc,ilo,ihi,jlo,jhi)
       allocate(buf(ilo:ihi,jlo:jhi))
-      call ga_get(g_c,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      if (ihi.ge.ilo.and.jhi.ge.jlo) then
+        call ga_get(g_c,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      else
+c       This process does not hold any part of g_c
+      endif
       do ir = 1, ne
         if(icnf(ir).ge.jlo.and.icnf(ir).le.jhi)
      &  then

@@ -214,9 +214,16 @@ c
             fmax = max(fmax,abs(bufa(ii,jj)),abs(bufb(ii,jj)))
           enddo
         enddo
+        deallocate(bufa)
+        deallocate(bufb)
         call ga_dgop(MT_DBL,dmax,1,"max")
         call ga_dgop(MT_DBL,fmax,1,"max")
-        if (dmax/fmax.lt.1.0d-10) then
+cDEBUG
+c       if (iproc.eq.0) then
+c         write(*,*)'HVD: wfn1_limit_max N:',dmax/fmax,dmax,fmax
+c       endif
+cDEBUG
+        if (dmax/fmax.lt.1.0d-6.or.fmax.lt.1.0d-8) then
 c
 c         The alpha and beta channels are identical so this is most
 c         likely a closed shell calculation and we should implement
@@ -272,9 +279,16 @@ c
             fmax = max(fmax,abs(bufa(ii,jj)),abs(bufb(ii,jj)))
           enddo
         enddo
+        deallocate(bufa)
+        deallocate(bufb)
         call ga_dgop(MT_DBL,dmax,1,"max")
         call ga_dgop(MT_DBL,fmax,1,"max")
-        if (dmax/fmax.lt.1.0d-10) then
+cDEBUG
+c       if (iproc.eq.0) then
+c         write(*,*)'HVD: wfn1_limit_max C:',dmax/fmax,dmax,fmax
+c       endif
+cDEBUG
+        if (dmax/fmax.lt.1.0d-6.or.fmax.lt.1.0d-8) then
 c
 c         The alpha and beta channels are identical so this is most
 c         likely a closed shell calculation and we should implement
@@ -319,5 +333,143 @@ c
 c
       return
       end function wfn1_limit_max
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Find and print where the Fock matrices differ most
+!>
+!> The parallelism seems to affect how closely the same the alpha and
+!> beta Fock matrices are. This is unexpected and to trace where this
+!> is coming from we need a routine to find and print where the Fock
+!> matrices differ most.
+!>
+      subroutine wfn1_print_max(wfn1_deriv,message)
+      implicit none
+#include "mafdecls.fh"
+#include "stdio.fh"
+#include "errquit.fh"
+#include "global.fh"
+#include "wfn1_error.fh"
+#include "wfn1_drv.fh"
+!<    The Fock matrices
+      type(wfn1_drv), intent(inout) :: wfn1_deriv
+!<    Print message
+      character*(*), intent(in) :: message
+c
+      character*15 :: pname
+      parameter(pname="wfn1_print_max:")
+c
+      integer :: elm_pos_ij(2)
+c
+      double precision, allocatable :: bufa(:,:)
+      double precision, allocatable :: bufb(:,:)
+      double precision, allocatable :: dmaxg(:)
+      double precision :: dmax, fmax
+      integer :: ialo, iahi, jalo, jahi, nia
+      integer :: iblo, ibhi, jblo, jbhi, nib
+      integer :: ii, jj ! counters
+c
+      integer :: iroot
+      integer :: iproc ! this process rank
+      integer :: nproc ! the number of process ranks
+c
+      iproc = ga_nodeid()
+      nproc = ga_nnodes()
+      call ga_sync()
+c
+      allocate(dmaxg(0:nproc-1))
+      elm_pos_ij    = 0
+      call ga_distribution(wfn1_deriv%g_dna,iproc,ialo,iahi,jalo,jahi)
+      call ga_distribution(wfn1_deriv%g_dnb,iproc,iblo,ibhi,jblo,jbhi)
+      if (ialo.ne.iblo.or.iahi.ne.ibhi.or.
+     &    jalo.ne.jblo.or.jahi.ne.jbhi) then
+        call errquit(pname//" mismatching dimensions natural Fock",
+     &               0,UERR)
+      endif
+      nia = iahi-ialo+1
+      nib = ibhi-iblo+1
+      allocate(bufa(ialo:iahi,jalo:jahi))
+      allocate(bufb(iblo:ibhi,jblo:jbhi))
+      call ga_get(wfn1_deriv%g_dna,ialo,iahi,jalo,jahi,bufa,nia)
+      call ga_get(wfn1_deriv%g_dnb,iblo,ibhi,jblo,jbhi,bufb,nib)
+      dmax = 0.0d0
+      fmax = 0.0d0
+      do jj = jalo, jahi
+        do ii = ialo, iahi
+          if (abs(bufa(ii,jj)-bufb(ii,jj)).gt.dmax) then
+            elm_pos_ij(1) = ii
+            elm_pos_ij(2) = jj
+            dmax = abs(bufa(ii,jj)-bufb(ii,jj))
+            fmax = max(fmax,abs(bufa(ii,jj)),abs(bufb(ii,jj)))
+          endif
+        enddo
+      enddo
+      deallocate(bufa)
+      deallocate(bufb)
+      dmaxg = 0.0d0
+      dmaxg(iproc) = dmax
+      call ga_dgop(MT_DBL,dmaxg,nproc,"+")
+      call ga_dgop(MT_DBL,dmax,1,"max")
+      iroot = -1
+      do ii = 0, nproc-1
+        if (dmax.eq.dmaxg(ii)) then
+          iroot = ii
+        endif
+      enddo
+      call ga_brdcst(MT_DBL,fmax,1,iroot)
+      call ga_brdcst(MT_INT,elm_pos_ij,2,iroot)
+      if (iproc.eq.0) then
+        write(LuOut,*)trim(message)//':N max diff: ',
+     &                dmax/max(fmax,1.0d-15),fmax,elm_pos_ij
+      endif
+c
+      elm_pos_ij    = 0
+      call ga_distribution(wfn1_deriv%g_dca,iproc,ialo,iahi,jalo,jahi)
+      call ga_distribution(wfn1_deriv%g_dcb,iproc,iblo,ibhi,jblo,jbhi)
+      if (ialo.ne.iblo.or.iahi.ne.ibhi.or.
+     &    jalo.ne.jblo.or.jahi.ne.jbhi) then
+        call errquit(pname//" mismatching dimensions correlation Fock"
+     &               ,0,UERR)
+      endif
+      nia = iahi-ialo+1
+      nib = ibhi-iblo+1
+      allocate(bufa(ialo:iahi,jalo:jahi))
+      allocate(bufb(iblo:ibhi,jblo:jbhi))
+      call ga_get(wfn1_deriv%g_dca,ialo,iahi,jalo,jahi,bufa,nia)
+      call ga_get(wfn1_deriv%g_dcb,iblo,ibhi,jblo,jbhi,bufb,nib)
+      dmax = 0.0d0
+      fmax = 0.0d0
+      do jj = jalo, jahi
+        do ii = ialo, iahi
+          if (abs(bufa(ii,jj)-bufb(ii,jj)).gt.dmax) then
+            elm_pos_ij(1) = ii
+            elm_pos_ij(2) = jj
+            dmax = abs(bufa(ii,jj)-bufb(ii,jj))
+            fmax = max(fmax,abs(bufa(ii,jj)),abs(bufb(ii,jj)))
+          endif
+        enddo
+      enddo
+      deallocate(bufa)
+      deallocate(bufb)
+      dmaxg = 0.0d0
+      dmaxg(iproc) = dmax
+      call ga_dgop(MT_DBL,dmaxg,nproc,"+")
+      call ga_dgop(MT_DBL,dmax,1,"max")
+      iroot = -1
+      do ii = 0, nproc-1
+        if (dmax.eq.dmaxg(ii)) then
+          iroot = ii
+        endif
+      enddo
+      call ga_brdcst(MT_DBL,fmax,1,iroot)
+      call ga_brdcst(MT_INT,elm_pos_ij,2,iroot)
+      if (iproc.eq.0) then
+        write(LuOut,*)trim(message)//':C max diff: ',
+     &                dmax/max(fmax,1.0d-15),fmax,elm_pos_ij
+      endif
+      deallocate(dmaxg)
+c
+      return
+      end subroutine wfn1_print_max
 c
 c-----------------------------------------------------------------------

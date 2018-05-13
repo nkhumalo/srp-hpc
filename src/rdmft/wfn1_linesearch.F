@@ -92,9 +92,12 @@ c
       logical o_reduced     !< Whether the gradient has been reduced
                             !< sufficiently
 c
+      integer iproc         !< The current rank
+c
       character*17 pname
       parameter(pname = "wfn1_linesearch: ")
 c
+      iproc = ga_nodeid()
       tol = wfn1_param%convergence
       tr = 1.0d0
 c

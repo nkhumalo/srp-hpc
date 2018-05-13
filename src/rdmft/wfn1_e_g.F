@@ -71,6 +71,10 @@ c     call ga_zero(g_momo)
       call ga_zero(wfn1_deriv%g_dnb)
       call ga_zero(wfn1_deriv%g_dca)
       call ga_zero(wfn1_deriv%g_dcb)
+      call ga_sync()
+cDEBUG
+c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g A")
+cDEBUG
 c
       wfn1_energy%E_tot = 0.0d0
       wfn1_energy%E_1el = 0.0d0
@@ -94,11 +98,6 @@ c
 c     Evaluate the various Fock matrix terms
 c     --------------------------------------
 c
-c     The 1-electron terms
-c
-      call wfn1_e_g_1el(wfn1_param,wfn1_mat,wfn1_wave,wfn1_deriv,
-     &                  v_dca,v_dcb,g_bfmo,g_momo,wfn1_energy%E_1el)
-c
 c     The 2-electron terms
 c
       if (wfn1_param%corr_expr == "wfn1_mx") then
@@ -118,11 +117,29 @@ c
       else
         call errquit("invalid correlation energy option",0,UERR)
       endif
+      call ga_dgop(MT_DBL,v_dca,nmo,"+")
+      call ga_dgop(MT_DBL,v_dcb,nmo,"+")
+cDEBUG
+c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g B")
+cDEBUG
+c
+c     The 1-electron terms
+c
+      call wfn1_e_g_1el(wfn1_param,wfn1_mat,wfn1_wave,wfn1_deriv,
+     &                  v_dca,v_dcb,g_bfmo,g_momo,wfn1_energy%E_1el)
+cDEBUG
+c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g C")
+cDEBUG
 c
 c     The entropy term
 c
       call wfn1_e_g_ent(wfn1_param,wfn1_wave,v_dca,v_dcb,
      &                  wfn1_energy%E_ent)
+c
+      call ga_sync()
+cDEBUG
+c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g D")
+cDEBUG
 c
 c     Transform the correlation function Fock matrices from natural
 c     orbital to correlation function basis
@@ -142,7 +159,7 @@ c
 c     Second transform the correlation function Fock matrix from the
 c     natural orbital to the correlation function basis.
 c
-      nmo = wfn1_param%nmo
+      call ga_sync()
       call ga_dgemm('T','N',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,
      &              wfn1_deriv%g_dca,0.0d0,g_momo)
       call ga_dgemm('N','N',nmo,nmo,nmo,1.0d0,g_momo,wfn1_wave%g_ca,
@@ -163,11 +180,14 @@ c
 c     Second transform the correlation function Fock matrix from the
 c     natural orbital to the correlation function basis.
 c
-      nmo = wfn1_param%nmo
+      call ga_sync()
       call ga_dgemm('T','N',nmo,nmo,nmo,1.0d0,wfn1_wave%g_cb,
      &              wfn1_deriv%g_dcb,0.0d0,g_momo)
       call ga_dgemm('N','N',nmo,nmo,nmo,1.0d0,g_momo,wfn1_wave%g_cb,
      &              0.0d0,wfn1_deriv%g_dcb)
+cDEBUG
+c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g E")
+cDEBUG
 c
 c     Clean up memory
 c
@@ -265,11 +285,17 @@ c
       call ga_put(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
       deallocate(bufji)
       deallocate(buf)
+cDEBUG
+c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g F")
+c     if (iproc.eq.0) then
+c       write(*,*)
+c     endif
+cDEBUG
 c
-      call ga_dgop(MT_DBL,v_dna,wfn1_param%nmo,"+")
-      call ga_dgop(MT_DBL,v_dnb,wfn1_param%nmo,"+")
-      call ga_dgop(MT_DBL,v_dca,wfn1_param%nmo,"+")
-      call ga_dgop(MT_DBL,v_dcb,wfn1_param%nmo,"+")
+      call ga_dgop(MT_DBL,v_dna,nmo,"+")
+      call ga_dgop(MT_DBL,v_dnb,nmo,"+")
+      call ga_dgop(MT_DBL,v_dca,nmo,"+")
+      call ga_dgop(MT_DBL,v_dcb,nmo,"+")
 c
       wfn1_energy%E_tot = wfn1_energy%E_1el + wfn1_energy%E_2el
      &                  + wfn1_energy%E_nuc + wfn1_energy%E_ent
@@ -578,7 +604,11 @@ c     Calculate the alpha-occupation numbers
 c
       call ga_distribution(wfn1_wave%g_ca,iproc,iclo,ichi,jclo,jchi)
       allocate(buf(iclo:ichi,jclo:jchi))
-      call ga_get(wfn1_wave%g_ca,iclo,ichi,jclo,jchi,buf,ichi-iclo+1)
+      if (ichi.ge.iclo.and.jchi.ge.jclo) then
+        call ga_get(wfn1_wave%g_ca,iclo,ichi,jclo,jchi,buf,ichi-iclo+1)
+      else
+c       This rank holds no part of g_ca
+      endif
       do jj = 1, wfn1_param%nea
         if(wfn1_wave%icnfa(jj).ge.jclo.and.wfn1_wave%icnfa(jj).le.jchi)
      &  then
@@ -608,7 +638,11 @@ c     Calculate the beta-occupation numbers
 c
       call ga_distribution(wfn1_wave%g_cb,iproc,iclo,ichi,jclo,jchi)
       allocate(buf(iclo:ichi,jclo:jchi))
-      call ga_get(wfn1_wave%g_cb,iclo,ichi,jclo,jchi,buf,ichi-iclo+1)
+      if (ichi.ge.iclo.and.jchi.ge.jclo) then
+        call ga_get(wfn1_wave%g_cb,iclo,ichi,jclo,jchi,buf,ichi-iclo+1)
+      else
+c       This rank holds no part of g_cb
+      endif
       do jj = 1, wfn1_param%neb
         if(wfn1_wave%icnfb(jj).ge.jclo.and.wfn1_wave%icnfb(jj).le.jchi)
      &  then

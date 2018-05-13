@@ -186,14 +186,13 @@ c
           buf(ii,jj) = dnrm(jj) * buf(ii,jj)
         enddo
       enddo
-      call ga_put(wfn1_wave%g_ca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      if (ihi.ge.ilo.and.jhi.ge.jlo) then
+        call ga_put(wfn1_wave%g_ca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      else
+c       This process hold no part of g_ca
+      endif
       deallocate(dnrm)
       deallocate(buf)
-      call ga_sync()
-c
-c     Orthonormalize the vectors
-c
-      call ga_orthog(wfn1_wave%g_ca,ii,.false.)
 c
 c     Setup the beta correlation functions
 c
@@ -281,13 +280,18 @@ c
           buf(ii,jj) = dnrm(jj) * buf(ii,jj)
         enddo
       enddo
-      call ga_put(wfn1_wave%g_cb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      if (ihi.ge.ilo.and.jhi.ge.jlo) then
+        call ga_put(wfn1_wave%g_cb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      else
+c       This process hold no part of g_ca
+      endif
       deallocate(dnrm)
       deallocate(buf)
       call ga_sync()
 c
 c     Orthonormalize the vectors
 c
+      call ga_orthog(wfn1_wave%g_ca,ii,.false.)
       call ga_orthog(wfn1_wave%g_cb,ii,.false.)
 c
       end

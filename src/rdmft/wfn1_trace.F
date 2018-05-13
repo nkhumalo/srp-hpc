@@ -61,6 +61,8 @@ c
       if (nrowa.ne.nrowb) call errquit("wrong nrow g_dcb",0,UERR)
       if (ncola.ne.ncolb) call errquit("wrong ncol g_dcb",0,UERR)
 c
+      call ga_sync() ! make sure g_dna and g_dnb are completed
+c
       call ga_distribution(wfn1_drva%g_dna,iproc,ilo,ihi,jlo,jhi)
       allocate(bufa(ilo:ihi,jlo:jhi))
       allocate(bufb(ilo:ihi,jlo:jhi))

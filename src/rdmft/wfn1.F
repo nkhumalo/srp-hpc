@@ -352,6 +352,7 @@ c
 c     == Find the linearly independent orbitals ==
 c     == and orthonormalizing transformation    ==
 c
+      call ga_sync() ! Overlap matrix has to be complete
       call wfn1_lindep(wfn1_mat%g_s,wfn1_mat%g_s12,g_bfbf,
      &                 wfn1_param%nmo,ndep_tol)
       if (ndep_nmo.gt.0) wfn1_param%nmo = min(wfn1_param%nbf,ndep_nmo)
@@ -463,6 +464,7 @@ c
 c
 c     == Initial wavefunction complete ==
 c
+      call ga_sync() ! make sure wave function guesses are completed
       if (iproc.eq.0) then
         if (.not.oprerr) then
           write(luout,'(a10,a20,a16)')"iteration","energy","error"
@@ -569,6 +571,7 @@ c
 c
 c     == Print results ==
 c
+      call ga_sync() ! for good measure
       if (iproc.eq.0) then
         call wfn1_print_energy(wfn1_energy)
       endif

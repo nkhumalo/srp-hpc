@@ -216,8 +216,8 @@ c
         enddo
         deallocate(bufa)
         deallocate(bufb)
-        call ga_dgop(MT_DBL,dmax,1,"max")
-        call ga_dgop(MT_DBL,fmax,1,"max")
+        call ga_dgop(1500,dmax,1,"max")
+        call ga_dgop(1501,fmax,1,"max")
 cDEBUG
 c       if (iproc.eq.0) then
 c         write(*,*)'HVD: wfn1_limit_max N:',dmax/fmax,dmax,fmax
@@ -281,8 +281,8 @@ c
         enddo
         deallocate(bufa)
         deallocate(bufb)
-        call ga_dgop(MT_DBL,dmax,1,"max")
-        call ga_dgop(MT_DBL,fmax,1,"max")
+        call ga_dgop(1502,dmax,1,"max")
+        call ga_dgop(1503,fmax,1,"max")
 cDEBUG
 c       if (iproc.eq.0) then
 c         write(*,*)'HVD: wfn1_limit_max C:',dmax/fmax,dmax,fmax
@@ -408,16 +408,17 @@ c
       deallocate(bufb)
       dmaxg = 0.0d0
       dmaxg(iproc) = dmax
-      call ga_dgop(MT_DBL,dmaxg,nproc,"+")
-      call ga_dgop(MT_DBL,dmax,1,"max")
+      call ga_dgop(1504,dmaxg,nproc,"+")
+      call ga_dgop(1505,dmax,1,"max")
       iroot = -1
       do ii = 0, nproc-1
         if (dmax.eq.dmaxg(ii)) then
           iroot = ii
         endif
       enddo
-      call ga_brdcst(MT_DBL,fmax,1,iroot)
-      call ga_brdcst(MT_INT,elm_pos_ij,2,iroot)
+      call ga_brdcst(1000,fmax,ma_sizeof(MT_DBL,1,MT_BYTE),iroot)
+      call ga_brdcst(1001,elm_pos_ij,ma_sizeof(MT_INT,2,MT_BYTE),
+     &               iroot)
       if (iproc.eq.0) then
         write(LuOut,*)trim(message)//':N max diff: ',
      &                dmax/max(fmax,1.0d-15),fmax,elm_pos_ij
@@ -453,16 +454,17 @@ c
       deallocate(bufb)
       dmaxg = 0.0d0
       dmaxg(iproc) = dmax
-      call ga_dgop(MT_DBL,dmaxg,nproc,"+")
-      call ga_dgop(MT_DBL,dmax,1,"max")
+      call ga_dgop(1506,dmaxg,nproc,"+")
+      call ga_dgop(1507,dmax,1,"max")
       iroot = -1
       do ii = 0, nproc-1
         if (dmax.eq.dmaxg(ii)) then
           iroot = ii
         endif
       enddo
-      call ga_brdcst(MT_DBL,fmax,1,iroot)
-      call ga_brdcst(MT_INT,elm_pos_ij,2,iroot)
+      call ga_brdcst(1002,fmax,ma_sizeof(MT_DBL,1,MT_BYTE),iroot)
+      call ga_brdcst(1003,elm_pos_ij,ma_sizeof(MT_INT,2,MT_BYTE),
+     &               iroot)
       if (iproc.eq.0) then
         write(LuOut,*)trim(message)//':C max diff: ',
      &                dmax/max(fmax,1.0d-15),fmax,elm_pos_ij

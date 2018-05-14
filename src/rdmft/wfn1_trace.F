@@ -118,7 +118,7 @@ c
       error%total = error%errna + error%errnb 
      &            + error%errca + error%errcb
 c
-      call ga_dgop(MT_DBL,error,5,"+")
+      call ga_dgop(1700,error,5,"+")
       wfn1_trace = error
 c
       return
@@ -294,7 +294,7 @@ c
       error%total = error%errna + error%errnb 
      &            + error%errca + error%errcb
 c
-      call ga_dgop(MT_DBL,error,5,"+")
+      call ga_dgop(1701,error,5,"+")
       wfn1_etrace = error
 c
       return

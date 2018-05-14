@@ -117,8 +117,8 @@ c
       else
         call errquit("invalid correlation energy option",0,UERR)
       endif
-      call ga_dgop(MT_DBL,v_dca,nmo,"+")
-      call ga_dgop(MT_DBL,v_dcb,nmo,"+")
+      call ga_dgop(1400,v_dca,nmo,"+")
+      call ga_dgop(1401,v_dcb,nmo,"+")
 cDEBUG
 c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g B")
 cDEBUG
@@ -292,10 +292,10 @@ c       write(*,*)
 c     endif
 cDEBUG
 c
-      call ga_dgop(MT_DBL,v_dna,nmo,"+")
-      call ga_dgop(MT_DBL,v_dnb,nmo,"+")
-      call ga_dgop(MT_DBL,v_dca,nmo,"+")
-      call ga_dgop(MT_DBL,v_dcb,nmo,"+")
+      call ga_dgop(1402,v_dna,nmo,"+")
+      call ga_dgop(1403,v_dnb,nmo,"+")
+      call ga_dgop(1404,v_dca,nmo,"+")
+      call ga_dgop(1405,v_dcb,nmo,"+")
 c
       wfn1_energy%E_tot = wfn1_energy%E_1el + wfn1_energy%E_2el
      &                  + wfn1_energy%E_nuc + wfn1_energy%E_ent
@@ -416,7 +416,7 @@ c
       do ii = max(imlo,jmlo), min(imhi,jmhi)
         call ga_get(g_momo,ii,ii,ii,ii,e1a(ii),1)
       enddo
-      call ga_dgop(MT_DBL,e1a,wfn1_param%nmo,"+")
+      call ga_dgop(1406,e1a,wfn1_param%nmo,"+")
 c
 c     Do step 3.
 c
@@ -465,7 +465,7 @@ c
       do ii = max(imlo,jmlo), min(imhi,jmhi)
         call ga_get(g_momo,ii,ii,ii,ii,e1b(ii),1)
       enddo
-      call ga_dgop(MT_DBL,e1b,wfn1_param%nmo,"+")
+      call ga_dgop(1407,e1b,wfn1_param%nmo,"+")
 c
 c     Do step 3.
 c
@@ -621,7 +621,7 @@ c       This rank holds no part of g_ca
         endif
       enddo
       deallocate(buf)
-      call ga_dgop(MT_DBL,occa,wfn1_param%nmo,"+")
+      call ga_dgop(1408,occa,wfn1_param%nmo,"+")
 c
 c     Calculate the entropy
 c
@@ -655,7 +655,7 @@ c       This rank holds no part of g_cb
         endif
       enddo
       deallocate(buf)
-      call ga_dgop(MT_DBL,occb,wfn1_param%nmo,"+")
+      call ga_dgop(1409,occb,wfn1_param%nmo,"+")
 c
 c     Calculate the entropy
 c

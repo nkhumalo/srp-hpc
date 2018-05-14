@@ -177,7 +177,7 @@ c
           dnrm(jj) = dnrm(jj) + buf(ii,jj)*buf(ii,jj)
         enddo
       enddo
-      call ga_dgop(MT_DBL,dnrm,nmo,"+")
+      call ga_dgop(1600,dnrm,nmo,"+")
       do jj = jlo, jhi
         dnrm(jj) = 1.0d0/dsqrt(dnrm(jj))
       enddo
@@ -271,7 +271,7 @@ c
           dnrm(jj) = dnrm(jj) + buf(ii,jj)*buf(ii,jj)
         enddo
       enddo
-      call ga_dgop(MT_DBL,dnrm,nmo,"+")
+      call ga_dgop(1601,dnrm,nmo,"+")
       do jj = jlo, jhi
         dnrm(jj) = 1.0d0/dsqrt(dnrm(jj))
       enddo

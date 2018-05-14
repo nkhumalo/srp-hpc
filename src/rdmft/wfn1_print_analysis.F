@@ -157,10 +157,10 @@ c
         enddo
       endif
       call ga_sync()
-      call ga_brdcst(MT_DBL,ec1a,nmo,0)
-      call ga_brdcst(MT_DBL,occa,nmo,0)
-      call ga_brdcst(MT_DBL,ec1b,nmo,nproc-1)
-      call ga_brdcst(MT_DBL,occb,nmo,nproc-1)
+      call ga_brdcst(1100,ec1a,ma_sizeof(MT_DBL,nmo,MT_BYTE),0)
+      call ga_brdcst(1101,occa,ma_sizeof(MT_DBL,nmo,MT_BYTE),0)
+      call ga_brdcst(1102,ec1b,ma_sizeof(MT_DBL,nmo,MT_BYTE),nproc-1)
+      call ga_brdcst(1103,occb,ma_sizeof(MT_DBL,nmo,MT_BYTE),nproc-1)
 c
       if (iproc.eq.0) then
         blob="WFN1 Final Correlation function energies and occupations"

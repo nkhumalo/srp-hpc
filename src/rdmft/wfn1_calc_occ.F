@@ -47,7 +47,7 @@ c       This process does not hold any part of g_c
         endif
       enddo
       deallocate(buf)
-      call ga_dgop(MT_DBL,occ,nmo,"+")
+      call ga_dgop(1200,occ,nmo,"+")
 c
       end subroutine wfn1_calc_occ
 c

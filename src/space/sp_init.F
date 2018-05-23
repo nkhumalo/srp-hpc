@@ -3071,7 +3071,8 @@ c
       return
       end
       subroutine sp_wrttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
-     + stime,pres,temp,tempw,temps,iwl,xw,vw,fw,xwcr,isl,xs,vs,fs)
+     + stime,pres,temp,tempw,temps,iwl,xw,vw,fw,xwcr,isl,xs,vs,fs,
+     + mdstep,maxstep)
 c
       implicit none
 c
@@ -3087,6 +3088,8 @@ c
       real*8 xs(msa,3),vs(msa,3),fs(msa,3)
 c
       integer lenscr
+      integer mdstep
+      integer maxstep
 c
       lenscr=ma_inquire_avail(mt_byte)/
      + ((9*mwa+3)*ma_sizeof(mt_dbl,1,mt_byte)+
@@ -3109,7 +3112,7 @@ c
      + iwl,int_mb(i_packw),xw,vw,fw,xwcr,isl,int_mb(i_pack),xs,vs,fs,
      + int_mb(i_ipl),lenscr,int_mb(i_bi),dbl_mb(i_bx),dbl_mb(i_bv),
      + dbl_mb(i_bf),dbl_mb(i_br),int_mb(i_bi),dbl_mb(i_bx),dbl_mb(i_bv),
-     + dbl_mb(i_bf))
+     + dbl_mb(i_bf), mdstep, maxstep)
 c
       if(.not.ma_pop_stack(l_n))
      + call md_abort('Failed to deallocate n',0)
@@ -3128,13 +3131,18 @@ c
       end
       subroutine sp_wttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
      + stime,pres,temp,tempw,temps,iwl,iwlp,xw,vw,fw,xwcr,
-     + isl,islp,xs,vs,fs,ipl,nb,ibw,bxw,bvw,bfw,brw,ibs,bxs,bvs,bfs)
+     + isl,islp,xs,vs,fs,ipl,nb,ibw,bxw,bvw,bfw,brw,ibs,bxs,bvs,bfs,
+     + mdstep,maxstep)
 c
+      use adios_defs_mod
+      use adios_write_mod
       implicit none
 c
 #include "sp_common.fh"
 #include "mafdecls.fh"
 #include "global.fh"
+#include "mpif.h"
+
 c
       integer lfntrj,nb
       logical lxw,lvw,lfw,lxs,lvs,lfs
@@ -3156,6 +3164,14 @@ c
 c
       real*8 dumdst,dist
       integer nonh
+      integer*4 adios_comm_world
+      integer*4 adios_err
+      integer*8 m_adios_group
+      integer*8 varid
+      integer*8 adios_handle
+      integer   mdstep
+      integer   maxstep
+      integer   totalatoms
 c
       dumdst=0.02d0
 c
@@ -3445,6 +3461,71 @@ c     end solute output
     8 continue
       endif
 c
+      endif
+
+      call ga_sync
+      call ga_brdcst(10,numw,ma_sizeof(MT_INT,1,MT_BYTE),0)
+c
+      totalatoms=numw*maxstep
+      offset=numw*nwa*mdstep+numw/np*me
+c
+      print *,'%%%%%%%%%%%%%%%%%%%%%%%%',mdstep
+      if(mdstep.eq.1) then
+      call ga_mpi_comm_pgroup_default(adios_comm_world)
+c      adios_comm_world=mpi_comm_world
+      call adios_init_noxml(adios_comm_world, adios_err)
+      call adios_set_max_buffer_size(10)
+      call adios_declare_group(m_adios_group, "coordinates", "",
+     +adios_stat_default, adios_err)
+      call adios_select_method(m_adios_group, "MPI", "", "",
+     +adios_err)
+      call adios_define_var(m_adios_group, "NATOMS", "", adios_integer,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "NWATER", "", adios_integer,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "TATOMS", "", adios_integer,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "OFFSET", "", adios_integer,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "LX", "", adios_double,
+     +"NATOMS,NWATER", "TATOMS,NWATER", "OFFSET", varid);
+      call adios_define_var(m_adios_group, "LY", "", adios_double,
+     +"NATOMS,NWATER", "TATOMS,NWATER", "OFFSET", varid);
+      call adios_define_var(m_adios_group, "LZ", "", adios_double,
+     +"NATOMS,NWATER", "TATOMS,NWATER", "OFFSET", varid);
+      call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
+     +"w", adios_comm_world, adios_err)
+c     adios_groupsize = 2*4 + 2*8*ndx*ndy
+c     call adios_group_size (adios_handle, adios_groupsize, adios_totalsize, adios_err)
+      call adios_write (adios_handle, "NATOMS", numw, adios_err)
+      call adios_write (adios_handle, "NWATER", nwa, adios_err)
+      call adios_write (adios_handle, "TATOMS", totalatoms, adios_err)
+      call adios_write (adios_handle, "OFFSET", 0, adios_err)
+      call adios_write (adios_handle, "LX", bxw(1:numw,1,1:nwa),
+     +adios_err)
+      call adios_write (adios_handle, "LY", bxw(1:numw,2,1:nwa),
+     +adios_err)
+      call adios_write (adios_handle, "LZ", bxw(1:numw,3,1:nwa),
+     +adios_err)
+      call adios_close (adios_handle, adios_err)
+      else
+      call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
+     +"a", adios_comm_world, adios_err)
+      print *,'1---',mdstep
+      call adios_write (adios_handle, "NATOMS", numw, adios_err)
+      call adios_write (adios_handle, "NWATER", nwa, adios_err)
+      call adios_write (adios_handle, "TATOMS", totalatoms, adios_err)
+      call adios_write (adios_handle, "OFFSET", offset, adios_err)
+      print *,'2---',mdstep
+      call adios_write (adios_handle, "LX", bxw(1:numw,1,1:nwa),
+     +adios_err)
+      print *,'3---',mdstep
+      call adios_write (adios_handle, "LY", bxw(1:numw,2,1:nwa),
+     +adios_err)
+      print *,'4---',mdstep
+      call adios_write (adios_handle, "LZ", bxw(1:numw,3,1:nwa),
+     +adios_err)
+      call adios_close (adios_handle, adios_err)
       endif
 c
       call util_flush(lfntrj)

@@ -3083,6 +3083,10 @@ c
       integer lfntrj
       logical lxw,lvw,lfw,lxs,lvs,lfs
       integer iwl(mwm,miw2),isl(msa,mis2)
+      integer l_si, i_si
+      integer l_sx, i_sx
+      integer l_sv, i_sv
+      integer l_sf, i_sf
       real*8 stime,pres,temp,tempw,temps
       real*8 xw(mwm,3,mwa),vw(mwm,3,mwa),fw(mwm,3,mwa),xwcr(mwm,3)
       real*8 xs(msa,3),vs(msa,3),fs(msa,3)
@@ -3092,8 +3096,8 @@ c
       integer maxstep
 c
       lenscr=ma_inquire_avail(mt_byte)/
-     + ((9*mwa+3)*ma_sizeof(mt_dbl,1,mt_byte)+
-     + (mis2+4)*ma_sizeof(mt_int,1,mt_byte))-1
+     + ((9*mwa+12)*ma_sizeof(mt_dbl,1,mt_byte)+
+     + (2*mis2+2*4)*ma_sizeof(mt_int,1,mt_byte))-1
       if(.not.ma_push_get(mt_dbl,lenscr*3*mwa,'bx',l_bx,i_bx))
      + call md_abort('Failed to allocate bx',0)
       if(.not.ma_push_get(mt_dbl,lenscr*3*mwa,'bv',l_bv,i_bv))
@@ -3106,14 +3110,30 @@ c
      + call md_abort('Failed to allocate bi',0)
       if(.not.ma_push_get(mt_int,lenscr,'n',l_n,i_n))
      + call md_abort('Failed to allocate n',0)
+      if(.not.ma_push_get(mt_dbl,lenscr*3,'sx',l_sx,i_sx))
+     + call md_abort('Failed to allocate sx',0)
+      if(.not.ma_push_get(mt_dbl,lenscr*3,'sv',l_sv,i_sv))
+     + call md_abort('Failed to allocate sv',0)
+      if(.not.ma_push_get(mt_dbl,lenscr*3,'sf',l_sf,i_sf))
+     + call md_abort('Failed to allocate sf',0)
+      if(.not.ma_push_get(mt_int,lenscr*max(mis2,2),'si',l_si,i_si))
+     + call md_abort('Failed to allocate si',0)
 c
       call sp_wttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
      + stime,pres,temp,tempw,temps,
      + iwl,int_mb(i_packw),xw,vw,fw,xwcr,isl,int_mb(i_pack),xs,vs,fs,
      + int_mb(i_ipl),lenscr,int_mb(i_bi),dbl_mb(i_bx),dbl_mb(i_bv),
-     + dbl_mb(i_bf),dbl_mb(i_br),int_mb(i_bi),dbl_mb(i_bx),dbl_mb(i_bv),
-     + dbl_mb(i_bf), mdstep, maxstep)
+     + dbl_mb(i_bf),dbl_mb(i_br),int_mb(i_si),dbl_mb(i_sx),dbl_mb(i_sv),
+     + dbl_mb(i_sf), mdstep, maxstep)
 c
+      if(.not.ma_pop_stack(l_si))
+     + call md_abort('Failed to deallocate si',0)
+      if(.not.ma_pop_stack(l_sf))
+     + call md_abort('Failed to deallocate sf',0)
+      if(.not.ma_pop_stack(l_sv))
+     + call md_abort('Failed to deallocate sv',0)
+      if(.not.ma_pop_stack(l_sx))
+     + call md_abort('Failed to deallocate sx',0)
       if(.not.ma_pop_stack(l_n))
      + call md_abort('Failed to deallocate n',0)
       if(.not.ma_pop_stack(l_bi))
@@ -3154,6 +3174,10 @@ c
       integer ipl(mbox,mip2),ibw(nb),ibs(nb)
       real*8 bxw(nb,3,mwa),bvw(nb,3,mwa),bfw(nb,3,mwa),brw(nb,3)
       real*8 bxs(nb,3),bvs(nb,3),bfs(nb,3)
+
+      real*8, allocatable :: xx(:,:)
+      real*8, allocatable :: yy(:,:)
+      real*8, allocatable :: zz(:,:)
 c
       integer i,j,k,node,ncyc,icyc,numw,nums,number,nwmn,nsan
       integer ilp,ihp,jlp,jhp,ili,ihi,jli,jhi,ilw,ihw,jlw,jhw
@@ -3172,6 +3196,11 @@ c
       integer   mdstep
       integer   maxstep
       integer   totalatoms
+      integer   offset
+      integer   localatoms
+      integer   localnumw
+      integer   startnumw
+      integer   endnumw
 c
       dumdst=0.02d0
 c
@@ -3465,71 +3494,85 @@ c
 
       call ga_sync
       call ga_brdcst(10,numw,ma_sizeof(MT_INT,1,MT_BYTE),0)
+      call ga_brdcst(10,bxw,ma_sizeof(MT_DBL,nb*3*nwa,MT_BYTE),0)
 c
-      totalatoms=numw*maxstep
-      offset=numw*nwa*mdstep+numw/np*me
+      localnumw=numw/np
+      startnumw=localnumw*me+1
+      endnumw=localnumw*(me+1)
+      if(me.eq.(np-1)) then
+      localnumw=numw-localnumw*(np-1)
+      endnumw=numw
+      endif
+      call ga_sync
+      localatoms=localnumw*nwa
+      totalatoms=numw*nwa
+      offset=numw*nwa/np*me
 c
-      print *,'%%%%%%%%%%%%%%%%%%%%%%%%',mdstep
+      allocate(xx(nwa,numw))
+      allocate(yy(nwa,numw))
+      allocate(zz(nwa,numw))
+      do i = 1, numw
+        do k = 1, nwa
+          xx(k,i) = bxw(i,1,k)
+          yy(k,i) = bxw(i,2,k)
+          zz(k,i) = bxw(i,3,k)
+        enddo
+      enddo
+c
       if(mdstep.eq.1) then
-      call ga_mpi_comm_pgroup_default(adios_comm_world)
-c      adios_comm_world=mpi_comm_world
+c      call ga_mpi_comm_pgroup_default(adios_comm_world)
+      adios_comm_world=mpi_comm_world
       call adios_init_noxml(adios_comm_world, adios_err)
       call adios_set_max_buffer_size(10)
-      call adios_declare_group(m_adios_group, "coordinates", "",
+      call adios_declare_group(m_adios_group, "coordinates", "iter",
      +adios_stat_default, adios_err)
       call adios_select_method(m_adios_group, "MPI", "", "",
      +adios_err)
-      call adios_define_var(m_adios_group, "NATOMS", "", adios_integer,
+      call adios_define_var(m_adios_group, "NATOMS", "", 2,
      +"", "", "", varid);
-      call adios_define_var(m_adios_group, "NWATER", "", adios_integer,
+      call adios_define_var(m_adios_group, "TATOMS", "", 2,
      +"", "", "", varid);
-      call adios_define_var(m_adios_group, "TATOMS", "", adios_integer,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "OFFSET", "", adios_integer,
+      call adios_define_var(m_adios_group, "OFFSET", "", 2,
      +"", "", "", varid);
       call adios_define_var(m_adios_group, "LX", "", adios_double,
-     +"NATOMS,NWATER", "TATOMS,NWATER", "OFFSET", varid);
+     +"NATOMS", "TATOMS", "OFFSET", varid);
       call adios_define_var(m_adios_group, "LY", "", adios_double,
-     +"NATOMS,NWATER", "TATOMS,NWATER", "OFFSET", varid);
+     +"NATOMS", "TATOMS", "OFFSET", varid);
       call adios_define_var(m_adios_group, "LZ", "", adios_double,
-     +"NATOMS,NWATER", "TATOMS,NWATER", "OFFSET", varid);
+     +"NATOMS", "TATOMS", "OFFSET", varid);
       call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
      +"w", adios_comm_world, adios_err)
 c     adios_groupsize = 2*4 + 2*8*ndx*ndy
 c     call adios_group_size (adios_handle, adios_groupsize, adios_totalsize, adios_err)
-      call adios_write (adios_handle, "NATOMS", numw, adios_err)
-      call adios_write (adios_handle, "NWATER", nwa, adios_err)
-      call adios_write (adios_handle, "TATOMS", totalatoms, adios_err)
-      call adios_write (adios_handle, "OFFSET", 0, adios_err)
-      call adios_write (adios_handle, "LX", bxw(1:numw,1,1:nwa),
-     +adios_err)
-      call adios_write (adios_handle, "LY", bxw(1:numw,2,1:nwa),
-     +adios_err)
-      call adios_write (adios_handle, "LZ", bxw(1:numw,3,1:nwa),
-     +adios_err)
-      call adios_close (adios_handle, adios_err)
-      else
-      call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
-     +"a", adios_comm_world, adios_err)
-      print *,'1---',mdstep
-      call adios_write (adios_handle, "NATOMS", numw, adios_err)
-      call adios_write (adios_handle, "NWATER", nwa, adios_err)
+      call adios_write (adios_handle, "NATOMS", localatoms, adios_err)
       call adios_write (adios_handle, "TATOMS", totalatoms, adios_err)
       call adios_write (adios_handle, "OFFSET", offset, adios_err)
-      print *,'2---',mdstep
-      call adios_write (adios_handle, "LX", bxw(1:numw,1,1:nwa),
-     +adios_err)
-      print *,'3---',mdstep
-      call adios_write (adios_handle, "LY", bxw(1:numw,2,1:nwa),
-     +adios_err)
-      print *,'4---',mdstep
-      call adios_write (adios_handle, "LZ", bxw(1:numw,3,1:nwa),
-     +adios_err)
+      call adios_write (adios_handle, "LX", xx(1:nwa,startnumw:endnumw)
+     +, adios_err)
+      call adios_write (adios_handle, "LY", yy(1:nwa,startnumw:endnumw)
+     +, adios_err)
+      call adios_write (adios_handle, "LZ", zz(1:nwa,startnumw:endnumw)
+     +, adios_err)
+      call adios_close (adios_handle, adios_err)
+      else
+c      call ga_mpi_comm_pgroup_default(adios_comm_world)
+      adios_comm_world=mpi_comm_world
+      call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
+     +"a", adios_comm_world, adios_err)
+      call adios_write (adios_handle, "NATOMS", localatoms, adios_err)
+      call adios_write (adios_handle, "TATOMS", totalatoms, adios_err)
+      call adios_write (adios_handle, "OFFSET", offset, adios_err)
+      call adios_write (adios_handle, "LX", xx(1:nwa,startnumw:endnumw)
+     +, adios_err)
+      call adios_write (adios_handle, "LY", yy(1:nwa,startnumw:endnumw)
+     +, adios_err)
+      call adios_write (adios_handle, "LZ", zz(1:nwa,startnumw:endnumw)
+     +, adios_err)
       call adios_close (adios_handle, adios_err)
       endif
 c
       call util_flush(lfntrj)
-c
+      deallocate(xx,yy,zz)
       return
       end
       logical function sp_skip(lfntri,nskip)

@@ -2045,6 +2045,7 @@ ln -s bin/${CC}  bin/nwc_tau_cc.sh
 ln -s bin/${CXX} bin/nwc_tau_cxx.sh
 export CWD=`pwd`
 export PATH=${CWD}/bin:${PATH}
+export TAU_MAKEFILE=${CWD}/bin/Makefile.tau-intel-mpi-pdt
 #
 # End messing with Tau
 #

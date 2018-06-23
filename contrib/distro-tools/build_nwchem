@@ -2023,6 +2023,31 @@ fi
 if [ ${#NWCHEM_EXECUTABLE} -eq 0 ] ; then
   export NWCHEM_EXECUTABLE=$NWCHEM_TOP/bin/$NWCHEM_TARGET/nwchem
 fi
+#
+# Mess around with Tau
+#
+# 1. Find the absolute pathnames of the F90, C, and C++ compilers and set
+#    TAU_F90_ABSOLUTE, TAU_CC_ABSOLUTE, and TAU_CXX_ABSOLUTE accordingly.
+# 2. Create soft-links in the bin-directory pointing the compilers to the
+#    corresponding nwc_tau_*.sh wrapper scripts.
+# 3. Prepend the bin directory to the PATH so the basename of the compiler
+#    points to the corresponding compiler wrapper script.
+# 4. USE_TAU should be set to
+#    a. "source" for source code instrumentation
+#    b. "compiler" for compiler based instrumentation
+#    c. remain unset for no instrumentation.
+#
+export TAU_F90_ABSOLUTE=`which ${FC}`
+export TAU_CC_ABSOLUTE=`which ${CC}`
+export TAU_CXX_ABSOLUTE=`which ${CXX}`
+ln -s bin/${FC}  bin/nwc_tau_f90.sh
+ln -s bin/${CC}  bin/nwc_tau_cc.sh
+ln -s bin/${CXX} bin/nwc_tau_cxx.sh
+export CWD=`pwd`
+export PATH=${CWD}/bin:${PATH}
+#
+# End messing with Tau
+#
 echo "==============="
 echo "Building NWChem"
 echo "==============="

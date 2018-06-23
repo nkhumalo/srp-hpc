@@ -1532,13 +1532,7 @@ if [ ${#SLURMOPT} -eq 0 ] ; then
   if [ -f /usr/lib/libslurm.a ] ; then
     export SLURMOPT="-L/usr/lib -lslurm"
     export SLURM=y
-  elif [ -f /usr/lib/libslurm.so ] ; then
-    export SLURMOPT="-L/usr/lib -lslurm"
-    export SLURM=y
   elif [ -f /usr/lib64/libslurm.a ] ; then
-    export SLURMOPT="-L/usr/lib64 -lslurm"
-    export SLURM=y
-  elif [ -f /usr/lib64/libslurm.so ] ; then
     export SLURMOPT="-L/usr/lib64 -lslurm"
     export SLURM=y
   fi

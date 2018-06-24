@@ -2034,9 +2034,11 @@ fi
 export TAU_F90_ABSOLUTE=`which ${MPI_F90}`
 export TAU_CC_ABSOLUTE=`which ${MPI_CC}`
 export TAU_CXX_ABSOLUTE=`which ${MPI_CXX}`
-ln -s bin/nwc_tau_f90.sh  bin/${MPI_F90}
-ln -s bin/nwc_tau_cc.sh   bin/${MPI_CC}
-ln -s bin/nwc_tau_cxx.sh  bin/${MPI_CXX}
+cd bin
+ln -s nwc_tau_f90.sh  ${MPI_F90}
+ln -s nwc_tau_cc.sh   ${MPI_CC}
+ln -s nwc_tau_cxx.sh  ${MPI_CXX}
+cd ..
 export CWD=`pwd`
 export PATH=${CWD}/bin:${PATH}
 export TAU_MAKEFILE=${CWD}/bin/Makefile.tau-intel-mpi-pdt

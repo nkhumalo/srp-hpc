@@ -2561,6 +2561,7 @@ fi
 #    b. "compiler" for compiler based instrumentation
 #    c. remain unset for no instrumentation.
 #
+cd $NWCHEM_TOP
 export TAU_F90_ABSOLUTE=`which ${MPI_F90}`
 export TAU_CC_ABSOLUTE=`which ${MPI_CC}`
 export TAU_CXX_ABSOLUTE=`which ${MPI_CXX}`
@@ -2572,6 +2573,7 @@ cd ..
 export CWD=`pwd`
 export PATH=${CWD}/bin:${PATH}
 export TAU_OPTIONS="-optRevert"
+cd $NWCHEM_TOP/src
 #
 # End messing with Tau
 #

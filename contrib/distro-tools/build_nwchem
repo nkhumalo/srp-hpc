@@ -2570,6 +2570,7 @@ if [ ${#USE_TAU} -ne 0 ] ; then
   ln -s nwc_tau_f90.sh  ${MPI_F90}
   ln -s nwc_tau_cc.sh   ${MPI_CC}
   ln -s nwc_tau_cxx.sh  ${MPI_CXX}
+  ls
   cd ${NWCHEM_TOP}
   export CWD=`pwd`
   export PATH=${CWD}/bin:${PATH}
@@ -2581,6 +2582,7 @@ if [ ${#USE_TAU} -ne 0 ] ; then
   echo "export TAU_CC_ABSOLUTE=${TAU_CC_ABSOLUTE}"   >> ${NWCHEM_ENV_SH}
   echo "export TAU_OPTIONS=${TAU_OPTIONS}"   >> ${NWCHEM_ENV_SH}
   echo "export PATH=${PATH}"   >> ${NWCHEM_ENV_SH}
+  cd $NWCHEM_TOP/src
 fi
 #
 # End messing with Tau

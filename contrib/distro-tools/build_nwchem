@@ -2561,17 +2561,27 @@ fi
 #    b. "compiler" for compiler based instrumentation
 #    c. remain unset for no instrumentation.
 #
-export TAU_F90_ABSOLUTE=`which ${MPI_F90}`
-export TAU_CC_ABSOLUTE=`which ${MPI_CC}`
-export TAU_CXX_ABSOLUTE=`which ${MPI_CXX}`
-cd bin
-ln -s nwc_tau_f90.sh  ${MPI_F90}
-ln -s nwc_tau_cc.sh   ${MPI_CC}
-ln -s nwc_tau_cxx.sh  ${MPI_CXX}
-cd ..
-export CWD=`pwd`
-export PATH=${CWD}/bin:${PATH}
-export TAU_OPTIONS="-optRevert"
+if [ ${#USE_TAU} -ne 0 ] ; then
+  echo "Doing Tau..."
+  export TAU_F90_ABSOLUTE=`which ${MPI_F90}`
+  export TAU_CC_ABSOLUTE=`which ${MPI_CC}`
+  export TAU_CXX_ABSOLUTE=`which ${MPI_CXX}`
+  cd ${NWCHEM_TOP}/bin
+  ln -s nwc_tau_f90.sh  ${MPI_F90}
+  ln -s nwc_tau_cc.sh   ${MPI_CC}
+  ln -s nwc_tau_cxx.sh  ${MPI_CXX}
+  cd ${NWCHEM_TOP}
+  export CWD=`pwd`
+  export PATH=${CWD}/bin:${PATH}
+  export TAU_OPTIONS="-optRevert"
+  #
+  echo "export USE_TAU=${USE_TAU}"   >> ${NWCHEM_ENV_SH}
+  echo "export TAU_F90_ABSOLUTE=${TAU_F90_ABSOLUTE}"   >> ${NWCHEM_ENV_SH}
+  echo "export TAU_CXX_ABSOLUTE=${TAU_CXX_ABSOLUTE}"   >> ${NWCHEM_ENV_SH}
+  echo "export TAU_CC_ABSOLUTE=${TAU_CC_ABSOLUTE}"   >> ${NWCHEM_ENV_SH}
+  echo "export TAU_OPTIONS=${TAU_OPTIONS}"   >> ${NWCHEM_ENV_SH}
+  echo "export PATH=${PATH}"   >> ${NWCHEM_ENV_SH}
+fi
 #
 # End messing with Tau
 #

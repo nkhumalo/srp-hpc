@@ -605,7 +605,7 @@ c
       if(.not.ga_destroy(ga_iw))
      + call md_abort('Error ga_destroy iw',ga_iw)
       if(.not.ga_destroy(ga_ip))
-     + call md_abort('Error ga_destroy iw',ga_ip)
+     + call md_abort('Error ga_destroy ip',ga_ip)
 c
       if(.not.ma_pop_stack(l_sndx))
      + call md_abort('Failed to deallocate sndx',0)

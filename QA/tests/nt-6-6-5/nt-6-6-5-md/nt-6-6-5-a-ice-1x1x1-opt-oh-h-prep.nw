@@ -1,0 +1,11 @@
+echo 
+start md_dat
+
+prepare
+  system nt-ice_md
+  new_rst
+  source ja4074529_si_004.pdb
+end
+
+task prepare
+

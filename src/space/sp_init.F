@@ -9,7 +9,7 @@
      + i_lseqi,ndumsi,nbgeti,npreci,madbxi)
 c
 c
-c $Id$
+c $Id: sp_init.F 19708 2010-10-29 18:04:21Z d3y133 $
 c
       implicit none
 c
@@ -460,7 +460,10 @@ c
       mwmg=max(1,msag/mwa+1)
       mwm=max(1,mwm,msa/mwa+1)
 c
-      msa=min(msa,2*nsa+1)
+c     msa=min(msa,2*nsa+1)
+cDEBUG
+      msa=max(msa,2*nsa+1)
+cDEBUG
       mwm=min(mwm,2*nwm+1)
       msag=min(msag,2*nsa+1)
       mwmg=min(mwmg,2*nwm+1)
@@ -674,6 +677,11 @@ c
 c
       integer l,m,ib(3),nbox,nb(3),joff,npars,icount,lasts
       real*8 xtmin,xtmax,xtx,xt(3)
+c
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      real*8 util_nint
+      external util_nint
+#endif
 c
       if(.not.ma_verify_allocator_stuff()) then
       call md_abort('ERROR IN MEMORY USE ENTERING SP_RDRST',0)
@@ -1043,7 +1051,11 @@ c
       xtx=0.5d0*(xtmax+xtmin)
       if(npbtyp.ne.0) then
       if(abs(xtx).gt.boxh(l)) then
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      xtx=xtx-util_nint(xtx*boxi(l))*box(l)
+#else
       xtx=xtx-nint(xtx*boxi(l))*box(l)
+#endif
       endif
       endif
       ib(l)=0
@@ -3156,6 +3168,14 @@ c
 c
       real*8 dumdst,dist
       integer nonh
+cDEBUG
+      character*255 message
+      character*63  string1,string2
+      double precision util_clock_gettime
+      double precision tautracegettime
+      integer, save :: call_count
+      data call_count/0/
+cDEBUG
 c
       dumdst=0.02d0
 c
@@ -3166,6 +3186,22 @@ c
 c
       call swatch(rdate,rtime)
 c
+cDEBUG Simulate inter workflow communication for Wei
+c     write(string1,'(e14.6)')util_clock_gettime()
+      write(string1,'(e14.6)')tautracegettime()
+      write(string2,'(f20.6)')stime
+      if (call_count.eq.0) then
+      message = '{"event-type":"output","name":"SP_WTTRJ","time":"'//
+     &trim(adjustl(string1))//'","node-id": "0", "thread-id": "0", '//
+     &'"filename":"trajectory-'//trim(adjustl(string2))//'"}'
+      else
+      message = ',{"event-type":"output","name":"SP_WTTRJ","time":"'//
+     &trim(adjustl(string1))//'","node-id": "0", "thread-id": "0", '//
+     &'"filename":"trajectory-'//trim(adjustl(string2))//'"}'
+      endif
+      write(80,*)trim(message)
+      call_count = call_count + 1
+cDEBUG
       write(lfntrj,1000)
  1000 format('frame')
       write(lfntrj,1001) stime,temp,pres,rdate,rtime

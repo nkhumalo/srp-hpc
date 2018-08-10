@@ -1,0 +1,35 @@
+echo 
+start ana_dat
+
+memory mb total 6000
+
+prepare
+  system nt-ice_md
+  new_rst
+  source ../nt-6-6-5-md/ja4074529_si_004.pdb
+end
+
+#task prepare
+
+md
+  system nt-ice_md
+  leapfrog
+  step 0.002 equil 1000 data 2200
+  isotherm 298.15 trelax 0.1
+  isobar
+  print step 10
+  record coord 1 ascii
+end
+
+#task md dynamics
+
+analysis
+  system nt-ice_md
+  reference ../nt-6-6-5-md/nt-ice_md.rst
+  file ../nt-6-6-5-md/nt-ice_md.trj
+  frames 1 1000 10
+  essential
+end
+
+task analysis
+

@@ -1,7 +1,7 @@
       subroutine sp_setup(node,iwl,xw,xwcr,vw,gw,numwm,
      + isl,xs,xscr,vs,gs,numsa,lpack)
 c
-c $Id$
+c $Id: sp_main.F 19708 2010-10-29 18:04:21Z d3y133 $
 c
       implicit none
 c
@@ -922,6 +922,10 @@ c
 c
 #include "sp_common.fh"
 c
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      real*8 util_nint
+      external util_nint
+#endif
 c
       real*8 xs(msa,3)
       real*8 boxsiz(maxbox,3)
@@ -983,15 +987,27 @@ cx
 c
       if(npbtyp.ne.0) then
       if(abs(xcgx).gt.boxh(1)) then
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      xcgx=xcgx-util_nint(xcgx*boxi(1))*box(1)
+#else
       xcgx=xcgx-nint(xcgx*boxi(1))*box(1)
+#endif
       nfold=1
       endif
       if(abs(xcgy).gt.boxh(2)) then
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      xcgy=xcgy-util_nint(xcgy*boxi(2))*box(2)
+#else
       xcgy=xcgy-nint(xcgy*boxi(2))*box(2)
+#endif
       nfold=1
       endif
       if(abs(xcgz).gt.boxh(3)) then
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      xcgz=xcgz-util_nint(xcgz*boxi(3))*box(3)
+#else
       xcgz=xcgz-nint(xcgz*boxi(3))*box(3)
+#endif
       nfold=1
       endif
       endif
@@ -1143,6 +1159,10 @@ c
       integer itemps,nfold
       logical lend
       character*255 string
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      real*8 util_nint
+      external util_nint
+#endif
 c
       boxi(1)=one/box(1)
       boxi(2)=one/box(2)
@@ -1797,15 +1817,27 @@ c
       xscz=factor*xscz
       if(npbtyp.ne.0) then
       if(abs(xscx).gt.boxh(1)) then
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      xscx=xscx-util_nint(xscx*boxi(1))*box(1)
+#else
       xscx=xscx-nint(xscx*boxi(1))*box(1)
+#endif
       nfold=1
       endif
       if(abs(xscy).gt.boxh(2)) then
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      xscy=xscy-util_nint(xscy*boxi(2))*box(2)
+#else
       xscy=xscy-nint(xscy*boxi(2))*box(2)
+#endif
       nfold=1
       endif
       if(abs(xscz).gt.boxh(3)) then
+#if defined(CRAY_T3D) || defined(CRAY_T3E)
+      xscz=xscz-util_nint(xscz*boxi(3))*box(3)
+#else
       xscz=xscz-nint(xscz*boxi(3))*box(3)
+#endif
       nfold=1
       endif
       endif
@@ -3038,8 +3070,11 @@ c
       endif
       if(jsfr.gt.0) then
       nsnon=jsto-jsfr+1
-      if(nsaloc+nsnon.gt.msa)
-     + call md_abort('Dimension msa too small (3)',nsaloc+nsnon)
+      if(nsaloc+nsnon.gt.msa) then
+       write(*,*)me,'msa = ',msa,' nsaloc+nsnon = ',
+     +           nsaloc,nsnon,nsaloc+nsnon
+       call md_abort('Dimension msa too small (3a)',nsaloc+nsnon)
+      endif
       call ga_distribution(ga_is,jnode,il,ih,jl,jh)
       if(npack.eq.0) then
       call ga_get(ga_is,il+jsfr-1,il+jsto-1,jl,jh,isl(nsaloc+1,1),msa)

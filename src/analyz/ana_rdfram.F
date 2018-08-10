@@ -1,6 +1,6 @@
       logical function ana_rdfram(x,ix,w)
 c
-c $Id$
+c $Id: ana_rdfram.F 19708 2010-10-29 18:04:21Z d3y133 $
 c
       implicit none
 c
@@ -20,6 +20,15 @@ c
       real*8 timp
       integer inwm,inwa
       integer flags(7)
+      integer ipos, isize, ipos2
+cDEBUG
+      character*255 message
+      character*63  string1,string2
+      double precision util_clock_gettime
+      double precision tautracegettime
+      integer, save :: call_count
+      data call_count/0/
+cDEBUG
 c
       lxw=.false.
       lvw=.false.
@@ -28,14 +37,38 @@ c
       lsv=.false.
       lfs=.false.
 c
+      card = " "
+c
       if(me.eq.0) then
   100 continue
       if(fmttrj.eq.'trj') then
+      inquire(unit=lfntrj,pos=ipos)
+c     ipos2 = 0
+c     inquire(unit=lfntrj,pos=ipos,size=isize)
+c     do while (ipos+214+25*nsa.gt.isize)
+c       read(unit=lfntrj,pos=ipos+ipos2,err=6001,end=6001,fmt='(a)')card
+c6001   inquire(unit=lfntrj,size=isize)
+c       read(unit=lfntrj,pos=ipos,err=6002,end=6002,fmt='(a)')card
+c6002   continue
+c       ipos2=ipos2+1
+c       if (mod(ipos2,1000).eq.0) write(*,*)'HvD: size = ',isize
+c     enddo
     1 continue
-      read(lfntrj,1000,err=9999,end=9999) card
- 1000 format(a)
-      if(card(1:5).ne.'frame') goto 1
-      read(lfntrj,1001,err=9999,end=9999) timp,temp,pres,datum,tijd
+ 6000 read(lfntrj,1000,pos=ipos,err=6000,end=6000) card
+cDEBUG
+c     write(*,*)'HvD: ana_rdfram: ipos,card=',ipos,trim(card)
+cDEBUG
+ 1000 format(a5)
+      if(card(1:5).ne.'frame') then
+c       close(lfntrj)
+c       call ana_rdhdr(byte_mb(i_snam))
+        ipos = ipos + 1
+        card = " "
+        goto 1
+      endif
+      inquire(unit=lfntrj,pos=ipos)
+ 6010 read(lfntrj,1001,pos=ipos,err=6010,end=6010) timp,temp,pres,
+     +     datum,tijd
  1001 format(2f12.6,e12.5,2a10)
       if(lclean.and.timp.lt.timr) then
       write(*,2221) timp,temp,pres,datum,tijd
@@ -48,28 +81,35 @@ c
       if(timp.lt.timr) timoff=time
       time=timp+timoff
       timr=timp
-      read(lfntrj,1000) card
+      inquire(unit=lfntrj,pos=ipos)
+ 6020 read(lfntrj,1100,pos=ipos,err=6020,end=6020) card
+ 1100 format(a36)
       if(card(54:54).eq.'.') then
       read(card,1012) box
  1012 format(f12.6,36x,f12.6,36x,f12.6)
       else
       read(card,1002) box(1)
  1002 format(f12.6)
-      read(lfntrj,1022) box(2),box(3)
+      inquire(unit=lfntrj,pos=ipos)
+ 6030 read(lfntrj,1022,pos=ipos,err=6030,end=6030) box(2),box(3)
  1022 format(12x,f12.6,/,24x,f12.6)
       endif
-      read(lfntrj,1000) card
-      if(card(8:8).eq.'F'.or.card(8:8).eq.'T') then
-      read(card,1006) lxw,lvw,lfw,lpw,lsx,lsv,lfs,lps,inwm,inwa,nsa
-      elseif(card(6:6).eq.'F'.or.card(6:6).eq.'T') then
-      read(card,1007) lxw,lvw,lfw,lsx,lsv,lfs,inwm,inwa,nsa
-      lpw=.false.
-      lps=.false.
-      else
-      read(card,1003) lxw,lvw,lsx,lsv,inwm,inwa,nsa
-      lfw=.false.
-      lfs=.false.
-      endif
+      inquire(unit=lfntrj,pos=ipos)
+ 6040 read(lfntrj,1006,pos=ipos,err=6040,end=6040)
+     +     lxw,lvw,lfw,lpw,lsx,lsv,lfs,lps,inwm,inwa,nsa
+c6040 read(lfntrj,1110,pos=ipos,err=6040,end=6040) card
+c1110 format(a38)
+c     if(card(8:8).eq.'F'.or.card(8:8).eq.'T') then
+c     read(card,1006) lxw,lvw,lfw,lpw,lsx,lsv,lfs,lps,inwm,inwa,nsa
+c     elseif(card(6:6).eq.'F'.or.card(6:6).eq.'T') then
+c     read(card,1007) lxw,lvw,lfw,lsx,lsv,lfs,inwm,inwa,nsa
+c     lpw=.false.
+c     lps=.false.
+c     else
+c     read(card,1003) lxw,lvw,lsx,lsv,inwm,inwa,nsa
+c     lfw=.false.
+c     lfs=.false.
+c     endif
       if(inwm.gt.0) then
       nwm=inwm
       nwa=inwa
@@ -87,14 +127,16 @@ c
       if((lxw.or.lvw).and.nwm.gt.0) then
       do 2 i=1,nwm
       do 3 j=1,nwa
-      read(lfntrj,1004) (w(i,j,k),k=1,3)
+      inquire(unit=lfntrj,pos=ipos)
+ 6050 read(lfntrj,1004,pos=ipos,err=6050,end=6050) (w(i,j,k),k=1,3)
  1004 format(3f8.3)
     3 continue
     2 continue
       endif
       if(lsx.and.nsa.gt.0) then
       do 4 i=1,nsa
-      read(lfntrj,1005) (x(i,j),j=1,3)
+      inquire(unit=lfntrj,pos=ipos)
+ 6060 read(lfntrj,1005,pos=ipos,err=6060,end=6060) (x(i,j),j=1,3)
  1005 format(3f8.3)
       ix(i)=i
     4 continue
@@ -102,30 +144,40 @@ c
       succes=.true.
       goto 9000
       elseif(fmttrj.eq.'sco'.or.fmttrj.eq.'coo') then
+cDEBUG
+      write(*,*)'HvD: ana_rdfram: trouble 1'
+      call md_abort('Trouble 1',0)
+cDEBUG
       datum='          '
       tijd='          '
    11 continue
-      read(lfntrj,1000,err=9999,end=9999) card
+      inquire(unit=lfntrj,pos=ipos)
+ 6070 read(lfntrj,1000,pos=ipos,err=6070,end=6070) card
       if(card(1:5).ne.'time:') goto 11
-      read(lfntrj,2001) timp
+      inquire(unit=lfntrj,pos=ipos)
+ 6080 read(lfntrj,2001,pos=ipos,err=6080,end=6080) timp
  2001 format(f12.6)
       if(timp.lt.timr) timoff=time
       time=timp+timoff
       timr=timp
    12 continue
-      read(lfntrj,1000,err=9999,end=9999) card
+      inquire(unit=lfntrj,pos=ipos)
+ 6090 read(lfntrj,1000,pos=ipos,err=6090,end=6090) card
       if(card(1:15).ne.'box_dimensions:') goto 12
-      read(lfntrj,2002) box
+      inquire(unit=lfntrj,pos=ipos)
+ 6100 read(lfntrj,2002,pos=ipos,err=6100,end=6100) box
  2002 format(3f12.6)
       lxw=fmttrj.eq.'coo'
       lvw=.false.
       lsx=.true.
       lsv=.false.
    13 continue
-      read(lfntrj,1000,err=9999,end=9999) card
+      inquire(unit=lfntrj,pos=ipos)
+ 6110 read(lfntrj,1000,pos=ipos,err=6110,end=6110) card
       if(card(1:10).ne.'atom_list:') goto 13
       do 14 i=1,nsa
-      read(lfntrj,1005,err=9999,end=9999) (x(i,j),j=1,3)
+      inquire(unit=lfntrj,pos=ipos)
+ 6120 read(lfntrj,1005,pos=ipos,err=6120,end=6120) (x(i,j),j=1,3)
       x(i,1)=x(i,1)*1.0d-1
       x(i,2)=x(i,2)*1.0d-1
       x(i,3)=x(i,3)*1.0d-1
@@ -134,7 +186,8 @@ c
       if(lxw) then
       do 15 i=1,nwm
       do 16 j=1,nwa
-      read(lfntrj,1005,err=9999,end=9999) (w(i,j,k),k=1,3)
+      inquire(unit=lfntrj,pos=ipos)
+ 6130 read(lfntrj,1005,pos=ipos,err=6130,end=6130) (w(i,j,k),k=1,3)
    16 continue
    15 continue
       endif
@@ -161,7 +214,7 @@ c
 c
       fname=filtrj(1:lq-1)//cnum//filtrj(lq+1:index(filtrj,' ')-1)
       open(unit=lfntrj,file=fname(1:index(fname,' ')-1),
-     + status='old',err=9998)
+     + status='old',err=9998,access="stream",form="formatted")
       write(*,3333) fname(1:index(fname,' ')-1)
  3333 format(/,' Opening trj file ',a)
 c
@@ -173,6 +226,24 @@ c
 c
       endif
  9000 continue
+cDEBUG Simulate inter workflow communication for Wei
+      if (succes) then
+c     write(string1,'(e14.6)')util_clock_gettime()
+      write(string1,'(e14.6)')tautracegettime()
+      write(string2,'(f20.6)')timp
+      if (call_count.eq.0) then
+      message = '{"event-type":"input","name":"ANA_RDFRAM","time":"'//
+     &trim(adjustl(string1))//'","node-id": "4", "thread-id": "0", '//
+     &'"filename":"trajectory-'//trim(adjustl(string2))//'"}'
+      else
+      message = ',{"event-type":"input","name":"ANA_RDFRAM","time":"'//
+     &trim(adjustl(string1))//'","node-id": "4", "thread-id": "0", '//
+     &'"filename":"trajectory-'//trim(adjustl(string2))//'"}'
+      endif
+      write(80,*)trim(message)
+      call_count = call_count + 1
+      endif
+cDEBUG
 c
 c     center and fold and rotate
 c     --------------------------

@@ -1,0 +1,1324 @@
+ argument  1 = nt-6-6-5-a-ice-1x1x1-opt-oh-h-ana.nw
+
+
+
+============================== echo of input deck ==============================
+echo
+start ana_dat
+
+memory mb total 6000
+
+prepare
+  system nt-ice_md
+  new_rst
+  source ../nt-6-6-5-md/ja4074529_si_004.pdb
+end
+
+#task prepare
+
+md
+  system nt-ice_md
+  leapfrog
+  step 0.002 equil 1000 data 2200
+  isotherm 298.15 trelax 0.1
+  isobar
+  print step 10
+  record coord 1 ascii
+end
+
+#task md dynamics
+
+analysis
+  system nt-ice_md
+  reference ../nt-6-6-5-md/nt-ice_md.rst
+  file ../nt-6-6-5-md/nt-ice_md.trj
+  frames 1 1000 10
+  essential
+end
+
+task analysis
+
+================================================================================
+
+
+                                         
+                                         
+
+
+              Northwest Computational Chemistry Package (NWChem) 6.6
+              ------------------------------------------------------
+
+
+                    Environmental Molecular Sciences Laboratory
+                       Pacific Northwest National Laboratory
+                                Richland, WA 99352
+
+                              Copyright (c) 1994-2015
+                       Pacific Northwest National Laboratory
+                            Battelle Memorial Institute
+
+             NWChem is an open-source computational chemistry package
+                        distributed under the terms of the
+                      Educational Community License (ECL) 2.0
+             A copy of the license is included with this distribution
+                              in the LICENSE.TXT file
+
+                                  ACKNOWLEDGMENT
+                                  --------------
+
+            This software and its documentation were developed at the
+            EMSL at Pacific Northwest National Laboratory, a multiprogram
+            national laboratory, operated for the U.S. Department of Energy
+            by Battelle under Contract Number DE-AC05-76RL01830. Support
+            for this work was provided by the Department of Energy Office
+            of Biological and Environmental Research, Office of Basic
+            Energy Sciences, and the Office of Advanced Scientific Computing.
+
+
+           Job information
+           ---------------
+
+    hostname        = hpc1.csc.bnl.gov
+    program         = ../../../../bin/LINUX64/nwchem
+    date            = Fri May  5 21:47:46 2017
+
+    compiled        = Tue_Apr_25_15:08:50_2017
+    source          = /home/hvandam/tau/nwchem-mpi-mt
+    nwchem branch   = Development
+    nwchem revision = 29056
+    ga revision     = 10752
+    input           = nt-6-6-5-a-ice-1x1x1-opt-oh-h-ana.nw
+    prefix          = ana_dat.
+    data base       = ./ana_dat.db
+    status          = startup
+    nproc           =        1
+    time left       =     -1s
+
+
+
+           Memory information
+           ------------------
+
+    heap     =  196607998 doubles =   1500.0 Mbytes
+    stack    =  196607995 doubles =   1500.0 Mbytes
+    global   =  393216000 doubles =   3000.0 Mbytes (distinct from heap & stack)
+    total    =  786431993 doubles =   6000.0 Mbytes
+    verify   = yes
+    hardfail = no 
+
+
+           Directory information
+           ---------------------
+
+  0 permanent = .
+  0 scratch   = .
+
+
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+                               Analysis Input Module
+                               ---------------------
+
+
+                                  Analysis Module
+                                  ---------------
+
+
+ HvD: ana_rdref: nsa=                 3948
+ Reference coordinates read from ../nt-6-6-5-md/nt-ice_md.rst
+
+ Number of atoms is  3948
+ Topology read from ../nt-6-6-5-md/nt-ice.top
+
+ Opening trj file ../nt-6-6-5-md/nt-ice_md.trj
+ HvD: ana_rdhdr: nwa,nsa,nsb,nwb=                    3                 3948                 3948                    3
+ Closing trj file 
+
+ Trajectory file header from ../nt-6-6-5-md/nt-ice_md.trj
+
+ Selected frames          1 to       1000 by        10
+
+ Opening trj file ../nt-6-6-5-md/nt-ice_md.trj
+ HvD: ana_rdhdr: nwa,nsa,nsb,nwb=                    3                 3948                 3948                    3
+ HvD: ifrfr,ifrto,ifrsk=                    1                 1000                   10
+ HvD: nread,nframe=                    0                    0
+ HvD: rms0,rms1=  0.41862391365264651       0.41852615298079116     
+ HvD: nread,nframe=                    1                    1
+ HvD: nread,nframe=                    2                    2
+ HvD: nread,nframe=                    3                    3
+ HvD: nread,nframe=                    4                    4
+ HvD: nread,nframe=                    5                    5
+ HvD: nread,nframe=                    6                    6
+ HvD: nread,nframe=                    7                    7
+ HvD: nread,nframe=                    8                    8
+ HvD: nread,nframe=                    9                    9
+ HvD: nread,nframe=                   10                   10
+ HvD: rms0,rms1=  0.43470340295264492       0.43460672452673504     
+ HvD: nread,nframe=                   11                   11
+ HvD: nread,nframe=                   12                   12
+ HvD: nread,nframe=                   13                   13
+ HvD: nread,nframe=                   14                   14
+ HvD: nread,nframe=                   15                   15
+ HvD: nread,nframe=                   16                   16
+ HvD: nread,nframe=                   17                   17
+ HvD: nread,nframe=                   18                   18
+ HvD: nread,nframe=                   19                   19
+ HvD: nread,nframe=                   20                   20
+ HvD: rms0,rms1=  0.43840254598337075       0.43831522635412934     
+ HvD: nread,nframe=                   21                   21
+ HvD: nread,nframe=                   22                   22
+ HvD: nread,nframe=                   23                   23
+ HvD: nread,nframe=                   24                   24
+ HvD: nread,nframe=                   25                   25
+ HvD: nread,nframe=                   26                   26
+ HvD: nread,nframe=                   27                   27
+ HvD: nread,nframe=                   28                   28
+ HvD: nread,nframe=                   29                   29
+ HvD: nread,nframe=                   30                   30
+ HvD: rms0,rms1=  0.44712761925870770       0.44704353025971416     
+ HvD: nread,nframe=                   31                   31
+ HvD: nread,nframe=                   32                   32
+ HvD: nread,nframe=                   33                   33
+ HvD: nread,nframe=                   34                   34
+ HvD: nread,nframe=                   35                   35
+ HvD: nread,nframe=                   36                   36
+ HvD: nread,nframe=                   37                   37
+ HvD: nread,nframe=                   38                   38
+ HvD: nread,nframe=                   39                   39
+ HvD: nread,nframe=                   40                   40
+ HvD: rms0,rms1=  0.44988608654655854       0.44980030233977714     
+ HvD: nread,nframe=                   41                   41
+ HvD: nread,nframe=                   42                   42
+ HvD: nread,nframe=                   43                   43
+ HvD: nread,nframe=                   44                   44
+ HvD: nread,nframe=                   45                   45
+ HvD: nread,nframe=                   46                   46
+ HvD: nread,nframe=                   47                   47
+ HvD: nread,nframe=                   48                   48
+ HvD: nread,nframe=                   49                   49
+ HvD: nread,nframe=                   50                   50
+ HvD: rms0,rms1=  0.45645712569222469       0.45638805482725331     
+ HvD: nread,nframe=                   51                   51
+ HvD: nread,nframe=                   52                   52
+ HvD: nread,nframe=                   53                   53
+ HvD: nread,nframe=                   54                   54
+ HvD: nread,nframe=                   55                   55
+ HvD: nread,nframe=                   56                   56
+ HvD: nread,nframe=                   57                   57
+ HvD: nread,nframe=                   58                   58
+ HvD: nread,nframe=                   59                   59
+ HvD: nread,nframe=                   60                   60
+ HvD: rms0,rms1=  0.45870954537216907       0.45863783116052925     
+ HvD: nread,nframe=                   61                   61
+ HvD: nread,nframe=                   62                   62
+ HvD: nread,nframe=                   63                   63
+ HvD: nread,nframe=                   64                   64
+ HvD: nread,nframe=                   65                   65
+ HvD: nread,nframe=                   66                   66
+ HvD: nread,nframe=                   67                   67
+ HvD: nread,nframe=                   68                   68
+ HvD: nread,nframe=                   69                   69
+ HvD: nread,nframe=                   70                   70
+ HvD: rms0,rms1=  0.46648810852965455       0.46641728242726377     
+ HvD: nread,nframe=                   71                   71
+ HvD: nread,nframe=                   72                   72
+ HvD: nread,nframe=                   73                   73
+ HvD: nread,nframe=                   74                   74
+ HvD: nread,nframe=                   75                   75
+ HvD: nread,nframe=                   76                   76
+ HvD: nread,nframe=                   77                   77
+ HvD: nread,nframe=                   78                   78
+ HvD: nread,nframe=                   79                   79
+ HvD: nread,nframe=                   80                   80
+ HvD: rms0,rms1=  0.47464439832699568       0.47457311857511009     
+ HvD: nread,nframe=                   81                   81
+ HvD: nread,nframe=                   82                   82
+ HvD: nread,nframe=                   83                   83
+ HvD: nread,nframe=                   84                   84
+ HvD: nread,nframe=                   85                   85
+ HvD: nread,nframe=                   86                   86
+ HvD: nread,nframe=                   87                   87
+ HvD: nread,nframe=                   88                   88
+ HvD: nread,nframe=                   89                   89
+ HvD: nread,nframe=                   90                   90
+ HvD: rms0,rms1=  0.48181788989792201       0.48175688015821633     
+ HvD: nread,nframe=                   91                   91
+ HvD: nread,nframe=                   92                   92
+ HvD: nread,nframe=                   93                   93
+ HvD: nread,nframe=                   94                   94
+ HvD: nread,nframe=                   95                   95
+ HvD: nread,nframe=                   96                   96
+ HvD: nread,nframe=                   97                   97
+ HvD: nread,nframe=                   98                   98
+ HvD: nread,nframe=                   99                   99
+ HvD: nread,nframe=                  100                  100
+ HvD: rms0,rms1=  0.48755454724145847       0.48748660288350154     
+ HvD: nread,nframe=                  101                  101
+ HvD: nread,nframe=                  102                  102
+ HvD: nread,nframe=                  103                  103
+ HvD: nread,nframe=                  104                  104
+ HvD: nread,nframe=                  105                  105
+ HvD: nread,nframe=                  106                  106
+ HvD: nread,nframe=                  107                  107
+ HvD: nread,nframe=                  108                  108
+ HvD: nread,nframe=                  109                  109
+ HvD: nread,nframe=                  110                  110
+ HvD: rms0,rms1=  0.49514751580498417       0.49508766740005755     
+ HvD: nread,nframe=                  111                  111
+ HvD: nread,nframe=                  112                  112
+ HvD: nread,nframe=                  113                  113
+ HvD: nread,nframe=                  114                  114
+ HvD: nread,nframe=                  115                  115
+ HvD: nread,nframe=                  116                  116
+ HvD: nread,nframe=                  117                  117
+ HvD: nread,nframe=                  118                  118
+ HvD: nread,nframe=                  119                  119
+ HvD: nread,nframe=                  120                  120
+ HvD: rms0,rms1=  0.50214705171347118       0.50209495843157659     
+ HvD: nread,nframe=                  121                  121
+ HvD: nread,nframe=                  122                  122
+ HvD: nread,nframe=                  123                  123
+ HvD: nread,nframe=                  124                  124
+ HvD: nread,nframe=                  125                  125
+ HvD: nread,nframe=                  126                  126
+ HvD: nread,nframe=                  127                  127
+ HvD: nread,nframe=                  128                  128
+ HvD: nread,nframe=                  129                  129
+ HvD: nread,nframe=                  130                  130
+ HvD: rms0,rms1=  0.50681680823834996       0.50676309050406365     
+ HvD: nread,nframe=                  131                  131
+ HvD: nread,nframe=                  132                  132
+ HvD: nread,nframe=                  133                  133
+ HvD: nread,nframe=                  134                  134
+ HvD: nread,nframe=                  135                  135
+ HvD: nread,nframe=                  136                  136
+ HvD: nread,nframe=                  137                  137
+ HvD: nread,nframe=                  138                  138
+ HvD: nread,nframe=                  139                  139
+ HvD: nread,nframe=                  140                  140
+ HvD: rms0,rms1=  0.51344041024981668       0.51338922706414447     
+ HvD: nread,nframe=                  141                  141
+ HvD: nread,nframe=                  142                  142
+ HvD: nread,nframe=                  143                  143
+ HvD: nread,nframe=                  144                  144
+ HvD: nread,nframe=                  145                  145
+ HvD: nread,nframe=                  146                  146
+ HvD: nread,nframe=                  147                  147
+ HvD: nread,nframe=                  148                  148
+ HvD: nread,nframe=                  149                  149
+ HvD: nread,nframe=                  150                  150
+ HvD: rms0,rms1=  0.51516364306536166       0.51511522867717141     
+ HvD: nread,nframe=                  151                  151
+ HvD: nread,nframe=                  152                  152
+ HvD: nread,nframe=                  153                  153
+ HvD: nread,nframe=                  154                  154
+ HvD: nread,nframe=                  155                  155
+ HvD: nread,nframe=                  156                  156
+ HvD: nread,nframe=                  157                  157
+ HvD: nread,nframe=                  158                  158
+ HvD: nread,nframe=                  159                  159
+ HvD: nread,nframe=                  160                  160
+ HvD: rms0,rms1=  0.52011427142628086       0.52006788508284663     
+ HvD: nread,nframe=                  161                  161
+ HvD: nread,nframe=                  162                  162
+ HvD: nread,nframe=                  163                  163
+ HvD: nread,nframe=                  164                  164
+ HvD: nread,nframe=                  165                  165
+ HvD: nread,nframe=                  166                  166
+ HvD: nread,nframe=                  167                  167
+ HvD: nread,nframe=                  168                  168
+ HvD: nread,nframe=                  169                  169
+ HvD: nread,nframe=                  170                  170
+ HvD: rms0,rms1=  0.52899240379076062       0.52895299768444171     
+ HvD: nread,nframe=                  171                  171
+ HvD: nread,nframe=                  172                  172
+ HvD: nread,nframe=                  173                  173
+ HvD: nread,nframe=                  174                  174
+ HvD: nread,nframe=                  175                  175
+ HvD: nread,nframe=                  176                  176
+ HvD: nread,nframe=                  177                  177
+ HvD: nread,nframe=                  178                  178
+ HvD: nread,nframe=                  179                  179
+ HvD: nread,nframe=                  180                  180
+ HvD: rms0,rms1=  0.53539370028342015       0.53536075359682311     
+ HvD: nread,nframe=                  181                  181
+ HvD: nread,nframe=                  182                  182
+ HvD: nread,nframe=                  183                  183
+ HvD: nread,nframe=                  184                  184
+ HvD: nread,nframe=                  185                  185
+ HvD: nread,nframe=                  186                  186
+ HvD: nread,nframe=                  187                  187
+ HvD: nread,nframe=                  188                  188
+ HvD: nread,nframe=                  189                  189
+ HvD: nread,nframe=                  190                  190
+ HvD: rms0,rms1=  0.53401503167910847       0.53397546408393481     
+ HvD: nread,nframe=                  191                  191
+ HvD: nread,nframe=                  192                  192
+ HvD: nread,nframe=                  193                  193
+ HvD: nread,nframe=                  194                  194
+ HvD: nread,nframe=                  195                  195
+ HvD: nread,nframe=                  196                  196
+ HvD: nread,nframe=                  197                  197
+ HvD: nread,nframe=                  198                  198
+ HvD: nread,nframe=                  199                  199
+ HvD: nread,nframe=                  200                  200
+ HvD: rms0,rms1=  0.54146942712375778       0.54143368673159553     
+ HvD: nread,nframe=                  201                  201
+ HvD: nread,nframe=                  202                  202
+ HvD: nread,nframe=                  203                  203
+ HvD: nread,nframe=                  204                  204
+ HvD: nread,nframe=                  205                  205
+ HvD: nread,nframe=                  206                  206
+ HvD: nread,nframe=                  207                  207
+ HvD: nread,nframe=                  208                  208
+ HvD: nread,nframe=                  209                  209
+ HvD: nread,nframe=                  210                  210
+ HvD: rms0,rms1=  0.54732152994284300       0.54729295533292721     
+ HvD: nread,nframe=                  211                  211
+ HvD: nread,nframe=                  212                  212
+ HvD: nread,nframe=                  213                  213
+ HvD: nread,nframe=                  214                  214
+ HvD: nread,nframe=                  215                  215
+ HvD: nread,nframe=                  216                  216
+ HvD: nread,nframe=                  217                  217
+ HvD: nread,nframe=                  218                  218
+ HvD: nread,nframe=                  219                  219
+ HvD: nread,nframe=                  220                  220
+ HvD: rms0,rms1=  0.55205571385517715       0.55202970241303673     
+ HvD: nread,nframe=                  221                  221
+ HvD: nread,nframe=                  222                  222
+ HvD: nread,nframe=                  223                  223
+ HvD: nread,nframe=                  224                  224
+ HvD: nread,nframe=                  225                  225
+ HvD: nread,nframe=                  226                  226
+ HvD: nread,nframe=                  227                  227
+ HvD: nread,nframe=                  228                  228
+ HvD: nread,nframe=                  229                  229
+ HvD: nread,nframe=                  230                  230
+ HvD: rms0,rms1=  0.55724913770745355       0.55722760338262878     
+ HvD: nread,nframe=                  231                  231
+ HvD: nread,nframe=                  232                  232
+ HvD: nread,nframe=                  233                  233
+ HvD: nread,nframe=                  234                  234
+ HvD: nread,nframe=                  235                  235
+ HvD: nread,nframe=                  236                  236
+ HvD: nread,nframe=                  237                  237
+ HvD: nread,nframe=                  238                  238
+ HvD: nread,nframe=                  239                  239
+ HvD: nread,nframe=                  240                  240
+ HvD: rms0,rms1=  0.56212808102610778       0.56210862764090197     
+ HvD: nread,nframe=                  241                  241
+ HvD: nread,nframe=                  242                  242
+ HvD: nread,nframe=                  243                  243
+ HvD: nread,nframe=                  244                  244
+ HvD: nread,nframe=                  245                  245
+ HvD: nread,nframe=                  246                  246
+ HvD: nread,nframe=                  247                  247
+ HvD: nread,nframe=                  248                  248
+ HvD: nread,nframe=                  249                  249
+ HvD: nread,nframe=                  250                  250
+ HvD: rms0,rms1=  0.56535982780017990       0.56533562721215247     
+ HvD: nread,nframe=                  251                  251
+ HvD: nread,nframe=                  252                  252
+ HvD: nread,nframe=                  253                  253
+ HvD: nread,nframe=                  254                  254
+ HvD: nread,nframe=                  255                  255
+ HvD: nread,nframe=                  256                  256
+ HvD: nread,nframe=                  257                  257
+ HvD: nread,nframe=                  258                  258
+ HvD: nread,nframe=                  259                  259
+ HvD: nread,nframe=                  260                  260
+ HvD: rms0,rms1=  0.57108544644387516       0.57106695729713619     
+ HvD: nread,nframe=                  261                  261
+ HvD: nread,nframe=                  262                  262
+ HvD: nread,nframe=                  263                  263
+ HvD: nread,nframe=                  264                  264
+ HvD: nread,nframe=                  265                  265
+ HvD: nread,nframe=                  266                  266
+ HvD: nread,nframe=                  267                  267
+ HvD: nread,nframe=                  268                  268
+ HvD: nread,nframe=                  269                  269
+ HvD: nread,nframe=                  270                  270
+ HvD: rms0,rms1=  0.57296087199520651       0.57293330857588842     
+ HvD: nread,nframe=                  271                  271
+ HvD: nread,nframe=                  272                  272
+ HvD: nread,nframe=                  273                  273
+ HvD: nread,nframe=                  274                  274
+ HvD: nread,nframe=                  275                  275
+ HvD: nread,nframe=                  276                  276
+ HvD: nread,nframe=                  277                  277
+ HvD: nread,nframe=                  278                  278
+ HvD: nread,nframe=                  279                  279
+ HvD: nread,nframe=                  280                  280
+ HvD: rms0,rms1=  0.57440110036300707       0.57437248593641255     
+ HvD: nread,nframe=                  281                  281
+ HvD: nread,nframe=                  282                  282
+ HvD: nread,nframe=                  283                  283
+ HvD: nread,nframe=                  284                  284
+ HvD: nread,nframe=                  285                  285
+ HvD: nread,nframe=                  286                  286
+ HvD: nread,nframe=                  287                  287
+ HvD: nread,nframe=                  288                  288
+ HvD: nread,nframe=                  289                  289
+ HvD: nread,nframe=                  290                  290
+ HvD: rms0,rms1=  0.57926417336631775       0.57923125260360186     
+ HvD: nread,nframe=                  291                  291
+ HvD: nread,nframe=                  292                  292
+ HvD: nread,nframe=                  293                  293
+ HvD: nread,nframe=                  294                  294
+ HvD: nread,nframe=                  295                  295
+ HvD: nread,nframe=                  296                  296
+ HvD: nread,nframe=                  297                  297
+ HvD: nread,nframe=                  298                  298
+ HvD: nread,nframe=                  299                  299
+ HvD: nread,nframe=                  300                  300
+ HvD: rms0,rms1=  0.58166140830435786       0.58162857138051394     
+ HvD: nread,nframe=                  301                  301
+ HvD: nread,nframe=                  302                  302
+ HvD: nread,nframe=                  303                  303
+ HvD: nread,nframe=                  304                  304
+ HvD: nread,nframe=                  305                  305
+ HvD: nread,nframe=                  306                  306
+ HvD: nread,nframe=                  307                  307
+ HvD: nread,nframe=                  308                  308
+ HvD: nread,nframe=                  309                  309
+ HvD: nread,nframe=                  310                  310
+ HvD: rms0,rms1=  0.58664988155969977       0.58660969623067771     
+ HvD: nread,nframe=                  311                  311
+ HvD: nread,nframe=                  312                  312
+ HvD: nread,nframe=                  313                  313
+ HvD: nread,nframe=                  314                  314
+ HvD: nread,nframe=                  315                  315
+ HvD: nread,nframe=                  316                  316
+ HvD: nread,nframe=                  317                  317
+ HvD: nread,nframe=                  318                  318
+ HvD: nread,nframe=                  319                  319
+ HvD: nread,nframe=                  320                  320
+ HvD: rms0,rms1=  0.59045299873213664       0.59041700805164776     
+ HvD: nread,nframe=                  321                  321
+ HvD: nread,nframe=                  322                  322
+ HvD: nread,nframe=                  323                  323
+ HvD: nread,nframe=                  324                  324
+ HvD: nread,nframe=                  325                  325
+ HvD: nread,nframe=                  326                  326
+ HvD: nread,nframe=                  327                  327
+ HvD: nread,nframe=                  328                  328
+ HvD: nread,nframe=                  329                  329
+ HvD: nread,nframe=                  330                  330
+ HvD: rms0,rms1=  0.59112345402157918       0.59108748079618378     
+ HvD: nread,nframe=                  331                  331
+ HvD: nread,nframe=                  332                  332
+ HvD: nread,nframe=                  333                  333
+ HvD: nread,nframe=                  334                  334
+ HvD: nread,nframe=                  335                  335
+ HvD: nread,nframe=                  336                  336
+ HvD: nread,nframe=                  337                  337
+ HvD: nread,nframe=                  338                  338
+ HvD: nread,nframe=                  339                  339
+ HvD: nread,nframe=                  340                  340
+ HvD: rms0,rms1=  0.59137363571287815       0.59134016600920236     
+ HvD: nread,nframe=                  341                  341
+ HvD: nread,nframe=                  342                  342
+ HvD: nread,nframe=                  343                  343
+ HvD: nread,nframe=                  344                  344
+ HvD: nread,nframe=                  345                  345
+ HvD: nread,nframe=                  346                  346
+ HvD: nread,nframe=                  347                  347
+ HvD: nread,nframe=                  348                  348
+ HvD: nread,nframe=                  349                  349
+ HvD: nread,nframe=                  350                  350
+ HvD: rms0,rms1=  0.59769880384172691       0.59766641466562487     
+ HvD: nread,nframe=                  351                  351
+ HvD: nread,nframe=                  352                  352
+ HvD: nread,nframe=                  353                  353
+ HvD: nread,nframe=                  354                  354
+ HvD: nread,nframe=                  355                  355
+ HvD: nread,nframe=                  356                  356
+ HvD: nread,nframe=                  357                  357
+ HvD: nread,nframe=                  358                  358
+ HvD: nread,nframe=                  359                  359
+ HvD: nread,nframe=                  360                  360
+ HvD: rms0,rms1=  0.60150722218307295       0.60147723569442257     
+ HvD: nread,nframe=                  361                  361
+ HvD: nread,nframe=                  362                  362
+ HvD: nread,nframe=                  363                  363
+ HvD: nread,nframe=                  364                  364
+ HvD: nread,nframe=                  365                  365
+ HvD: nread,nframe=                  366                  366
+ HvD: nread,nframe=                  367                  367
+ HvD: nread,nframe=                  368                  368
+ HvD: nread,nframe=                  369                  369
+ HvD: nread,nframe=                  370                  370
+ HvD: rms0,rms1=  0.60254593313483329       0.60251719398529957     
+ HvD: nread,nframe=                  371                  371
+ HvD: nread,nframe=                  372                  372
+ HvD: nread,nframe=                  373                  373
+ HvD: nread,nframe=                  374                  374
+ HvD: nread,nframe=                  375                  375
+ HvD: nread,nframe=                  376                  376
+ HvD: nread,nframe=                  377                  377
+ HvD: nread,nframe=                  378                  378
+ HvD: nread,nframe=                  379                  379
+ HvD: nread,nframe=                  380                  380
+ HvD: rms0,rms1=  0.60773189381983861       0.60770307560974124     
+ HvD: nread,nframe=                  381                  381
+ HvD: nread,nframe=                  382                  382
+ HvD: nread,nframe=                  383                  383
+ HvD: nread,nframe=                  384                  384
+ HvD: nread,nframe=                  385                  385
+ HvD: nread,nframe=                  386                  386
+ HvD: nread,nframe=                  387                  387
+ HvD: nread,nframe=                  388                  388
+ HvD: nread,nframe=                  389                  389
+ HvD: nread,nframe=                  390                  390
+ HvD: rms0,rms1=  0.60697722015598266       0.60694650009730866     
+ HvD: nread,nframe=                  391                  391
+ HvD: nread,nframe=                  392                  392
+ HvD: nread,nframe=                  393                  393
+ HvD: nread,nframe=                  394                  394
+ HvD: nread,nframe=                  395                  395
+ HvD: nread,nframe=                  396                  396
+ HvD: nread,nframe=                  397                  397
+ HvD: nread,nframe=                  398                  398
+ HvD: nread,nframe=                  399                  399
+ HvD: nread,nframe=                  400                  400
+ HvD: rms0,rms1=  0.61241889435605557       0.61238685850189301     
+ HvD: nread,nframe=                  401                  401
+ HvD: nread,nframe=                  402                  402
+ HvD: nread,nframe=                  403                  403
+ HvD: nread,nframe=                  404                  404
+ HvD: nread,nframe=                  405                  405
+ HvD: nread,nframe=                  406                  406
+ HvD: nread,nframe=                  407                  407
+ HvD: nread,nframe=                  408                  408
+ HvD: nread,nframe=                  409                  409
+ HvD: nread,nframe=                  410                  410
+ HvD: rms0,rms1=  0.61463117963640801       0.61459899482268820     
+ HvD: nread,nframe=                  411                  411
+ HvD: nread,nframe=                  412                  412
+ HvD: nread,nframe=                  413                  413
+ HvD: nread,nframe=                  414                  414
+ HvD: nread,nframe=                  415                  415
+ HvD: nread,nframe=                  416                  416
+ HvD: nread,nframe=                  417                  417
+ HvD: nread,nframe=                  418                  418
+ HvD: nread,nframe=                  419                  419
+ HvD: nread,nframe=                  420                  420
+ HvD: rms0,rms1=  0.62027846210454307       0.62024692565264505     
+ HvD: nread,nframe=                  421                  421
+ HvD: nread,nframe=                  422                  422
+ HvD: nread,nframe=                  423                  423
+ HvD: nread,nframe=                  424                  424
+ HvD: nread,nframe=                  425                  425
+ HvD: nread,nframe=                  426                  426
+ HvD: nread,nframe=                  427                  427
+ HvD: nread,nframe=                  428                  428
+ HvD: nread,nframe=                  429                  429
+ HvD: nread,nframe=                  430                  430
+ HvD: rms0,rms1=  0.62167795387428171       0.62163943942056910     
+ HvD: nread,nframe=                  431                  431
+ HvD: nread,nframe=                  432                  432
+ HvD: nread,nframe=                  433                  433
+ HvD: nread,nframe=                  434                  434
+ HvD: nread,nframe=                  435                  435
+ HvD: nread,nframe=                  436                  436
+ HvD: nread,nframe=                  437                  437
+ HvD: nread,nframe=                  438                  438
+ HvD: nread,nframe=                  439                  439
+ HvD: nread,nframe=                  440                  440
+ HvD: rms0,rms1=  0.62798938184121889       0.62795219340819164     
+ HvD: nread,nframe=                  441                  441
+ HvD: nread,nframe=                  442                  442
+ HvD: nread,nframe=                  443                  443
+ HvD: nread,nframe=                  444                  444
+ HvD: nread,nframe=                  445                  445
+ HvD: nread,nframe=                  446                  446
+ HvD: nread,nframe=                  447                  447
+ HvD: nread,nframe=                  448                  448
+ HvD: nread,nframe=                  449                  449
+ HvD: nread,nframe=                  450                  450
+ HvD: rms0,rms1=  0.63062300830731854       0.63058139267371072     
+ HvD: nread,nframe=                  451                  451
+ HvD: nread,nframe=                  452                  452
+ HvD: nread,nframe=                  453                  453
+ HvD: nread,nframe=                  454                  454
+ HvD: nread,nframe=                  455                  455
+ HvD: nread,nframe=                  456                  456
+ HvD: nread,nframe=                  457                  457
+ HvD: nread,nframe=                  458                  458
+ HvD: nread,nframe=                  459                  459
+ HvD: nread,nframe=                  460                  460
+ HvD: rms0,rms1=  0.63201966729110837       0.63197775553057223     
+ HvD: nread,nframe=                  461                  461
+ HvD: nread,nframe=                  462                  462
+ HvD: nread,nframe=                  463                  463
+ HvD: nread,nframe=                  464                  464
+ HvD: nread,nframe=                  465                  465
+ HvD: nread,nframe=                  466                  466
+ HvD: nread,nframe=                  467                  467
+ HvD: nread,nframe=                  468                  468
+ HvD: nread,nframe=                  469                  469
+ HvD: nread,nframe=                  470                  470
+ HvD: rms0,rms1=  0.63818221038199785       0.63813969720784236     
+ HvD: nread,nframe=                  471                  471
+ HvD: nread,nframe=                  472                  472
+ HvD: nread,nframe=                  473                  473
+ HvD: nread,nframe=                  474                  474
+ HvD: nread,nframe=                  475                  475
+ HvD: nread,nframe=                  476                  476
+ HvD: nread,nframe=                  477                  477
+ HvD: nread,nframe=                  478                  478
+ HvD: nread,nframe=                  479                  479
+ HvD: nread,nframe=                  480                  480
+ HvD: rms0,rms1=  0.63820419945658846       0.63816301397945241     
+ HvD: nread,nframe=                  481                  481
+ HvD: nread,nframe=                  482                  482
+ HvD: nread,nframe=                  483                  483
+ HvD: nread,nframe=                  484                  484
+ HvD: nread,nframe=                  485                  485
+ HvD: nread,nframe=                  486                  486
+ HvD: nread,nframe=                  487                  487
+ HvD: nread,nframe=                  488                  488
+ HvD: nread,nframe=                  489                  489
+ HvD: nread,nframe=                  490                  490
+ HvD: rms0,rms1=  0.64426686542446321       0.64422971683849006     
+ HvD: nread,nframe=                  491                  491
+ HvD: nread,nframe=                  492                  492
+ HvD: nread,nframe=                  493                  493
+ HvD: nread,nframe=                  494                  494
+ HvD: nread,nframe=                  495                  495
+ HvD: nread,nframe=                  496                  496
+ HvD: nread,nframe=                  497                  497
+ HvD: nread,nframe=                  498                  498
+ HvD: nread,nframe=                  499                  499
+ HvD: nread,nframe=                  500                  500
+ HvD: rms0,rms1=  0.64479378311058588       0.64476194646170004     
+ HvD: nread,nframe=                  501                  501
+ HvD: nread,nframe=                  502                  502
+ HvD: nread,nframe=                  503                  503
+ HvD: nread,nframe=                  504                  504
+ HvD: nread,nframe=                  505                  505
+ HvD: nread,nframe=                  506                  506
+ HvD: nread,nframe=                  507                  507
+ HvD: nread,nframe=                  508                  508
+ HvD: nread,nframe=                  509                  509
+ HvD: nread,nframe=                  510                  510
+ HvD: rms0,rms1=  0.64783744053714809       0.64780109800384311     
+ HvD: nread,nframe=                  511                  511
+ HvD: nread,nframe=                  512                  512
+ HvD: nread,nframe=                  513                  513
+ HvD: nread,nframe=                  514                  514
+ HvD: nread,nframe=                  515                  515
+ HvD: nread,nframe=                  516                  516
+ HvD: nread,nframe=                  517                  517
+ HvD: nread,nframe=                  518                  518
+ HvD: nread,nframe=                  519                  519
+ HvD: nread,nframe=                  520                  520
+ HvD: rms0,rms1=  0.65014186075754477       0.65010829950815552     
+ HvD: nread,nframe=                  521                  521
+ HvD: nread,nframe=                  522                  522
+ HvD: nread,nframe=                  523                  523
+ HvD: nread,nframe=                  524                  524
+ HvD: nread,nframe=                  525                  525
+ HvD: nread,nframe=                  526                  526
+ HvD: nread,nframe=                  527                  527
+ HvD: nread,nframe=                  528                  528
+ HvD: nread,nframe=                  529                  529
+ HvD: nread,nframe=                  530                  530
+ HvD: rms0,rms1=  0.65277732880225658       0.65274301525796552     
+ HvD: nread,nframe=                  531                  531
+ HvD: nread,nframe=                  532                  532
+ HvD: nread,nframe=                  533                  533
+ HvD: nread,nframe=                  534                  534
+ HvD: nread,nframe=                  535                  535
+ HvD: nread,nframe=                  536                  536
+ HvD: nread,nframe=                  537                  537
+ HvD: nread,nframe=                  538                  538
+ HvD: nread,nframe=                  539                  539
+ HvD: nread,nframe=                  540                  540
+ HvD: rms0,rms1=  0.65619617268904995       0.65616596007155037     
+ HvD: nread,nframe=                  541                  541
+ HvD: nread,nframe=                  542                  542
+ HvD: nread,nframe=                  543                  543
+ HvD: nread,nframe=                  544                  544
+ HvD: nread,nframe=                  545                  545
+ HvD: nread,nframe=                  546                  546
+ HvD: nread,nframe=                  547                  547
+ HvD: nread,nframe=                  548                  548
+ HvD: nread,nframe=                  549                  549
+ HvD: nread,nframe=                  550                  550
+ HvD: rms0,rms1=  0.65685578837514613       0.65682445368228426     
+ HvD: nread,nframe=                  551                  551
+ HvD: nread,nframe=                  552                  552
+ HvD: nread,nframe=                  553                  553
+ HvD: nread,nframe=                  554                  554
+ HvD: nread,nframe=                  555                  555
+ HvD: nread,nframe=                  556                  556
+ HvD: nread,nframe=                  557                  557
+ HvD: nread,nframe=                  558                  558
+ HvD: nread,nframe=                  559                  559
+ HvD: nread,nframe=                  560                  560
+ HvD: rms0,rms1=  0.66165724287290906       0.66162740221607652     
+ HvD: nread,nframe=                  561                  561
+ HvD: nread,nframe=                  562                  562
+ HvD: nread,nframe=                  563                  563
+ HvD: nread,nframe=                  564                  564
+ HvD: nread,nframe=                  565                  565
+ HvD: nread,nframe=                  566                  566
+ HvD: nread,nframe=                  567                  567
+ HvD: nread,nframe=                  568                  568
+ HvD: nread,nframe=                  569                  569
+ HvD: nread,nframe=                  570                  570
+ HvD: rms0,rms1=  0.66373975987198430       0.66370895834982058     
+ HvD: nread,nframe=                  571                  571
+ HvD: nread,nframe=                  572                  572
+ HvD: nread,nframe=                  573                  573
+ HvD: nread,nframe=                  574                  574
+ HvD: nread,nframe=                  575                  575
+ HvD: nread,nframe=                  576                  576
+ HvD: nread,nframe=                  577                  577
+ HvD: nread,nframe=                  578                  578
+ HvD: nread,nframe=                  579                  579
+ HvD: nread,nframe=                  580                  580
+ HvD: rms0,rms1=  0.66572744641127479       0.66569253575649812     
+ HvD: nread,nframe=                  581                  581
+ HvD: nread,nframe=                  582                  582
+ HvD: nread,nframe=                  583                  583
+ HvD: nread,nframe=                  584                  584
+ HvD: nread,nframe=                  585                  585
+ HvD: nread,nframe=                  586                  586
+ HvD: nread,nframe=                  587                  587
+ HvD: nread,nframe=                  588                  588
+ HvD: nread,nframe=                  589                  589
+ HvD: nread,nframe=                  590                  590
+ HvD: rms0,rms1=  0.66798231526210328       0.66794941729637247     
+ HvD: nread,nframe=                  591                  591
+ HvD: nread,nframe=                  592                  592
+ HvD: nread,nframe=                  593                  593
+ HvD: nread,nframe=                  594                  594
+ HvD: nread,nframe=                  595                  595
+ HvD: nread,nframe=                  596                  596
+ HvD: nread,nframe=                  597                  597
+ HvD: nread,nframe=                  598                  598
+ HvD: nread,nframe=                  599                  599
+ HvD: nread,nframe=                  600                  600
+ HvD: rms0,rms1=  0.67043805166903092       0.67040584975057693     
+ HvD: nread,nframe=                  601                  601
+ HvD: nread,nframe=                  602                  602
+ HvD: nread,nframe=                  603                  603
+ HvD: nread,nframe=                  604                  604
+ HvD: nread,nframe=                  605                  605
+ HvD: nread,nframe=                  606                  606
+ HvD: nread,nframe=                  607                  607
+ HvD: nread,nframe=                  608                  608
+ HvD: nread,nframe=                  609                  609
+ HvD: nread,nframe=                  610                  610
+ HvD: rms0,rms1=  0.67321589396160586       0.67318505975105170     
+ HvD: nread,nframe=                  611                  611
+ HvD: nread,nframe=                  612                  612
+ HvD: nread,nframe=                  613                  613
+ HvD: nread,nframe=                  614                  614
+ HvD: nread,nframe=                  615                  615
+ HvD: nread,nframe=                  616                  616
+ HvD: nread,nframe=                  617                  617
+ HvD: nread,nframe=                  618                  618
+ HvD: nread,nframe=                  619                  619
+ HvD: nread,nframe=                  620                  620
+ HvD: rms0,rms1=  0.67092391509392768       0.67088718802286906     
+ HvD: nread,nframe=                  621                  621
+ HvD: nread,nframe=                  622                  622
+ HvD: nread,nframe=                  623                  623
+ HvD: nread,nframe=                  624                  624
+ HvD: nread,nframe=                  625                  625
+ HvD: nread,nframe=                  626                  626
+ HvD: nread,nframe=                  627                  627
+ HvD: nread,nframe=                  628                  628
+ HvD: nread,nframe=                  629                  629
+ HvD: nread,nframe=                  630                  630
+ HvD: rms0,rms1=  0.67634926262472062       0.67631372130971945     
+ HvD: nread,nframe=                  631                  631
+ HvD: nread,nframe=                  632                  632
+ HvD: nread,nframe=                  633                  633
+ HvD: nread,nframe=                  634                  634
+ HvD: nread,nframe=                  635                  635
+ HvD: nread,nframe=                  636                  636
+ HvD: nread,nframe=                  637                  637
+ HvD: nread,nframe=                  638                  638
+ HvD: nread,nframe=                  639                  639
+ HvD: nread,nframe=                  640                  640
+ HvD: rms0,rms1=  0.67982044719045698       0.67978681267289531     
+ HvD: nread,nframe=                  641                  641
+ HvD: nread,nframe=                  642                  642
+ HvD: nread,nframe=                  643                  643
+ HvD: nread,nframe=                  644                  644
+ HvD: nread,nframe=                  645                  645
+ HvD: nread,nframe=                  646                  646
+ HvD: nread,nframe=                  647                  647
+ HvD: nread,nframe=                  648                  648
+ HvD: nread,nframe=                  649                  649
+ HvD: nread,nframe=                  650                  650
+ HvD: rms0,rms1=  0.67955483603339262       0.67951291611790010     
+ HvD: nread,nframe=                  651                  651
+ HvD: nread,nframe=                  652                  652
+ HvD: nread,nframe=                  653                  653
+ HvD: nread,nframe=                  654                  654
+ HvD: nread,nframe=                  655                  655
+ HvD: nread,nframe=                  656                  656
+ HvD: nread,nframe=                  657                  657
+ HvD: nread,nframe=                  658                  658
+ HvD: nread,nframe=                  659                  659
+ HvD: nread,nframe=                  660                  660
+ HvD: rms0,rms1=  0.67770433980655354       0.67766382094402267     
+ HvD: nread,nframe=                  661                  661
+ HvD: nread,nframe=                  662                  662
+ HvD: nread,nframe=                  663                  663
+ HvD: nread,nframe=                  664                  664
+ HvD: nread,nframe=                  665                  665
+ HvD: nread,nframe=                  666                  666
+ HvD: nread,nframe=                  667                  667
+ HvD: nread,nframe=                  668                  668
+ HvD: nread,nframe=                  669                  669
+ HvD: nread,nframe=                  670                  670
+ HvD: rms0,rms1=  0.68058082487016458       0.68053781761706311     
+ HvD: nread,nframe=                  671                  671
+ HvD: nread,nframe=                  672                  672
+ HvD: nread,nframe=                  673                  673
+ HvD: nread,nframe=                  674                  674
+ HvD: nread,nframe=                  675                  675
+ HvD: nread,nframe=                  676                  676
+ HvD: nread,nframe=                  677                  677
+ HvD: nread,nframe=                  678                  678
+ HvD: nread,nframe=                  679                  679
+ HvD: nread,nframe=                  680                  680
+ HvD: rms0,rms1=  0.68286400332617947       0.68281944287624341     
+ HvD: nread,nframe=                  681                  681
+ HvD: nread,nframe=                  682                  682
+ HvD: nread,nframe=                  683                  683
+ HvD: nread,nframe=                  684                  684
+ HvD: nread,nframe=                  685                  685
+ HvD: nread,nframe=                  686                  686
+ HvD: nread,nframe=                  687                  687
+ HvD: nread,nframe=                  688                  688
+ HvD: nread,nframe=                  689                  689
+ HvD: nread,nframe=                  690                  690
+ HvD: rms0,rms1=  0.68510578511137632       0.68506328144107942     
+ HvD: nread,nframe=                  691                  691
+ HvD: nread,nframe=                  692                  692
+ HvD: nread,nframe=                  693                  693
+ HvD: nread,nframe=                  694                  694
+ HvD: nread,nframe=                  695                  695
+ HvD: nread,nframe=                  696                  696
+ HvD: nread,nframe=                  697                  697
+ HvD: nread,nframe=                  698                  698
+ HvD: nread,nframe=                  699                  699
+ HvD: nread,nframe=                  700                  700
+ HvD: rms0,rms1=  0.68685496986708783       0.68680660797229820     
+ HvD: nread,nframe=                  701                  701
+ HvD: nread,nframe=                  702                  702
+ HvD: nread,nframe=                  703                  703
+ HvD: nread,nframe=                  704                  704
+ HvD: nread,nframe=                  705                  705
+ HvD: nread,nframe=                  706                  706
+ HvD: nread,nframe=                  707                  707
+ HvD: nread,nframe=                  708                  708
+ HvD: nread,nframe=                  709                  709
+ HvD: nread,nframe=                  710                  710
+ HvD: rms0,rms1=  0.68755845047193909       0.68751140624775930     
+ HvD: nread,nframe=                  711                  711
+ HvD: nread,nframe=                  712                  712
+ HvD: nread,nframe=                  713                  713
+ HvD: nread,nframe=                  714                  714
+ HvD: nread,nframe=                  715                  715
+ HvD: nread,nframe=                  716                  716
+ HvD: nread,nframe=                  717                  717
+ HvD: nread,nframe=                  718                  718
+ HvD: nread,nframe=                  719                  719
+ HvD: nread,nframe=                  720                  720
+ HvD: rms0,rms1=  0.68885254086945191       0.68880547448701290     
+ HvD: nread,nframe=                  721                  721
+ HvD: nread,nframe=                  722                  722
+ HvD: nread,nframe=                  723                  723
+ HvD: nread,nframe=                  724                  724
+ HvD: nread,nframe=                  725                  725
+ HvD: nread,nframe=                  726                  726
+ HvD: nread,nframe=                  727                  727
+ HvD: nread,nframe=                  728                  728
+ HvD: nread,nframe=                  729                  729
+ HvD: nread,nframe=                  730                  730
+ HvD: rms0,rms1=  0.68903675305514767       0.68899239275124646     
+ HvD: nread,nframe=                  731                  731
+ HvD: nread,nframe=                  732                  732
+ HvD: nread,nframe=                  733                  733
+ HvD: nread,nframe=                  734                  734
+ HvD: nread,nframe=                  735                  735
+ HvD: nread,nframe=                  736                  736
+ HvD: nread,nframe=                  737                  737
+ HvD: nread,nframe=                  738                  738
+ HvD: nread,nframe=                  739                  739
+ HvD: nread,nframe=                  740                  740
+ HvD: rms0,rms1=  0.68912509792731980       0.68907605930856586     
+ HvD: nread,nframe=                  741                  741
+ HvD: nread,nframe=                  742                  742
+ HvD: nread,nframe=                  743                  743
+ HvD: nread,nframe=                  744                  744
+ HvD: nread,nframe=                  745                  745
+ HvD: nread,nframe=                  746                  746
+ HvD: nread,nframe=                  747                  747
+ HvD: nread,nframe=                  748                  748
+ HvD: nread,nframe=                  749                  749
+ HvD: nread,nframe=                  750                  750
+ HvD: rms0,rms1=  0.69181186136723605       0.69176150062003716     
+ HvD: nread,nframe=                  751                  751
+ HvD: nread,nframe=                  752                  752
+ HvD: nread,nframe=                  753                  753
+ HvD: nread,nframe=                  754                  754
+ HvD: nread,nframe=                  755                  755
+ HvD: nread,nframe=                  756                  756
+ HvD: nread,nframe=                  757                  757
+ HvD: nread,nframe=                  758                  758
+ HvD: nread,nframe=                  759                  759
+ HvD: nread,nframe=                  760                  760
+ HvD: rms0,rms1=  0.69151755522971425       0.69146342690348606     
+ HvD: nread,nframe=                  761                  761
+ HvD: nread,nframe=                  762                  762
+ HvD: nread,nframe=                  763                  763
+ HvD: nread,nframe=                  764                  764
+ HvD: nread,nframe=                  765                  765
+ HvD: nread,nframe=                  766                  766
+ HvD: nread,nframe=                  767                  767
+ HvD: nread,nframe=                  768                  768
+ HvD: nread,nframe=                  769                  769
+ HvD: nread,nframe=                  770                  770
+ HvD: rms0,rms1=  0.69148071435169789       0.69142724499379771     
+ HvD: nread,nframe=                  771                  771
+ HvD: nread,nframe=                  772                  772
+ HvD: nread,nframe=                  773                  773
+ HvD: nread,nframe=                  774                  774
+ HvD: nread,nframe=                  775                  775
+ HvD: nread,nframe=                  776                  776
+ HvD: nread,nframe=                  777                  777
+ HvD: nread,nframe=                  778                  778
+ HvD: nread,nframe=                  779                  779
+ HvD: nread,nframe=                  780                  780
+ HvD: rms0,rms1=  0.69585600428060890       0.69580653069602516     
+ HvD: nread,nframe=                  781                  781
+ HvD: nread,nframe=                  782                  782
+ HvD: nread,nframe=                  783                  783
+ HvD: nread,nframe=                  784                  784
+ HvD: nread,nframe=                  785                  785
+ HvD: nread,nframe=                  786                  786
+ HvD: nread,nframe=                  787                  787
+ HvD: nread,nframe=                  788                  788
+ HvD: nread,nframe=                  789                  789
+ HvD: nread,nframe=                  790                  790
+ HvD: rms0,rms1=  0.69516282436735821       0.69510307138080318     
+ HvD: nread,nframe=                  791                  791
+ HvD: nread,nframe=                  792                  792
+ HvD: nread,nframe=                  793                  793
+ HvD: nread,nframe=                  794                  794
+ HvD: nread,nframe=                  795                  795
+ HvD: nread,nframe=                  796                  796
+ HvD: nread,nframe=                  797                  797
+ HvD: nread,nframe=                  798                  798
+ HvD: nread,nframe=                  799                  799
+ HvD: nread,nframe=                  800                  800
+ HvD: rms0,rms1=  0.69637809784759097       0.69631881531690287     
+ HvD: nread,nframe=                  801                  801
+ HvD: nread,nframe=                  802                  802
+ HvD: nread,nframe=                  803                  803
+ HvD: nread,nframe=                  804                  804
+ HvD: nread,nframe=                  805                  805
+ HvD: nread,nframe=                  806                  806
+ HvD: nread,nframe=                  807                  807
+ HvD: nread,nframe=                  808                  808
+ HvD: nread,nframe=                  809                  809
+ HvD: nread,nframe=                  810                  810
+ HvD: rms0,rms1=  0.69646061370829804       0.69639232693170372     
+ HvD: nread,nframe=                  811                  811
+ HvD: nread,nframe=                  812                  812
+ HvD: nread,nframe=                  813                  813
+ HvD: nread,nframe=                  814                  814
+ HvD: nread,nframe=                  815                  815
+ HvD: nread,nframe=                  816                  816
+ HvD: nread,nframe=                  817                  817
+ HvD: nread,nframe=                  818                  818
+ HvD: nread,nframe=                  819                  819
+ HvD: nread,nframe=                  820                  820
+ HvD: rms0,rms1=  0.70054578437442216       0.70048168603077843     
+ HvD: nread,nframe=                  821                  821
+ HvD: nread,nframe=                  822                  822
+ HvD: nread,nframe=                  823                  823
+ HvD: nread,nframe=                  824                  824
+ HvD: nread,nframe=                  825                  825
+ HvD: nread,nframe=                  826                  826
+ HvD: nread,nframe=                  827                  827
+ HvD: nread,nframe=                  828                  828
+ HvD: nread,nframe=                  829                  829
+ HvD: nread,nframe=                  830                  830
+ HvD: rms0,rms1=  0.70107153384745913       0.70100610992732859     
+ HvD: nread,nframe=                  831                  831
+ HvD: nread,nframe=                  832                  832
+ HvD: nread,nframe=                  833                  833
+ HvD: nread,nframe=                  834                  834
+ HvD: nread,nframe=                  835                  835
+ HvD: nread,nframe=                  836                  836
+ HvD: nread,nframe=                  837                  837
+ HvD: nread,nframe=                  838                  838
+ HvD: nread,nframe=                  839                  839
+ HvD: nread,nframe=                  840                  840
+ HvD: rms0,rms1=  0.70682018244620770       0.70675547054329346     
+ HvD: nread,nframe=                  841                  841
+ HvD: nread,nframe=                  842                  842
+ HvD: nread,nframe=                  843                  843
+ HvD: nread,nframe=                  844                  844
+ HvD: nread,nframe=                  845                  845
+ HvD: nread,nframe=                  846                  846
+ HvD: nread,nframe=                  847                  847
+ HvD: nread,nframe=                  848                  848
+ HvD: nread,nframe=                  849                  849
+ HvD: nread,nframe=                  850                  850
+ HvD: rms0,rms1=  0.70399976351052596       0.70393146970982390     
+ HvD: nread,nframe=                  851                  851
+ HvD: nread,nframe=                  852                  852
+ HvD: nread,nframe=                  853                  853
+ HvD: nread,nframe=                  854                  854
+ HvD: nread,nframe=                  855                  855
+ HvD: nread,nframe=                  856                  856
+ HvD: nread,nframe=                  857                  857
+ HvD: nread,nframe=                  858                  858
+ HvD: nread,nframe=                  859                  859
+ HvD: nread,nframe=                  860                  860
+ HvD: rms0,rms1=  0.70566477112892267       0.70558968832843927     
+ HvD: nread,nframe=                  861                  861
+ HvD: nread,nframe=                  862                  862
+ HvD: nread,nframe=                  863                  863
+ HvD: nread,nframe=                  864                  864
+ HvD: nread,nframe=                  865                  865
+ HvD: nread,nframe=                  866                  866
+ HvD: nread,nframe=                  867                  867
+ HvD: nread,nframe=                  868                  868
+ HvD: nread,nframe=                  869                  869
+ HvD: nread,nframe=                  870                  870
+ HvD: rms0,rms1=  0.70734759614037079       0.70727657599451976     
+ HvD: nread,nframe=                  871                  871
+ HvD: nread,nframe=                  872                  872
+ HvD: nread,nframe=                  873                  873
+ HvD: nread,nframe=                  874                  874
+ HvD: nread,nframe=                  875                  875
+ HvD: nread,nframe=                  876                  876
+ HvD: nread,nframe=                  877                  877
+ HvD: nread,nframe=                  878                  878
+ HvD: nread,nframe=                  879                  879
+ HvD: nread,nframe=                  880                  880
+ HvD: rms0,rms1=  0.70988820566866861       0.70981813414751938     
+ HvD: nread,nframe=                  881                  881
+ HvD: nread,nframe=                  882                  882
+ HvD: nread,nframe=                  883                  883
+ HvD: nread,nframe=                  884                  884
+ HvD: nread,nframe=                  885                  885
+ HvD: nread,nframe=                  886                  886
+ HvD: nread,nframe=                  887                  887
+ HvD: nread,nframe=                  888                  888
+ HvD: nread,nframe=                  889                  889
+ HvD: nread,nframe=                  890                  890
+ HvD: rms0,rms1=  0.70667523366171725       0.70659669473701947     
+ HvD: nread,nframe=                  891                  891
+ HvD: nread,nframe=                  892                  892
+ HvD: nread,nframe=                  893                  893
+ HvD: nread,nframe=                  894                  894
+ HvD: nread,nframe=                  895                  895
+ HvD: nread,nframe=                  896                  896
+ HvD: nread,nframe=                  897                  897
+ HvD: nread,nframe=                  898                  898
+ HvD: nread,nframe=                  899                  899
+ HvD: nread,nframe=                  900                  900
+ HvD: rms0,rms1=  0.70807795958105824       0.70798984120769326     
+ HvD: nread,nframe=                  901                  901
+ HvD: nread,nframe=                  902                  902
+ HvD: nread,nframe=                  903                  903
+ HvD: nread,nframe=                  904                  904
+ HvD: nread,nframe=                  905                  905
+ HvD: nread,nframe=                  906                  906
+ HvD: nread,nframe=                  907                  907
+ HvD: nread,nframe=                  908                  908
+ HvD: nread,nframe=                  909                  909
+ HvD: nread,nframe=                  910                  910
+ HvD: rms0,rms1=  0.71107890748592606       0.71098174924992341     
+ HvD: nread,nframe=                  911                  911
+ HvD: nread,nframe=                  912                  912
+ HvD: nread,nframe=                  913                  913
+ HvD: nread,nframe=                  914                  914
+ HvD: nread,nframe=                  915                  915
+ HvD: nread,nframe=                  916                  916
+ HvD: nread,nframe=                  917                  917
+ HvD: nread,nframe=                  918                  918
+ HvD: nread,nframe=                  919                  919
+ HvD: nread,nframe=                  920                  920
+ HvD: rms0,rms1=  0.71135843401671039       0.71124881853401423     
+ HvD: nread,nframe=                  921                  921
+ HvD: nread,nframe=                  922                  922
+ HvD: nread,nframe=                  923                  923
+ HvD: nread,nframe=                  924                  924
+ HvD: nread,nframe=                  925                  925
+ HvD: nread,nframe=                  926                  926
+ HvD: nread,nframe=                  927                  927
+ HvD: nread,nframe=                  928                  928
+ HvD: nread,nframe=                  929                  929
+ HvD: nread,nframe=                  930                  930
+ HvD: rms0,rms1=  0.71319473995662352       0.71306698647253197     
+ HvD: nread,nframe=                  931                  931
+ HvD: nread,nframe=                  932                  932
+ HvD: nread,nframe=                  933                  933
+ HvD: nread,nframe=                  934                  934
+ HvD: nread,nframe=                  935                  935
+ HvD: nread,nframe=                  936                  936
+ HvD: nread,nframe=                  937                  937
+ HvD: nread,nframe=                  938                  938
+ HvD: nread,nframe=                  939                  939
+ HvD: nread,nframe=                  940                  940
+ HvD: rms0,rms1=  0.71338733615409722       0.71326870472160353     
+ HvD: nread,nframe=                  941                  941
+ HvD: nread,nframe=                  942                  942
+ HvD: nread,nframe=                  943                  943
+ HvD: nread,nframe=                  944                  944
+ HvD: nread,nframe=                  945                  945
+ HvD: nread,nframe=                  946                  946
+ HvD: nread,nframe=                  947                  947
+ HvD: nread,nframe=                  948                  948
+ HvD: nread,nframe=                  949                  949
+ HvD: nread,nframe=                  950                  950
+ HvD: rms0,rms1=  0.71394891871396782       0.71379884699145579     
+ HvD: nread,nframe=                  951                  951
+ HvD: nread,nframe=                  952                  952
+ HvD: nread,nframe=                  953                  953
+ HvD: nread,nframe=                  954                  954
+ HvD: nread,nframe=                  955                  955
+ HvD: nread,nframe=                  956                  956
+ HvD: nread,nframe=                  957                  957
+ HvD: nread,nframe=                  958                  958
+ HvD: nread,nframe=                  959                  959
+ HvD: nread,nframe=                  960                  960
+ HvD: rms0,rms1=  0.71474356232227243       0.71458420757209118     
+ HvD: nread,nframe=                  961                  961
+ HvD: nread,nframe=                  962                  962
+ HvD: nread,nframe=                  963                  963
+ HvD: nread,nframe=                  964                  964
+ HvD: nread,nframe=                  965                  965
+ HvD: nread,nframe=                  966                  966
+ HvD: nread,nframe=                  967                  967
+ HvD: nread,nframe=                  968                  968
+ HvD: nread,nframe=                  969                  969
+ HvD: nread,nframe=                  970                  970
+ HvD: rms0,rms1=  0.71564094664586053       0.71547524938623064     
+ HvD: nread,nframe=                  971                  971
+ HvD: nread,nframe=                  972                  972
+ HvD: nread,nframe=                  973                  973
+ HvD: nread,nframe=                  974                  974
+ HvD: nread,nframe=                  975                  975
+ HvD: nread,nframe=                  976                  976
+ HvD: nread,nframe=                  977                  977
+ HvD: nread,nframe=                  978                  978
+ HvD: nread,nframe=                  979                  979
+ HvD: nread,nframe=                  980                  980
+ HvD: rms0,rms1=  0.71687983749267681       0.71668113534921574     
+ HvD: nread,nframe=                  981                  981
+ HvD: nread,nframe=                  982                  982
+ HvD: nread,nframe=                  983                  983
+ HvD: nread,nframe=                  984                  984
+ HvD: nread,nframe=                  985                  985
+ HvD: nread,nframe=                  986                  986
+ HvD: nread,nframe=                  987                  987
+ HvD: nread,nframe=                  988                  988
+ HvD: nread,nframe=                  989                  989
+ HvD: nread,nframe=                  990                  990
+ HvD: rms0,rms1=  0.71662700184558870       0.71642001609638728     
+ HvD: nread,nframe=                  991                  991
+ HvD: nread,nframe=                  992                  992
+ HvD: nread,nframe=                  993                  993
+ HvD: nread,nframe=                  994                  994
+ HvD: nread,nframe=                  995                  995
+ HvD: nread,nframe=                  996                  996
+ HvD: nread,nframe=                  997                  997
+ HvD: nread,nframe=                  998                  998
+ HvD: nread,nframe=                  999                  999
+ Closing trj file 
+
+ Averaged        100 frames
+
+ Task  times  cpu:       46.1s     wall:      287.9s
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Summary of allocated global arrays
+-----------------------------------
+  No active global arrays
+
+
+
+                         GA Statistics for process    0
+                         ------------------------------
+
+       create   destroy   get      put      acc     scatter   gather  read&inc
+calls:    0        0        0        0        0        0        0        0     
+number of processes/call 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+bytes total:             0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+bytes remote:            0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+Max memory consumed for GA by this process: 0 bytes
+
+MA_summarize_allocated_blocks: starting scan ...
+MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
+MA usage statistics:
+
+	allocation statistics:
+					      heap	     stack
+					      ----	     -----
+	current number of blocks	         0	         0
+	maximum number of blocks	         0	        27
+	current total bytes		         0	         0
+	maximum total bytes		         0	   5182008
+	maximum total K-bytes		         0	      5183
+	maximum total M-bytes		         0	         6
+
+
+                                     CITATION
+                                     --------
+                Please cite the following reference when publishing
+                           results obtained with NWChem:
+
+                 M. Valiev, E.J. Bylaska, N. Govind, K. Kowalski,
+              T.P. Straatsma, H.J.J. van Dam, D. Wang, J. Nieplocha,
+                        E. Apra, T.L. Windus, W.A. de Jong
+                 "NWChem: a comprehensive and scalable open-source
+                  solution for large scale molecular simulations"
+                      Comput. Phys. Commun. 181, 1477 (2010)
+                           doi:10.1016/j.cpc.2010.04.018
+
+                                      AUTHORS
+                                      -------
+          E. Apra, E. J. Bylaska, W. A. de Jong, N. Govind, K. Kowalski,
+       T. P. Straatsma, M. Valiev, H. J. J. van Dam, D. Wang, T. L. Windus,
+        J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec, K. Lopata,
+       S. A. Fischer, S. Krishnamoorthy, W. Ma, M. Klemm, O. Villa, Y. Chen,
+    V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler, V. Konjkov, T. Risthaus,
+       M. Malagoli, A. Marenich, A. Otero-de-la-Roza, J. Mullin, P. Nichols,
+      R. Peverati, J. Pittner, Y. Zhao, P.-D. Fan, A. Fonari, M. Williamson,
+      R. J. Harrison, J. R. Rehr, M. Dupuis, D. Silverstein, D. M. A. Smith,
+            J. Nieplocha, V. Tipparaju, M. Krishnan, B. E. Van Kuiken,
+        A. Vazquez-Mayagoitia, L. Jensen, M. Swart, Q. Wu, T. Van Voorhis,
+     A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown, G. Cisneros, G. I. Fann,
+   H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall, J. A. Nichols, K. Tsemekhman,
+    K. Wolinski, J. Anchell, D. E. Bernholdt, P. Borowski, T. Clark, D. Clerc,
+   H. Dachsel, M. J. O. Deegan, K. Dyall, D. Elwood, E. Glendening, M. Gutowski,
+   A. C. Hess, J. Jaffe, B. G. Johnson, J. Ju, R. Kobayashi, R. Kutteh, Z. Lin,
+   R. Littlefield, X. Long, B. Meng, T. Nakajima, S. Niu, L. Pollack, M. Rosing,
+   K. Glaesemann, G. Sandrone, M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe,
+                               A. T. Wong, Z. Zhang.
+
+ Total times  cpu:       46.3s     wall:      288.3s

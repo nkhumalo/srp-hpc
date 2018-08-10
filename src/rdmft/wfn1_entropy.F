@@ -110,7 +110,8 @@ c
 #ifdef USE_GSL
       double precision, external :: gsl_sf_lngamma
       double precision, external :: gsl_sf_psi
-      a  = log(0.5d0)/(2.0d0*gsl_sf_lngamma(1.5d0))
+c     a  = log(0.5d0)/(2.0d0*gsl_sf_lngamma(1.5d0))
+      a  = 0.2869408590744988D+01
       s  = a*(gsl_sf_lngamma(1.0d0+p) + gsl_sf_lngamma(2.0d0-p))
       ds = a*(gsl_sf_psi(1.0d0+p) - gsl_sf_psi(2.0d0-p))
 c
@@ -132,8 +133,13 @@ c
       endif
       ss  = a*ss
       dss = a*dss
-c     write(*,*)"HVD s ",s, 2.0d0*abs(s-ss)/(abs(s)+abs(ss))
-c     write(*,*)"HVD ds",ds,2.0d0*abs(ds-dss)/(abs(ds)+abs(dss))
+c     write(*,*)"HVD s ",s, abs(s-ss),
+c    &          2.0d0*abs(s-ss)/(abs(s)+abs(ss))
+c     write(*,*)"HVD ds",ds,abs(ds-dss),
+c    &          2.0d0*abs(ds-dss)/(abs(ds)+abs(dss))
+c     write(*,'(" HVD a ",e24.16)')a
+      s  = ss
+      ds = dss
 #else
       tol = 1.0d-10
       if   (p.lt.tol) then
@@ -152,40 +158,283 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_entropy2(p1,p2,s,ds1,ds2)
-      implicit none
 C>
-C> \brief Calculate the 2-electron entropy associated with an 
-C> orbital pair and its derivatives
+C> \brief Evaluate the 1-electron entropy and its gradient but without
+C> the Stirling approximation.
 C>
-C> The entropy of a natural orbital pair with occupation numbers
-C> \f$p_1\f$ and \f$p_2\f$ is
+C> The entropy of a natural orbital with occupation number \f$p\f$ is
 C> given by
 C> \f{eqnarray}{
-C>    \f$S^2 &=& p_1 p_2\ln(p_1 p_2) 
-C>               +(1-p_1)p_2\ln((1-p_1)p_2) \\\\
-C>           &&  +p_1(1-p_2)\ln(p_1(1-p_2))
-C>               +(1-p_1)(1-p_2)\ln((1-p_1)(1-p_2))
-C> \f}.
-C> 
-      double precision, intent(in)  :: p1  ! The occupation number of
-                                           ! orbital 1.
-      double precision, intent(in)  :: p2  ! The occupation number of
-                                           ! orbital 2.
-      double precision, intent(out) :: s   ! The entropy
-      double precision, intent(out) :: ds1 ! The entropy derivative for
-                                           ! orbital 1.
-      double precision, intent(out) :: ds2 ! The entropy derivative for
-                                           ! orbital 2.
+C>   S^1(p) &=& \ln(p!)+\ln([1-p]!).
+C> \f}
+C> This equation can be expressed in terms of the Gamma-function as
+C> \f{eqnarray}{
+C>   S^1(p) &=& \ln(\Gamma(1+p))+\ln(\Gamma(1+[1-p]))
+C> \f}
+C> where \f$\ln(\Gamma(x))\f$ is also know as the log-gamma function.
+C> The first order derivative of the log-gamma function is also known
+C> as the digamma function, denoted by \f$\psi_0(x)\f$. In terms of the
+C> digamma function the first order derivative of \f$S^1(p)\f$ is
+C> \f{eqnarray}{
+C>   \frac{\partial S_1}{\partial p}
+C>   &=& \psi_0(1+p)-\psi_0(1+[1-p])
+C> \f}
+C>
+C> This form of the 1-electron entropy is an essential ingredient of
+C> the electron-pair entropy for the correlation model. This as opposed
+C> to the finite temperature 1-electron entropy.
+C>
+      subroutine wfn1_entropy_si(p,s,ds)
+      implicit none
+!>    The occupation number
+      double precision, intent(in)  :: p
+!>    The entropy
+      double precision, intent(out) :: s
+!>    The entropy gradient
+      double precision, intent(out) :: ds
 c
-      s =   p1*p2*log(p1*p2)
-     &  +   (1.0d0-p1)*p2*log((1.0d0-p1)*p2)
-     &  +   p1*(1.0d0-p2)*log(p1*(1.0d0-p2))
-     &  +   (1.0d0-p1)*(1.0d0-p2)*log((1.0d0-p1)*(1.0d0-p2))
-      ds1 = p2*log(p1*p2) + (2*p2-1.0d0)
-     &    - (1.0d0-p2)*log((1.0d0-p1)*(1.0d0-p2))
-      ds2 = p1*log(p1*p2) + (2*p1-1.0d0)
-     &    - (1.0d0-p1)*log((1.0d0-p1)*(1.0d0-p2))
+      double precision :: a0, a
+      double precision :: tol
+      double precision :: ss, dss
+      integer, parameter :: mxcc = 28
+      double precision, parameter :: cc(0:mxcc) = (/
+     &  -1.8267295744229717e-01, !   0
+     &  -4.7492598692312660e-01, !   1
+     &   1.9614310244009392e+00, !   2
+     &  -7.6584746194002107e-01, !   3
+     &   3.5824935810760326e+00, !   4
+     &  -6.7105852916520634e+00, !   5
+     &   3.7028427428299736e+01, !   6
+     &  -1.3867070561680774e+02, !   7
+     &   9.1270050624592193e+02, !   8
+     &  -5.1733200953013929e+03, !   9
+     &   4.0438498887562106e+04, !  10
+     &  -3.0445288613979606e+05, !  11
+     &   2.7940653844185043e+06, !  12
+     &  -2.6013424905976593e+07, !  13
+     &   2.7640984169809264e+08, !  14
+     &  -3.0480304585382962e+09, !  15
+     &   3.6979925453039085e+10, !  16
+     &  -4.6961506675232050e+11, !  17
+     &   6.4226726567984150e+12, !  18
+     &  -9.2114814596364359e+13, !  19
+     &   1.4041599596566502e+15, !  20
+     &  -2.2420499819440248e+16, !  21
+     &   3.7721542091731910e+17, !  22
+     &  -6.6320480845454735e+18, !  23
+     &   1.2212077163997869e+20, !  24
+     &  -2.3434678559572684e+21, !  25
+     &   4.6887208088579196e+22, !  26
+     &  -9.7498848636924539e+23, !  27
+     &   2.1063843942817377e+25/)!  28
+      integer :: ii ! counter
+      double precision :: x
+c
+      double precision, external :: gsl_sf_lngamma
+      double precision, external :: gsl_sf_psi
+c     a  = log(0.5d0)/(2.0d0*gsl_sf_lngamma(1.5d0))
+c     a  = 0.2869408590744988D+01
+      a  = 1.0d0
+      s  = a*(gsl_sf_lngamma(1.0d0+p) + gsl_sf_lngamma(2.0d0-p))
+      ds = a*(gsl_sf_psi(1.0d0+p) - gsl_sf_psi(2.0d0-p))
+c
+      ss  = 0.0d0
+      dss = 0.0d0
+      a0  = 0.25d0
+      if (p.le.0.5d0) then
+        x = p
+      else
+        x = 1.0d0-p
+      endif
+      do ii = mxcc-1, 0, -1
+        ss  = ss/dble(ii+1)*(x-a0) +cc(ii)
+        dss = dss/dble(ii+1)*(x-a0)+cc(ii+1)
+      enddo
+      if (p.le.0.5d0) then
+      else
+        dss = -dss
+      endif
+      ss  = a*ss
+      dss = a*dss
+c     write(*,*)"HVD s ",s, abs(s-ss),
+c    &          2.0d0*abs(s-ss)/(abs(s)+abs(ss))
+c     write(*,*)"HVD ds",ds,abs(ds-dss),
+c    &          2.0d0*abs(ds-dss)/(abs(ds)+abs(dss))
+c     write(*,'(" HVD a ",e24.16)')a
+c     s  = ss
+c     ds = dss
+c
+      end subroutine wfn1_entropy_si
+c
+c-----------------------------------------------------------------------
+c
+C>
+C> \brief Evaluate the 2-electron entropy and its gradient but without
+C> the Stirling approximation.
+C>
+C> This form of the 2-electron entropy is an essential ingredient of
+C> the electron-pair entropy for the correlation model. 
+C>
+C> The entropy of a natural orbital pair with occupation numbers
+C> \f$p_i\f$ and \f$p_j\f$ is
+C> given by
+C> \f{eqnarray}{
+C>    \f$S^2 &=& \ln(p_i p_j!) 
+C>               +\ln([1-p_i]p_j!) \\\\
+C>           &&  +\ln(p_i[1-p_j]!)
+C>               +\ln([1-p_i][1-p_j]!)
+C> \f}.
+C> This expression can be rewritten in terms of the log-gamma function
+C> as
+C> \f{eqnarray}{
+C>    \f$S^2 &=& \ln(\Gamma(1+p_i p_j)) 
+C>               +\ln(\Gamma(1+[1-p_i]p_j)) \\\\
+C>           &&  +\ln(\Gamma(1+p_i[1-p_j]))
+C>               +\ln(\Gamma(1+[1-p_i][1-p_j]))
+C> \f}.
+C> The derivative of \f$\ln(\Gamma(x))\f$ is know as the digamma
+C> function denoted as \f$\psi_0(x)\f$.
+C>
+      subroutine wfn1_entropy_sij(pi,pj,s,dsi,dsj)
+      implicit none
+!>    The occupation number for natural orbital \f$i\f$
+      double precision, intent(in)  :: pi
+!>    The occupation number for natural orbital \f$j\f$
+      double precision, intent(in)  :: pj
+!>    The entropy
+      double precision, intent(out) :: s
+!>    The entropy gradient wrt \f$p_i\f$
+      double precision, intent(out) :: dsi
+!>    The entropy gradient wrt \f$p_j\f$
+      double precision, intent(out) :: dsj
+c
+      double precision :: a0, a
+      double precision :: tol
+      double precision :: ss, dss
+      integer, parameter :: mxcc = 28
+      double precision, parameter :: cc(0:mxcc) = (/
+     &  -1.8267295744229717e-01, !   0
+     &  -4.7492598692312660e-01, !   1
+     &   1.9614310244009392e+00, !   2
+     &  -7.6584746194002107e-01, !   3
+     &   3.5824935810760326e+00, !   4
+     &  -6.7105852916520634e+00, !   5
+     &   3.7028427428299736e+01, !   6
+     &  -1.3867070561680774e+02, !   7
+     &   9.1270050624592193e+02, !   8
+     &  -5.1733200953013929e+03, !   9
+     &   4.0438498887562106e+04, !  10
+     &  -3.0445288613979606e+05, !  11
+     &   2.7940653844185043e+06, !  12
+     &  -2.6013424905976593e+07, !  13
+     &   2.7640984169809264e+08, !  14
+     &  -3.0480304585382962e+09, !  15
+     &   3.6979925453039085e+10, !  16
+     &  -4.6961506675232050e+11, !  17
+     &   6.4226726567984150e+12, !  18
+     &  -9.2114814596364359e+13, !  19
+     &   1.4041599596566502e+15, !  20
+     &  -2.2420499819440248e+16, !  21
+     &   3.7721542091731910e+17, !  22
+     &  -6.6320480845454735e+18, !  23
+     &   1.2212077163997869e+20, !  24
+     &  -2.3434678559572684e+21, !  25
+     &   4.6887208088579196e+22, !  26
+     &  -9.7498848636924539e+23, !  27
+     &   2.1063843942817377e+25/)!  28
+      integer :: ii ! counter
+      double precision :: x
+c
+      double precision, external :: gsl_sf_lngamma
+      double precision, external :: gsl_sf_psi
+      s   = gsl_sf_lngamma(1.0d0+pi*pj)
+     &    + gsl_sf_lngamma(1.0d0+(1.0d0-pi)*pj)
+     &    + gsl_sf_lngamma(1.0d0+(1.0d0-pj)*pi)
+     &    + gsl_sf_lngamma(1.0d0+(1.0d0-pi)*(1.0d0-pj))
+      dsi = gsl_sf_psi(1.0d0+pi*pj)*pj
+     &    - gsl_sf_psi(1.0d0+(1.0d0-pi)*pj)*pj
+     &    + gsl_sf_psi(1.0d0+(1.0d0-pj)*pi)*(1.0d0-pj)
+     &    - gsl_sf_psi(1.0d0+(1.0d0-pi)*(1.0d0-pj))*(1.0d0-pj)
+      dsj = gsl_sf_psi(1.0d0+pi*pj)*pi
+     &    + gsl_sf_psi(1.0d0+(1.0d0-pi)*pj)*(1.0d0-pi)
+     &    - gsl_sf_psi(1.0d0+(1.0d0-pj)*pi)*pi
+     &    - gsl_sf_psi(1.0d0+(1.0d0-pi)*(1.0d0-pj))*(1.0d0-pi)
+c
+c     ss  = 0.0d0
+c     dss = 0.0d0
+c     a0  = 0.25d0
+c     if (p.le.0.5d0) then
+c       x = p
+c     else
+c       x = 1.0d0-p
+c     endif
+c     do ii = mxcc-1, 0, -1
+c       ss  = ss/dble(ii+1)*(x-a0) +cc(ii)
+c       dss = dss/dble(ii+1)*(x-a0)+cc(ii+1)
+c     enddo
+c     if (p.le.0.5d0) then
+c     else
+c       dss = -dss
+c     endif
+c     ss  = a*ss
+c     dss = a*dss
+c     write(*,*)"HVD s ",s, abs(s-ss),
+c    &          2.0d0*abs(s-ss)/(abs(s)+abs(ss))
+c     write(*,*)"HVD ds",ds,abs(ds-dss),
+c    &          2.0d0*abs(ds-dss)/(abs(ds)+abs(dss))
+c     write(*,'(" HVD a ",e24.16)')a
+c     s  = ss
+c     ds = dss
+c
+      end subroutine wfn1_entropy_sij
+c
+c-----------------------------------------------------------------------
+c
+C>
+C> \brief Calculate the 2-electron entropy associated with a 
+C> natural orbital pair and its derivatives
+C>
+C> The entropy for a pair of natural orbitals is given by
+C> \f{eqnarray}{
+C>   S(p_i,p_j) &=& S_1(p_i) + S_1(p_j) - S_2(p_i,p_j)
+C> \f}
+C> The normalization of this expression should be such that 
+C> \f$S(1/2,1/2) = 1\f$.
+C> 
+      subroutine wfn1_entropy2(pi,pj,s,dsi,dsj)
+      implicit none
+C>    The occupation number of orbital \f$i\f$
+      double precision, intent(in)  :: pi
+C>    The occupation number of orbital \f$i\f$
+      double precision, intent(in)  :: pj
+C>    The entropy
+      double precision, intent(out) :: s
+C>    The derivative wrt \f$p_i\f$
+      double precision, intent(out) :: dsi
+C>    The derivative wrt \f$p_j\f$
+      double precision, intent(out) :: dsj
+c
+c     Local
+c
+      double precision :: a, ai, aj, aij
+      double precision ::    si, sj, sij
+      double precision :: ds1_i
+      double precision :: ds1_j
+      double precision :: ds2_i
+      double precision :: ds2_j
+c
+      call wfn1_entropy_si(0.5d0,ai,ds1_i)
+      call wfn1_entropy_si(0.5d0,aj,ds1_j)
+      call wfn1_entropy_sij(0.5d0,0.5d0,aij,ds2_i,ds2_j)
+      a = 1.0d0/(ai+aj-aij)
+c
+      call wfn1_entropy_si(pi,si,ds1_i)
+      call wfn1_entropy_si(pj,sj,ds1_j)
+      call wfn1_entropy_sij(pi,pj,sij,ds2_i,ds2_j)
+c
+      s   = a*(si+sj-sij)
+      dsi = a*(ds1_i-ds2_i)
+      dsj = a*(ds1_j-ds2_j)
 c
       end
 c

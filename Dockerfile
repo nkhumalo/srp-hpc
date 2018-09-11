@@ -2,7 +2,8 @@ FROM ubuntu:latest
 
 RUN mkdir -p /nwchem
 WORKDIR /nwchem
-ADD . /nwchem    # Does this duplicate the whole context (1GB of stuff)?
+# Does the next line duplicate the whole context (1GB of stuff)?
+ADD . /nwchem
 ENV DEBIAN_FRONTEND=noninteractive
 #RUN cd /nwchem && ls -l
 RUN apt-get update
@@ -24,9 +25,8 @@ ENV ARMCI_NETWORK=MPI-TS
 ENV BLASOPT=-lopenblas
 ENV NWCHEM_MODULES=md
 RUN cd /nwchem && \
-    ./contrib/distro-tools/build_nwchem 2>&1 | tee build_nwchem.log
-RUN cd /nwchem/QA && \
-    domknwchemrc
+    ./contrib/distro-tools/build_nwchem 2>&1 | tee build_nwchem.log && \
+    ./QA/domknwchemrc
 RUN echo "cd /nwchem/QA/tests/ethanol; mpirun -np 4 ../../../bin/LINUX64/nwchem ethanol_md.nw" > run_nwchem
 RUN chmod +x run_nwchem
 

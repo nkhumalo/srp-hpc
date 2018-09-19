@@ -446,18 +446,20 @@ cDEBUG
 c
 c     Entropy related quantities
 c
-      double precision :: saaij    ! The entropy for pair i,j
-      double precision :: dsaaij_i ! The entropy derivative wrt d_i
-      double precision :: dsaaij_j ! The entropy derivative wrt d_j
-      double precision :: sabij    ! The entropy for pair i,j
-      double precision :: dsabij_i ! The entropy derivative wrt d_i
-      double precision :: dsabij_j ! The entropy derivative wrt d_j
-      double precision :: sbaij    ! The entropy for pair i,j
-      double precision :: dsbaij_i ! The entropy derivative wrt d_i
-      double precision :: dsbaij_j ! The entropy derivative wrt d_j
-      double precision :: sbbij    ! The entropy for pair i,j
-      double precision :: dsbbij_i ! The entropy derivative wrt d_i
-      double precision :: dsbbij_j ! The entropy derivative wrt d_j
+      double precision :: saaij     ! The entropy for pair i,j
+      double precision :: dsaaij_i  ! The entropy derivative wrt d_i
+      double precision :: dsaaij_j  ! The entropy derivative wrt d_j
+      double precision :: dsaaij_ij ! The entropy derivative wrt d_ij
+      double precision :: sabij     ! The entropy for pair i,j
+      double precision :: dsabij_i  ! The entropy derivative wrt d_i
+      double precision :: dsabij_j  ! The entropy derivative wrt d_j
+      double precision :: sbaij     ! The entropy for pair i,j
+      double precision :: dsbaij_i  ! The entropy derivative wrt d_i
+      double precision :: dsbaij_j  ! The entropy derivative wrt d_j
+      double precision :: sbbij     ! The entropy for pair i,j
+      double precision :: dsbbij_i  ! The entropy derivative wrt d_i
+      double precision :: dsbbij_j  ! The entropy derivative wrt d_j
+      double precision :: dsbbij_ij ! The entropy derivative wrt d_ij
 c
       double precision, target :: dummy(2)
 c
@@ -986,14 +988,26 @@ c
 c
                 do jj = jj_lo, jj_hi
                   do ii = ii_lo, ii_hi
-                    call wfn1_entropy2(occ_a(ii),occ_a(jj),saaij,
-     &                                 dsaaij_i,dsaaij_j)
-                    call wfn1_entropy2(occ_a(ii),occ_b(jj),sabij,
-     &                                 dsabij_i,dsabij_j)
-                    call wfn1_entropy2(occ_b(ii),occ_a(jj),sbaij,
-     &                                 dsbaij_i,dsbaij_j)
-                    call wfn1_entropy2(occ_b(ii),occ_b(jj),sbbij,
-     &                                 dsbbij_i,dsbbij_j)
+                    call wfn1_entropy2_aa(
+     &                   occ_a(ii),occ_a(jj),
+     &                   x_aa(ii,jj)+occ_a(ii)*occ_a(jj),
+     &                   saaij,dsaaij_i,dsaaij_j,dsaaij_ij)
+                    sabij    = 0.0d0
+                    sbaij    = 0.0d0
+                    dsabij_i = 0.0d0
+                    dsabij_j = 0.0d0
+                    dsbaij_i = 0.0d0
+                    dsbaij_j = 0.0d0
+ctest               if (ii.ne.jj) then
+                      call wfn1_entropy2_ab(occ_a(ii),occ_b(jj),sabij,
+     &                                      dsabij_i,dsabij_j)
+                      call wfn1_entropy2_ab(occ_b(ii),occ_a(jj),sbaij,
+     &                                      dsbaij_i,dsbaij_j)
+ctest               endif
+                    call wfn1_entropy2_aa(
+     &                   occ_b(ii),occ_b(jj),
+     &                   x_bb(ii,jj)+occ_b(ii)*occ_b(jj),
+     &                   sbbij,dsbbij_i,dsbbij_j,dsbbij_ij)
                     do ic = ic_lo, ic_hi
                       do ia = ia_lo, ia_hi
                         rdm2_acj_aa(ia,ic,jj) = rdm2_acj_aa(ia,ic,jj)
@@ -1291,35 +1305,53 @@ c                  2.4 x_bb(ii,jj)+occ_b(ii)*occ_b(jj)
 c
                 do jj = jj_lo, jj_hi
                   do ii = ii_lo, ii_hi
-                    call wfn1_entropy2(occ_a(ii),occ_a(jj),saaij,
-     &                                 dsaaij_i,dsaaij_j)
-                    call wfn1_entropy2(occ_a(ii),occ_b(jj),sabij,
-     &                                 dsabij_i,dsabij_j)
-                    call wfn1_entropy2(occ_b(ii),occ_a(jj),sbaij,
-     &                                 dsbaij_i,dsbaij_j)
-                    call wfn1_entropy2(occ_b(ii),occ_b(jj),sbbij,
-     &                                 dsbbij_i,dsbbij_j)
+                    call wfn1_entropy2_aa(
+     &                   occ_a(ii),occ_a(jj),
+     &                   x_aa(ii,jj)+occ_a(ii)*occ_a(jj),
+     &                   saaij,dsaaij_i,dsaaij_j,dsaaij_ij)
+                    sabij    = 0.0d0
+                    sbaij    = 0.0d0
+                    dsabij_i = 0.0d0
+                    dsabij_j = 0.0d0
+                    dsbaij_i = 0.0d0
+                    dsbaij_j = 0.0d0
+ctest               if (ii.ne.jj) then
+                      call wfn1_entropy2_ab(occ_a(ii),occ_b(jj),sabij,
+     &                                      dsabij_i,dsabij_j)
+                      call wfn1_entropy2_ab(occ_b(ii),occ_a(jj),sbaij,
+     &                                      dsbaij_i,dsbaij_j)
+ctest               endif
+                    call wfn1_entropy2_aa(
+     &                   occ_b(ii),occ_b(jj),
+     &                   x_bb(ii,jj)+occ_b(ii)*occ_b(jj),
+     &                   sbbij,dsbbij_i,dsbbij_j,dsbbij_ij)
                     v_dc_a(ii) = v_dc_a(ii)
 !                   1.1 occ_a(ii)*occ_a(jj)
-     &              + (1.0d0-saaij)*occ_a(jj)*fc_ij_aa(ii,jj)
+c    &              + 0.25d0*(1.0d0-saaij)*occ_a(jj)*fc_ij_aa(ii,jj)
+     &              + 1.00d0*(1.0d0-saaij)*occ_a(jj)*fc_ij_aa(ii,jj)
 !                   1.2 occ_a(ii)*occ_b(jj)
-     &              + (1.0d0-sabij)*occ_b(jj)*fc_ij_ab(ii,jj)
+c    &              + 0.25d0*(1.0d0-sabij)*occ_b(jj)*fc_ij_ab(ii,jj)
+     &              + 1.00d0*(1.0d0-sabij)*occ_b(jj)*fc_ij_ab(ii,jj)
                     v_dc_b(ii) = v_dc_b(ii)
 !                   1.3 occ_b(ii)*occ_a(jj)
-     &              + (1.0d0-sbaij)*occ_a(jj)*fc_ij_ba(ii,jj)
+c    &              + 0.25d0*(1.0d0-sbaij)*occ_a(jj)*fc_ij_ba(ii,jj)
+     &              + 1.00d0*(1.0d0-sbaij)*occ_a(jj)*fc_ij_ba(ii,jj)
 !                   1.4 occ_b(ii)*occ_b(jj)
-     &              + (1.0d0-sbbij)*occ_b(jj)*fc_ij_bb(ii,jj)
+c    &              + 0.25d0*(1.0d0-sbbij)*occ_b(jj)*fc_ij_bb(ii,jj)
+     &              + 1.00d0*(1.0d0-sbbij)*occ_b(jj)*fc_ij_bb(ii,jj)
                     v_dc_a(ii) = v_dc_a(ii)
 !                   2.1 x_aa(ii,jj)+occ_a(ii)*occ_a(jj)
-     &              - dsaaij_i*(x_aa(ii,jj)+occ_a(ii)*occ_a(jj))*
+     &              - 1.0d0*(dsaaij_i+dsaaij_ij*occ_a(jj))*
+     &                (x_aa(ii,jj)+occ_a(ii)*occ_a(jj))*
      &                fc_ij_aa(ii,jj)
 !                   2.2 occ_a(ii)*occ_b(jj)
-     &              - dsabij_i*occ_a(ii)*occ_b(jj)*fc_ij_ab(ii,jj)
+     &              - 1.0d0*dsabij_i*occ_a(ii)*occ_b(jj)*fc_ij_ab(ii,jj)
                     v_dc_b(ii) = v_dc_b(ii)
 !                   2.3 occ_b(ii)*occ_a(jj)
-     &              - dsbaij_i*occ_b(ii)*occ_a(jj)*fc_ij_ba(ii,jj)
+     &              - 1.0d0*dsbaij_i*occ_b(ii)*occ_a(jj)*fc_ij_ba(ii,jj)
 !                   2.4 x_bb(ii,jj)+occ_b(ii)*occ_b(jj)
-     &              - dsbbij_i*(x_bb(ii,jj)+occ_b(ii)*occ_b(jj))*
+     &              - 1.0d0*(dsbbij_i+dsbbij_ij*occ_b(jj))*
+     &                (x_bb(ii,jj)+occ_b(ii)*occ_b(jj))*
      &                fc_ij_bb(ii,jj)
                   enddo ! ii
                 enddo ! jj
@@ -1370,10 +1402,12 @@ c
       call ga_access(g_dx_aa,ix_lo,ix_hi,jx_lo,jx_hi,idxx,ldx)
       do jj=0,jf_hi-jf_lo
         do ii=0,if_hi-if_lo
-          call wfn1_entropy2(occ_a(ii),occ_a(jj),saaij,
-     &                       dsaaij_i,dsaaij_j)
+          call wfn1_entropy2_aa(occ_a(ii),occ_a(jj),
+     &                          x_aa(ii,jj)+occ_a(ii)*occ_a(jj),saaij,
+     &                          dsaaij_i,dsaaij_j,dsaaij_ij)
           dbl_mb(idxf+ii+jj*ldf) = dbl_mb(idxf+ii+jj*ldf)
-     &                           * (1.0d0-saaij)*dbl_mb(idxx+ii+jj*ldx)
+     &                           * ((1.0d0-saaij)-dsaaij_ij)
+     &                           * dbl_mb(idxx+ii+jj*ldx)
         enddo
       enddo
 c
@@ -1391,10 +1425,12 @@ c
       call ga_access(g_dx_bb,ix_lo,ix_hi,jx_lo,jx_hi,idxx,ldx)
       do jj=0,jf_hi-jf_lo
         do ii=0,if_hi-if_lo
-          call wfn1_entropy2(occ_b(ii),occ_b(jj),sbbij,
-     &                       dsbbij_i,dsbbij_j)
+          call wfn1_entropy2_aa(occ_b(ii),occ_b(jj),
+     &                          x_bb(ii,jj)+occ_b(ii)*occ_b(jj),sbbij,
+     &                          dsbbij_i,dsbbij_j,dsbbij_ij)
           dbl_mb(idxf+ii+jj*ldf) = dbl_mb(idxf+ii+jj*ldf)
-     &                           * (1.0d0-sbbij)*dbl_mb(idxx+ii+jj*ldx)
+     &                           * ((1.0d0-sbbij)-dsbbij_ij)
+     &                           * dbl_mb(idxx+ii+jj*ldx)
         enddo
       enddo
 c

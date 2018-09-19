@@ -117,6 +117,8 @@ c
 c
       logical, external :: int_normalize
 c
+      double precision aa_hh, aa_hl, aa_ll, ab_hh, ab_hl, ab_ll
+c
       iproc = ga_nodeid()
       nproc = ga_nnodes()
 c
@@ -281,6 +283,25 @@ c
      &                   wfn1_param%corr_expr)) then
          wfn1_param%corr_expr="wfn1_mx"
       endif
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:aa',MT_DBL,1,
+     &                   aa_hh))
+     &  aa_hh = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_aa',MT_DBL,1,
+     &                   aa_ll))
+     &  aa_ll = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:aa_hl',MT_DBL,1,
+     &                   aa_hl))
+     &  aa_hl = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:ab',MT_DBL,1,
+     &                   ab_hh))
+     &  ab_hh = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_ab',MT_DBL,1,
+     &                   ab_ll))
+     &  ab_ll = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:ab_hl',MT_DBL,1,
+     &                   ab_hl))
+     &  ab_hl = 0.0d0
+      call wfn1_set_entropy_fac(aa_hh,ab_hh,aa_ll,ab_ll)
 c
 c     == Get the convergence criterion and maximum number of iterations
 c
@@ -591,6 +612,9 @@ c
 c
 c     == Clean up ==
 c
+cDEBUG
+      wfn1_task_energy = .true.
+cDEBUG
       call wfn1_deallocate_drv(wfn1_trial_drv)
       call wfn1_deallocate_drv(wfn1_deriv)
       deallocate(v_dca,v_dcb)

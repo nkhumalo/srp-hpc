@@ -184,8 +184,10 @@ C> This form of the 1-electron entropy is an essential ingredient of
 C> the electron-pair entropy for the correlation model. This as opposed
 C> to the finite temperature 1-electron entropy.
 C>
-      subroutine wfn1_entropy_si(p,s,ds)
+      subroutine wfn1_entropy_si(pow,p,s,ds)
       implicit none
+!>    The power in the entropy expression (akin to Renyi)
+      double precision, intent(in)  :: pow
 !>    The occupation number
       double precision, intent(in)  :: p
 !>    The entropy
@@ -235,27 +237,38 @@ c
 c     a  = log(0.5d0)/(2.0d0*gsl_sf_lngamma(1.5d0))
 c     a  = 0.2869408590744988D+01
       a  = 1.0d0
+#ifdef LOGGAMMA
       s  = a*(gsl_sf_lngamma(1.0d0+p) + gsl_sf_lngamma(2.0d0-p))
       ds = a*(gsl_sf_psi(1.0d0+p) - gsl_sf_psi(2.0d0-p))
+#else
+      s  = 0.0d0
+      ds = 0.0d0
+      if (pow.ge.1.0d0.or.p.gt.1.0d-12) then
+        s  = (p**pow)*log(p**pow)
+        ds = pow*(p**(pow-1.0d0))*log(p**pow)+pow*(p**(pow-1.0d0))
+      endif
+#endif
+c     s  = a*(gsl_sf_lngamma(1.0d0+p))
+c     ds = a*(gsl_sf_psi(1.0d0+p))
 c
-      ss  = 0.0d0
-      dss = 0.0d0
-      a0  = 0.25d0
-      if (p.le.0.5d0) then
-        x = p
-      else
-        x = 1.0d0-p
-      endif
-      do ii = mxcc-1, 0, -1
-        ss  = ss/dble(ii+1)*(x-a0) +cc(ii)
-        dss = dss/dble(ii+1)*(x-a0)+cc(ii+1)
-      enddo
-      if (p.le.0.5d0) then
-      else
-        dss = -dss
-      endif
-      ss  = a*ss
-      dss = a*dss
+c     ss  = 0.0d0
+c     dss = 0.0d0
+c     a0  = 0.25d0
+c     if (p.le.0.5d0) then
+c       x = p
+c     else
+c       x = 1.0d0-p
+c     endif
+c     do ii = mxcc-1, 0, -1
+c       ss  = ss/dble(ii+1)*(x-a0) +cc(ii)
+c       dss = dss/dble(ii+1)*(x-a0)+cc(ii+1)
+c     enddo
+c     if (p.le.0.5d0) then
+c     else
+c       dss = -dss
+c     endif
+c     ss  = a*ss
+c     dss = a*dss
 c     write(*,*)"HVD s ",s, abs(s-ss),
 c    &          2.0d0*abs(s-ss)/(abs(s)+abs(ss))
 c     write(*,*)"HVD ds",ds,abs(ds-dss),
@@ -295,8 +308,10 @@ C> \f}.
 C> The derivative of \f$\ln(\Gamma(x))\f$ is know as the digamma
 C> function denoted as \f$\psi_0(x)\f$.
 C>
-      subroutine wfn1_entropy_sij(pi,pj,s,dsi,dsj)
+      subroutine wfn1_entropy_sij(pow,pi,pj,s,dsi,dsj)
       implicit none
+!>    The power in the entropy (akin to Renyi)
+      double precision, intent(in)  :: pow
 !>    The occupation number for natural orbital \f$i\f$
       double precision, intent(in)  :: pi
 !>    The occupation number for natural orbital \f$j\f$
@@ -347,6 +362,7 @@ c
 c
       double precision, external :: gsl_sf_lngamma
       double precision, external :: gsl_sf_psi
+#ifdef LOGGAMMA
       s   = gsl_sf_lngamma(1.0d0+pi*pj)
      &    + gsl_sf_lngamma(1.0d0+(1.0d0-pi)*pj)
      &    + gsl_sf_lngamma(1.0d0+(1.0d0-pj)*pi)
@@ -359,6 +375,18 @@ c
      &    + gsl_sf_psi(1.0d0+(1.0d0-pi)*pj)*(1.0d0-pi)
      &    - gsl_sf_psi(1.0d0+(1.0d0-pj)*pi)*pi
      &    - gsl_sf_psi(1.0d0+(1.0d0-pi)*(1.0d0-pj))*(1.0d0-pi)
+#else
+      s   = 0.0d0
+      dsi = 0.0d0
+      dsj = 0.0d0
+      if (pow.ge.1.0d0.or.pi*pj.gt.1.0d-12) then
+        s   = ((pi*pj)**pow)*log((pi*pj)**pow)
+        dsi = pow*pj*((pi*pj)**(pow-1.0d0))*log((pi*pj)**pow)
+     &      + pow*pj*((pi*pj)**(pow-1.0d0))
+        dsj = pow*pi*((pi*pj)**(pow-1.0d0))*log((pi*pj)**pow)
+     &      + pow*pi*((pi*pj)**(pow-1.0d0))
+      endif
+#endif
 c
 c     ss  = 0.0d0
 c     dss = 0.0d0
@@ -390,6 +418,26 @@ c
 c
 c-----------------------------------------------------------------------
 c
+      subroutine wfn1_set_entropy_fac(aa,ab,paa,pab)
+      implicit none
+      double precision ::     aa ! scale factor
+      double precision ::     ab ! scale factor
+      double precision ::    paa ! power
+      double precision ::    pab ! power
+      double precision :: fac_aa
+      double precision :: fac_ab
+      double precision :: pow_aa
+      double precision :: pow_ab
+      common/wfn1_fac/fac_aa,fac_ab,
+     +                pow_aa,pow_ab
+      fac_aa = aa
+      fac_ab = ab
+      pow_aa = paa
+      pow_ab = pab
+      end subroutine wfn1_set_entropy_fac
+c
+c-----------------------------------------------------------------------
+c
 C>
 C> \brief Calculate the 2-electron entropy associated with a 
 C> natural orbital pair and its derivatives
@@ -401,7 +449,7 @@ C> \f}
 C> The normalization of this expression should be such that 
 C> \f$S(1/2,1/2) = 1\f$.
 C> 
-      subroutine wfn1_entropy2(pi,pj,s,dsi,dsj)
+      subroutine wfn1_entropy2_ab(pi,pj,s,dsi,dsj)
       implicit none
 C>    The occupation number of orbital \f$i\f$
       double precision, intent(in)  :: pi
@@ -423,18 +471,148 @@ c
       double precision :: ds2_i
       double precision :: ds2_j
 c
+c     Global
+c
+      double precision :: fac_aa
+      double precision :: fac_ab
+      double precision :: pow_aa
+      double precision :: pow_ab
+      common/wfn1_fac/fac_aa,fac_ab,
+     +                pow_aa,pow_ab
+c
+c     call wfn1_entropy_si(0.5d0,ai,ds1_i)
+c     call wfn1_entropy_si(0.5d0,aj,ds1_j)
+c     call wfn1_entropy_sij(0.5d0,0.5d0,aij,ds2_i,ds2_j)
+#ifdef LOGGAMMA
+      call wfn1_entropy_si(1.0d0/3.0d0,ai,ds1_i)
+      call wfn1_entropy_si(1.0d0/3.0d0,aj,ds1_j)
+      call wfn1_entropy_sij(1.0d0/3.0d0,1.0d0/3.0d0,aij,ds2_i,ds2_j)
+#else
+      call wfn1_entropy_si(pow_ab,0.5d0,ai,ds1_i)
+      call wfn1_entropy_si(pow_ab,0.5d0,aj,ds1_j)
+      call wfn1_entropy_sij(pow_ab,0.5d0,0.5d0,aij,ds2_i,ds2_j)
+#endif
+      a = 0.25d0/(ai+aj-aij)
+c
+c     The following factor comes from a H2 calculation in the STO-3G
+c     basis set at an interatomic distance of the equilibrium bond-
+c     length plus 5 Angstrom, and then dividing the UHF 2-electron
+c     energy by the RHF 2-electron energy and subtracting that fraction
+c     (0.21364) from 1. I.e. electron correlation does not annihilate
+c     the 2-electron interaction completely but mostly.
+c
+c     a = a*0.78636d0
+c     if (pi.lt.0.5d0.and.pj.lt.0.5d0) then
+c       a = fac_ab_ll*a
+c     else if (pi.lt.0.5d0.and.pj.ge.0.5d0) then
+c       a = fac_ab_hl*a
+c     else if (pi.ge.0.5d0.and.pj.lt.0.5d0) then
+c       a = fac_ab_hl*a
+c     else
+c       a = fac_ab_hh*a
+c     endif
+      a = fac_ab*a
+c
+      call wfn1_entropy_si(pow_ab,pi,si,ds1_i)
+      call wfn1_entropy_si(pow_ab,pj,sj,ds1_j)
+      call wfn1_entropy_sij(pow_ab,pi,pj,sij,ds2_i,ds2_j)
+c
+      s   = a*(si+sj-sij)
+cDEBUG
+c     if (s.gt.1.0d0) then
+c       write(*,*)'S too large: ',s,pi,pj
+c     else if (s.lt.0.0d0) then
+c       write(*,*)'S too small: ',s,pi,pj
+c     endif
+cDEBUG
+      dsi = a*(ds1_i-ds2_i)
+      dsj = a*(ds1_j-ds2_j)
+c
+      end
+      subroutine wfn1_entropy2_aa(pi,pj,pij,s,dsi,dsj,dsij)
+      implicit none
+C>    The occupation number of orbital \f$i\f$
+      double precision, intent(in)  :: pi
+C>    The occupation number of orbital \f$j\f$
+      double precision, intent(in)  :: pj
+C>    The occupation number of orbital pair \f$i\f$, \f$j\f$
+      double precision, intent(in)  :: pij
+C>    The entropy
+      double precision, intent(out) :: s
+C>    The derivative wrt \f$p_i\f$
+      double precision, intent(out) :: dsi
+C>    The derivative wrt \f$p_j\f$
+      double precision, intent(out) :: dsj
+C>    The derivative wrt \f$p_{ij}\f$
+      double precision, intent(out) :: dsij
+c
+c     Local
+c
+      double precision :: a, ai, aj, aij
+      double precision ::    si, sj, sij
+      double precision :: ds1_i
+      double precision :: ds1_j
+      double precision :: ds1_ij
+      double precision :: ds2_i
+      double precision :: ds2_j
+c
+c     Global
+c
+      double precision :: fac_aa
+      double precision :: fac_ab
+      double precision :: pow_aa
+      double precision :: pow_ab
+      common/wfn1_fac/fac_aa,fac_ab,
+     +                pow_aa,pow_ab
+c
+#ifdef LOGGAMMA
       call wfn1_entropy_si(0.5d0,ai,ds1_i)
       call wfn1_entropy_si(0.5d0,aj,ds1_j)
       call wfn1_entropy_sij(0.5d0,0.5d0,aij,ds2_i,ds2_j)
-      a = 1.0d0/(ai+aj-aij)
+#else
+c     Computing the scale factor A from this ensures that the
+c     aa and ab entropies have the same scale.
+      call wfn1_entropy_si(pow_aa,0.5d0,ai,ds1_i)
+      call wfn1_entropy_si(pow_aa,0.5d0,aj,ds1_j)
+      call wfn1_entropy_si(pow_aa,0.5d0*0.5d0,aij,ds2_i)
+#endif
+      a = 0.25d0/(ai+aj-aij)
 c
-      call wfn1_entropy_si(pi,si,ds1_i)
-      call wfn1_entropy_si(pj,sj,ds1_j)
-      call wfn1_entropy_sij(pi,pj,sij,ds2_i,ds2_j)
+c     The following factor comes from a H2 calculation in the STO-3G
+c     basis set at an interatomic distance of the equilibrium bond-
+c     length plus 5 Angstrom, and then dividing the UHF 2-electron
+c     energy by the RHF 2-electron energy and subtracting that fraction
+c     (0.21364) from 1. I.e. electron correlation does not annihilate
+c     the 2-electron interaction completely but mostly.
+c
+c     a = a*0.78636d0*0.83606d0
+c     a = a*0.78636d0
+c     if (pi.lt.0.5d0.and.pj.lt.0.5d0) then
+c       a = fac_aa_ll*a
+c     else if (pi.lt.0.5d0.and.pj.ge.0.5d0) then
+c       a = fac_aa_hl*a
+c     else if (pi.ge.0.5d0.and.pj.lt.0.5d0) then
+c       a = fac_aa_hl*a
+c     else
+c       a = fac_aa_hh*a
+c     endif
+      a = fac_aa*a
+c
+      call wfn1_entropy_si(pow_aa,pi,si,ds1_i)
+      call wfn1_entropy_si(pow_aa,pj,sj,ds1_j)
+      call wfn1_entropy_si(pow_aa,pij,sij,ds1_ij)
 c
       s   = a*(si+sj-sij)
-      dsi = a*(ds1_i-ds2_i)
-      dsj = a*(ds1_j-ds2_j)
+cDEBUG
+c     if (s.gt.1.0d0) then
+c       write(*,*)'S too large: ',s,pi,pj
+c     else if (s.lt.0.0d0) then
+c       write(*,*)'S too small: ',s,pi,pj
+c     endif
+cDEBUG
+      dsi  =  a*ds1_i
+      dsj  =  a*ds1_j
+      dsij = -a*ds1_ij
 c
       end
 c

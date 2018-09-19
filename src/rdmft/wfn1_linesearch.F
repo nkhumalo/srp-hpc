@@ -36,7 +36,7 @@ c
       type(wfn1_prm),     intent(in)    :: wfn1_param
       type(wfn1_prminst), intent(in)    :: wfn1_inst
       type(wfn1_matcnst), intent(in)    :: wfn1_mat
-      type(wfn1_wfn),     intent(in)    :: wfn1_wave
+      type(wfn1_wfn),     intent(inout) :: wfn1_wave
       type(wfn1_drv),     intent(inout) :: wfn1_deriv
       type(wfn1_en),      intent(inout) :: wfn1_energy
       type(wfn1_wfn),     intent(inout) :: wfn1_trial_wv
@@ -91,8 +91,16 @@ c
                             !< energy.
       logical o_reduced     !< Whether the gradient has been reduced
                             !< sufficiently
+      logical o_limited     !< Have the Fock matrices been limited.
+                            !< A limited Fock matrix has been reduced
+                            !< to one element (the largest one from the
+                            !< full Fock matrix).
 c
       integer iproc         !< The current rank
+      type(wfn1_en)  :: et  !< Temporary energy structure
+      type(wfn1_wfn) :: wt  !< Temporary wave function structure
+      type(wfn1_drv) :: dt  !< Temporary wave function derivative
+                            !< structure
 c
       character*17 pname
       parameter(pname = "wfn1_linesearch: ")
@@ -100,10 +108,11 @@ c
       iproc = ga_nodeid()
       tol = wfn1_param%convergence
       tr = 1.0d0
+      o_limited = .false.
 c
 c     Store the initial point
 c
-      npts = 1
+ 10   npts = 1
       xx       = 0.0d0
       fx(npts) = wfn1_energy%E_tot
       error = wfn1_etrace(wfn1_param,wfn1_wave,wfn1_deriv,wfn1_deriv)
@@ -259,8 +268,39 @@ c     This works only when minimizing one matrix element. So we need
 c     to change the search direction to make this possible.
 c     The change of search direction is effected by wfn1_limit_max.
 c
+      if (o_eminimized .and. npts.lt.mxpts .and. .not.o_limited) then
+c
+c       Limit the Fock matrix and redo the energy minimization on it
+c       again.
+c       The original Fock matrix provides a different search direction
+c       than the limited Fock matrix. Hence we need to minimize the 
+c       energy on the limited space first before attempting to minimize
+c       the norm of the Fock matrix (under the assumption that the non-
+c       zero elements correspond to redundant variables).
+c
+        wt = wfn1_wave
+        wfn1_wave = wfn1_trial_wv
+        wfn1_trial_wv = wt
+c
+        dt = wfn1_deriv
+        wfn1_deriv = wfn1_trial_drv
+        wfn1_trial_drv = dt
+c
+        wfn1_energy = wfn1_trial_en
+c
+        error = wfn1_select_max(wfn1_deriv)
+        error = wfn1_limit_max(wfn1_deriv)
+c
+        o_reduced = .false.
+        o_limited = .true.
+c
+        goto 10
+      endif
       o_reduced = .false.
-      error = wfn1_limit_max(wfn1_deriv)
+c     error = wfn1_limit_max(wfn1_deriv)
+c
+      if (wfn1_param%corr_expr.eq."wfn1s") return
+c
       do while (o_eminimized .and. npts.lt.mxpts .and. .not.o_reduced)
         indxmin = wfn1_idmin(npts,df,1)
         call wfn1_closest_three(npts,xx,indxmin,ix1,ix2,ix3)

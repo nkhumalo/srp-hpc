@@ -56,7 +56,7 @@ c
       ilnk=ilnk+1
       if(ilnk.gt.mlnk) call md_abort('increase dimension mlnk',9999)
       read(card,1002,err=9999) (llnk(j,ilnk),clnk(j,ilnk),j=1,2)
- 1002 format(5x,i5,a4,i5,a4)
+ 1002 format(5x,i7,a4,i7,a4)
       llnk(3,ilnk)=0
       goto 1
       endif
@@ -94,7 +94,7 @@ c
       iseq=iseq+1
       if(iseq.gt.mseq) call md_abort('increase dimension mseq',9999)
       read(card,1001,err=9999) lseq(1,iseq),cseq(iseq)
- 1001 format(i5,a10)
+ 1001 format(i7,a10)
       lseq(2,iseq)=0
       lseq(4,iseq)=imol
       if(iseq+1.gt.mseq) call md_abort('increase dimension mseq',9999)

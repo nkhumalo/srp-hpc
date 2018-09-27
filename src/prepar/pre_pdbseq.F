@@ -174,7 +174,8 @@ c
  2009 format('PDB ERROR : insufficient memory available')
       goto 9999
       endif
-      lseq(1,iseq)=isgm
+chvd  lseq(1,iseq)=isgm
+      lseq(1,iseq)=iseq
       cseq(1,iseq)(1:3)=card(18:20)
       lseq(3,iseq)=0
 c      if(nchain.eq.1) cseq(1,iseq)(4:5)='_N'
@@ -218,7 +219,8 @@ c
  2010 format('PDB ERROR : insufficient memory available')
       goto 9999
       endif
-      lseq(1,iseq)=isgm
+chvd  lseq(1,iseq)=isgm
+      lseq(1,iseq)=iseq
       cseq(1,iseq)(1:3)=card(18:20)
       lseq(3,iseq)=0
 c      if(nchain.eq.1) cseq(1,iseq)(4:5)='_N'

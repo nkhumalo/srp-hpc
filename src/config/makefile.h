@@ -90,6 +90,45 @@ endif
      INCDIR := $(TOPDIR)/src/include
      CNFDIR := $(TOPDIR)/src/config
 
+     ifdef EXTERNAL_GA_PATH
+#check if ga-config is there
+       ifeq ("$(wildcard ${EXTERNAL_GA_PATH}/bin/ga-config)","")
+          $(info  )
+          $(info invalid EXTERNAL_GA_PATH)
+          $(info ga-config not found)
+          $(info  )
+          $(error )
+       endif
+#check if f77 was enabled
+       GA_HAS_F77 = $(shell ${EXTERNAL_GA_PATH}/bin/ga-config --enable-f77 | awk '/yes/ {print "Y"}')
+       ifndef GA_HAS_F77
+          $(info NWChem requires Global Arrays built with Fortran support)
+          $(error )
+       endif
+#check peigs interface       
+       GA_HAS_PEIGS = $(shell ${EXTERNAL_GA_PATH}/bin/ga-config --enable-peigs | awk '/yes/ {print "Y"}')
+       ifndef GA_HAS_PEIGS
+          $(info NWChem requires Global Arrays built with Peigs support)
+          $(error )
+       endif
+#check blas size
+       GA_BLAS_SIZE = $(shell ${EXTERNAL_GA_PATH}/bin/ga-config --blas_size)
+       ifndef BLAS_SIZE
+       BLAS_SIZE=8
+       endif
+       ifneq ($(BLAS_SIZE),$(GA_BLAS_SIZE))
+            $(info )
+            $(info NWChem requires Global Arrays built with same BLAS size )
+            $(info you asked BLAS_SIZE=${BLAS_SIZE})
+            $(info Global Arrays was built with BLAS size=${GA_BLAS_SIZE})
+            $(info )
+            $(error )
+       endif
+       GA_PATH=$(EXTERNAL_GA_PATH)
+     else
+       GA_PATH=$(NWCHEM_TOP)/src/tools/install
+     endif
+      
 #
 # Define LIBPATH to be paths for libraries that you are linking in
 # from precompiled sources and are not building now. These libraries
@@ -100,8 +139,17 @@ endif
 ifdef OLD_GA
     LIBPATH = -L$(SRCDIR)/tools/lib/$(TARGET)
 else
-    TOOLSLIB =  $(shell grep libdir\ =  $(NWCHEM_TOP)/src/tools/build/Makefile |grep -v pkgl|cut -b 25-)
-    LIBPATH = -L$(SRCDIR)/tools/install/$(TOOLSLIB) 
+#case guard against case when tools have not been compiled yet
+  ifeq ("$(wildcard ${GA_PATH}/bin/ga-config)","")
+    LIBPATH = -L$(SRCDIR)/tools/install/lib
+  else
+    GA_LDFLAGS=  $(shell ${GA_PATH}/bin/ga-config --ldflags  )
+#extract GA libs location from last word in GA_LDLFLAGS
+    LIBPATH :=  $(word $(words ${GA_LDFLAGS}),${GA_LDFLAGS}) 
+    ifdef EXTERNAL_GA_PATH
+      LIBPATH += -L$(shell $(NWCHEM_TOP)/src/tools/guess-mpidefs --mpi_lib)
+    endif
+  endif
 endif
 
 #
@@ -113,7 +161,16 @@ INCPATH =
 ifdef OLD_GA
     INCPATH = -I$(SRCDIR)/tools/include
 else
+#case guard against case when tools have not been compiled yet
+  ifeq ("$(wildcard ${GA_PATH}/bin/ga-config)","")
     INCPATH = -I$(SRCDIR)/tools/install/include
+  else
+    GA_CPPFLAGS=  $(shell ${GA_PATH}/bin/ga-config --cppflags  )
+    INCPATH :=  $(word $(words ${GA_CPPFLAGS}),${GA_CPPFLAGS})
+  ifdef EXTERNAL_GA_PATH
+    INCPATH += -I$(shell $(NWCHEM_TOP)/src/tools/guess-mpidefs --mpi_include)
+  endif
+  endif
 endif
 
 # These subdirectories will build the core, or supporting libraries
@@ -134,7 +191,10 @@ endif
 # their header files are needed for dependency analysis of
 # other NWChem modules
 
-NW_CORE_SUBDIRS = tools include basis geom inp input  \
+ifndef EXTERNAL_GA_PATH
+NW_CORE_SUBDIRS = tools
+endif
+NW_CORE_SUBDIRS += include basis geom inp input  \
                   pstat rtdb task symmetry util peigs perfm bq cons $(CORE_SUBDIRS_EXTRA)
 
 # Include the modules to build defined by 'make nwchem_config' at top level
@@ -259,8 +319,7 @@ endif
 # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=798804 (Debian did not backtrack)                                          
 #      USE_ARUR = $(shell rm -f aru.tmp;ar -U > aru.tmp 2>&1; head -1 aru.tmp| awk ' /no\ operation/ {print "Y";exit};{print "N"}'; rm -f aru.tmp)
   USE_ARUR = $(shell rm -f aru.tmp;ar --help  > aru.tmp 2>&1; grep U aru.tmp| awk ' /ctual\ timest/ {print "Y";exit};'; rm -f aru.tmp)
-  
-      ifeq ($(USE_ARUR), "Y")
+      ifeq ($(USE_ARUR),Y)
         ARFLAGS = rU 
       endif
 
@@ -1244,7 +1303,9 @@ ifeq ($(TARGET),$(findstring $(TARGET),LINUX CYGNUS CYGWIN INTERIX))
      _FC = gfortran
    endif
    ifeq ($(CC),$(findstring $(CC),gcc gcc-4 gcc-5 gcc-6 gcc-7 gcc-8 gcc-9 i686-w64-mingw32.static-gcc))
+   ifneq ($(CC),cc)
      _CC = gcc
+   endif
    endif
 
          LINUXCPU = $(shell uname -m |\
@@ -1631,7 +1692,9 @@ endif
        _FC= gfortran
      endif
      ifeq ($(CC),$(findstring $(CC),gcc gcc-4 gcc-5 gcc6 gcc-6 gcc-7 gcc7 gcc-8 gcc8 gcc-9 gcc9 i686-w64-mingw32.static-gcc))
+     ifneq ($(CC),cc)
        _CC= gcc
+     endif
      endif
       ifeq ($(FC),gfortran)
        _FC=gfortran
@@ -1676,7 +1739,7 @@ endif
          COPTIONS   = -m64
        endif
       endif
-      GOTCLANG= $(shell $(CC) -dM -E - </dev/null 2> /dev/null |grep __clang__|head -1|cut -c19)
+      GOTCLANG= $(shell $(_CC) -dM -E - </dev/null 2> /dev/null |grep __clang__|head -1|cut -c19)
       ifeq ($(GOTCLANG),1)
          COPTIONS   += -fPIC
       endif
@@ -1862,11 +1925,11 @@ endif
        _IFCV18=$(shell ifort -logo  2>&1|egrep "Version "|head -n 1 | sed 's/.*Version \([0-9][0-9]\).*/\1/' | awk '{if ($$1 >= 18) {print "Y";exit}}')
 # Intel EM64T is required
       ifneq ($(_IFCE),Y)
-        defineFCE: 
-        @echo
-        @echo "   " ifort missing or not suitable x86_64 CPUs
-        @echo
-        @exit 1
+        defineFCE:
+	@echo
+	@echo "   " ifort missing or not suitable x86_64 CPUs
+	@echo
+	@exit 1
       endif
        ifneq ($(_IFCV7),Y)
 # to get EM64T
@@ -2348,6 +2411,11 @@ ifeq ($(NWCHEM_TARGET),CATAMOUNT)
         DEFINES  += -DCATAMOUNT
 endif
 
+  # Jeff: FreeBSD does not link libm automatically with flang
+  ifeq ($(USE_FLANG),1)
+    EXTRA_LIBS += -lm
+  endif
+
 endif
 endif
 #endof of LINUX64
@@ -2565,7 +2633,12 @@ ifdef USE_FDIST
   DEFINES += -DFDIST
 endif
 
-_USE_SCALAPACK = $(shell cat ${NWCHEM_TOP}/src/tools/build/config.h | awk ' /HAVE_SCALAPACK\ 1/ {print "Y"}')
+#_USE_SCALAPACK = $(shell cat ${NWCHEM_TOP}/src/tools/build/config.h | awk ' /HAVE_SCALAPACK\ 1/ {print "Y"}')
+#case guard against case when tools have not been compiled yet
+  ifeq ("$(wildcard ${GA_PATH}/bin/ga-config)","")
+  else
+_USE_SCALAPACK = $(shell ${GA_PATH}/bin/ga-config  --use_scalapack| awk ' /1/ {print "Y"}')
+endif
 
 ifeq ($(_USE_SCALAPACK),Y)
   DEFINES += -DSCALAPACK
@@ -2646,7 +2719,7 @@ else
     ifdef EXTERNAL_ARMCI_PATH
       CORE_LIBS += -L$(EXTERNAL_ARMCI_PATH)/lib -larmci
     else
-      CORE_LIBS += -L$(NWCHEM_TOP)/src/tools/install/lib -larmci
+      CORE_LIBS += -larmci
     endif
   else
       CORE_LIBS +=
@@ -2656,8 +2729,8 @@ endif
 # MPI version requires tcgmsg-mpi library
 
 ifdef USE_MPI 
-  #ifeq ($(FC),$(findstring $(FC),mpifrt mpfort mpif77 mpxlf mpif90 ftn))
-  ifeq ($(FC),$(findstring $(FC), ftn))
+  #ifeq ($(FC),$(findstring $(FC),mpifrt mpfort mpif77 mpxlf mpif90 ftn scorep-ftn))
+  ifeq ($(FC),$(findstring $(FC), ftn scorep-ftn))
     LIBMPI =
     MPI_INCLUDE =
     MPI_LIB =
@@ -2667,10 +2740,10 @@ ifdef USE_MPI
       MPIF90YN = $(shell $(NWCHEM_TOP)/src/tools/guess-mpidefs --mpi_include)
       ifeq ($(MPIF90YN),mpif90notfound)
         errormpif90:
-          @echo " "
-          @echo "mpif90 not found. Please add its location to PATH"
-          @echo "e.g. export PATH=/usr/local/bin:/usr/lib64/openmpi/bin:..."
-          @echo " "
+$(info )
+$(info mpif90 not found. Please add its location to PATH)
+$(info e.g. export PATH=/usr/local/bin:/usr/lib64/openmpi/bin:...)
+$(info )
       endif
       MPI_INCLUDE = $(shell $(NWCHEM_TOP)/src/tools/guess-mpidefs --mpi_include)
     endif
@@ -2745,6 +2818,9 @@ endif
 ifdef TCE_CUDA
   CORE_LIBS += $(CUDA_LIBS)
   EXTRA_LIBS += -lstdc++
+  ifdef USE_TTLG
+    EXTRA_LIBS += -lcublas
+  endif
   ifeq ($(_CC),pgcc)
     COPTIONS += -acc
   endif
@@ -2755,14 +2831,18 @@ ifdef USE_F90_ALLOCATABLE
 endif
 
 # lower level libs used by communication libraries 
-COMM_LIBS=  $(shell grep ARMCI_NETWORK_LIBS\ = ${NWCHEM_TOP}/src/tools/build/Makefile | cut -b 22-)
-COMM_LIBS +=  $(shell grep ARMCI_NETWORK_LDFLAGS\ = ${NWCHEM_TOP}/src/tools/build/Makefile | cut -b 24-)
+#case guard against case when tools have not been compiled yet
+#  ifeq ("$(wildcard ${GA_PATH}/bin/ga-config)","")
+#  else
+COMM_LIBS=  $(shell ${GA_PATH}/bin/ga-config --network_ldflags)
+COMM_LIBS +=  $(shell ${GA_PATH}/bin/ga-config --network_libs)
 #comex bit
-COMM_LIBS +=  $(shell [ -e ${NWCHEM_TOP}/src/tools/build/comex/config.h ] && grep LIBS\ = ${NWCHEM_TOP}/src/tools/build/comex/Makefile|grep -v _LIBS| cut -b 8-) -lpthread
+#COMM_LIBS +=  $(shell [ -e ${NWCHEM_TOP}/src/tools/build/comex/config.h ] && grep LIBS\ = ${NWCHEM_TOP}/src/tools/build/comex/Makefile|grep -v _LIBS| cut -b 8-) -lpthread
+COMM_LIBS += $(shell [ -e ${GA_PATH}/bin/comex-config ] && ${GA_PATH}/bin/comex-config --libs) -lpthread
 ifdef COMM_LIBS 
  CORE_LIBS += $(COMM_LIBS) 
 endif 
-
+#endif
 ifdef USE_LINUXAIO
  CORE_LIBS += -lrt
 endif
@@ -2865,16 +2945,20 @@ else
 endif
 
 ifdef TCE_CUDA
+ifdef USE_TTLG
 CUDA_VERS_GE8=$(shell nvcc --version|egrep rel|  awk '/release 9/ {print "Y";exit}; /release 8/ {print "Y";exit};{print "N"}')
         ifeq ($(CUDA_VERS_GE8),N)
              CUDA_FLAGS = -O3 -Xcompiler -std=c++11 -DNOHTIME -Xptxas --warn-on-spills $(CUDA_ARCH) 
         else
               CUDA_FLAGS = -O3  -std=c++11 -DNOHTIME -Xptxas --warn-on-spills $(CUDA_ARCH) 
         endif
-endif
 (%.o):  %.cu
 	$(CUDA) -c $(CUDA_FLAGS) $(CUDA_INCLUDE) -I$(NWCHEM_TOP)/src/tce/ttlg/includes -o $% $<
-
+else
+(%.o):  %.cu
+	$(CUDA) -c $(CUDA_FLAGS) $(CUDA_INCLUDE) -o $% $<
+endif
+endif
 (%.o):  %.o
 
 # Preceding line has a tab to make an empty rule

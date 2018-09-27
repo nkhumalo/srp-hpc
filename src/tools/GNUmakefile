@@ -577,6 +577,7 @@ ifdef DEV_GA
 endif
 
 ifdef USE_GAGITHUB
+  MAKEFLAGS = -j 1 --no-print-directory
 	GET_TOOLS=./get-tools-github
   ifdef USE_GA_RELEASE
     ifndef GA_RELEASE_NO
@@ -624,6 +625,15 @@ endif
 ifeq ($(TARGET),CYGWIN64) 
         MAYBE_ARMCI += --disable-weak
 endif # CYGWIN64
+#SCORE-P
+ifeq ($(CC),$(findstring $(CC),scorep scorep-wrapper scorep-gcc scorep-mpicc scorep-cc scorep-nvcc scorep-xlc scorep-xlc_r))
+#fix for configure or cmake
+     MAYBE_HOST += SCOREP_WRAPPER=OFF
+endif
+ifeq ($(FC),$(findstring $(FC),scorep scorep-wrapper scorep-gfortran scorep-mpif90 scorep-ftn scorep-xlf scorep-xlf_r scorep-mpif77))
+#fix for configure or cmake
+     MAYBE_HOST += SCOREP_WRAPPER=OFF
+endif
 BUILDDIR = build
 INSTALLDIR = install
 CONFIGURE_PATH = ../$(GA_DIR)/configure
@@ -644,7 +654,7 @@ $(INSTALLDIR)/lib/libga.a: $(BUILDDIR)/.libs/libga.a
 	@echo '*** Installing Parallel Tools ****'
 	@echo ''
 	@(cd $(BUILDDIR) && $(MAKE) install) || exit 1
-	@(../util/util_ga_version.bash $(GA_DIR))
+	@(../util/util_ga_version.bash)
 
 $(BUILDDIR)/.libs/libga.a:  $(BUILDDIR)/Makefile $(BUILDDIR)/armci/Makefile
 	@echo ''

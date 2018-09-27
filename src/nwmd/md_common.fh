@@ -97,7 +97,7 @@ c     md_nam : filenames
 c     -------------------
 c
       character*80 root,filnam,fdarg,fdlog,fsum,server,projct
-      character*70 filday,filinp,filrst,filtop,filtrj,filprp,filfld,
+      character*255 filday,filinp,filrst,filtop,filtrj,filprp,filfld,
      + filgib,filppd,filhis,filhbo,filsfl,filcmd,filtri,
      + filmro,filmri,filout,filmem,fildef,filpmf,filhop,
      + filqsc,filsur,filqrs,filrdf,filddf,filkrk,fildbg,filacf,filcnv,

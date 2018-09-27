@@ -716,7 +716,7 @@ c
       read(lfntop,2002,end=9897,err=9898) nat
       read(lfntop,2002,end=9897,err=9898) nqt
       read(lfntop,2002,end=9897,err=9898) nseq
- 2002 format(i5)
+ 2002 format(i7)
       read(lfntop,2001,end=9897,err=9898) 
       do 1103 k=1,npars
       do 102 i=1,nat
@@ -989,7 +989,7 @@ c
       bfs(k,3)=zero
       endif
       read(lfntop,2009,end=9897,err=9898) (ibs(k,j),j=1,10)
- 2009 format(16x,i3,4i7,5i5)
+ 2009 format(16x,i3,4i7,5i7)
 c 2009 format(16x,10i5)
       if(ibs(k,3).ne.lasts) then
       icount=icount+1

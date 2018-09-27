@@ -164,7 +164,7 @@ c
       endif
       endif
       pchain=card(22:22)
-      if(card(18:20).eq.namslv) goto 99
+      if(card(18:20).eq.namslv) goto 1
       if(i.ne.isgm) then
       isgm=i
       iseq=iseq+1
@@ -174,7 +174,8 @@ c
  2009 format('PDB ERROR : insufficient memory available')
       goto 9999
       endif
-      lseq(1,iseq)=isgm
+chvd  lseq(1,iseq)=isgm
+      lseq(1,iseq)=iseq
       cseq(1,iseq)(1:3)=card(18:20)
       lseq(3,iseq)=0
 c      if(nchain.eq.1) cseq(1,iseq)(4:5)='_N'
@@ -208,7 +209,7 @@ c
       endif
       endif
       pchain=card(22:22)
-      if(card(18:20).eq.namslv) goto 99
+      if(card(18:20).eq.namslv) goto 1
       if(i.ne.isgm) then
       isgm=i
       iseq=iseq+1
@@ -218,7 +219,8 @@ c
  2010 format('PDB ERROR : insufficient memory available')
       goto 9999
       endif
-      lseq(1,iseq)=isgm
+chvd  lseq(1,iseq)=isgm
+      lseq(1,iseq)=iseq
       cseq(1,iseq)(1:3)=card(18:20)
       lseq(3,iseq)=0
 c      if(nchain.eq.1) cseq(1,iseq)(4:5)='_N'
@@ -262,6 +264,29 @@ c
    99 continue
 c
       close(iunit)
+c
+c     guard against wrap around of segment numbers
+c     --------------------------------------------
+c
+c     This may occur if solvation waters are included in the PDB file
+c     and those waters are listed before the counter ions. I.e. there
+c     are more 10,000 segments and the counter ion segment numbers may
+c     overlap with protein segment numbers. Non-unique segment numbers
+c     cause the code to crash so better detect this problem now and
+c     provide a sensible error message.
+c
+      do i = 1, iseq-1
+      if (lseq(1,i+1).le.lseq(1,i)) then
+      if (util_print('where',print_none)) then
+      write(lfnout,2012)lseq(1,i),cseq(1,i),lseq(1,i+1),cseq(1,i+1)
+ 2012 format(' ERROR: Segment',i8,' ',a3,
+     +  ' followed by segment',i8,' ',a3,/,
+     +  ' ERROR: Segment numbers potentially non-unique.')
+      goto 9999
+      endif
+      endif
+      enddo
+c
 c
 c     take white space out of segment names
 c     -------------------------------------

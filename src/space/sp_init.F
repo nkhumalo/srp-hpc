@@ -2760,7 +2760,7 @@ c
       read(lfntop,2002) nat
       read(lfntop,2002) nqt
       read(lfntop,2002) nseq
- 2002 format(i5)
+ 2002 format(i7)
       read(lfntop,2001) cdum
       do 1102 k=1,npars
       do 102 i=1,nat

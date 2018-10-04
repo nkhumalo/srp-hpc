@@ -51,7 +51,7 @@ c
       if(length.le.0) length=5
 c      write(lfnseq,1000) lseq(1,i),cseq(2,i)(1:length)
       write(lfnseq,1000) lseq(1,i),cseq(2,i)
- 1000 format(i5,a)
+ 1000 format(i7,a)
       ll=lseq(1,i)
     1 continue
 c
@@ -63,13 +63,13 @@ c
       do 33 j=1,icount(i)
       l=l+1
       write(lfnseq,1006) ll+l,scount(i)
- 1006 format(i5,a)
+ 1006 format(i7,a)
       if(i.lt.ncount.or.j.lt.icount(i)) write(lfnseq,1007)
  1007 format('molecule')
    33 continue
       if(util_print('topology',print_medium)) then
       write(lfnout,1060) icount(i),scount(i)
- 1060 format(' Appended ',i5,' counter ions ',a,' to topology')
+ 1060 format(' Appended ',i7,' counter ions ',a,' to topology')
       endif
     3 continue
       endif
@@ -82,11 +82,11 @@ c
       if(i.le.nlnkf) then
       write(lfnseq,1002) lseq(1,llnk(1,i)),clnk(1,i),
      + lseq(1,llnk(2,i)),clnk(2,i)
- 1002 format('LINK ',i5,a4,i5,a4)
+ 1002 format('LINK ',i7,a4,i7,a4)
       else
       write(lfnseq,1003) lseq(1,llnk(1,i)),clnk(1,i),
      + lseq(1,llnk(2,i)),clnk(2,i)
- 1003 format('link ',i5,a4,i5,a4)
+ 1003 format('link ',i7,a4,i7,a4)
       endif
     4 continue
 c
@@ -95,7 +95,7 @@ c     -------------
 c
       if(slvmdl(1:1).ne.' ') then
       write(lfnseq,1004) 0,slvmdl
- 1004 format('solvent',/,i5,a)
+ 1004 format('solvent',/,i7,a)
       endif
 c
       write(lfnseq,1009)

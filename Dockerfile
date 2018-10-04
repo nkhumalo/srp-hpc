@@ -24,10 +24,7 @@ ENV USE_TAU="compiler"
 ENV ARMCI_NETWORK=MPI-TS
 ENV BLASOPT=-lopenblas
 ENV NWCHEM_MODULES=md
-RUN cd /nwchem && \
-    ./contrib/distro-tools/build_nwchem 2>&1 | tee build_nwchem.log && \
-    ./QA/domknwchemrc
-RUN echo "cd /nwchem/QA/tests/ethanol; mpirun -np 4 ../../../bin/LINUX64/nwchem ethanol_md.nw" > run_nwchem
-RUN chmod +x run_nwchem
-
-CMD ["run_nwchem"]
+RUN ./contrib/distro-tools/build_nwchem 2>&1 | tee build_nwchem.log 
+# domknwchemrc script has to be run within QA folder
+RUN cd QA && ./domknwchemrc
+CMD ["./scripts/entry_point.sh"]

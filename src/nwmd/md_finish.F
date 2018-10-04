@@ -171,7 +171,7 @@ c
      + timer_cpu_average(206)
  2001 format(' FFT',t20,i10,t40,f12.3,t55,f12.3)
       endif
-      close(unit=lfnout,status='keep')
+c     close(unit=lfnout,status='keep')
       endif
 c
       return

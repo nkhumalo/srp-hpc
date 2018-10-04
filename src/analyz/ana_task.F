@@ -203,7 +203,7 @@ c
       if(me.eq.0) then
       write(*,'(a,a)') ' Reference coordinates read from ',
      + filref(1:index(filref,' ')-1)
-      write(*,'(/,a,i5)') ' Number of atoms is ',nsai
+      write(*,'(/,a,i7)') ' Number of atoms is ',nsai
       endif
       goto 1
       endif

@@ -1532,13 +1532,7 @@ if [ ${#SLURMOPT} -eq 0 ] ; then
   if [ -f /usr/lib/libslurm.a ] ; then
     export SLURMOPT="-L/usr/lib -lslurm"
     export SLURM=y
-  elif [ -f /usr/lib/libslurm.so ] ; then
-    export SLURMOPT="-L/usr/lib -lslurm"
-    export SLURM=y
   elif [ -f /usr/lib64/libslurm.a ] ; then
-    export SLURMOPT="-L/usr/lib64 -lslurm"
-    export SLURM=y
-  elif [ -f /usr/lib64/libslurm.so ] ; then
     export SLURMOPT="-L/usr/lib64 -lslurm"
     export SLURM=y
   fi
@@ -2553,6 +2547,46 @@ if [ ${#OLD_GA} -eq 0 ] ; then
     echo "BLASOPT from GA = " ${BLASOPT}
   fi
 fi
+#
+# Mess around with Tau
+#
+# 1. Find the absolute pathnames of the F90, C, and C++ compilers and set
+#    TAU_F90_ABSOLUTE, TAU_CC_ABSOLUTE, and TAU_CXX_ABSOLUTE accordingly.
+# 2. Create soft-links in the bin-directory pointing the compilers to the
+#    corresponding nwc_tau_*.sh wrapper scripts.
+# 3. Prepend the bin directory to the PATH so the basename of the compiler
+#    points to the corresponding compiler wrapper script.
+# 4. USE_TAU should be set to
+#    a. "source" for source code instrumentation
+#    b. "compiler" for compiler based instrumentation
+#    c. remain unset for no instrumentation.
+#
+if [ ${#USE_TAU} -ne 0 ] ; then
+  echo "Doing Tau..."
+  export TAU_F90_ABSOLUTE=`which ${MPI_F90}`
+  export TAU_CC_ABSOLUTE=`which ${MPI_CC}`
+  export TAU_CXX_ABSOLUTE=`which ${MPI_CXX}`
+  cd ${NWCHEM_TOP}/bin
+  ln -s nwc_tau_f90.sh  ${MPI_F90}
+  ln -s nwc_tau_cc.sh   ${MPI_CC}
+  ln -s nwc_tau_cxx.sh  ${MPI_CXX}
+  ls
+  cd ${NWCHEM_TOP}
+  export CWD=`pwd`
+  export PATH=${CWD}/bin:${PATH}
+  export TAU_OPTIONS="-optRevert"
+  #
+  echo "export USE_TAU=${USE_TAU}"   >> ${NWCHEM_ENV_SH}
+  echo "export TAU_F90_ABSOLUTE=${TAU_F90_ABSOLUTE}"   >> ${NWCHEM_ENV_SH}
+  echo "export TAU_CXX_ABSOLUTE=${TAU_CXX_ABSOLUTE}"   >> ${NWCHEM_ENV_SH}
+  echo "export TAU_CC_ABSOLUTE=${TAU_CC_ABSOLUTE}"   >> ${NWCHEM_ENV_SH}
+  echo "export TAU_OPTIONS=${TAU_OPTIONS}"   >> ${NWCHEM_ENV_SH}
+  echo "export PATH=${PATH}"   >> ${NWCHEM_ENV_SH}
+  cd $NWCHEM_TOP/src
+fi
+#
+# End messing with Tau
+#
 #
 # Deal with USE_64TO32 which is special because it also depends on how the
 # GA configuration process went

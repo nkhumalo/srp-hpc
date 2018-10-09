@@ -154,8 +154,11 @@ c
 c
       integer timer_calls
       real*8 timer_cpu_average,timer_wall_average
+      character*10 timer_names
       external timer_calls
+      external timer_names
       external timer_cpu_average,timer_wall_average
+      integer i
 c
       if(me.eq.0) then
       write(lfnout,1000)
@@ -171,7 +174,18 @@ c
      + timer_cpu_average(206)
  2001 format(' FFT',t20,i10,t40,f12.3,t55,f12.3)
       endif
-      close(unit=lfnout,status='keep')
+c
+c
+      write(lfnout,*)
+      do i = 1, 250
+        if (timer_calls(i).gt.1) then
+          write(lfnout,2000) i,timer_names(i),timer_calls(i),
+     +                       timer_wall_average(i),timer_cpu_average(i)
+
+        endif
+      enddo
+ 2000 format(i5,"  ",a10,t20,i10,t40,f12.3,t55,f12.3)
+c     close(unit=lfnout,status='keep')
       endif
 c
       return

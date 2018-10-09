@@ -6,6 +6,7 @@ c
 c
 #include "md_common.fh"
 c
+      call timer_name(-2,"")
       if(ntype.eq.0) then
 c
 c     single energy
@@ -1288,10 +1289,12 @@ c
 c
       call md_timer_init()
 c
+      call timer_name(201,"MD step")
       call timer_start(201)
 c
       call md_newton()
 c
+      call timer_name(6,"GA coords")
       call timer_start(6)
 c
       if(lfw.or.lfs) then
@@ -2214,6 +2217,8 @@ c
 c
       call md_fclass(iwl,isl,xw,xwm,xs,fw,fs)
 c
+      call timer_name(202,"barrier")
+      call timer_name(204,"barrier")
       call timer_start(44)
       call timer_start(202)
       call timer_start(204)
@@ -2354,6 +2359,9 @@ c
       itcom1=33
       itforc=34
       itcom2=35
+      call timer_name(33,"prefetch")
+      call timer_name(34,"wait")
+      call timer_name(35,"accumulate")
 c
       if(nbget.eq.0) then
       call sp_nbbl(nbbl)
@@ -2389,6 +2397,9 @@ c
       itcom1=36
       itforc=37
       itcom2=38
+      call timer_name(36,"get")
+      call timer_name(37,"forces")
+      call timer_name(38,"accumulate")
       local=.false.
       if(nbget.ne.0) itforc=36
       endif
@@ -2407,6 +2418,7 @@ c
       endif
       call timer_stop(itcom1)
       else
+      call timer_name(34,"wait")
       call timer_start(34)
       call sp_nbwait(ibbl,lnew,lhandl,lself,lpbcs,
      + iwfr,iwto,jwfr,jwto,isfr,isto,jsfr,jsto,iwl,isl)

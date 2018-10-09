@@ -2853,6 +2853,11 @@ endif
 EXTRA_LIBS += $(CONFIG_LIBS)
 CORE_LIBS += $(EXTRA_LIBS)
 
+ifdef USE_SHARED
+	FOPTIONS  += -fPIC
+	COPTIONS  += -fPIC
+	LDOPTIONS += -fPIC
+endif
 
 ifdef OPTIMIZE
     FFLAGS = $(FOPTIONS) $(FOPTIMIZE)
@@ -2989,5 +2994,3 @@ else
 endif
 
 endif
-
-

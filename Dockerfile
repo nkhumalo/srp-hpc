@@ -21,6 +21,7 @@ RUN cd OpenBLAS-0.2.20/ && \
     make USE_THREAD=0 FC=gfortran && \
     make PREFIX=/usr install
 ENV USE_TAU="compiler"
+ENV USE_SHARED=yes
 ENV ARMCI_NETWORK=MPI-TS
 ENV BLASOPT=-lopenblas
 ENV NWCHEM_MODULES=md

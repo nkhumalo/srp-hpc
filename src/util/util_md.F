@@ -1104,6 +1104,43 @@ c
 c
       return
       end
+      character*10 function timer_names(itime)
+c
+      integer itime
+c
+      integer mtime
+      parameter(mtime=250)
+      character*10 chrtime(250)
+      common/ctim/chrtime
+c
+      if(itime.le.0.or.itime.gt.mtime)
+     + call md_abort('Illegal timer index',0)
+c
+      timer_names=chrtime(itime)
+c
+      return
+      end
+      subroutine timer_name(itime,name)
+c
+      integer itime
+c
+      integer mtime
+      parameter(mtime=250)
+      character*(*) name
+      character*10 chrtime(250)
+      common/ctim/chrtime
+c
+      if(itime.eq.-2)then
+        chrtime = "          "
+        return
+      endif
+      if(itime.le.0.or.itime.gt.mtime)
+     + call md_abort('Illegal timer index',0)
+c
+      chrtime(itime) = name
+c
+      return
+      end
       real*8 function timer_cpu_minimum(itime)
 c
       implicit none

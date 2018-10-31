@@ -3174,10 +3174,19 @@ c
       integer ipl(mbox,mip2),ibw(nb),ibs(nb)
       real*8 bxw(nb,3,mwa),bvw(nb,3,mwa),bfw(nb,3,mwa),brw(nb,3)
       real*8 bxs(nb,3),bvs(nb,3),bfs(nb,3)
-
-      real*8, allocatable :: xx(:,:)
-      real*8, allocatable :: yy(:,:)
-      real*8, allocatable :: zz(:,:)
+c
+      real*8,   allocatable :: localWx(:)
+      real*8,   allocatable :: localWy(:)
+      real*8,   allocatable :: localWz(:)
+      real*8,   allocatable :: localSx(:)
+      real*8,   allocatable :: localSy(:)
+      real*8,   allocatable :: localSz(:)
+      integer*4,allocatable :: localiwl(:)
+      integer*4,allocatable :: localisl(:)
+c
+      integer*4,allocatable :: nwmnlist(:)
+      integer*4,allocatable :: nsanlist(:)
+      integer,allocatable   :: templist(:)
 c
       integer i,j,k,node,ncyc,icyc,numw,nums,number,nwmn,nsan
       integer ilp,ihp,jlp,jhp,ili,ihi,jli,jhi,ilw,ihw,jlw,jhw
@@ -3188,20 +3197,29 @@ c
 c
       real*8 dumdst,dist
       integer nonh
+c
       integer*4 adios_comm_world
       integer*4 adios_err
       integer*8 m_adios_group
       integer*8 varid
       integer*8 adios_handle
+      integer*4 i2,i10,adiosrank
       integer   mdstep
       integer   maxstep
-      integer   totalatoms
-      integer   offset
-      integer   localatoms
-      integer   localnumw
-      integer   startnumw
-      integer   endnumw
+      integer   localWatoms, localWmolecules, localSatoms
+      integer   totalWatoms, totalWmolecules, totalSatoms
+      integer   offsetWatoms, offsetWmolecules, offsetSatoms
 c
+      integer localindex
+      integer localld
+      target dbl_mb
+      target int_mb
+      integer, pointer ::  localipl(:,:)
+      real*8,  pointer ::  localxw(:,:,:)
+      real*8,  pointer ::  localxs(:,:)
+c
+      i2=2
+      i10=10     
       dumdst=0.02d0
 c
       lpw=.false.
@@ -3261,6 +3279,10 @@ c
       bxw(j,1,k)=xw(i,1,k)
       bxw(j,2,k)=xw(i,2,k)
       bxw(j,3,k)=xw(i,3,k)
+c      if((mdstep.eq.1).and.(k.eq.nwa)) then
+c      print*,'RANK*iwl',node,j
+c      print*,'RANK*LZ',node,bxw(j,1,1:nwa)
+c      endif
     4 continue
       if(lvw) then
       do 5 k=1,nwa
@@ -3379,9 +3401,11 @@ c
       else
       call ga_get(ga_is,ili,ili+nsan-1,jli,jli+npack-1,islp,msa)
       call sp_unpack(nsan,isl,islp)
+c      print*,'-----node',node,isl(1:nsan,lsgan)
       endif
       call ga_distribution(ga_s,node,ils,ihs,jls,jhs)
       call ga_get(ga_s,ils,ils+nsan-1,jls,jls+2,xs,msa)
+c      print*,'=====node',xs(1:nsan,1)
       if(lvs) call ga_get(ga_s,ils,ils+nsan-1,jls+3,jls+5,vs,msa)
       if(lfs) call ga_get(ga_s,ils,ils+nsan-1,jls+6,jls+8,fs,msa)
       nonh=0
@@ -3491,88 +3515,274 @@ c     end solute output
       endif
 c
       endif
-
-      call ga_sync
+c
+c
+      allocate(nwmnlist(np))
+      allocate(nsanlist(np))
+      allocate(templist(np))
+c
       call ga_brdcst(10,numw,ma_sizeof(MT_INT,1,MT_BYTE),0)
-      call ga_brdcst(10,bxw,ma_sizeof(MT_DBL,nb*3*nwa,MT_BYTE),0)
+      call ga_brdcst(10,nums,ma_sizeof(MT_INT,1,MT_BYTE),0)
 c
-      localnumw=numw/np
-      startnumw=localnumw*me+1
-      endnumw=localnumw*(me+1)
-      if(me.eq.(np-1)) then
-      localnumw=numw-localnumw*(np-1)
-      endnumw=numw
-      endif
       call ga_sync
-      localatoms=localnumw*nwa
-      totalatoms=numw*nwa
-      offset=numw*nwa/np*me
+      call ga_distribution(ga_ip,me,ilp,ihp,jlp,jhp)
+      call ga_access(ga_ip, ilp, ihp, jlp, jhp, localindex, localld)
+      localipl(1:mbox,1:mip2)=>int_mb(localindex:localindex+mbox*mip2)
+      nwmn=localipl(1,2)
+      nsan=ipl(2,2)
 c
-      allocate(xx(nwa,numw))
-      allocate(yy(nwa,numw))
-      allocate(zz(nwa,numw))
-      do i = 1, numw
+      do i = 1, np
+        templist(i)=0
+      enddo
+      templist(me+1)=nwmn
+      call ga_sync
+      call ga_igop(10,templist,np,'+')
+      do i = 1, np
+        nwmnlist(i)=templist(i)
+      enddo
+c
+      do i = 1, np
+        templist(i)=0
+      enddo
+      templist(me+1)=nsan
+      call ga_sync
+      call ga_igop(10,templist,np,'+')
+      do i = 1, np
+        nsanlist(i)=templist(i)
+      enddo
+c
+      do i = 2, np
+        nwmnlist(i)=nwmnlist(i)+nwmnlist(i-1)
+        nsanlist(i)=nsanlist(i)+nsanlist(i-1)
+      enddo
+
+
+      if(nwmn.gt.0) then
+c
+      call ga_distribution(ga_iw,me,ili,ihi,jli,jhi)
+      call ga_get(ga_iw,ili,ili+nwmn-1,jli,jli+npackw-1,iwlp,mwm)
+      call sp_unpackw(nwmn,iwl,iwlp)
+      allocate(localiwl(nwmn))
+      do i = 1, nwmn
+c      localiwl(i)=iwl(i,lwgmn)-number
+      localiwl(i)=iwl(i,lwgmn)
+      enddo
+c
+      call ga_distribution(ga_w,me,ilw,ihw,jlw,jhw)
+      call ga_access(ga_w,ilw,ilw+nwmn-1,jlw,jlw+3*mwa-1,localindex,
+     +localld)
+      localxw(1:mwm,1:3,1:mwa)=>dbl_mb(localindex:localindex+mwm*3*mwa)
+      allocate(localWx(nwa*nwmn))
+      allocate(localWy(nwa*nwmn))
+      allocate(localWz(nwa*nwmn))
+      j = 1
+      do i = 1, nwmn
         do k = 1, nwa
-          xx(k,i) = bxw(i,1,k)
-          yy(k,i) = bxw(i,2,k)
-          zz(k,i) = bxw(i,3,k)
+          localWx(j) = localxw(i,1,k)
+          localWy(j) = localxw(i,2,k)
+          localWz(j) = localxw(i,3,k)
+          j = j + 1
         enddo
       enddo
 c
+      endif
+c
+      call ga_sync
+c
+      if(nsan.gt.0) then
+c 
+      call ga_distribution(ga_is,me,ili,ihi,jli,jhi)
+      call ga_get(ga_is,ili,ili+nsan-1,jli,jli+npack-1,islp,msa)
+      call sp_unpack(nsan,isl,islp)
+      allocate(localisl(nsan))
+      do i = 1, nsan
+c      localisl(i)=isl(i,lsgan)-number
+      localisl(i)=isl(i,lsgan)
+      enddo
+c
+      call ga_distribution(ga_s,me,ils,ihs,jls,jhs)
+      call ga_access(ga_s,ils,ils+nsan-1,jls,jls+2,localindex,localld)
+      localxs(1:msa,1:3)=>dbl_mb(localindex:localindex+3*msa)
+      allocate(localSx(nsan))
+      allocate(localSy(nsan))
+      allocate(localSz(nsan))
+      do i = 1, nsan
+        localSx(i) = localxs(i,1)
+        localSy(i) = localxs(i,2)
+        localSz(i) = localxs(i,3)
+      enddo
+c      print*,'-----me',me,localSx(1:nsan)
+c
+      endif
+ 
+
+ 
+c      if(mdstep.eq.1) then
+c      print*,'RANK-nwmn-iwl',me,nwmn,localiwl
+c      print*,'RANK-LX',me,localxyz(1,:)
+c      endif
+c
+c
+c      ===========NON-JOINED-ARRAY=================
+c      call ga_distribution(ga_ip,node,ilp,ihp,jlp,jhp)
+c      call ga_access(ga_ip, ilp, ihp, jlp, jhp, localindex, localld)
+c      localipl(1:mbox,1:mip2)=>int_mb(localindex:localindex+mbox*mip2)
+c      globalipl(me+1)=localipl(1,2)
+c      call ga_sync
+c      call ga_igop(10,globalipl,np,'+')
+c
+c      offset=0
+c      if(me.gt.0) then
+c      do 333 i=0,me-1,1
+c      offset=offset+globalipl(i)
+c  333 continue
+c      endif
+c      =============================================
+c
+      if(me.eq.1) print*,'========ADIOS from NWChem: timstep - ',mdstep
+c
+      localWmolecules=nwmn
+      localWatoms=localWmolecules*nwa
+      localSatoms=nsan
+c
+      totalWmolecules=numw
+      totalWatoms=totalWmolecules*nwa
+      totalSatoms=nums
+c
+      offsetWmolecules=nwmnlist(me)
+      offsetWatoms=nwmnlist(me)*nwa
+      offsetSatoms=nsanlist(me)
+  
       if(mdstep.eq.1) then
 c      call ga_mpi_comm_pgroup_default(adios_comm_world)
       adios_comm_world=mpi_comm_world
       call adios_init_noxml(adios_comm_world, adios_err)
-      call adios_set_max_buffer_size(10)
+      call adios_set_max_buffer_size(i10)
       call adios_declare_group(m_adios_group, "coordinates", "iter",
      +adios_stat_default, adios_err)
-      call adios_select_method(m_adios_group, "MPI", "", "",
-     +adios_err)
-      call adios_define_var(m_adios_group, "NATOMS", "", 2,
+      call adios_select_method(m_adios_group, "DATASPACES", "verbose=4",
+     +"",adios_err)
+      call adios_define_var(m_adios_group, "LWATOMS", "", i2,
      +"", "", "", varid);
-      call adios_define_var(m_adios_group, "TATOMS", "", 2,
+      call adios_define_var(m_adios_group, "TWATOMS", "", i2,
      +"", "", "", varid);
-      call adios_define_var(m_adios_group, "OFFSET", "", 2,
+      call adios_define_var(m_adios_group, "OWATOMS", "", i2,
      +"", "", "", varid);
-      call adios_define_var(m_adios_group, "LX", "", adios_double,
-     +"NATOMS", "TATOMS", "OFFSET", varid);
-      call adios_define_var(m_adios_group, "LY", "", adios_double,
-     +"NATOMS", "TATOMS", "OFFSET", varid);
-      call adios_define_var(m_adios_group, "LZ", "", adios_double,
-     +"NATOMS", "TATOMS", "OFFSET", varid);
+      call adios_define_var(m_adios_group, "LWMOLECULES", "", i2,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "TWMOLECULES", "", i2,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "OWMOLECULES", "", i2,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "LSATOMS", "", i2,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "TSATOMS", "", i2,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "OSATOMS", "", i2,
+     +"", "", "", varid);
+      call adios_define_var(m_adios_group, "WLX", "", adios_double,
+     +"LWATOMS", "TWATOMS", "OWATOMS", varid);
+      call adios_define_var(m_adios_group, "WLY", "", adios_double,
+     +"LWATOMS", "TWATOMS", "OWATOMS", varid);
+      call adios_define_var(m_adios_group, "WLZ", "", adios_double,
+     +"LWATOMS", "TWATOMS", "OWATOMS", varid);
+      call adios_define_var(m_adios_group, "WID", "", adios_integer,
+     +"LWMOLECULES", "TWMOLECULES", "OWMOLECULES", varid);
+      call adios_define_var(m_adios_group, "SLX", "", adios_double,
+     +"LSATOMS", "TSATOMS", "OSATOMS", varid);
+      call adios_define_var(m_adios_group, "SLY", "", adios_double,
+     +"LSATOMS", "TSATOMS", "OSATOMS", varid);
+      call adios_define_var(m_adios_group, "SLZ", "", adios_double,
+     +"LSATOMS", "TSATOMS", "OSATOMS", varid);
+      call adios_define_var(m_adios_group, "SID", "", adios_integer,
+     +"LSATOMS", "TSATOMS", "OSATOMS", varid);
       call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
      +"w", adios_comm_world, adios_err)
-c     adios_groupsize = 2*4 + 2*8*ndx*ndy
-c     call adios_group_size (adios_handle, adios_groupsize, adios_totalsize, adios_err)
-      call adios_write (adios_handle, "NATOMS", localatoms, adios_err)
-      call adios_write (adios_handle, "TATOMS", totalatoms, adios_err)
-      call adios_write (adios_handle, "OFFSET", offset, adios_err)
-      call adios_write (adios_handle, "LX", xx(1:nwa,startnumw:endnumw)
-     +, adios_err)
-      call adios_write (adios_handle, "LY", yy(1:nwa,startnumw:endnumw)
-     +, adios_err)
-      call adios_write (adios_handle, "LZ", zz(1:nwa,startnumw:endnumw)
-     +, adios_err)
+      call adios_write (adios_handle, "LWATOMS", localWatoms,
+     +adios_err)
+      call adios_write (adios_handle, "TWATOMS", totalWatoms,
+     +adios_err)
+      call adios_write (adios_handle, "OWATOMS", offsetWatoms,
+     +adios_err)
+      call adios_write (adios_handle, "LWMOLECULES", localWmolecules,
+     +adios_err)
+      call adios_write (adios_handle, "TWMOLECULES", totalWmolecules,
+     +adios_err)
+      call adios_write (adios_handle, "OWMOLECULES", offsetWmolecules,
+     +adios_err)
+      call adios_write (adios_handle, "LSATOMS", localSatoms,
+     +adios_err)
+      call adios_write (adios_handle, "TSATOMS", totalSatoms,
+     +adios_err)
+      call adios_write (adios_handle, "OSATOMS", offsetSatoms,
+     +adios_err)
+      call adios_write (adios_handle, "WLX", localWx(:), adios_err)
+      call adios_write (adios_handle, "WLY", localWy(:), adios_err)
+      call adios_write (adios_handle, "WLZ", localWz(:), adios_err)
+      call adios_write (adios_handle, "WID", localiwl(:), adios_err)
+      call adios_write (adios_handle, "SLX", localSx(:), adios_err)
+      call adios_write (adios_handle, "SLY", localSy(:), adios_err)
+      call adios_write (adios_handle, "SLZ", localSz(:), adios_err)
+      call adios_write (adios_handle, "SID", localisl(:), adios_err)
       call adios_close (adios_handle, adios_err)
       else
 c      call ga_mpi_comm_pgroup_default(adios_comm_world)
       adios_comm_world=mpi_comm_world
       call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
      +"a", adios_comm_world, adios_err)
-      call adios_write (adios_handle, "NATOMS", localatoms, adios_err)
-      call adios_write (adios_handle, "TATOMS", totalatoms, adios_err)
-      call adios_write (adios_handle, "OFFSET", offset, adios_err)
-      call adios_write (adios_handle, "LX", xx(1:nwa,startnumw:endnumw)
-     +, adios_err)
-      call adios_write (adios_handle, "LY", yy(1:nwa,startnumw:endnumw)
-     +, adios_err)
-      call adios_write (adios_handle, "LZ", zz(1:nwa,startnumw:endnumw)
-     +, adios_err)
+      call adios_write (adios_handle, "LWATOMS", localWatoms,
+     +adios_err)
+      call adios_write (adios_handle, "TWATOMS", totalWatoms,
+     +adios_err)
+      call adios_write (adios_handle, "OWATOMS", offsetWatoms,
+     +adios_err)
+      call adios_write (adios_handle, "LWMOLECULES", localWmolecules,
+     +adios_err)
+      call adios_write (adios_handle, "TWMOLECULES", totalWmolecules,
+     +adios_err)
+      call adios_write (adios_handle, "OWMOLECULES", offsetWmolecules,
+     +adios_err)
+      call adios_write (adios_handle, "LSATOMS", localSatoms,
+     +adios_err)
+      call adios_write (adios_handle, "TSATOMS", totalSatoms,
+     +adios_err)
+      call adios_write (adios_handle, "OSATOMS", offsetSatoms,
+     +adios_err)
+      call adios_write (adios_handle, "WLX", localWx(:), adios_err)
+      call adios_write (adios_handle, "WLY", localWy(:), adios_err)
+      call adios_write (adios_handle, "WLZ", localWz(:), adios_err)
+      call adios_write (adios_handle, "WID", localiwl(:), adios_err)
+      call adios_write (adios_handle, "SLX", localSx(:), adios_err)
+      call adios_write (adios_handle, "SLY", localSy(:), adios_err)
+      call adios_write (adios_handle, "SLZ", localSz(:), adios_err)
+      call adios_write (adios_handle, "SID", localisl(:), adios_err)
       call adios_close (adios_handle, adios_err)
       endif
 c
+      if(mdstep.eq.maxstep) then
+      adiosrank = me
+      call adios_finalize(adiosrank, adios_err)
+      endif
+c
       call util_flush(lfntrj)
-      deallocate(xx,yy,zz)
+
+      if(nwmn.gt.0) then
+      deallocate(localiwl)
+      deallocate(localWx)
+      deallocate(localWy)
+      deallocate(localWz)
+      endif
+
+      if(nsan.gt.0) then
+      deallocate(localisl)
+      deallocate(localSx)
+      deallocate(localSy)
+      deallocate(localSz)
+      endif
+c
+      deallocate(nwmnlist)
+      deallocate(nsanlist)
+c
       return
       end
       logical function sp_skip(lfntri,nskip)

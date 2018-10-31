@@ -2867,10 +2867,10 @@ else
     FFLAGS = $(FOPTIONS) $(FDEBUG) 
     CFLAGS = $(COPTIONS) $(CDEBUG) 
 endif
-  INCLUDES = -I. $(LIB_INCLUDES) -I$(INCDIR) $(INCPATH) $(shell adios_config -c -f)
+  INCLUDES = -I. $(MPI_INCLUDE) $(LIB_INCLUDES) -I$(INCDIR) $(INCPATH) $(shell adios_config -c -f)
   CPPFLAGS = $(INCLUDES) $(DEFINES) $(LIB_DEFINES)
    LDFLAGS = $(LDOPTIONS) -L$(LIBDIR) $(LIBPATH)
-      LIBS = $(NW_MODULE_LIBS) $(CORE_LIBS) 
+      LIBS = $(NW_MODULE_LIBS) $(CORE_LIBS) -ldl
 
 # I think this will work everywhere, but it might have to become
 # machine-dependent 

@@ -2336,6 +2336,13 @@ if [ ${#PYTHONLIBTYPE} -ne 0 ] ; then
   echo "unset PYTHONLIBTYPE"                   >> ${NWCHEM_UNENV_SH}
   echo "unsetenv PYTHONLIBTYPE"                >> ${NWCHEM_UNENV_CSH}
 fi
+if [ ${#USE_FORTRAN2003} -ne 0 ] ; then
+  echo "USE_FORTRAN2003    =" ${USE_FORTRAN2003} 
+  echo "export USE_FORTRAN2003=\"${USE_FORTRAN2003}\"" >> ${NWCHEM_ENV_SH}
+  echo "setenv USE_FORTRAN2003 \"${USE_FORTRAN2003}\"" >> ${NWCHEM_ENV_CSH}
+  echo "unset USE_FORTRAN2003"                         >> ${NWCHEM_UNENV_SH}
+  echo "unsetenv USE_FORTRAN2003"                      >> ${NWCHEM_UNENV_CSH}
+fi
 echo "function renwc()" >> ${NWCHEM_ENV_SH}
 echo "{"                                                                   >> ${NWCHEM_ENV_SH}
 echo "   make FC=\$FC ; pushd \$NWCHEM_TOP/src ; make FC=\$FC link ; popd" >> ${NWCHEM_ENV_SH}

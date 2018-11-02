@@ -144,8 +144,8 @@ ENV NWCHEM_MODULES=md
 # RUN chmod +x ./contrib/distro-tools/build_nwchem
 RUN . /etc/profile && ./contrib/distro-tools/build_nwchem 2>&1 | tee build_nwchem.log 
 RUN cd QA && ./domknwchemrc
-COPY run_ethanolmd_adios_tau.sh .
-RUN chmod +x run_ethanolmd_adios_tau.sh
+# COPY run_ethanolmd_adios_tau.sh .
+# RUN chmod +x run_ethanolmd_adios_tau.sh
 
 WORKDIR /Codar/nwchem-1
 CMD ["./test.sh"]

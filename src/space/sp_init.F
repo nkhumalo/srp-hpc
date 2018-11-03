@@ -3660,7 +3660,7 @@ c      call ga_mpi_comm_pgroup_default(adios_comm_world)
       call adios_set_max_buffer_size(i10)
       call adios_declare_group(m_adios_group, "coordinates", "iter",
      +adios_stat_default, adios_err)
-      call adios_select_method(m_adios_group, "DATASPACES", "verbose=4",
+      call adios_select_method(m_adios_group, "MPI", "verbose=3",
      +"",adios_err)
       call adios_define_var(m_adios_group, "LWATOMS", "", i2,
      +"", "", "", varid);

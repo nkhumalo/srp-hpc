@@ -129,9 +129,12 @@ RUN . /etc/profile && pip3 install adios adios_mpi
 
 
 # Copy current directory contents into the container
-RUN mkdir -p /Chimbuko
 # COPY PerformanceAnalysis/ /Chimbuko
 # COPY Visualization/ /Chimbuko
+RUN git clone https://github.com/gomfy/Chimbuko
+RUN mkdir -p /Chimbuko
+RUN cp -a Chimbuko/demo/SC18/NWChem/Analysis      /Chimbuko/PerformanceAnalysis
+RUN cp -a Chimbuko/demo/SC18/NWChem/Visualization /Chimbuko/Visualization
 WORKDIR /Chimbuko
 
 # Build NWChem

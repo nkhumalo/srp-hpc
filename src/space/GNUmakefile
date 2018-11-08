@@ -6,7 +6,7 @@ OBJ=sp_init.o sp_main.o
 
 LIBRARY=libspace.a
 
-HEADER=sp_adios_common.fh
+HEADERS=sp_adios_common.fh
 
 USES_BLAS=
 

@@ -3159,6 +3159,7 @@ c
       implicit none
 c
 #include "sp_common.fh"
+#include "sp_adios_common.fh"
 #include "mafdecls.fh"
 #include "global.fh"
 #include "mpif.h"
@@ -3187,6 +3188,7 @@ c
       integer*4,allocatable :: nwmnlist(:)
       integer*4,allocatable :: nsanlist(:)
       integer,allocatable   :: templist(:)
+      integer               :: amlen
 c
       integer i,j,k,node,ncyc,icyc,numw,nums,number,nwmn,nsan
       integer ilp,ihp,jlp,jhp,ili,ihi,jli,jhi,ilw,ihw,jlw,jhw
@@ -3660,8 +3662,12 @@ c      call ga_mpi_comm_pgroup_default(adios_comm_world)
       call adios_set_max_buffer_size(i10)
       call adios_declare_group(m_adios_group, "coordinates", "iter",
      +adios_stat_default, adios_err)
-      call adios_select_method(m_adios_group, "MPI", "verbose=3",
-     +"",adios_err)
+      amlen=inp_strlen(adios_mode)
+      if (me.eq.0) then
+        write(lfnout,*)"ADIOS mode: ",adios_mode(1:amlen)
+      endif
+      call adios_select_method(m_adios_group, adios_mode(1:amlen),
+     +"verbose=3","",adios_err)
       call adios_define_var(m_adios_group, "LWATOMS", "", i2,
      +"", "", "", varid);
       call adios_define_var(m_adios_group, "TWATOMS", "", i2,

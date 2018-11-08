@@ -80,7 +80,7 @@ c     -----------------------
 c
       call md_print()
 c
-c     start the spacial decomposition API
+c     start the spatial decomposition API
 c     -----------------------------------
 c
       if(.not.lqmd) then
@@ -335,6 +335,7 @@ c
 #include "rtdb.fh"
 #include "mafdecls.fh"
 #include "nwmd_constants.fh"
+#include "sp_adios_common.fh"
 #if defined(NEED_LOC)
       external loc
       integer loc
@@ -665,6 +666,10 @@ c
 c
       iformt=1
 c
+c     ADIOS
+c
+      adios_mode = "MPI"
+c
 c     parallel execution defaults
 c
 c     many of the above defaults are superceded by defaults in the rtdb
@@ -684,6 +689,12 @@ c
 c     sequential access to rtdb
 c
       lstate=rtdb_parallel(.false.)
+c
+c     ADIOS
+c
+      if(.not.rtdb_cget(irtdb,'sp:adios_mode',1,adios_mode)) then
+        adios_mode = "MPI"
+      endif
 c
 c     retrieve project name
 c
@@ -1338,6 +1349,7 @@ c
       call ga_brdcst(mrg_d36,ptol,nbytes,0)
       nbytes=7*ma_sizeof(mt_int,1,mt_byte)
       call ga_brdcst(mrg_d37,npx,nbytes,0)
+      call util_char_ga_brdcst(mrg_d38,adios_mode,0)
       call util_char_ga_brdcst(mrg_d38,filnam,0)
       endif
 c

@@ -1,0 +1,9 @@
+c
+c     Store the transport mode for ADIOS:
+c     - NULL
+c     - MPI
+c     - FLEXPATH
+c     - DATASPACES
+c
+      character(len=15) :: adios_mode
+      common/sp_adios_common/adios_mode

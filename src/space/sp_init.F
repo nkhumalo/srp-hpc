@@ -3160,6 +3160,7 @@ c
 c
 #include "sp_common.fh"
 #include "sp_adios_common.fh"
+#include "inp.fh"
 #include "mafdecls.fh"
 #include "global.fh"
 #include "mpif.h"

@@ -116,6 +116,7 @@ c
       type(wfn1_drv) :: wfn1_t_drv ! temporary variable
 c
       logical, external :: int_normalize
+      logical, external :: wfn1_solve_line
 c
       double precision aa_hh, aa_hl, aa_ll, ab_hh, ab_hl, ab_ll
 c
@@ -324,6 +325,7 @@ c
      &               0,INPUT_ERR)
       endif
       wfn1_param%convergence = conv_tol
+      wfn1_param%maxiter     = maxit
 c
 c     == Get input/output vectors selection ==
 c
@@ -486,6 +488,7 @@ c
 c     == Initial wavefunction complete ==
 c
       call ga_sync() ! make sure wave function guesses are completed
+#ifdef JUNK
       if (iproc.eq.0) then
         if (.not.oprerr) then
           write(luout,'(a10,a20,a16)')"iteration","energy","error"
@@ -500,6 +503,7 @@ c
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
      &              wfn1_energy,g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &              v_dna,v_dnb,v_dca,v_dcb)
+      call wfn1_skew(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
 c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
       error = wfn1_trace(wfn1_deriv,wfn1_deriv)
       oconverged = (error%total < conv_tol)
@@ -565,6 +569,12 @@ c
         endif
       enddo
       wfn1_task_energy = oconverged
+#endif
+      wfn1_task_energy = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
+     &                   wfn1_wave,wfn1_deriv,wfn1_energy,
+     &                   wfn1_trial_wv,wfn1_trial_drv,
+     &                   g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                   v_dna,v_dnb,v_dca,v_dcb,oprerr)
       if (iproc.eq.0) then
         if (curit.eq.0) then
 c

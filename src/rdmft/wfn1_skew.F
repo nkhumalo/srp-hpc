@@ -42,6 +42,8 @@ c
 !>    Buffers
       double precision, allocatable :: buf(:,:), bufji(:,:)
 c
+      iproc = ga_nodeid()
+c
       v_dna = 0.0d0
       v_dnb = 0.0d0
 c

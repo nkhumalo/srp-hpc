@@ -570,11 +570,12 @@ c
       enddo
       wfn1_task_energy = oconverged
 #endif
-      wfn1_task_energy = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
-     &                   wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                   wfn1_trial_wv,wfn1_trial_drv,
-     &                   g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                   v_dna,v_dnb,v_dca,v_dcb,oprerr)
+      oconverged = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
+     &                  wfn1_wave,wfn1_deriv,wfn1_energy,
+     &                  wfn1_trial_wv,wfn1_trial_drv,
+     &                  g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                  v_dna,v_dnb,v_dca,v_dcb,oprerr,curit)
+      wfn1_task_energy = oconverged
       if (iproc.eq.0) then
         if (curit.eq.0) then
 c

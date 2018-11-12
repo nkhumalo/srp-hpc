@@ -15,7 +15,7 @@ C>
      &                         wfn1_trial_wv,wfn1_trial_drv,
      &                         g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                         v_dna,v_dnb,v_dca,v_dcb,
-     &                         oprerr)
+     &                         oprerr,curit)
       implicit none
 #include "wfn1_param.fh"
 #include "wfn1_wfn.fh"
@@ -61,6 +61,8 @@ c
 c
 !     Print detailed errors or not
       logical :: oprerr
+!     The current iteration count
+      integer :: curit
 c
       double precision, intent(out) :: v_dna(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
@@ -71,7 +73,6 @@ c     Local
 c
       integer :: iproc
       integer :: maxit
-      integer :: curit
       logical :: oconverged
 c
       double precision :: conv_tol 

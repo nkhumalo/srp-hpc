@@ -117,6 +117,7 @@ c
 c
       logical, external :: int_normalize
       logical, external :: wfn1_solve_line
+      logical, external :: wfn1_solve_diag
 c
       double precision aa_hh, aa_hl, aa_ll, ab_hh, ab_hl, ab_ll
 c
@@ -276,6 +277,10 @@ c
       nclosed =  (nelec-nopen)/2
       wfn1_param%nea = nclosed + nopen
       wfn1_param%neb = nclosed
+      if (nopen.eq.0.and.wfn1_param%nea+wfn1_param%neb.ne.nelec) then
+        nopen = nelec-2*nclosed
+        wfn1_param%nea = nclosed + nopen
+      endif
 c
 c     == Get the correlation energy expression
 c
@@ -306,6 +311,11 @@ c
 c
 c     == Get the convergence criterion and maximum number of iterations
 c
+      if (.not.rtdb_cget(wfn1_inst%rtdb,"wfn1:solver",
+     &                   len(wfn1_param%solver),
+     &                   wfn1_param%solver)) then
+         wfn1_param%solver="diagonalize"
+      endif
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:conv_tol",MT_DBL,
      &                  1,conv_tol)) conv_tol = 1.0d-6
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:maxit",MT_INT,
@@ -351,6 +361,16 @@ c
           wfn1_param%movecs_out = wfn1_param%movecs_in
         endif
       endif
+c
+      write(luout,*)
+      write(luout,100)nelec,wfn1_param%nea,wfn1_param%neb,int(charge),
+     &                nopen+1
+  100 format(10x,'No. of electrons :',2x,i4,/,
+     &       10x,' Alpha electrons :',2x,i4,/,
+     &       10x,'  Beta electrons :',2x,i4,/,
+     &       10x,'Charge           :',2x,i4,/,
+     &       10x,'Spin multiplicity:',2x,i4)
+      write(luout,*)
 c
 c     == Deal with 1-electron integrals ==
 c
@@ -570,11 +590,27 @@ c
       enddo
       wfn1_task_energy = oconverged
 #endif
-      oconverged = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
-     &                  wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                  wfn1_trial_wv,wfn1_trial_drv,
-     &                  g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                  v_dna,v_dnb,v_dca,v_dcb,oprerr,curit)
+      if (wfn1_param%solver.eq."linesearch") then
+        oconverged = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
+     &                    wfn1_wave,wfn1_deriv,wfn1_energy,
+     &                    wfn1_trial_wv,wfn1_trial_drv,
+     &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                    v_dna,v_dnb,v_dca,v_dcb,oprerr,curit)
+      else if (wfn1_param%solver.eq."diagonalize") then
+        oconverged = wfn1_solve_diag(wfn1_param,wfn1_inst,wfn1_mat,
+     &                    wfn1_wave,wfn1_deriv,wfn1_energy,
+     &                    wfn1_trial_wv,wfn1_trial_drv,
+     &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                    v_dna,v_dnb,v_dca,v_dcb,oprerr,curit)
+      else
+        if (iproc.eq.0) then
+          write(luout,*)pname//" solver = ",wfn1_param%solver
+          write(luout,*)pname//" valid options are:"
+          write(luout,*)pname//" - linesearch"
+          write(luout,*)pname//" - diagonalize"
+        endif
+        call errquit(pname//" invalid solver",0)
+      endif
       wfn1_task_energy = oconverged
       if (iproc.eq.0) then
         if (curit.eq.0) then

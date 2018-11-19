@@ -1,11 +1,5 @@
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
-     &                    wfn1_deriv,wfn1_energy,g_bfmo,g_momo,
-     &                    g_momo2,g_momo3,g_momo4,
-     &                    v_dna,v_dnb,v_dca,v_dcb)
-      implicit none
-C>
 C> \brief Calculate the energy and the derivative of the energy wrt
 C> the wavefunction parameters
 C>
@@ -18,6 +12,12 @@ C>   natural orbital basis (nmo x nmo)
 C> - The Fock matrix for the correlation functions will be returned in
 C>   the correlation function basis (nmo x nmo)
 C>
+      subroutine wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                    wfn1_deriv,wfn1_energy,g_bfmo,g_momo,
+     &                    g_momo2,g_momo3,g_momo4,
+     &                    v_dna,v_dnb,v_dca,v_dcb)
+      implicit none
+C 
 #include "mafdecls.fh"
 #include "errquit.fh"
 #include "global.fh"
@@ -51,11 +51,12 @@ c
       double precision, allocatable :: buf(:,:)
       double precision, allocatable :: bufji(:,:)
 c
-      integer ilo, ihi ! range limits
-      integer jlo, jhi ! range limits
-      integer ii       ! counter
-      integer jj       ! counter
-      integer nmo      ! local copy of the number of MOs
+      integer ilo,  ihi  ! range limits
+      integer jlo,  jhi  ! range limits
+      integer mxlo, mnhi ! range limits
+      integer ii         ! counter
+      integer jj         ! counter
+      integer nmo        ! local copy of the number of MOs
 c
       integer nproc
       integer iproc
@@ -191,108 +192,63 @@ cDEBUG
 c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g E")
 cDEBUG
 c
-c     Clean up memory
+c     Fetch diagonals
 c
-c     deallocate(v_dcb,v_dca)
-c
-c     Make derivative matrices skew-symmetric
-c
+      v_dna = 0.0d0
       call ga_distribution(wfn1_deriv%g_dna,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      allocate(bufji(jlo:jhi,ilo:ihi))
-      call ga_get(wfn1_deriv%g_dna,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      call ga_get(wfn1_deriv%g_dna,jlo,jhi,ilo,ihi,bufji,jhi-jlo+1)
-      do jj = jlo, jhi
-        do ii = ilo, ihi
-          if      (ii.lt.jj) then
-            buf(ii,jj) = -0.5d0*(buf(ii,jj)+bufji(jj,ii))
-          else if (ii.eq.jj) then
-            v_dna(ii)  = buf(ii,jj)
-            buf(ii,jj) =  0.0d0
-          else if (ii.gt.jj) then
-            buf(ii,jj) = +0.5d0*(buf(ii,jj)+bufji(jj,ii))
-          endif
+      mxlo = max(ilo,jlo)
+      mnhi = min(ihi,jhi)
+      if (mxlo.le.mnhi) then
+        allocate(buf(mxlo:mnhi,mxlo:mnhi))
+        call ga_get(wfn1_deriv%g_dna,mxlo,mnhi,mxlo,mnhi,
+     &              buf,mnhi-mxlo+1)
+        do ii = mxlo, mnhi
+          v_dna(ii)  = buf(ii,ii)
         enddo
-      enddo
-      call ga_sync()
-      call ga_put(wfn1_deriv%g_dna,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(bufji)
-      deallocate(buf)
+        deallocate(buf)
+      endif
 c
+      v_dnb = 0.0d0
       call ga_distribution(wfn1_deriv%g_dnb,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      allocate(bufji(jlo:jhi,ilo:ihi))
-      call ga_get(wfn1_deriv%g_dnb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      call ga_get(wfn1_deriv%g_dnb,jlo,jhi,ilo,ihi,bufji,jhi-jlo+1)
-      do jj = jlo, jhi
-        do ii = ilo, ihi
-          if      (ii.lt.jj) then
-            buf(ii,jj) = -0.5d0*(buf(ii,jj)+bufji(jj,ii))
-          else if (ii.eq.jj) then
-            v_dnb(ii)  = buf(ii,jj)
-            buf(ii,jj) =  0.0d0
-          else if (ii.gt.jj) then
-            buf(ii,jj) = +0.5d0*(buf(ii,jj)+bufji(jj,ii))
-          endif
+      mxlo = max(ilo,jlo)
+      mnhi = min(ihi,jhi)
+      if (mxlo.le.mnhi) then
+        allocate(buf(mxlo:mnhi,mxlo:mnhi))
+        call ga_get(wfn1_deriv%g_dnb,mxlo,mnhi,mxlo,mnhi,
+     &              buf,mnhi-mxlo+1)
+        do ii = mxlo, mnhi
+          v_dnb(ii)  = buf(ii,ii)
         enddo
-      enddo
-      call ga_sync()
-      call ga_put(wfn1_deriv%g_dnb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(bufji)
-      deallocate(buf)
+        deallocate(buf)
+      endif
 c
       v_dca = 0.0d0
-      v_dcb = 0.0d0
-c
       call ga_distribution(wfn1_deriv%g_dca,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      allocate(bufji(jlo:jhi,ilo:ihi))
-      call ga_get(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      call ga_get(wfn1_deriv%g_dca,jlo,jhi,ilo,ihi,bufji,jhi-jlo+1)
-      do jj = jlo, jhi
-        do ii = ilo, ihi
-          if      (ii.lt.jj) then
-            buf(ii,jj) = -0.5d0*(buf(ii,jj)+bufji(jj,ii))
-          else if (ii.eq.jj) then
-            v_dca(ii)  =  buf(ii,jj)
-            buf(ii,jj) =  0.0d0
-          else if (ii.gt.jj) then
-            buf(ii,jj) = +0.5d0*(buf(ii,jj)+bufji(jj,ii))
-          endif
+      mxlo = max(ilo,jlo)
+      mnhi = min(ihi,jhi)
+      if (mxlo.le.mnhi) then
+        allocate(buf(mxlo:mnhi,mxlo:mnhi))
+        call ga_get(wfn1_deriv%g_dca,mxlo,mnhi,mxlo,mnhi,
+     &              buf,mnhi-mxlo+1)
+        do ii = mxlo, mnhi
+          v_dca(ii)  = buf(ii,ii)
         enddo
-      enddo
-      call ga_sync()
-      call ga_put(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(bufji)
-      deallocate(buf)
+        deallocate(buf)
+      endif
 c
+      v_dcb = 0.0d0
       call ga_distribution(wfn1_deriv%g_dcb,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      allocate(bufji(jlo:jhi,ilo:ihi))
-      call ga_get(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      call ga_get(wfn1_deriv%g_dcb,jlo,jhi,ilo,ihi,bufji,jhi-jlo+1)
-      do jj = jlo, jhi
-        do ii = ilo, ihi
-          if      (ii.lt.jj) then
-            buf(ii,jj) = -0.5d0*(buf(ii,jj)+bufji(jj,ii))
-          else if (ii.eq.jj) then
-            v_dcb(ii)  =  buf(ii,jj)
-            buf(ii,jj) =  0.0d0
-          else if (ii.gt.jj) then
-            buf(ii,jj) = +0.5d0*(buf(ii,jj)+bufji(jj,ii))
-          endif
+      mxlo = max(ilo,jlo)
+      mnhi = min(ihi,jhi)
+      if (mxlo.le.mnhi) then
+        allocate(buf(mxlo:mnhi,mxlo:mnhi))
+        call ga_get(wfn1_deriv%g_dcb,mxlo,mnhi,mxlo,mnhi,
+     &              buf,mnhi-mxlo+1)
+        do ii = mxlo, mnhi
+          v_dcb(ii)  = buf(ii,ii)
         enddo
-      enddo
-      call ga_sync()
-      call ga_put(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(bufji)
-      deallocate(buf)
-cDEBUG
-c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g F")
-c     if (iproc.eq.0) then
-c       write(*,*)
-c     endif
-cDEBUG
+        deallocate(buf)
+      endif
 c
       call ga_dgop(1402,v_dna,nmo,"+")
       call ga_dgop(1403,v_dnb,nmo,"+")
@@ -304,7 +260,7 @@ c
 c
       call ga_sync()
 c
-      end
+      end subroutine wfn1_e_g
 c
 c-----------------------------------------------------------------------
 c

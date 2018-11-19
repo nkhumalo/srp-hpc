@@ -1132,10 +1132,10 @@ c
                         do ia = ia_lo, ia_hi
                           fn_bcj_a(ib,ic,jj) = fn_bcj_a(ib,ic,jj)
      &                      + eri(ia,ic,ib,id)*rdm2_adj_aa(ia,id,jj)
-     &                      + eri(ia,ic,ib,id)*rdm2_adj_ba(ia,id,jj)
+!    &                      + eri(ia,ic,ib,id)*rdm2_adj_ba(ia,id,jj) !hvd
                           fn_bcj_b(ib,ic,jj) = fn_bcj_b(ib,ic,jj)
      &                      + eri(ia,ic,ib,id)*rdm2_adj_bb(ia,id,jj)
-     &                      + eri(ia,ic,ib,id)*rdm2_adj_ab(ia,id,jj)
+!    &                      + eri(ia,ic,ib,id)*rdm2_adj_ab(ia,id,jj)
                           fn_bdj_a(ib,id,jj) = fn_bdj_a(ib,id,jj)
      &                      + eri(ia,ic,ib,id)*rdm2_acj_aa(ia,ic,jj)
      &                      + eri(ia,ic,ib,id)*rdm2_acj_ba(ia,ic,jj)
@@ -1272,10 +1272,10 @@ c Taken care of by the loop over jproc
                       do ia = ia_lo, ia_hi
                         fc_ij_aa(ii,jj) = fc_ij_aa(ii,jj)
      &                  - fc_adj_a(ia,id,jj)*N_ai_a(ia,ii)*N_di_a(id,ii)
-                        fc_ij_ab(ii,jj) = fc_ij_ab(ii,jj)
-     &                  - fc_adj_b(ia,id,jj)*N_ai_a(ia,ii)*N_di_a(id,ii)
-                        fc_ij_ba(ii,jj) = fc_ij_ba(ii,jj)
-     &                  - fc_adj_a(ia,id,jj)*N_ai_b(ia,ii)*N_di_b(id,ii)
+!                       fc_ij_ab(ii,jj) = fc_ij_ab(ii,jj) !hvd
+!    &                  - fc_adj_b(ia,id,jj)*N_ai_a(ia,ii)*N_di_a(id,ii)
+!                       fc_ij_ba(ii,jj) = fc_ij_ba(ii,jj)
+!    &                  - fc_adj_a(ia,id,jj)*N_ai_b(ia,ii)*N_di_b(id,ii)
                         fc_ij_bb(ii,jj) = fc_ij_bb(ii,jj)
      &                  - fc_adj_b(ia,id,jj)*N_ai_b(ia,ii)*N_di_b(id,ii)
                       enddo ! ia

@@ -60,6 +60,11 @@ C> n < \frac{\ln(\epsilon)}{\ln(\max(x-a))} \\\\
 C> n < \frac{\ln(\epsilon)}{\ln(1/4)} \\\\
 C> n \le 27
 C> \f}
+C>
+C> In fact, instead of introducing a Taylor series there is a much
+C> simpler way to approximate the entropy expression
+C> \f$f(x)=\ln(x!)+\ln((1-x)!)\f$ as 
+C> \f$f(x)\approx [x(1-x)]^b,\; b=0.9757\f$
 C> 
       subroutine wfn1_entropy1(p,s,ds)
       implicit none
@@ -140,7 +145,7 @@ c    &          2.0d0*abs(ds-dss)/(abs(ds)+abs(dss))
 c     write(*,'(" HVD a ",e24.16)')a
       s  = ss
       ds = dss
-#else
+#elif USE_MERMIN
       tol = 1.0d-10
       if   (p.lt.tol) then
         s  = 0.0d0
@@ -151,6 +156,21 @@ c     write(*,'(" HVD a ",e24.16)')a
       else
         s  = p*log(p) + (1.0d0-p)*log(1.0d0-p)
         ds = log(p) - log(1.0d0-p)
+      endif
+#else
+      double precision :: b = 0.9757d0
+      a = (0.5d0*log(0.5d0)+(1.0d0-0.5d0)*log(1.0d0-0.5d0))/
+     &    ((0.5d0*(1.0d0-0.5d0))**b)
+      tol = 1.0d-10
+      if   (p.lt.tol) then
+        s  = 0.0d0
+        ds = a*b*((tol*(1.0d0-tol))**(b-1.0d0))*(1.0d0-2.0d0*tol)
+      else if (p.gt.1.0d0-tol) then
+        s  = 0.0d0
+        ds = -a*b*((tol*(1.0d0-tol))**(b-1.0d0))*(1.0d0-2.0d0*tol)
+      else
+        s  = a*((p*(1.0d0-p))**b)
+        ds = a*b*((p*(1.0d0-p))**(b-1.0d0))*(1.0d0-2.0d0*p)
       endif
 #endif
 c
@@ -243,7 +263,7 @@ c     a  = 0.2869408590744988D+01
 #else
       s  = 0.0d0
       ds = 0.0d0
-      if (pow.ge.1.0d0.or.p.gt.1.0d-12) then
+      if (pow.ge.1.0d0.and.p.gt.1.0d-12) then
         s  = (p**pow)*log(p**pow)
         ds = pow*(p**(pow-1.0d0))*log(p**pow)+pow*(p**(pow-1.0d0))
       endif

@@ -1,10 +1,14 @@
 c-----------------------------------------------------------------------
 c
-      function wfn1_trace(wfn1_drva,wfn1_drvb)
-      implicit none
 C>
 C> \brief Compute the trace of the gradients
 C>
+C> Only the off-diagonal elements are included. Hence this routine can
+C> be used for both regular Fock matrices and their skew symmetric
+C> variants.
+C>
+      function wfn1_trace(wfn1_drva,wfn1_drvb)
+      implicit none
 #include "errquit.fh"
 #include "mafdecls.fh"
 #include "global.fh"
@@ -70,7 +74,9 @@ c
       call ga_get(wfn1_drvb%g_dna,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
-          error%errna = error%errna + bufa(ii,jj)*bufb(ii,jj)
+          if (ii.ne.jj) then
+            error%errna = error%errna + bufa(ii,jj)*bufb(ii,jj)
+          endif
         enddo
       enddo
       deallocate(bufb)
@@ -83,7 +89,9 @@ c
       call ga_get(wfn1_drvb%g_dnb,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
-          error%errnb = error%errnb + bufa(ii,jj)*bufb(ii,jj)
+          if (ii.ne.jj) then
+            error%errnb = error%errnb + bufa(ii,jj)*bufb(ii,jj)
+          endif
         enddo
       enddo
       deallocate(bufb)
@@ -96,7 +104,9 @@ c
       call ga_get(wfn1_drvb%g_dca,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
-          error%errca = error%errca + bufa(ii,jj)*bufb(ii,jj)
+          if (ii.ne.jj) then
+            error%errca = error%errca + bufa(ii,jj)*bufb(ii,jj)
+          endif
         enddo
       enddo
       deallocate(bufb)
@@ -109,7 +119,9 @@ c
       call ga_get(wfn1_drvb%g_dcb,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
-          error%errcb = error%errcb + bufa(ii,jj)*bufb(ii,jj)
+          if (ii.ne.jj) then
+            error%errcb = error%errcb + bufa(ii,jj)*bufb(ii,jj)
+          endif
         enddo
       enddo
       deallocate(bufb)

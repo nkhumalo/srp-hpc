@@ -12,6 +12,7 @@ C>
          character*256    :: movecs_in   ! input movecs (file) name
          character*256    :: movecs_out  ! output movecs (file) name
          character*16     :: corr_expr   ! correlation energy expression
+         character*16     :: solver      ! method to minimize energy
          double precision :: convergence ! convergence criterion
          double precision :: enuc        ! nuclear repulsion energy
          double precision :: Tinitial    ! initial guess temperature

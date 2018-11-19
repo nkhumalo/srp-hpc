@@ -1,16 +1,13 @@
 c-----------------------------------------------------------------------
 c
-C> \brief Solve for the minimal energy using line searches
+C> \brief Solve for the minimal energy using diagonalization
 C>
-C> The Fock matrices are used as search directions and the energy is
-C> minimized along these directions. In practice a quadratic expression
-C> is fitted to the energy at different step sizes and the step size with
-C> minimum energy is ultimately picked as the solution. 
-C> Multiple line searches are issued until overal convergence is
-C> reached.
+C> The Fock matrices are diagonalized to update the wave functions.
+C> In each iteration either the natural orbitals or the correlation
+C> functions are kept constant.
 C>
       logical
-     &function wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
+     &function wfn1_solve_diag(wfn1_param,wfn1_inst,wfn1_mat,
      &                         wfn1_wave,wfn1_deriv,wfn1_energy,
      &                         wfn1_trial_wv,wfn1_trial_drv,
      &                         g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
@@ -25,6 +22,7 @@ C>
 #include "wfn1_trace.fh"
 #include "wfn1_en.fh"
 #include "global.fh"
+#include "errquit.fh"
 #include "stdio.fh"
 c
 c     Arguments
@@ -61,8 +59,6 @@ c
 c
 !     Print detailed errors or not
       logical :: oprerr
-!     The current iteration count
-      integer :: curit
 c
       double precision, intent(out) :: v_dna(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
@@ -73,7 +69,14 @@ c     Local
 c
       integer :: iproc
       integer :: maxit
+      integer :: curit
+      integer :: nmo
+      integer :: nbf
+      integer :: ii ! counter
       logical :: oconverged
+c
+      integer, allocatable :: icola(:)
+      integer, allocatable :: icolb(:)
 c
       double precision :: conv_tol 
 c
@@ -81,9 +84,18 @@ c
       type(wfn1_drv)   :: wfn1_t_drv
       type(wfn1_error) :: error
 c
+      integer, parameter :: DIAG_N = 1 ! diagonalize nat orb Fock
+      integer, parameter :: DIAG_C = 2 ! diagonalize cor fnc Fock
+      integer  :: diag_NorC = DIAG_N
+c
       iproc    = ga_nodeid()
       conv_tol = wfn1_param%convergence
       maxit    = wfn1_param%maxiter
+      nmo      = wfn1_param%nmo
+      nbf      = wfn1_param%nbf
+c
+      allocate(icola(1:nmo))
+      allocate(icolb(1:nmo))
 c
       if (iproc.eq.0) then
         if (.not.oprerr) then
@@ -99,8 +111,7 @@ c
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
      &              wfn1_energy,g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &              v_dna,v_dnb,v_dca,v_dcb)
-      call wfn1_skew(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
-c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
+      call wfn1_symm(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
       error      = wfn1_trace(wfn1_deriv,wfn1_deriv)
       oconverged = (error%total < conv_tol)
       curit      = 0
@@ -124,58 +135,84 @@ c
         if (error%errna+error%errnb > 0.5d0*conv_tol .and.
      &      error%errca+error%errcb > 0.5d0*conv_tol) then
           if (mod(curit,2).eq.0) then
-            call ga_zero(wfn1_deriv%g_dca)
-            call ga_zero(wfn1_deriv%g_dcb)
+            diag_NorC = DIAG_N
           else
-            call ga_zero(wfn1_deriv%g_dna)
-            call ga_zero(wfn1_deriv%g_dnb)
+            diag_NorC = DIAG_C
           endif
         else if (error%errna+error%errnb >
      &           error%errca+error%errcb) then
-          call ga_zero(wfn1_deriv%g_dca)
-          call ga_zero(wfn1_deriv%g_dcb)
+          diag_NorC = DIAG_N
         else
-          call ga_zero(wfn1_deriv%g_dna)
-          call ga_zero(wfn1_deriv%g_dnb)
+          diag_NorC = DIAG_C
         endif
 c
 c       end of alternating optimization
 c
-        call wfn1_linesearch(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
-     &                       wfn1_deriv,wfn1_energy,
-     &                       wfn1_trial_wv,wfn1_trial_drv,wfn1_trial_en,
-     &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                       v_dna,v_dnb,v_dca,v_dcb)
-c
-        error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
+        if      (diag_NorC.eq.DIAG_C) then
+          call wfn1_scale_offdiag(wfn1_deriv%g_dca,0.40d0)
+          call wfn1_scale_offdiag(wfn1_deriv%g_dcb,0.40d0)
+          call ga_diag_std(wfn1_deriv%g_dca,g_momo1,v_dca)
+          call ga_diag_std(wfn1_deriv%g_dcb,g_momo2,v_dcb)
+c         call wfn1_column_max(wfn1_param,g_momo1,icola)
+c         call wfn1_column_max(wfn1_param,g_momo2,icolb)
+c         call wfn1_backorder(wfn1_param,g_momo1,icola,g_momo3)
+c         call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
+          call ga_copy(g_momo1,g_momo3)
+          call ga_copy(g_momo2,g_momo4)
+          call ga_dgemm('N','N',nmo,nmo,nmo,
+     &                  1.0d0,wfn1_wave%g_ca,g_momo3,0.0d0,g_momo1)
+          call ga_dgemm('N','N',nmo,nmo,nmo,
+     &                  1.0d0,wfn1_wave%g_cb,g_momo4,0.0d0,g_momo2)
+          call ga_copy(g_momo1,wfn1_wave%g_ca)
+          call ga_copy(g_momo2,wfn1_wave%g_cb)
+        else if (diag_NorC.eq.DIAG_N) then
+          call wfn1_scale_offdiag(wfn1_deriv%g_dna,0.40d0)
+          call wfn1_scale_offdiag(wfn1_deriv%g_dnb,0.40d0)
+          call ga_diag_std(wfn1_deriv%g_dna,g_momo1,v_dna)
+          call ga_diag_std(wfn1_deriv%g_dnb,g_momo2,v_dnb)
+          call wfn1_column_max(wfn1_param,g_momo1,icola)
+          call wfn1_column_max(wfn1_param,g_momo2,icolb)
+          call wfn1_backorder(wfn1_param,g_momo1,icola,g_momo3)
+          call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
+          call ga_dgemm('N','N',nmo,nmo,nmo,
+     &                  1.0d0,wfn1_wave%g_na,g_momo3,0.0d0,g_momo1)
+          call ga_dgemm('N','N',nmo,nmo,nmo,
+     &                  1.0d0,wfn1_wave%g_nb,g_momo4,0.0d0,g_momo2)
+          call ga_copy(g_momo1,wfn1_wave%g_na)
+          call ga_copy(g_momo2,wfn1_wave%g_nb)
+        else
+          call errquit("wfn1_solve_diag: invalid diagonalization",
+     &                 diag_NorC,UERR)
+        endif
+        call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                wfn1_deriv,wfn1_energy,g_bfmo,g_momo1,g_momo2,
+     &                g_momo3,g_momo4,v_dna,v_dnb,v_dca,v_dcb)
+        call wfn1_symm(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
+        error = wfn1_trace(wfn1_deriv,wfn1_deriv)
         oconverged = (error%total < conv_tol)
 c
-c       swap trial wavefunctions, derivatives and energies with the 
-c       regular ones.
-c
-        wfn1_t_wv      = wfn1_trial_wv
-        wfn1_trial_wv  = wfn1_wave
-        wfn1_wave      = wfn1_t_wv
-c
-        wfn1_t_drv     = wfn1_trial_drv
-        wfn1_trial_drv = wfn1_deriv
-        wfn1_deriv     = wfn1_t_drv
-c
-        wfn1_energy    = wfn1_trial_en
-
         if (iproc.eq.0) then
           if (.not.oprerr) then
             write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
      &                                      error%total
           else
-            write(luout,'(i10,f20.8,5f16.6)')curit,wfn1_energy%E_tot,
-     &                                       error%total,
-     &                                       error%errna,error%errnb,
-     &                                       error%errca,error%errcb
+            if      (diag_NorC.eq.diag_C) then
+              write(luout,'(i10,f20.8,5f16.6,a2)')
+     &              curit,wfn1_energy%E_tot,error%total,
+     &              error%errna,error%errnb,error%errca,error%errcb,'C'
+            else if (diag_NorC.eq.diag_N) then
+              write(luout,'(i10,f20.8,5f16.6,a2)')
+     &              curit,wfn1_energy%E_tot,error%total,
+     &              error%errna,error%errnb,error%errca,error%errcb,'N'
+            else
+              call errquit("should never get here",0,UERR)
+            endif
           endif
         endif
       enddo
-      wfn1_solve_line = oconverged
-      end function wfn1_solve_line
+      deallocate(icolb)
+      deallocate(icola)
+      wfn1_solve_diag = oconverged
+      end function wfn1_solve_diag
 c
 c-----------------------------------------------------------------------

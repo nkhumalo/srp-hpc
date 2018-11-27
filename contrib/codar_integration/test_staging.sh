@@ -5,8 +5,8 @@
 
 cd /Codar/nwchem-1/QA/tests/ethanol
 
-cp /Codar/workflow/md_compress_adaptive_adios_dataspaces.py .
-cp /Codar/workflow/dataspaces.conf .
+cp /Codar/nwchem-1/contrib/codar_integration/md_compress_adaptive_adios_dataspaces.py .
+cp /Codar/nwchem-1/contrib/codar_integration/dataspaces.conf .
 
 sed -i 's/coord 0/coord 1/' ethanol_md.nw
 sed -i 's/scoor 0/scoor 1/' ethanol_md.nw

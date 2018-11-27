@@ -111,11 +111,7 @@ RUN make install -j2
 WORKDIR /Codar
 RUN git clone https://github.com/hjjvandam/nwchem-1.git
 WORKDIR /Codar/nwchem-1
-RUN git checkout tau
-COPY build_nwchem ./contrib/distro-tools
-COPY makefile.h ./src/config
-COPY md_main.F ./src/nwmd
-COPY sp_init.F ./src/space
+RUN git checkout pretauadio
 COPY select.tau /Codar/nwchem-1/.
 RUN git clone https://github.com/khuck/sos_flow_experiments.git
 RUN cp sos_flow_experiments/sos_scripts/Codar_nwchem_everything/*.* .
@@ -156,13 +152,6 @@ RUN chmod +x run_ethanolmd_adios_tau.sh
 
 RUN apt-get install -y python3-numpy python3-scipy
 
-WORKDIR /Codar
-RUN mkdir workflow
-COPY adios_read_ws_checker.py ./workflow
-COPY md_compress_adaptive_adios_dataspaces.py ./workflow
-COPY dataspaces.conf ./workflow
-COPY test_staging.sh ./workflow
+WORKDIR /Codar/nwchem-1/contrib/codar_integration
 
-
-WORKDIR /Codar/nwchem-1
-CMD ["./test.sh"]
+CMD ["sh test_staging.sh"]

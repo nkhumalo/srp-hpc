@@ -163,7 +163,18 @@ Comments: order the water and solute atoms and send the ordered coordinates to a
 
 The integration code can be found in [https://github.com/hjjvandam/nwchem-1](https://github.com/hjjvandam/nwchem-1) on the branch "pretauadio".
  
-In this integration code, ADIOS only writes out the trajactories of Molecular Dynamics (MD) of NWChem. The output trajactories are identical with the NWChem .trj file. The following sections present the details of how ADIOS integrates with NWChem.
+This ADIOS integration with NWChem can work with either MPI mode or DATASPACES mode.
+The MPI mode outputs the trajectory file with the ADIOS BP format. It can be queried
+by using bpls command (e.g., `bpls -l xx.bp`, `bpls` is installed from ADIOS). The
+DATASPACES mode outputs the data into a dataspaces server and then connect to the
+analysis code. There will be no file generated during the execution. To set the
+ADIOS mode in NWChem, you can use
+```
+  set "sp:adios_mode" "DATASPACES"
+```
+in the `.nw` file.
+
+The following sections present the details of how ADIOS integrates with NWChem.
 
 ### 1. nwchem-1/nwchem_make_env.sh
 

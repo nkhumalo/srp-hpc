@@ -112,7 +112,7 @@ WORKDIR /Codar
 RUN git clone https://github.com/hjjvandam/nwchem-1.git
 WORKDIR /Codar/nwchem-1
 RUN git checkout pretauadio
-COPY select.tau /Codar/nwchem-1/.
+#COPY select.tau /Codar/nwchem-1/.
 RUN git clone https://github.com/khuck/sos_flow_experiments.git
 RUN cp sos_flow_experiments/sos_scripts/Codar_nwchem_everything/*.* .
 
@@ -142,11 +142,11 @@ WORKDIR /Codar/nwchem-1
 ENV ARMCI_NETWORK=MPI-TS
 ENV BLASOPT="-lopenblas `adios_config -l -f`"
 ENV NWCHEM_MODULES=md
-COPY sp_init.F ./src/space
+#COPY sp_init.F ./src/space
 RUN chmod +x ./contrib/distro-tools/build_nwchem
 RUN . /etc/profile && ./contrib/distro-tools/build_nwchem 2>&1 | tee build_nwchem.log 
 RUN cd QA && ./domknwchemrc
-COPY run_ethanolmd_adios_tau.sh .
+#COPY run_ethanolmd_adios_tau.sh .
 RUN chmod +x run_ethanolmd_adios_tau.sh
 
 

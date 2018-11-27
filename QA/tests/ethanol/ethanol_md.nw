@@ -14,9 +14,9 @@ task prepare
 
 # Store the ADIOS mode selection in the Run Time Data Base
 #set "sp:adios_mode" "NULL"
- set "sp:adios_mode" "MPI"
+#set "sp:adios_mode" "MPI"
 #set "sp:adios_mode" "FLEXPATH"
-#set "sp:adios_mode" "DATASPACES"
+ set "sp:adios_mode" "DATASPACES"
 
 md
  print out6

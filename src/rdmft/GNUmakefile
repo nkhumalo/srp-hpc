@@ -7,8 +7,10 @@
          wfn1_allocate_drv.o \
          wfn1_allocate_mat.o \
          wfn1_allocate_wfn.o \
+         wfn1_backorder.o \
          wfn1_calc_occ.o \
          wfn1_closest_three.o \
+         wfn1_column_max.o \
          wfn1_configuration.o \
          wfn1_df1df2df3.o \
          wfn1_dlasyf.o \
@@ -41,10 +43,14 @@
          wfn1_print.o \
          wfn1_print_analysis.o \
          wfn1_print_occ.o \
+         wfn1_scale_offdiag.o \
          wfn1_size.o \
          wfn1_skew.o \
+         wfn1_solve_diag.o \
          wfn1_solve_line.o \
+         wfn1_symm.o \
          wfn1_test_rdms.o \
+         wfn1_thimble.o \
 	 wfn1_trace.o \
          wfn1_write_movecs.o \
          wfn1_zero_vv.o 

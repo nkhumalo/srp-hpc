@@ -93,6 +93,15 @@ c
           write(LuOut,'(i8,f12.4,f12.4,4x,f12.4,f12.4)')ii,
      &          en1a(ii),en1b(ii),ocna(ii),ocnb(ii)
         enddo
+cDEBUG
+        do ii = 1, nmo
+          write(80,'(2x,f14.6,$)')ocna(ii)
+        enddo
+        do ii = 1, nmo
+          write(80,'(2x,f14.6,$)')ocnb(ii)
+        enddo
+        close(80)
+cDEBUG
       endif
 c
 c     Sort correlation functions by energy

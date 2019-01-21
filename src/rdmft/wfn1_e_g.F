@@ -15,7 +15,7 @@ C>
       subroutine wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
      &                    wfn1_deriv,wfn1_energy,g_bfmo,g_momo,
      &                    g_momo2,g_momo3,g_momo4,
-     &                    v_dna,v_dnb,v_dca,v_dcb)
+     &                    v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
       implicit none
 C 
 #include "mafdecls.fh"
@@ -48,6 +48,12 @@ c
       double precision, intent(out) :: v_dca(1:wfn1_param%nmo)
 !>    The \$\beta\f$ correlation function energies
       double precision, intent(out) :: v_dcb(1:wfn1_param%nmo)
+!>    The \$\alpha\f$ natural orbital expectation values of
+!>    correlation function Fock matrix
+      double precision, intent(out) :: v_dcna(1:wfn1_param%nmo)
+!>    The \$\beta\f$ natural orbital expectation values of
+!>    correlation function Fock matrix
+      double precision, intent(out) :: v_dcnb(1:wfn1_param%nmo)
       double precision, allocatable :: buf(:,:)
       double precision, allocatable :: bufji(:,:)
 c
@@ -91,10 +97,12 @@ c
 c     allocate(v_dca(1:wfn1_param%nmo))
 c     allocate(v_dcb(1:wfn1_param%nmo))
 c
-      v_dna = 0.0d0
-      v_dnb = 0.0d0
-      v_dca = 0.0d0
-      v_dcb = 0.0d0
+      v_dna  = 0.0d0
+      v_dnb  = 0.0d0
+      v_dca  = 0.0d0
+      v_dcb  = 0.0d0
+      v_dcna = 0.0d0
+      v_dcnb = 0.0d0
 c
 c     Evaluate the various Fock matrix terms
 c     --------------------------------------
@@ -155,6 +163,7 @@ c
       call ga_get(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
       do ii = max(ilo,jlo), min(ihi,jhi)
         buf(ii,ii) = buf(ii,ii) + v_dca(ii)
+        v_dcna(ii) = buf(ii,ii)
       enddo
       call ga_put(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
       deallocate(buf)
@@ -176,6 +185,7 @@ c
       call ga_get(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
       do ii = max(ilo,jlo), min(ihi,jhi)
         buf(ii,ii) = buf(ii,ii) + v_dcb(ii)
+        v_dcnb(ii) = buf(ii,ii)
       enddo
       call ga_put(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
       deallocate(buf)
@@ -250,10 +260,15 @@ c
         deallocate(buf)
       endif
 c
-      call ga_dgop(1402,v_dna,nmo,"+")
-      call ga_dgop(1403,v_dnb,nmo,"+")
-      call ga_dgop(1404,v_dca,nmo,"+")
-      call ga_dgop(1405,v_dcb,nmo,"+")
+      call ga_dgop(1402,v_dna, nmo,"+")
+      call ga_dgop(1403,v_dnb, nmo,"+")
+      call ga_dgop(1404,v_dca, nmo,"+")
+      call ga_dgop(1405,v_dcb, nmo,"+")
+      call ga_dgop(1406,v_dcna,nmo,"+")
+      call ga_dgop(1407,v_dcnb,nmo,"+")
+cDEBUG
+      call wfn1_set_entropy_eorb(v_dna,v_dnb,nmo)
+cDEBUG
 c
       wfn1_energy%E_tot = wfn1_energy%E_1el + wfn1_energy%E_2el
      &                  + wfn1_energy%E_nuc + wfn1_energy%E_ent

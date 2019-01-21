@@ -11,7 +11,7 @@ C>
      &                         wfn1_wave,wfn1_deriv,wfn1_energy,
      &                         wfn1_trial_wv,wfn1_trial_drv,
      &                         g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                         v_dna,v_dnb,v_dca,v_dcb,
+     &                         v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb,
      &                         oprerr,curit)
       implicit none
 #include "wfn1_param.fh"
@@ -64,6 +64,8 @@ c
       double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dca(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcb(1:wfn1_param%nmo)
+      double precision, intent(out) :: v_dcna(1:wfn1_param%nmo)
+      double precision, intent(out) :: v_dcnb(1:wfn1_param%nmo)
 c
 c     Local
 c
@@ -110,7 +112,7 @@ c
       endif
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
      &              wfn1_energy,g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dna,v_dnb,v_dca,v_dcb)
+     &              v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
       call wfn1_symm(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
       error      = wfn1_trace(wfn1_deriv,wfn1_deriv)
       oconverged = (error%total < conv_tol)
@@ -149,8 +151,8 @@ c
 c       end of alternating optimization
 c
         if      (diag_NorC.eq.DIAG_C) then
-          call wfn1_scale_offdiag(wfn1_deriv%g_dca,0.40d0)
-          call wfn1_scale_offdiag(wfn1_deriv%g_dcb,0.40d0)
+          call wfn1_scale_offdiag(wfn1_deriv%g_dca,0.002d0)
+          call wfn1_scale_offdiag(wfn1_deriv%g_dcb,0.002d0)
           call ga_diag_std(wfn1_deriv%g_dca,g_momo1,v_dca)
           call ga_diag_std(wfn1_deriv%g_dcb,g_momo2,v_dcb)
 c         call wfn1_column_max(wfn1_param,g_momo1,icola)
@@ -166,8 +168,8 @@ c         call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
           call ga_copy(g_momo1,wfn1_wave%g_ca)
           call ga_copy(g_momo2,wfn1_wave%g_cb)
         else if (diag_NorC.eq.DIAG_N) then
-          call wfn1_scale_offdiag(wfn1_deriv%g_dna,0.40d0)
-          call wfn1_scale_offdiag(wfn1_deriv%g_dnb,0.40d0)
+          call wfn1_scale_offdiag(wfn1_deriv%g_dna,0.01d0)
+          call wfn1_scale_offdiag(wfn1_deriv%g_dnb,0.01d0)
           call ga_diag_std(wfn1_deriv%g_dna,g_momo1,v_dna)
           call ga_diag_std(wfn1_deriv%g_dnb,g_momo2,v_dnb)
           call wfn1_column_max(wfn1_param,g_momo1,icola)
@@ -186,7 +188,8 @@ c         call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
         endif
         call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
      &                wfn1_deriv,wfn1_energy,g_bfmo,g_momo1,g_momo2,
-     &                g_momo3,g_momo4,v_dna,v_dnb,v_dca,v_dcb)
+     &                g_momo3,g_momo4,
+     &                v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
         call wfn1_symm(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
         error = wfn1_trace(wfn1_deriv,wfn1_deriv)
         oconverged = (error%total < conv_tol)

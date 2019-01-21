@@ -462,6 +462,16 @@ c
       double precision :: dsbbij_ij ! The entropy derivative wrt d_ij
 c
       double precision, target :: dummy(2)
+cDEBUG
+      double precision :: ac_aa_mx = 0.0d0
+      double precision :: ac_ab_mx = 0.0d0
+      double precision :: ac_ba_mx = 0.0d0
+      double precision :: ac_bb_mx = 0.0d0
+      double precision :: ad_aa_mx = 0.0d0
+      double precision :: ad_ab_mx = 0.0d0
+      double precision :: ad_ba_mx = 0.0d0
+      double precision :: ad_bb_mx = 0.0d0
+cDEBUG
 c
 c     Functions:
 c
@@ -998,12 +1008,18 @@ c
                     dsabij_j = 0.0d0
                     dsbaij_i = 0.0d0
                     dsbaij_j = 0.0d0
-ctest               if (ii.ne.jj) then
-                      call wfn1_entropy2_ab(occ_a(ii),occ_b(jj),sabij,
+c                   if (ii.eq.jj) then
+                      call wfn1_entropy2_ab(ii,jj,occ_a(ii),occ_b(jj),
+     &                                      sabij,
      &                                      dsabij_i,dsabij_j)
-                      call wfn1_entropy2_ab(occ_b(ii),occ_a(jj),sbaij,
+                      call wfn1_entropy2_ab(jj,ii,occ_b(ii),occ_a(jj),
+     &                                      sbaij,
      &                                      dsbaij_i,dsbaij_j)
-ctest               endif
+cDEBUG
+c      write(*,*)'HVD: ii,jj,sabij = ',ii,jj,occ_a(ii),occ_b(jj),sabij
+c      write(*,*)'HVD: ii,jj,sbaij = ',ii,jj,occ_b(ii),occ_a(jj),sbaij
+cDEBUG
+c                   endif
                     call wfn1_entropy2_aa(
      &                   occ_b(ii),occ_b(jj),
      &                   x_bb(ii,jj)+occ_b(ii)*occ_b(jj),
@@ -1025,7 +1041,7 @@ ctest               endif
      &                      (x_bb(ii,jj)+occ_b(ii)*occ_b(jj))*
      &                      (1.0d0-sbbij)
                       enddo ! ia
-                    enddo ! id
+                    enddo ! ic
                     do id = id_lo, id_hi
                       do ia = ia_lo, ia_hi
                         rdm2_adj_aa(ia,id,jj) = rdm2_adj_aa(ia,id,jj)
@@ -1046,6 +1062,16 @@ c    &                      occ_b(ii)*occ_a(jj)*(1.0d0-sbaij)
                     enddo ! id
                   enddo ! ii
                 enddo ! jj
+cDEBUG
+                ac_aa_mx = max(ac_aa_mx,maxval(rdm2_acj_aa))
+                ac_ab_mx = max(ac_ab_mx,maxval(rdm2_acj_ab))
+                ac_ba_mx = max(ac_ba_mx,maxval(rdm2_acj_ba))
+                ac_bb_mx = max(ac_bb_mx,maxval(rdm2_acj_bb))
+                ad_aa_mx = max(ad_aa_mx,maxval(rdm2_adj_aa))
+                ad_ab_mx = max(ad_ab_mx,maxval(rdm2_adj_ab))
+                ad_ba_mx = max(ad_ba_mx,maxval(rdm2_adj_ba))
+                ad_bb_mx = max(ad_bb_mx,maxval(rdm2_adj_bb))
+cDEBUG
 c
 cDEBUG
 c               do jj = jj_lo, jj_hi
@@ -1315,12 +1341,14 @@ c
                     dsabij_j = 0.0d0
                     dsbaij_i = 0.0d0
                     dsbaij_j = 0.0d0
-ctest               if (ii.ne.jj) then
-                      call wfn1_entropy2_ab(occ_a(ii),occ_b(jj),sabij,
+c                   if (ii.eq.jj) then
+                      call wfn1_entropy2_ab(ii,jj,occ_a(ii),occ_b(jj),
+     &                                      sabij,
      &                                      dsabij_i,dsabij_j)
-                      call wfn1_entropy2_ab(occ_b(ii),occ_a(jj),sbaij,
+                      call wfn1_entropy2_ab(jj,ii,occ_b(ii),occ_a(jj),
+     &                                      sbaij,
      &                                      dsbaij_i,dsbaij_j)
-ctest               endif
+c                   endif
                     call wfn1_entropy2_aa(
      &                   occ_b(ii),occ_b(jj),
      &                   x_bb(ii,jj)+occ_b(ii)*occ_b(jj),
@@ -1439,6 +1467,16 @@ c
 c
       call ga_dgop(1300,E_2el,1,"+")
       call ga_dgop(1301,E_2el_chf,1,"+")
+cDEBUG
+c     write(*,*)'HVD: ac_aa_mx = ',ac_aa_mx
+c     write(*,*)'HVD: ac_ab_mx = ',ac_ab_mx
+c     write(*,*)'HVD: ac_ba_mx = ',ac_ba_mx
+c     write(*,*)'HVD: ac_bb_mx = ',ac_bb_mx
+c     write(*,*)'HVD: ad_aa_mx = ',ad_aa_mx
+c     write(*,*)'HVD: ad_ab_mx = ',ad_ab_mx
+c     write(*,*)'HVD: ad_ba_mx = ',ad_ba_mx
+c     write(*,*)'HVD: ad_bb_mx = ',ad_bb_mx
+cDEBUG
 c
 #ifdef TEST_RDMS
       flush(6)

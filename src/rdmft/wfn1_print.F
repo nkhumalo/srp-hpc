@@ -248,3 +248,83 @@ c
       end subroutine wfn1_print_mat2
 c
 c-----------------------------------------------------------------------
+c
+      subroutine wfn1_print_orb_energies(wfn1_param,e_na,e_nb,
+     &                                   e_cna,e_cnb)
+      implicit none
+#include "stdio.fh"
+#include "wfn1_param.fh"
+!>    Calculation parameters 
+      type(wfn1_prm), intent(in)   :: wfn1_param
+!>    \f$\alpha\f$ natural orbital Fock matrix eigenvalues
+      double precision, intent(in) :: e_na(1:wfn1_param%nmo)
+!>    \f$\beta\f$ natural orbital Fock matrix eigenvalues
+      double precision, intent(in) :: e_nb(1:wfn1_param%nmo)
+!>    \f$\alpha\f$ natural orbital expectation values of the 
+!>    correlation function Fock matrix
+      double precision, intent(in) :: e_cna(1:wfn1_param%nmo)
+!>    \f$\alpha\f$ natural orbital expectation values of the 
+!>    correlation function Fock matrix
+      double precision, intent(in) :: e_cnb(1:wfn1_param%nmo)
+c
+      double precision :: e1_na(1:wfn1_param%nmo)
+      double precision :: e1_nb(1:wfn1_param%nmo)
+      double precision :: e1_ca(1:wfn1_param%nmo)
+      double precision :: e1_cb(1:wfn1_param%nmo)
+      integer :: ii
+c
+      e1_na=e_na
+      e1_nb=e_nb
+      e1_ca=e_cna
+      e1_cb=e_cnb
+      call wfn1_sort(e1_na,wfn1_param%nmo)
+      call wfn1_sort(e1_nb,wfn1_param%nmo)
+      call wfn1_sort(e1_ca,wfn1_param%nmo)
+      call wfn1_sort(e1_cb,wfn1_param%nmo)
+      write(LuOut,'(12x,"  Alpha ",4x,"  Beta  ",8x,
+     &                  "  Alpha ",4x,"  Beta  ")')
+      write(LuOut,'(12x,"--------",4x,"--------",8x,
+     &                  "--------",4x,"--------")')
+      do ii = 1, wfn1_param%nmo
+        write(LuOut,'(i8,2f12.4,4x,2f12.4)')ii,e1_na(ii),e1_nb(ii),
+     &                                      e1_ca(ii),e1_cb(ii)
+      enddo
+cDEBUG
+      do ii = 1, wfn1_param%nmo
+        write(75,'(2x,f24.16,$)')e1_na(ii)
+        write(76,'(2x,f24.16,$)')e1_ca(ii)
+      enddo
+      write(75,*)
+      write(76,*)
+      close(75)
+      close(76)
+cDEBUG
+      end subroutine wfn1_print_orb_energies
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Sort the values in A in increasing order
+!>
+      subroutine wfn1_sort(a,n)
+      implicit none
+      integer, intent(in) :: n
+      double precision, intent(inout) :: a(n)
+      integer :: ii, jj, itmp
+      double precision tmp
+      do ii = 1, n
+        tmp = a(ii)
+        itmp = ii
+        do jj = ii+1,n
+          if (a(jj).lt.tmp) then
+            tmp = a(jj)
+            itmp = jj
+          endif
+        enddo
+        if (itmp.ne.ii) then
+          a(itmp) = a(ii)
+          a(ii) = tmp
+        endif
+      enddo
+      end subroutine wfn1_sort
+c
+c-----------------------------------------------------------------------

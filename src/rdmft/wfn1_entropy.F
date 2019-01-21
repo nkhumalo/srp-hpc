@@ -1,3 +1,15 @@
+      module wfn1_fac
+      double precision :: fac_aa
+      double precision :: fac_ab
+      double precision :: trm_aa
+      double precision :: trm_ab
+      double precision :: pow_y_aa
+      double precision :: pow_y_ab
+      double precision :: pow_z_aa
+      double precision :: pow_z_ab
+      double precision, allocatable :: orb_ea(:)
+      double precision, allocatable :: orb_eb(:)
+      end module wfn1_fac
 c-----------------------------------------------------------------------
 c
 C>
@@ -396,6 +408,7 @@ c
      &    - gsl_sf_psi(1.0d0+(1.0d0-pj)*pi)*pi
      &    - gsl_sf_psi(1.0d0+(1.0d0-pi)*(1.0d0-pj))*(1.0d0-pi)
 #else
+c     von Neumann entropy
       s   = 0.0d0
       dsi = 0.0d0
       dsj = 0.0d0
@@ -438,23 +451,144 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_set_entropy_fac(aa,ab,paa,pab)
+!> \brief Approximation to the entanglement entropy
+!>
+!> Rather than implementing the entanglement by combining the routines
+!> wfn1_entropy_si and wfn1_entropy_sij we use an approximation 
+!> similar to wfn1_entropy1. The approximation is generalized to all
+!> of the entanglement entropy.
+!> 
+      subroutine wfn1_entropy2_sij(pi,pj,s,dsi,dsj)
       implicit none
-      double precision ::     aa ! scale factor
-      double precision ::     ab ! scale factor
-      double precision ::    paa ! power
-      double precision ::    pab ! power
-      double precision :: fac_aa
-      double precision :: fac_ab
-      double precision :: pow_aa
-      double precision :: pow_ab
-      common/wfn1_fac/fac_aa,fac_ab,
-     +                pow_aa,pow_ab
-      fac_aa = aa
-      fac_ab = ab
-      pow_aa = paa
-      pow_ab = pab
+!>    The occupation number for natural orbital \f$i\f$
+      double precision, intent(in)  :: pi
+!>    The occupation number for natural orbital \f$j\f$
+      double precision, intent(in)  :: pj
+!>    The entropy
+      double precision, intent(out) :: s
+!>    The entropy gradient wrt \f$p_i\f$
+      double precision, intent(out) :: dsi
+!>    The entropy gradient wrt \f$p_j\f$
+      double precision, intent(out) :: dsj
+c
+      double precision :: a
+      double precision :: tol
+      double precision :: di, dj ! local versions of pi and pj
+c     double precision, parameter :: b = 0.9513d0
+      double precision, parameter :: b = 0.0500d0
+c
+      a =  1.0d0/((0.5d0*(1.0d0-0.5d0))**(2.0d0*b))
+c
+      di  = max(0.0d0,pi)
+      dj  = max(0.0d0,pj)
+      s   = (di*(1.0d0-di)*dj*(1.0d0-dj))**b
+      di  = max(1.0d-10,pi)
+      dj  = max(1.0d-10,pj)
+      dsi = b*(di*(1.0d0-di)*dj*(1.0d0-dj))**(b-1.0d0)
+     &      *(1.0d0-2.0d0*di)*dj*(1.0d0-dj)
+      dsj = b*(di*(1.0d0-di)*dj*(1.0d0-dj))**(b-1.0d0)
+     &      *di*(1.0d0-di)*(1.0d0-2.0d0*dj)
+c
+      s   = a*s
+      dsi = a*dsi
+      dsj = a*dsj
+c
+      end subroutine wfn1_entropy2_sij
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Set the parameters that define the entropy
+!>
+!> This subroutine is a temporary feature until there is more clarity
+!> on the required parameters.
+!>
+      subroutine wfn1_set_entropy_fac(faa,fab,taa,tab,
+     &                                pyaa,pyab,pzaa,pzab)
+      use wfn1_fac
+      implicit none
+!>    The same-spin overal scale factor
+      double precision, intent(in) :: faa
+!>    The opposite-spin overal scale factor
+      double precision, intent(in) :: fab
+!>    The same-spin coordinate offset term
+      double precision, intent(in) :: taa
+!>    The opposite-spin coordinate offset term
+      double precision, intent(in) :: tab
+!>    The same-spin power-y
+      double precision, intent(in) :: pyaa
+!>    The opposite-spin power-y
+      double precision, intent(in) :: pyab
+!>    The same-spin power-z
+      double precision, intent(in) :: pzaa
+!>    The opposite-spin power-z
+      double precision, intent(in) :: pzab
+!>
+c     double precision :: fac_aa
+c     double precision :: fac_ab
+c     double precision :: trm_aa
+c     double precision :: trm_ab
+c     double precision :: pow_y_aa
+c     double precision :: pow_y_ab
+c     double precision :: pow_z_aa
+c     double precision :: pow_z_ab
+c     double precision, allocatable :: orb_ea(:)
+c     double precision, allocatable :: orb_eb(:)
+c     common/wfn1_fac/fac_aa,fac_ab,
+c    +                trm_aa,trm_ab,
+c    +                pow_y_aa,pow_y_ab,
+c    +                pow_z_aa,pow_z_ab,
+c    +                orb_ea,orb_eb
+      fac_aa   = faa
+      fac_ab   = fab
+      trm_aa   = taa
+      trm_ab   = tab
+      pow_y_aa = pyaa
+      pow_y_ab = pyab
+      pow_z_aa = pzaa
+      pow_z_ab = pzab
       end subroutine wfn1_set_entropy_fac
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Set the orbital energies that define the entropy
+!>
+!> This subroutine is a temporary feature until there is more clarity
+!> on the required parameters.
+!>
+      subroutine wfn1_set_entropy_eorb(eorb_a,eorb_b,nmo)
+      use wfn1_fac
+      implicit none
+!>    The number of MOs
+      integer, intent(in)          :: nmo
+!>    The alpha-spin orbital energies
+      double precision, intent(in) :: eorb_a(1:nmo)
+!>    The beta-spin orbital energies
+      double precision, intent(in) :: eorb_b(1:nmo)
+!>
+c     double precision :: fac_aa
+c     double precision :: fac_ab
+c     double precision :: trm_aa
+c     double precision :: trm_ab
+c     double precision :: pow_y_aa
+c     double precision :: pow_y_ab
+c     double precision :: pow_z_aa
+c     double precision :: pow_z_ab
+c     double precision, allocatable :: orb_ea(:)
+c     double precision, allocatable :: orb_eb(:)
+c     common/wfn1_fac/fac_aa,fac_ab,
+c    +                trm_aa,trm_ab,
+c    +                pow_y_aa,pow_y_ab,
+c    +                pow_z_aa,pow_z_ab,
+c    +                orb_ea,orb_eb
+      if (.not.allocated(orb_ea)) then
+        allocate(orb_ea(1:nmo))
+      endif
+      if (.not.allocated(orb_eb)) then
+        allocate(orb_eb(1:nmo))
+      endif
+      orb_ea = eorb_a
+      orb_eb = eorb_b
+      end subroutine wfn1_set_entropy_eorb
 c
 c-----------------------------------------------------------------------
 c
@@ -469,8 +603,13 @@ C> \f}
 C> The normalization of this expression should be such that 
 C> \f$S(1/2,1/2) = 1\f$.
 C> 
-      subroutine wfn1_entropy2_ab(pi,pj,s,dsi,dsj)
+      subroutine wfn1_entropy2_ab(ii,jj,pi,pj,s,dsi,dsj)
+      use wfn1_fac
       implicit none
+C>    The orbital index \f$i\f$
+      integer, intent(in) :: ii
+C>    The orbital index \f$j\f$
+      integer, intent(in) :: jj
 C>    The occupation number of orbital \f$i\f$
       double precision, intent(in)  :: pi
 C>    The occupation number of orbital \f$i\f$
@@ -486,20 +625,36 @@ c     Local
 c
       double precision :: a, ai, aj, aij
       double precision ::    si, sj, sij
+      double precision :: pii, pjj
       double precision :: ds1_i
       double precision :: ds1_j
       double precision :: ds2_i
       double precision :: ds2_j
+      double precision :: f   ! the enhancement factor
+      double precision :: dfi ! the gradient of the enhancement factor
+      double precision :: dfj ! the gradient of the enhancement factor
+
 c
 c     Global
 c
-      double precision :: fac_aa
-      double precision :: fac_ab
-      double precision :: pow_aa
-      double precision :: pow_ab
-      common/wfn1_fac/fac_aa,fac_ab,
-     +                pow_aa,pow_ab
+c     double precision :: fac_aa
+c     double precision :: fac_ab
+c     double precision :: trm_aa
+c     double precision :: trm_ab
+c     double precision :: pow_y_aa
+c     double precision :: pow_y_ab
+c     double precision :: pow_z_aa
+c     double precision :: pow_z_ab
+c     double precision, allocatable :: orb_ea(:)
+c     double precision, allocatable :: orb_eb(:)
+c     common/wfn1_fac/fac_aa,fac_ab,
+c    +                trm_aa,trm_ab,
+c    +                pow_y_aa,pow_y_ab,
+c    +                pow_z_aa,pow_z_ab,
+c    +                orb_ea,orb_eb
+      double precision :: de
 c
+#ifdef OLD
 c     call wfn1_entropy_si(0.5d0,ai,ds1_i)
 c     call wfn1_entropy_si(0.5d0,aj,ds1_j)
 c     call wfn1_entropy_sij(0.5d0,0.5d0,aij,ds2_i,ds2_j)
@@ -548,8 +703,199 @@ cDEBUG
       dsi = a*(ds1_i-ds2_i)
       dsj = a*(ds1_j-ds2_j)
 c
+#else
+c     call wfn1_entropy2_sij(0.5d0,0.5d0,sij,dsi,dsj)
+c     write(*,*)'HVD: sij = ',sij,fac_ab
+      a = fac_ab
+cDEBUG
+c     write(*,*)'HVD: fac_ab = ',fac_ab,a
+c     write(*,*)'HVD: pi,pj  = ',pi,pj
+cDEBUG
+      if      (pi.gt.0.5d0.and.pj.gt.0.5d0) then
+        f   = 1.0d0
+        dfi = 0.0d0
+        dfj = 0.0d0
+      else if (pi.lt.0.5d0.and.pj.lt.0.5d0) then
+c       call wfn1_entropy2_ll(pi,pj,f,dfi,dfj)
+        f   = 1.0d0
+        dfi = 0.0d0
+        dfj = 0.0d0
+      else
+        f   = 1.0d0
+        dfi = 0.0d0
+        dfj = 0.0d0
+      endif
+c     call wfn1_entropy2_sij(pi,pj,s,dsi,dsj)
+      if (pi.lt.1.0d-10) then
+        pii = 1.0d-10
+      else if (pi.gt.1.0d0-1.0d-10) then
+        pii = 1.0d0-1.0d-10
+      else
+        pii = pi
+      endif
+      if (pj.lt.1.0d-10) then
+        pjj = 1.0d-10
+      else if (pj.gt.1.0d0-1.0d-10) then
+        pjj = 1.0d0-1.0d-10
+      else
+        pjj = pj
+      endif
+      de = orb_ea(ii)-orb_eb(jj)
+      call wfn1_thimble(pii,pjj,de,trm_ab,pow_y_ab,pow_z_ab,s,dsi,dsj)
+      s   = a*s*f
+      dsi = a*(f*dsi+s*dfi)
+      dsj = a*(f*dsj+s*dfj)
+#endif
+c
       end
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Entropy enhancement toward low occupations
+!>
+!> From Berylium atom we know that low occupied orbitals need to resist
+!> the tendency towards half occupation, otherwise all the occupation
+!> of the 2p orbitals will collapse into a single 2p orbital, generating
+!> an unphysical state.
+!>
+!> Here we will enhance the entropy if the maximum occupation of two
+!> low occupied orbitals is pushed further down.
+!>
+      subroutine wfn1_entropy2_ll(pi,pj,f,dfi,dfj)
+      implicit none
+!>    The occupation number \f$p_i\f$
+      double precision, intent(in)  :: pi
+!>    The occupation number \f$p_j\f$
+      double precision, intent(in)  :: pj
+!>    The enhancement factor \f$f\f$
+      double precision, intent(out) :: f
+!>    The gradient \f$\partial f/\partial p_i\f$
+      double precision, intent(out) :: dfi
+!>    The gradient \f$\partial f/\partial p_j\f$
+      double precision, intent(out) :: dfj
+c
+c     Local
+c
+      double precision :: r   ! the "maximum" of pi and pj
+      double precision :: dri ! the gradient of r wrt pi
+      double precision :: drj ! the gradient of r wrt pj
+      double precision, parameter :: fac0 = 1.0d0
+      double precision, parameter :: pow0 = 2.0d0
+      double precision, parameter :: fac1 = 1.0d1
+      double precision, parameter :: pow1 = 2.0d0*pow0
+      double precision, parameter :: fac2 = 1.0d2
+      double precision, parameter :: pow2 = 2.0d0*pow1
+      double precision :: x
+      double precision :: dfx
+      double precision :: dxr
+c
+c     Code
+c
+cDEBUG
+      f   = 1.0d0
+      dfi = 0.0d0
+      dfj = 0.0d0
+      return
+cDEBUG
+      call wfn1_cont_max(pi,pj,6.0d0,r,dri,drj)
+      x   =  0.5d0-r
+      dxr = -1.0d0
+      f   =  1.0d0
+     &    +  fac0*x**pow0
+     &    +  fac1*x**pow1
+     &    +  fac2*x**pow2
+      dfx =  fac0*pow0*x**(pow0-1.0d0)
+     &    +  fac1*pow1*x**(pow1-1.0d0)
+     &    +  fac2*pow2*x**(pow2-1.0d0)
+      dfi =  dfx*dxr*dri
+      dfj =  dfx*dxr*drj
+      end subroutine wfn1_entropy2_ll
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Continuous and continuously differential approximation to max
+!>
+!> We need a function \f$f(x,y)\f$ that generates a value that is
+!> close to \f$max(x,y)\f$ but the function should be continuous and
+!> continuously differentiable. Also as \f$x\f$ and \f$y\f$ are orbital
+!> occupation numbers their values are limited according to
+!> \f$0 \le x,y \le 1\f$.
+!>
+!> To implement such a function we make use of the fact that the p-norm
+!> of a vector for \f$p > 1\f$ is dominated by the largest number in 
+!> the vector. So we approximate the maximum function as
+!> \f{eqnarray}{
+!>   max(x,y) \approx \sqrt[p]{\frac{x^p+y^p}{2}}
+!> \f}
+!>
+      subroutine wfn1_cont_max(x,y,p,r,drx,dry)
+      implicit none
+!>    The \f$x\f$-argument
+      double precision, intent(in)  :: x
+!>    The \f$y\f$-argument
+      double precision, intent(in)  :: y
+!>    The power \f$p\f$ defining the order of the norm
+      double precision, intent(in)  :: p
+!>    The result \f$r\f$
+      double precision, intent(out) :: r
+!>    The derivative \f$\partial r/\partial x\f$
+      double precision, intent(out) :: drx
+!>    The derivative \f$\partial r/\partial y\f$
+      double precision, intent(out) :: dry
+c
+      r   = ((x**p+y**p)/2.0d0)**(1.0d0/p)
+      drx = (((x**p+y**p)/2.0d0)**(1.0d0/p-1.0d0))
+     &      *(x**(p-1.0d0))/2.0d0
+      dry = (((x**p+y**p)/2.0d0)**(1.0d0/p-1.0d0))
+     &      *(y**(p-1.0d0))/2.0d0
+      end subroutine wfn1_cont_max
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Continuous and continuously differential approximation to min
+!>
+!> We need a function \f$f(x,y)\f$ that generates a value that is
+!> close to \f$min(x,y)\f$ but the function should be continuous and
+!> continuously differentiable. Also as \f$x\f$ and \f$y\f$ are orbital
+!> occupation numbers their values are limited according to
+!> \f$0 \le x,y \le 1\f$.
+!>
+!> To implement such a function we make use of the fact that the p-norm
+!> of a vector for \f$p > 1\f$ is dominated by the largest number in 
+!> the vector. So we approximate the minimum function as
+!> \f{eqnarray}{
+!>   min(x,y) \approx \sqrt[-p]{\frac{x^{-p}+y^{-p}}{2}}
+!> \f}
+!>
+      subroutine wfn1_cont_min(x,y,p,r,drx,dry)
+      implicit none
+!>    The \f$x\f$-argument
+      double precision, intent(in)  :: x
+!>    The \f$y\f$-argument
+      double precision, intent(in)  :: y
+!>    The power \f$p\f$ defining the order of the norm
+      double precision, intent(in)  :: p
+!>    The result \f$r\f$
+      double precision, intent(out) :: r
+!>    The derivative \f$\partial r/\partial x\f$
+      double precision, intent(out) :: drx
+!>    The derivative \f$\partial r/\partial y\f$
+      double precision, intent(out) :: dry
+c
+      double precision :: q
+c
+      q   = -p
+      r   = ((x**q+y**q)/2.0d0)**(1.0d0/q)
+      drx = (((x**q+y**q)/2.0d0)**(1.0d0/q-1.0d0))
+     &      *(x**(q-1.0d0))/2.0d0
+      dry = (((x**q+y**q)/2.0d0)**(1.0d0/q-1.0d0))
+     &      *(y**(q-1.0d0))/2.0d0
+      end subroutine wfn1_cont_min
+c
+c-----------------------------------------------------------------------
+c
       subroutine wfn1_entropy2_aa(pi,pj,pij,s,dsi,dsj,dsij)
+      use wfn1_fac
       implicit none
 C>    The occupation number of orbital \f$i\f$
       double precision, intent(in)  :: pi
@@ -578,13 +924,23 @@ c
 c
 c     Global
 c
-      double precision :: fac_aa
-      double precision :: fac_ab
-      double precision :: pow_aa
-      double precision :: pow_ab
-      common/wfn1_fac/fac_aa,fac_ab,
-     +                pow_aa,pow_ab
+c     double precision :: fac_aa
+c     double precision :: fac_ab
+c     double precision :: trm_aa
+c     double precision :: trm_ab
+c     double precision :: pow_y_aa
+c     double precision :: pow_y_ab
+c     double precision :: pow_z_aa
+c     double precision :: pow_z_ab
+c     double precision, allocatable :: orb_ea(:)
+c     double precision, allocatable :: orb_eb(:)
+c     common/wfn1_fac/fac_aa,fac_ab,
+c    +                trm_aa,trm_ab,
+c    +                pow_y_aa,pow_y_ab,
+c    +                pow_z_aa,pow_z_ab,
+c    +                orb_ea,orb_eb
 c
+#ifdef OLD
 #ifdef LOGGAMMA
       call wfn1_entropy_si(0.5d0,ai,ds1_i)
       call wfn1_entropy_si(0.5d0,aj,ds1_j)
@@ -633,6 +989,12 @@ cDEBUG
       dsi  =  a*ds1_i
       dsj  =  a*ds1_j
       dsij = -a*ds1_ij
+#else
+      s    = 0.0d0
+      dsi  = 0.0d0
+      dsj  = 0.0d0
+      dsij = 0.0d0
+#endif
 c
       end
 c

@@ -1,0 +1,23 @@
+optimprefix: t;
+
+fortran_block(l,e) := block( [n : 0],
+  for n:1 thru length(e) do
+    fortran(l[n] = l[n] + e[n])
+  );
+
+fortran_optimize(l,e) := block(
+  for p in rest(args(optimize(e))) do
+    if op(p)=":" then fortran(apply("=",args(p)))
+    else if listp(p) then fortran_block(l,p)
+    else fortran(p)
+  );
+
+e(r):=(r*(1.0-r));
+f(r,y):=(e(r)/e(1/2))**y;
+h(r1,r2,y):=f(r1,y)*f(r2,y);
+
+dhdr1(r1,r2,y):=diff(h(r1,r2,y),r1);
+dhdr2(r1,r2,y):=diff(h(r1,r2,y),r2);
+with_stdout("thimble_better.F",
+    fortran_optimize([h,dhdr1,dhdr2],[h(r1,r2,y),dhdr1(r1,r2,y),dhdr2(r1,r2,y)]));
+

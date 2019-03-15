@@ -3154,8 +3154,8 @@ c
      + isl,islp,xs,vs,fs,ipl,nb,ibw,bxw,bvw,bfw,brw,ibs,bxs,bvs,bfs,
      + mdstep,maxstep)
 c
-      use adios_defs_mod
-      use adios_write_mod
+!AD1  use adios_defs_mod
+!AD1  use adios_write_mod
       implicit none
 c
 #include "sp_common.fh"
@@ -3656,120 +3656,120 @@ c
       offsetWatoms=nwmnlist(me)*nwa
       offsetSatoms=nsanlist(me)
   
-      if(mdstep.eq.1) then
+!AD1  if(mdstep.eq.1) then
 c      call ga_mpi_comm_pgroup_default(adios_comm_world)
-      adios_comm_world=mpi_comm_world
-      call adios_init_noxml(adios_comm_world, adios_err)
-      call adios_set_max_buffer_size(i10)
-      call adios_declare_group(m_adios_group, "coordinates", "iter",
-     +adios_stat_default, adios_err)
-      amlen=inp_strlen(adios_mode)
-      if (me.eq.0) then
-        write(lfnout,*)"ADIOS mode: ",adios_mode(1:amlen)
-      endif
-      call adios_select_method(m_adios_group, adios_mode(1:amlen),
-     +"verbose=3","",adios_err)
-      call adios_define_var(m_adios_group, "LWATOMS", "", i2,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "TWATOMS", "", i2,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "OWATOMS", "", i2,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "LWMOLECULES", "", i2,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "TWMOLECULES", "", i2,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "OWMOLECULES", "", i2,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "LSATOMS", "", i2,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "TSATOMS", "", i2,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "OSATOMS", "", i2,
-     +"", "", "", varid);
-      call adios_define_var(m_adios_group, "WLX", "", adios_double,
-     +"LWATOMS", "TWATOMS", "OWATOMS", varid);
-      call adios_define_var(m_adios_group, "WLY", "", adios_double,
-     +"LWATOMS", "TWATOMS", "OWATOMS", varid);
-      call adios_define_var(m_adios_group, "WLZ", "", adios_double,
-     +"LWATOMS", "TWATOMS", "OWATOMS", varid);
-      call adios_define_var(m_adios_group, "WID", "", adios_integer,
-     +"LWMOLECULES", "TWMOLECULES", "OWMOLECULES", varid);
-      call adios_define_var(m_adios_group, "SLX", "", adios_double,
-     +"LSATOMS", "TSATOMS", "OSATOMS", varid);
-      call adios_define_var(m_adios_group, "SLY", "", adios_double,
-     +"LSATOMS", "TSATOMS", "OSATOMS", varid);
-      call adios_define_var(m_adios_group, "SLZ", "", adios_double,
-     +"LSATOMS", "TSATOMS", "OSATOMS", varid);
-      call adios_define_var(m_adios_group, "SID", "", adios_integer,
-     +"LSATOMS", "TSATOMS", "OSATOMS", varid);
-      call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
-     +"w", adios_comm_world, adios_err)
-      call adios_write (adios_handle, "LWATOMS", localWatoms,
-     +adios_err)
-      call adios_write (adios_handle, "TWATOMS", totalWatoms,
-     +adios_err)
-      call adios_write (adios_handle, "OWATOMS", offsetWatoms,
-     +adios_err)
-      call adios_write (adios_handle, "LWMOLECULES", localWmolecules,
-     +adios_err)
-      call adios_write (adios_handle, "TWMOLECULES", totalWmolecules,
-     +adios_err)
-      call adios_write (adios_handle, "OWMOLECULES", offsetWmolecules,
-     +adios_err)
-      call adios_write (adios_handle, "LSATOMS", localSatoms,
-     +adios_err)
-      call adios_write (adios_handle, "TSATOMS", totalSatoms,
-     +adios_err)
-      call adios_write (adios_handle, "OSATOMS", offsetSatoms,
-     +adios_err)
-      call adios_write (adios_handle, "WLX", localWx(:), adios_err)
-      call adios_write (adios_handle, "WLY", localWy(:), adios_err)
-      call adios_write (adios_handle, "WLZ", localWz(:), adios_err)
-      call adios_write (adios_handle, "WID", localiwl(:), adios_err)
-      call adios_write (adios_handle, "SLX", localSx(:), adios_err)
-      call adios_write (adios_handle, "SLY", localSy(:), adios_err)
-      call adios_write (adios_handle, "SLZ", localSz(:), adios_err)
-      call adios_write (adios_handle, "SID", localisl(:), adios_err)
-      call adios_close (adios_handle, adios_err)
-      else
+!AD1  adios_comm_world=mpi_comm_world
+!AD1  call adios_init_noxml(adios_comm_world, adios_err)
+!AD1  call adios_set_max_buffer_size(i10)
+!AD1  call adios_declare_group(m_adios_group, "coordinates", "iter",
+!AD1 +adios_stat_default, adios_err)
+!AD1  amlen=inp_strlen(adios_mode)
+!AD1  if (me.eq.0) then
+!AD1    write(lfnout,*)"ADIOS mode: ",adios_mode(1:amlen)
+!AD1  endif
+!AD1  call adios_select_method(m_adios_group, adios_mode(1:amlen),
+!AD1 +"verbose=3","",adios_err)
+!AD1  call adios_define_var(m_adios_group, "LWATOMS", "", i2,
+!AD1 +"", "", "", varid);
+!AD1  call adios_define_var(m_adios_group, "TWATOMS", "", i2,
+!AD1 +"", "", "", varid);
+!AD1  call adios_define_var(m_adios_group, "OWATOMS", "", i2,
+!AD1 +"", "", "", varid);
+!AD1  call adios_define_var(m_adios_group, "LWMOLECULES", "", i2,
+!AD1 +"", "", "", varid);
+!AD1  call adios_define_var(m_adios_group, "TWMOLECULES", "", i2,
+!AD1 +"", "", "", varid);
+!AD1  call adios_define_var(m_adios_group, "OWMOLECULES", "", i2,
+!AD1 +"", "", "", varid);
+!AD1  call adios_define_var(m_adios_group, "LSATOMS", "", i2,
+!AD1 +"", "", "", varid);
+!AD1  call adios_define_var(m_adios_group, "TSATOMS", "", i2,
+!AD1 +"", "", "", varid);
+!AD1  call adios_define_var(m_adios_group, "OSATOMS", "", i2,
+!AD1 +"", "", "", varid);
+!AD1  call adios_define_var(m_adios_group, "WLX", "", adios_double,
+!AD1 +"LWATOMS", "TWATOMS", "OWATOMS", varid);
+!AD1  call adios_define_var(m_adios_group, "WLY", "", adios_double,
+!AD1 +"LWATOMS", "TWATOMS", "OWATOMS", varid);
+!AD1  call adios_define_var(m_adios_group, "WLZ", "", adios_double,
+!AD1 +"LWATOMS", "TWATOMS", "OWATOMS", varid);
+!AD1  call adios_define_var(m_adios_group, "WID", "", adios_integer,
+!AD1 +"LWMOLECULES", "TWMOLECULES", "OWMOLECULES", varid);
+!AD1  call adios_define_var(m_adios_group, "SLX", "", adios_double,
+!AD1 +"LSATOMS", "TSATOMS", "OSATOMS", varid);
+!AD1  call adios_define_var(m_adios_group, "SLY", "", adios_double,
+!AD1 +"LSATOMS", "TSATOMS", "OSATOMS", varid);
+!AD1  call adios_define_var(m_adios_group, "SLZ", "", adios_double,
+!AD1 +"LSATOMS", "TSATOMS", "OSATOMS", varid);
+!AD1  call adios_define_var(m_adios_group, "SID", "", adios_integer,
+!AD1 +"LSATOMS", "TSATOMS", "OSATOMS", varid);
+!AD1  call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
+!AD1 +"w", adios_comm_world, adios_err)
+!AD1  call adios_write (adios_handle, "LWATOMS", localWatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "TWATOMS", totalWatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "OWATOMS", offsetWatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "LWMOLECULES", localWmolecules,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "TWMOLECULES", totalWmolecules,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "OWMOLECULES", offsetWmolecules,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "LSATOMS", localSatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "TSATOMS", totalSatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "OSATOMS", offsetSatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "WLX", localWx(:), adios_err)
+!AD1  call adios_write (adios_handle, "WLY", localWy(:), adios_err)
+!AD1  call adios_write (adios_handle, "WLZ", localWz(:), adios_err)
+!AD1  call adios_write (adios_handle, "WID", localiwl(:), adios_err)
+!AD1  call adios_write (adios_handle, "SLX", localSx(:), adios_err)
+!AD1  call adios_write (adios_handle, "SLY", localSy(:), adios_err)
+!AD1  call adios_write (adios_handle, "SLZ", localSz(:), adios_err)
+!AD1  call adios_write (adios_handle, "SID", localisl(:), adios_err)
+!AD1  call adios_close (adios_handle, adios_err)
+!AD1  else
 c      call ga_mpi_comm_pgroup_default(adios_comm_world)
-      adios_comm_world=mpi_comm_world
-      call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
-     +"a", adios_comm_world, adios_err)
-      call adios_write (adios_handle, "LWATOMS", localWatoms,
-     +adios_err)
-      call adios_write (adios_handle, "TWATOMS", totalWatoms,
-     +adios_err)
-      call adios_write (adios_handle, "OWATOMS", offsetWatoms,
-     +adios_err)
-      call adios_write (adios_handle, "LWMOLECULES", localWmolecules,
-     +adios_err)
-      call adios_write (adios_handle, "TWMOLECULES", totalWmolecules,
-     +adios_err)
-      call adios_write (adios_handle, "OWMOLECULES", offsetWmolecules,
-     +adios_err)
-      call adios_write (adios_handle, "LSATOMS", localSatoms,
-     +adios_err)
-      call adios_write (adios_handle, "TSATOMS", totalSatoms,
-     +adios_err)
-      call adios_write (adios_handle, "OSATOMS", offsetSatoms,
-     +adios_err)
-      call adios_write (adios_handle, "WLX", localWx(:), adios_err)
-      call adios_write (adios_handle, "WLY", localWy(:), adios_err)
-      call adios_write (adios_handle, "WLZ", localWz(:), adios_err)
-      call adios_write (adios_handle, "WID", localiwl(:), adios_err)
-      call adios_write (adios_handle, "SLX", localSx(:), adios_err)
-      call adios_write (adios_handle, "SLY", localSy(:), adios_err)
-      call adios_write (adios_handle, "SLZ", localSz(:), adios_err)
-      call adios_write (adios_handle, "SID", localisl(:), adios_err)
-      call adios_close (adios_handle, adios_err)
-      endif
+!AD1  adios_comm_world=mpi_comm_world
+!AD1  call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
+!AD1 +"a", adios_comm_world, adios_err)
+!AD1  call adios_write (adios_handle, "LWATOMS", localWatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "TWATOMS", totalWatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "OWATOMS", offsetWatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "LWMOLECULES", localWmolecules,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "TWMOLECULES", totalWmolecules,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "OWMOLECULES", offsetWmolecules,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "LSATOMS", localSatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "TSATOMS", totalSatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "OSATOMS", offsetSatoms,
+!AD1 +adios_err)
+!AD1  call adios_write (adios_handle, "WLX", localWx(:), adios_err)
+!AD1  call adios_write (adios_handle, "WLY", localWy(:), adios_err)
+!AD1  call adios_write (adios_handle, "WLZ", localWz(:), adios_err)
+!AD1  call adios_write (adios_handle, "WID", localiwl(:), adios_err)
+!AD1  call adios_write (adios_handle, "SLX", localSx(:), adios_err)
+!AD1  call adios_write (adios_handle, "SLY", localSy(:), adios_err)
+!AD1  call adios_write (adios_handle, "SLZ", localSz(:), adios_err)
+!AD1  call adios_write (adios_handle, "SID", localisl(:), adios_err)
+!AD1  call adios_close (adios_handle, adios_err)
+!AD1  endif
 c
-      if(mdstep.eq.maxstep) then
-      adiosrank = me
-      call adios_finalize(adiosrank, adios_err)
-      endif
+!AD1  if(mdstep.eq.maxstep) then
+!AD1  adiosrank = me
+!AD1  call adios_finalize(adiosrank, adios_err)
+!AD1  endif
 c
       call util_flush(lfntrj)
 

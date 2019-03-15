@@ -1672,8 +1672,8 @@ c
       end
       subroutine md_newton()
 c
-      use adios_defs_mod
-      use adios_write_mod
+!AD1  use adios_defs_mod
+!AD1  use adios_write_mod
       implicit none
 c
 #include "md_common.fh"

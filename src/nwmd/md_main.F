@@ -1678,7 +1678,7 @@ c
 c
 #include "md_common.fh"
 #include "mafdecls.fh"
-#include "mpif.h"
+cinclude "mpif.h"
 c
       logical frequency
       external frequency

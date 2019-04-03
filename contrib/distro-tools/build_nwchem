@@ -2603,7 +2603,7 @@ if [ ${#USE_TAU} -ne 0 ] ; then
   cd ${NWCHEM_TOP}
   export CWD=`pwd`
   export PATH=${CWD}/bin:${PATH}
-  export TAU_OPTIONS="-optRevert -optVerbose -optTauSelectFile=${CWD}/select.tau"
+  export TAU_OPTIONS="-optShared -optRevert -optVerbose -optTauSelectFile=${CWD}/select.tau ${TAU_OPTIONS}"
   #
   echo "export USE_TAU=${USE_TAU}"   >> ${NWCHEM_ENV_SH}
   echo "export TAU_F90_ABSOLUTE=${TAU_F90_ABSOLUTE}"   >> ${NWCHEM_ENV_SH}

@@ -2579,6 +2579,9 @@ if [ ${#OLD_GA} -eq 0 ] ; then
     echo "BLASOPT from GA = " ${BLASOPT}
   fi
 fi
+mkdir -p src/tools/build/global/trace
+touch src/tools/build/global/trace/adjust.x
+touch src/tools/build/global/trace/collisions.x
 #
 # Mess around with Tau
 #

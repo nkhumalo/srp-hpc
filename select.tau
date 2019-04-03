@@ -46,3 +46,8 @@ BEGIN_INCLUDE_LIST
 "#comex_nbgets#"
 END_INCLUDE_LIST
 
+BEGIN_FILE_EXCLUDE_LIST
+adjust.c
+collisions.c
+END_FILE_EXCLUDE_LIST
+

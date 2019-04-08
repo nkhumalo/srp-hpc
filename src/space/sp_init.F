@@ -946,7 +946,14 @@ c
       call ga_distribution(ga_ip,node,ilp,ihp,jlp,jhp)
       call ga_get(ga_ip,ilp,ilp,jlp,jhp,ipl,mbox)
       nold=ipl(1,2)
-      if(nold+new.gt.mwm) call md_abort('Dimension mwm too small',0)
+      if(nold+new.gt.mwm) then
+        write(lfnout,*)'Dimension mwm  is ',mwm
+        write(lfnout,*)'Dimension nold is ',nold
+        write(lfnout,*)'Dimension new  is ',new
+        write(lfnout,*)'New total         ',nold+new
+        call util_flush(lfnout)
+        call md_abort('Dimension mwm too small',0)
+      endif
       ipl(1,2)=ipl(1,2)+new
       call ga_put(ga_ip,ilp,ilp,jlp,jhp,ipl,mbox)
       call ga_distribution(ga_iw,node,ili,ihi,jli,jhi)

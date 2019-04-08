@@ -6,6 +6,7 @@ start ethanol_md
 prepare
  system ethanol_test
  free
+ center
  modify segment 1 final self
  new_top new_seq
 end

@@ -947,10 +947,10 @@ c
       call ga_get(ga_ip,ilp,ilp,jlp,jhp,ipl,mbox)
       nold=ipl(1,2)
       if(nold+new.gt.mwm) then
-        write(lfnout,*)'Dimension mwm  is ',mwm
-        write(lfnout,*)'Dimension nold is ',nold
-        write(lfnout,*)'Dimension new  is ',new
-        write(lfnout,*)'New total         ',nold+new
+        write(lfnout,*)'Dimension mwm  is  ',mwm
+        write(lfnout,*)'Dimension nold is  ',nold
+        write(lfnout,*)'Dimension new  is  ',new
+        write(lfnout,*)'New total          ',nold+new
         call util_flush(lfnout)
         call md_abort('Dimension mwm too small',0)
       endif
@@ -3579,9 +3579,10 @@ c      localiwl(i)=iwl(i,lwgmn)-number
       enddo
 c
       call ga_distribution(ga_w,me,ilw,ihw,jlw,jhw)
-      call ga_access(ga_w,ilw,ilw+nwmn-1,jlw,jlw+3*mwa-1,localindex,
+      call ga_access(ga_w,ilw,ilw+mwmg-1,jlw,jlw+3*mwa-1,localindex,
      +localld)
-      localxw(1:mwm,1:3,1:mwa)=>dbl_mb(localindex:localindex+mwm*3*mwa)
+      localxw(1:mwmg,1:3,1:mwa)=>
+     +        dbl_mb(localindex:localindex+mwmg*3*mwa)
       allocate(localWx(nwa*nwmn))
       allocate(localWy(nwa*nwmn))
       allocate(localWz(nwa*nwmn))

@@ -64,7 +64,7 @@ void main(void)
                 error += out.err;
             }
         }
-        printf("     & %24.16e, ! %3d %14.6e   %14.6e %14.6e\n",coeff,ii,error,coeff*facinvb,coeff*facinvt);
+        printf("     & %24.16e, ! %3d %14.6e   %14.6e %14.6e\n",coeff,ii,error/coeff,coeff*facinvb,coeff*facinvt);
     }
 }
 

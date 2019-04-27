@@ -97,9 +97,12 @@ c
  500  nswap = 0
       swapname = ' '
       if (.not. inp_i(itest)) then
-         if (.not. inp_a(swapname)) goto 10000
+         if (.not. inp_a(swapname)) goto 999
          call inp_lcase(swapname)
-         if (swapname.ne.'alpha' .and. swapname.ne.'beta') goto 10000
+         if (swapname.ne.'alpha' .and. swapname.ne.'beta') then
+            call inp_prev_field()
+            goto 10
+         endif
       else
          call inp_prev_field()
       endif
@@ -124,7 +127,7 @@ c
          if (.not. rtdb_put(rtdb, swapname, mt_int, nswap,swap))
      $        call errquit('vectors_input: put of swap?', nswap,
      &       RTDB_ERR)
-         goto 10
+         goto 500
       else
          if ((nswap+2) .gt. max_swap) call errquit
      $        ('vectors_input: swapping too many orbitals', nswap,

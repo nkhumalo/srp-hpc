@@ -36,6 +36,9 @@ c
       integer ilo, ihi          ! For printing movecs analysis
       double precision eval_pr_tol_lo, eval_pr_tol_hi
       parameter (eval_pr_tol_lo = -1.5d0, eval_pr_tol_hi=0.5)
+cDEBUG
+      integer ii
+cDEBUG
 C
 *      Integer NAtoms, NShells
 c
@@ -147,6 +150,18 @@ c
 *            call ecce_print1('orbital energies', mt_dbl, 
 *     $           dbl_mb(k_eval), nmo)
             call util_flush(6)
+cHVD
+cDEBUG
+         do ii = 0, nmo-1
+           write(70,"(2x,f20.10,$)")dbl_mb(k_eval+ii)
+         enddo
+         write(70,*)
+         do ii = 0, nmo-1
+           write(70,"(2x,f20.10,$)")dbl_mb(k_eval+ii)
+         enddo
+         write(70,*)
+cDEBUG
+cHVD
          endif
       endif
 c

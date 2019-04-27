@@ -24,3 +24,13 @@ double gsl_sf_psi_(double* x)
    exit(1);
 #endif
 }
+
+double gsl_sf_gamma_(double* x)
+{
+#ifdef USE_GSL
+   return gsl_sf_gamma(*x);
+#else
+   printf("gsl_sf_gamma_: USE_GSL not set\n");
+   exit(1);
+#endif
+}

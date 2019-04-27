@@ -613,7 +613,7 @@ c
       dhdr1 = 1.0d+0*t1*t4*(t6-t7)*t8**t15*t14*y
       dhdr2 = 1.0d+0*t1*t4*t9*(t11-t12)*t13**t15*y
       end subroutine wfn1_thimble_002
-      subroutine wfn1_thimble(r1,r2,de,a,y,z,h,dhdr1,dhdr2)
+      subroutine wfn1_thimble_003(r1,r2,de,a,y,z,h,dhdr1,dhdr2)
       implicit double precision (t)
 !>    Occupation number 1
       double precision, intent(in)  :: r1
@@ -639,12 +639,150 @@ c
       t3 = 1.0d+0-r2
       t4 = (t3*r2)**y
       t5 = 4.0d+0**(2*y)
-c     t6 = exp(-abs(de)**1.31d+0*z)
-      t6 = exp(-abs(de)**1.21319d+0*z)
-      t6 = exp(-abs(de)**0.50d+0*z)
+      t6 = exp(-abs(de)**1.31d+0*z)
+c     t6 = exp(-abs(de)**1.21319d+0*z)
+c     t6 = exp(-abs(de)**0.50d+0*z)
       h = t2*t4*t5*t6
       dhdr1 = ((1.0d+0-2*r1)*t2*t4*y*t5*t6)/(t1*r1)
       dhdr2 = (t2*(1.0d+0-2*r2)*t4*y*t5*t6)/(t3*r2)
+      end subroutine wfn1_thimble_003
+      subroutine wfn1_thimble_004(r1,r2,de,x,y1,y2,z1,z2,h,dhdr1,dhdr2)
+      implicit double precision (t)
+!>    Occupation number 1
+      double precision, intent(in)  :: r1
+!>    Occupation number 2
+      double precision, intent(in)  :: r2
+!>    Difference in orbital energy
+      double precision, intent(in)  :: de
+!>    Parameter x, controls gradient at r=0 and r=1
+!>    The power on the entropy factor
+      double precision, intent(in)  :: x 
+!>    Parameter y1, y2, the power in the exponents
+      double precision, intent(in)  :: y1, y2
+!>    Parameter z1, z2, the scale factor in the exponents
+      double precision, intent(in)  :: z1, z2
+!>    Entropy
+      double precision, intent(out) :: h
+!>    Derivative of Entropy wrt. r1
+      double precision, intent(out) :: dhdr1
+!>    Derivative of Entropy wrt. r2
+      double precision, intent(out) :: dhdr2
+c
+      h     = 0.0d0
+      dhdr1 = 0.0d0
+      dhdr2 = 0.0d0
+c
+      t1 = 1.0d+0-r1
+      t2 = (t1*r1)**x
+      t3 = 1.0d+0-r2
+      t4 = (t3*r2)**x
+      t5 = 4.0d+0**(2*x)
+      t6 = abs(de)
+      t7 = exp((-t6**y2*z2)-t6**y1*z1)
+      h = t2*t4*t5*t7+h
+      dhdr1 = ((1.0d+0-2*r1)*t2*t4*x*t5*t7)/(t1*r1)+dhdr1
+      dhdr2 = (t2*(1.0d+0-2*r2)*t4*x*t5*t7)/(t3*r2)+dhdr2
+      end subroutine wfn1_thimble_004
+      subroutine wfn1_thimble_005(r1,r2,de,x,y1,y2,z1,z2,h,dhdr1,dhdr2)
+      implicit double precision (t)
+!>    Occupation number 1
+      double precision, intent(in)  :: r1
+!>    Occupation number 2
+      double precision, intent(in)  :: r2
+!>    Difference in orbital energy
+      double precision, intent(in)  :: de
+!>    Parameter x, controls gradient at r=0 and r=1
+!>    The power on the entropy factor
+      double precision, intent(in)  :: x 
+!>    Parameter y1, y2, the power in the exponents
+      double precision, intent(in)  :: y1, y2
+!>    Parameter z1, z2, the scale factor in the exponents
+      double precision, intent(in)  :: z1, z2
+!>    Entropy
+      double precision, intent(out) :: h
+!>    Derivative of Entropy wrt. r1
+      double precision, intent(out) :: dhdr1
+!>    Derivative of Entropy wrt. r2
+      double precision, intent(out) :: dhdr2
+c
+      double precision :: gsl_sf_gamma
+c
+      h     = 0.0d0
+      dhdr1 = 0.0d0
+      dhdr2 = 0.0d0
+c
+      t1 = 1.0d+0-r1
+      t2 = (t1*r1)**x
+      t3 = 1.0d+0-r2
+      t4 = (t3*r2)**x
+      t5 = 4.0d+0**(2*x)
+      t6 = abs(de)
+#ifdef USE_GSL
+      t7 = gsl_sf_gamma((z1*t6)**y1+2.0d+0)
+      t8 = gsl_sf_gamma((z2*t6)**y2+2.0d+0)
+      t9 = exp(-t8-t7+2.0d+0)
+#else
+      t7 = (z1*t6)**y1+1.0d+0
+      t8 = (z2*t6)**y2+1.0d+0
+      t9 = exp((-exp(t8*log(t8)))-exp(t7*log(t7))+2.0d+0)
+#endif
+      h = t2*t4*t5*t9+h
+      dhdr1 = ((1.0d+0-2*r1)*t2*t4*x*t5*t9)/(t1*r1)+dhdr1
+      dhdr2 = (t2*(1.0d+0-2*r2)*t4*x*t5*t9)/(t3*r2)+dhdr2
+      end subroutine wfn1_thimble_005
+      subroutine wfn1_thimble(r1,r2,de,x,
+     &                        y1,y2,y3,y4,y5,
+     &                        z1,z2,z3,z4,z5,
+     &                        h,dhdr1,dhdr2)
+      implicit double precision (t)
+!>    Occupation number 1
+      double precision, intent(in)  :: r1
+!>    Occupation number 2
+      double precision, intent(in)  :: r2
+!>    Difference in orbital energy
+      double precision, intent(in)  :: de
+!>    Parameter x, controls gradient at r=0 and r=1
+!>    The power on the entropy factor
+      double precision, intent(in)  :: x 
+!>    Parameter y1, y2, the power in the exponents
+      double precision, intent(in)  :: y1, y2, y3, y4, y5
+!>    Parameter z1, z2, the scale factor in the exponents
+      double precision, intent(in)  :: z1, z2, z3, z4, z5
+!>    Entropy
+      double precision, intent(out) :: h
+!>    Derivative of Entropy wrt. r1
+      double precision, intent(out) :: dhdr1
+!>    Derivative of Entropy wrt. r2
+      double precision, intent(out) :: dhdr2
+c
+      h     = 0.0d0
+      dhdr1 = 0.0d0
+      dhdr2 = 0.0d0
+c
+      t0 = abs(de)
+      t1 = 1.0d+0-r1
+      t2 = (t1*r1)**x
+      t3 = 1.0d+0-r2
+      t4 = (t3*r2)**x
+      t5 = 4.0d+0**(2.0d0*x)
+      t6 = -(t0*z5)**y5
+      t7 = -(t0*z4)**y4
+      t8 = -(t0*z3)**y3
+      t9 = -(t0*z2)**y2
+      t10 = -(t0*z1)**y1
+      t11 = exp(t6+t7+t8+t9+t10)
+cDEBUG
+      write(*,*)'abs(de)=',t0
+      write(*,*)'z1,y1  =',z1,y1,t10
+      write(*,*)'z2,y2  =',z2,y2,t9
+      write(*,*)'z3,y3  =',z3,y3,t8
+      write(*,*)'z4,y4  =',z4,y4,t7
+      write(*,*)'z5,y5  =',z5,y5,t6
+      write(*,*)'exp    =',t11
+cDEBUG
+      h = t2*t4*t5*t11+h
+      dhdr1 = ((1.0d+0-2*r1)*t2*t4*x*t5*t11)/(t1*r1)+dhdr1
+      dhdr2 = (t2*(1.0d+0-2*r2)*t4*x*t5*t11)/(t3*r2)+dhdr2
       end subroutine wfn1_thimble
 c
 c-----------------------------------------------------------------------

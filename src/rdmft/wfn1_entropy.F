@@ -2,11 +2,29 @@
       double precision :: fac_aa
       double precision :: fac_ab
       double precision :: trm_aa
-      double precision :: trm_ab
-      double precision :: pow_y_aa
-      double precision :: pow_y_ab
-      double precision :: pow_z_aa
-      double precision :: pow_z_ab
+      double precision :: del_ab
+      double precision :: pow_x_aa
+      double precision :: pow_x_ab
+      double precision :: pow_y1_aa
+      double precision :: pow_y1_ab
+      double precision :: pow_y2_aa
+      double precision :: pow_y2_ab
+      double precision :: pow_y3_aa
+      double precision :: pow_y3_ab
+      double precision :: pow_y4_aa
+      double precision :: pow_y4_ab
+      double precision :: pow_y5_aa
+      double precision :: pow_y5_ab
+      double precision :: pow_z1_aa
+      double precision :: pow_z1_ab
+      double precision :: pow_z2_aa
+      double precision :: pow_z2_ab
+      double precision :: pow_z3_aa
+      double precision :: pow_z3_ab
+      double precision :: pow_z4_aa
+      double precision :: pow_z4_ab
+      double precision :: pow_z5_aa
+      double precision :: pow_z5_ab
       double precision, allocatable :: orb_ea(:)
       double precision, allocatable :: orb_eb(:)
       end module wfn1_fac
@@ -502,8 +520,14 @@ c
 !> This subroutine is a temporary feature until there is more clarity
 !> on the required parameters.
 !>
-      subroutine wfn1_set_entropy_fac(faa,fab,taa,tab,
-     &                                pyaa,pyab,pzaa,pzab)
+      subroutine wfn1_set_entropy_fac(faa,fab,taa,dab,
+     &                                pxaa,pxab,
+     &                                py1aa,py1ab,py2aa,py2ab,
+     &                                py3aa,py3ab,py4aa,py4ab,
+     &                                py5aa,py5ab,
+     &                                pz1aa,pz1ab,pz2aa,pz2ab,
+     &                                pz3aa,pz3ab,pz4aa,pz4ab,
+     &                                pz5aa,pz5ab)
       use wfn1_fac
       implicit none
 !>    The same-spin overal scale factor
@@ -512,16 +536,36 @@ c
       double precision, intent(in) :: fab
 !>    The same-spin coordinate offset term
       double precision, intent(in) :: taa
-!>    The opposite-spin coordinate offset term
-      double precision, intent(in) :: tab
+!>    The opposite-spin same orbital scale factor
+      double precision, intent(in) :: dab
+!>    The same-spin power-x
+      double precision, intent(in) :: pxaa
+!>    The opposite-spin power-x
+      double precision, intent(in) :: pxab
 !>    The same-spin power-y
-      double precision, intent(in) :: pyaa
+      double precision, intent(in) :: py1aa
+      double precision, intent(in) :: py2aa
+      double precision, intent(in) :: py3aa
+      double precision, intent(in) :: py4aa
+      double precision, intent(in) :: py5aa
 !>    The opposite-spin power-y
-      double precision, intent(in) :: pyab
+      double precision, intent(in) :: py1ab
+      double precision, intent(in) :: py2ab
+      double precision, intent(in) :: py3ab
+      double precision, intent(in) :: py4ab
+      double precision, intent(in) :: py5ab
 !>    The same-spin power-z
-      double precision, intent(in) :: pzaa
+      double precision, intent(in) :: pz1aa
+      double precision, intent(in) :: pz2aa
+      double precision, intent(in) :: pz3aa
+      double precision, intent(in) :: pz4aa
+      double precision, intent(in) :: pz5aa
 !>    The opposite-spin power-z
-      double precision, intent(in) :: pzab
+      double precision, intent(in) :: pz1ab
+      double precision, intent(in) :: pz2ab
+      double precision, intent(in) :: pz3ab
+      double precision, intent(in) :: pz4ab
+      double precision, intent(in) :: pz5ab
 !>
 c     double precision :: fac_aa
 c     double precision :: fac_ab
@@ -538,14 +582,32 @@ c    +                trm_aa,trm_ab,
 c    +                pow_y_aa,pow_y_ab,
 c    +                pow_z_aa,pow_z_ab,
 c    +                orb_ea,orb_eb
-      fac_aa   = faa
-      fac_ab   = fab
-      trm_aa   = taa
-      trm_ab   = tab
-      pow_y_aa = pyaa
-      pow_y_ab = pyab
-      pow_z_aa = pzaa
-      pow_z_ab = pzab
+      fac_aa    = faa
+      fac_ab    = fab
+      trm_aa    = taa
+      del_ab    = dab
+      pow_x_aa  = pxaa
+      pow_x_ab  = pxab
+      pow_y1_aa = py1aa
+      pow_y1_ab = py1ab
+      pow_y2_aa = py2aa
+      pow_y2_ab = py2ab
+      pow_y3_aa = py3aa
+      pow_y3_ab = py3ab
+      pow_y4_aa = py4aa
+      pow_y4_ab = py4ab
+      pow_y5_aa = py5aa
+      pow_y5_ab = py5ab
+      pow_z1_aa = pz1aa
+      pow_z1_ab = pz1ab
+      pow_z2_aa = pz2aa
+      pow_z2_ab = pz2ab
+      pow_z3_aa = pz3aa
+      pow_z3_ab = pz3ab
+      pow_z4_aa = pz4aa
+      pow_z4_ab = pz4ab
+      pow_z5_aa = pz5aa
+      pow_z5_ab = pz5ab
       end subroutine wfn1_set_entropy_fac
 c
 c-----------------------------------------------------------------------
@@ -588,6 +650,12 @@ c    +                orb_ea,orb_eb
       endif
       orb_ea = eorb_a
       orb_eb = eorb_b
+cDEBUG
+      write(110,*)abs(eorb_a(1)-eorb_a(2))
+      write(111,*)abs(eorb_a(1)-eorb_a(2))
+      close(110)
+      close(111)
+cDEBUG
       end subroutine wfn1_set_entropy_eorb
 c
 c-----------------------------------------------------------------------
@@ -624,7 +692,7 @@ c
 c     Local
 c
       double precision :: a, ai, aj, aij
-      double precision ::    si, sj, sij
+      double precision :: d, si, sj, sij
       double precision :: pii, pjj
       double precision :: ds1_i
       double precision :: ds1_j
@@ -707,6 +775,7 @@ c
 c     call wfn1_entropy2_sij(0.5d0,0.5d0,sij,dsi,dsj)
 c     write(*,*)'HVD: sij = ',sij,fac_ab
       a = fac_ab
+      d = del_ab
 cDEBUG
 c     write(*,*)'HVD: fac_ab = ',fac_ab,a
 c     write(*,*)'HVD: pi,pj  = ',pi,pj
@@ -741,10 +810,23 @@ c     call wfn1_entropy2_sij(pi,pj,s,dsi,dsj)
         pjj = pj
       endif
       de = orb_ea(ii)-orb_eb(jj)
-      call wfn1_thimble(pii,pjj,de,trm_ab,pow_y_ab,pow_z_ab,s,dsi,dsj)
-      s   = a*s*f
-      dsi = a*(f*dsi+s*dfi)
-      dsj = a*(f*dsj+s*dfj)
+      call wfn1_thimble(pii,pjj,de,pow_x_ab,
+     &                  pow_y1_ab,pow_y2_ab,
+     &                  pow_y3_ab,pow_y4_ab,
+     &                  pow_y5_ab,
+     &                  pow_z1_ab,pow_z2_ab,
+     &                  pow_z3_ab,pow_z4_ab,
+     &                  pow_z5_ab,
+     &                  s,dsi,dsj)
+      if (ii.eq.jj) then
+        s   = d*s*f
+        dsi = d*(f*dsi+s*dfi)
+        dsj = d*(f*dsj+s*dfj)
+      else
+        s   = a*s*f
+        dsi = a*(f*dsi+s*dfi)
+        dsj = a*(f*dsj+s*dfj)
+      endif
 #endif
 c
       end

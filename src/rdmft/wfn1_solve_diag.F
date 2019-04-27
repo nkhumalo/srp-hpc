@@ -10,8 +10,10 @@ C>
      &function wfn1_solve_diag(wfn1_param,wfn1_inst,wfn1_mat,
      &                         wfn1_wave,wfn1_deriv,wfn1_energy,
      &                         wfn1_trial_wv,wfn1_trial_drv,
+     &                         wfn1_part_drv,
      &                         g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                         v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb,
+     &                         v_dna,v_dnb,v_dca,v_dcb,
+     &                         v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                         oprerr,curit)
       implicit none
 #include "wfn1_param.fh"
@@ -44,6 +46,8 @@ c
       type(wfn1_wfn), intent(inout)  :: wfn1_trial_wv
 !     The trial wave function derivative
       type(wfn1_drv), intent(inout)  :: wfn1_trial_drv
+!     The non-correlation, non-thermal part of wave function derivative
+      type(wfn1_drv), intent(inout)  :: wfn1_part_drv
 !     The trial energy terms
       type(wfn1_en)      :: wfn1_trial_en  ! the trial energy
 !     GA dimensions nbf x nmo
@@ -64,6 +68,8 @@ c
       double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dca(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcb(1:wfn1_param%nmo)
+      double precision, intent(out) :: v_dnna(1:wfn1_param%nmo)
+      double precision, intent(out) :: v_dnnb(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcna(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcnb(1:wfn1_param%nmo)
 c
@@ -111,8 +117,10 @@ c
         endif
       endif
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
+     &              wfn1_part_drv,
      &              wfn1_energy,g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &              v_dna,v_dnb,v_dca,v_dcb,
+     &              v_dnna,v_dnnb,v_dcna,v_dcnb)
       call wfn1_symm(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
       error      = wfn1_trace(wfn1_deriv,wfn1_deriv)
       oconverged = (error%total < conv_tol)
@@ -187,9 +195,10 @@ c         call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
      &                 diag_NorC,UERR)
         endif
         call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
-     &                wfn1_deriv,wfn1_energy,g_bfmo,g_momo1,g_momo2,
-     &                g_momo3,g_momo4,
-     &                v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &                wfn1_deriv,wfn1_part_drv,wfn1_energy,g_bfmo,
+     &                g_momo1,g_momo2,g_momo3,g_momo4,
+     &                v_dna,v_dnb,v_dca,v_dcb,
+     &                v_dnna,v_dnnb,v_dcna,v_dcnb)
         call wfn1_symm(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
         error = wfn1_trace(wfn1_deriv,wfn1_deriv)
         oconverged = (error%total < conv_tol)

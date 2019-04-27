@@ -20,9 +20,10 @@ C>
       subroutine wfn1_linesearch(wfn1_param,wfn1_inst,wfn1_mat,
      &                           wfn1_wave,wfn1_deriv,wfn1_energy,
      &                           wfn1_trial_wv,wfn1_trial_drv,
-     &                           wfn1_trial_en,
+     &                           wfn1_part_drv,wfn1_trial_en,
      &                           g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                           v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &                           v_dna,v_dnb,v_dca,v_dcb,
+     &                           v_dnna,v_dnnb,v_dcna,v_dcnb)
       implicit none
 #include "global.fh"
 #include "errquit.fh"
@@ -41,6 +42,7 @@ c
       type(wfn1_en),      intent(inout) :: wfn1_energy
       type(wfn1_wfn),     intent(inout) :: wfn1_trial_wv
       type(wfn1_drv),     intent(inout) :: wfn1_trial_drv
+      type(wfn1_drv),     intent(inout) :: wfn1_part_drv
       type(wfn1_en),      intent(inout) :: wfn1_trial_en
 c
       integer, intent(inout) :: g_bfmo  ! nbf x nmo scratch GA
@@ -62,6 +64,8 @@ c
 c     Natural orbital expectation values of the Correlation
 c     function Fock matrices
 c
+      double precision, intent(out) :: v_dnna(1:wfn1_param%nmo)
+      double precision, intent(out) :: v_dnnb(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcna(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcnb(1:wfn1_param%nmo)
 c
@@ -138,9 +142,10 @@ c
       call wfn1_ortho(wfn1_mat,wfn1_trial_wv)
 c     call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
-     &              wfn1_trial_drv,wfn1_trial_en,
+     &              wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
      &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &              v_dna,v_dnb,v_dca,v_dcb,
+     &              v_dnna,v_dnnb,v_dcna,v_dcnb)
       call wfn1_skew(wfn1_param,wfn1_trial_drv,
      &               v_dna,v_dnb,v_dca,v_dcb)
 c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_trial_drv)
@@ -165,9 +170,10 @@ c
       call wfn1_ortho(wfn1_mat,wfn1_trial_wv)
 c     call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
-     &              wfn1_trial_drv,wfn1_trial_en,
+     &              wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
      &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &              v_dna,v_dnb,v_dca,v_dcb,
+     &              v_dnna,v_dnnb,v_dcna,v_dcnb)
       call wfn1_skew(wfn1_param,wfn1_trial_drv,
      &               v_dna,v_dnb,v_dca,v_dcb)
 c     error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
@@ -228,9 +234,10 @@ c
         call wfn1_ortho(wfn1_mat,wfn1_trial_wv)
 c       call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
         call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
-     &                wfn1_trial_drv,wfn1_trial_en,
+     &                wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
      &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &                v_dna,v_dnb,v_dca,v_dcb,
+     &                v_dnna,v_dnnb,v_dcna,v_dcnb)
         call wfn1_skew(wfn1_param,wfn1_trial_drv,
      &                 v_dna,v_dnb,v_dca,v_dcb)
 c       call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_trial_drv)
@@ -344,9 +351,10 @@ c
         call wfn1_ortho(wfn1_mat,wfn1_trial_wv)
 c       call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
         call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
-     &                wfn1_trial_drv,wfn1_trial_en,
+     &                wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
      &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &                v_dna,v_dnb,v_dca,v_dcb,
+     &                v_dnna,v_dnnb,v_dcna,v_dcnb)
         call wfn1_skew(wfn1_param,wfn1_trial_drv,
      &                 v_dna,v_dnb,v_dca,v_dcb)
 c       call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_trial_drv)

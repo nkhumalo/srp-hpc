@@ -249,8 +249,8 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_print_orb_energies(wfn1_param,e_na,e_nb,
-     &                                   e_cna,e_cnb)
+      subroutine wfn1_print_orb_energies(wfn1_param,e_na,e_nb,e_ca,e_cb,
+     &           e_nna,e_nnb,e_cna,e_cnb)
       implicit none
 #include "stdio.fh"
 #include "wfn1_param.fh"
@@ -262,6 +262,16 @@ c
       double precision, intent(in) :: e_nb(1:wfn1_param%nmo)
 !>    \f$\alpha\f$ natural orbital expectation values of the 
 !>    correlation function Fock matrix
+      double precision, intent(in) :: e_ca(1:wfn1_param%nmo)
+!>    \f$\alpha\f$ natural orbital expectation values of the 
+!>    correlation function Fock matrix
+      double precision, intent(in) :: e_cb(1:wfn1_param%nmo)
+!>    \f$\alpha\f$ natural orbital Fock matrix eigenvalues
+      double precision, intent(in) :: e_nna(1:wfn1_param%nmo)
+!>    \f$\beta\f$ natural orbital Fock matrix eigenvalues
+      double precision, intent(in) :: e_nnb(1:wfn1_param%nmo)
+!>    \f$\alpha\f$ natural orbital expectation values of the 
+!>    correlation function Fock matrix
       double precision, intent(in) :: e_cna(1:wfn1_param%nmo)
 !>    \f$\alpha\f$ natural orbital expectation values of the 
 !>    correlation function Fock matrix
@@ -271,16 +281,28 @@ c
       double precision :: e1_nb(1:wfn1_param%nmo)
       double precision :: e1_ca(1:wfn1_param%nmo)
       double precision :: e1_cb(1:wfn1_param%nmo)
+      double precision :: e1_nna(1:wfn1_param%nmo)
+      double precision :: e1_nnb(1:wfn1_param%nmo)
+      double precision :: e1_cna(1:wfn1_param%nmo)
+      double precision :: e1_cnb(1:wfn1_param%nmo)
       integer :: ii
 c
       e1_na=e_na
       e1_nb=e_nb
-      e1_ca=e_cna
-      e1_cb=e_cnb
+      e1_ca=e_ca
+      e1_cb=e_cb
+      e1_nna=e_nna
+      e1_nnb=e_nnb
+      e1_cna=e_cna
+      e1_cnb=e_cnb
       call wfn1_sort(e1_na,wfn1_param%nmo)
       call wfn1_sort(e1_nb,wfn1_param%nmo)
       call wfn1_sort(e1_ca,wfn1_param%nmo)
       call wfn1_sort(e1_cb,wfn1_param%nmo)
+      call wfn1_sort(e1_nna,wfn1_param%nmo)
+      call wfn1_sort(e1_nnb,wfn1_param%nmo)
+      call wfn1_sort(e1_cna,wfn1_param%nmo)
+      call wfn1_sort(e1_cnb,wfn1_param%nmo)
       write(LuOut,'(12x,"  Alpha ",4x,"  Beta  ",8x,
      &                  "  Alpha ",4x,"  Beta  ")')
       write(LuOut,'(12x,"--------",4x,"--------",8x,
@@ -293,11 +315,23 @@ cDEBUG
       do ii = 1, wfn1_param%nmo
         write(75,'(2x,f24.16,$)')e1_na(ii)
         write(76,'(2x,f24.16,$)')e1_ca(ii)
+        write(77,'(2x,f24.16,$)')e1_nna(ii)
+        write(78,'(2x,f24.16,$)')e1_cna(ii)
+        write(89,'(2x,f24.16,$)')e1_na(ii)-e1_nna(ii)
+        write(90,'(2x,f24.16,$)')e1_ca(ii)-e1_cna(ii)
       enddo
       write(75,*)
       write(76,*)
+      write(77,*)
+      write(78,*)
+      write(89,*)
+      write(90,*)
       close(75)
       close(76)
+      close(77)
+      close(78)
+      close(89)
+      close(90)
 cDEBUG
       end subroutine wfn1_print_orb_energies
 c

@@ -13,12 +13,12 @@ fortran_optimize(l,e) := block(
   );
 
 d(r):=(r*(1.0-r));
-f(r,y):=(d(r)/d(1/2))**y;
-g(e,z):=exp(-z*abs(e)**(1.31));
-h(r1,r2,de,y,z):=f(r1,y)*f(r2,y)*g(de,z);
+f(r,x):=(d(r)/d(1/2))**x;
+g(e,y,z):=exp(-(z*abs(e))**y);
+h(r1,r2,de,x,y1,y2,y3,y4,y5,z1,z2,z3,z4,z5):=f(r1,x)*f(r2,x)*g(de,y1,z1)*g(de,y2,z2)*g(de,y3,z3)*g(de,y4,z4)*g(de,y5,z5);
 
-dhdr1(r1,r2,de,y,z):=diff(h(r1,r2,de,y,z),r1);
-dhdr2(r1,r2,de,y,z):=diff(h(r1,r2,de,y,z),r2);
+dhdr1(r1,r2,de,x,y1,y2,y3,y4,y5,z1,z2,z3,z4,z5):=diff(h(r1,r2,de,x,y1,y2,y3,y4,y5,z1,z2,z3,z4,z5),r1);
+dhdr2(r1,r2,de,x,y1,y2,y3,y4,y5,z1,z2,z3,z4,z5):=diff(h(r1,r2,de,x,y1,y2,y3,y4,y5,z1,z2,z3,z4,z5),r2);
 with_stdout("thimble_energy.F",
-    fortran_optimize([h,dhdr1,dhdr2],[h(r1,r2,de,y,z),dhdr1(r1,r2,de,y,z),dhdr2(r1,r2,de,y,z)]));
+    fortran_optimize([h,dhdr1,dhdr2],[h(r1,r2,de,x,y1,y2,y3,y4,y5,z1,z2,z3,z4,z5),dhdr1(r1,r2,de,x,y1,y2,y3,y4,y5,z1,z2,z3,z4,z5),dhdr2(r1,r2,de,x,y1,y2,y3,y4,y5,z1,z2,z3,z4,z5)]));
 

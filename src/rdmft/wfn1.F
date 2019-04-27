@@ -97,6 +97,8 @@ c
       double precision, allocatable :: v_dnb(:)
       double precision, allocatable :: v_dca(:)
       double precision, allocatable :: v_dcb(:)
+      double precision, allocatable :: v_dnna(:)
+      double precision, allocatable :: v_dnnb(:)
       double precision, allocatable :: v_dcna(:)
       double precision, allocatable :: v_dcnb(:)
       type(wfn1_error)              :: error
@@ -112,6 +114,9 @@ c
       type(wfn1_wfn)     :: wfn1_trial_wv  ! the trial wave function
       type(wfn1_drv)     :: wfn1_trial_drv ! the derivative wrt the trial
                                            ! wave function
+      type(wfn1_drv)     :: wfn1_part_drv ! the non-correlation, non-
+                                          ! thermal part of derivative
+                                          ! wrt the wave function
       type(wfn1_en)      :: wfn1_trial_en  ! the trial energy
 c
       type(wfn1_wfn) :: wfn1_t_wv  ! temporary variable
@@ -122,8 +127,16 @@ c
       logical, external :: wfn1_solve_diag
 c
       double precision aa_hl, ab_hl
-      double precision fac_aa, trm_aa, pow_y_aa, pow_z_aa
-      double precision fac_ab, trm_ab, pow_y_ab, pow_z_ab
+      double precision fac_aa, trm_aa, pow_x_aa, pow_y1_aa, pow_z1_aa,
+     +                                           pow_y2_aa, pow_z2_aa,
+     +                                           pow_y3_aa, pow_z3_aa,
+     +                                           pow_y4_aa, pow_z4_aa,
+     +                                           pow_y5_aa, pow_z5_aa
+      double precision fac_ab, del_ab, pow_x_ab, pow_y1_ab, pow_z1_ab,
+     +                                           pow_y2_ab, pow_z2_ab,
+     +                                           pow_y3_ab, pow_z3_ab,
+     +                                           pow_y4_ab, pow_z4_ab,
+     +                                           pow_y5_ab, pow_z5_ab
 c
       iproc = ga_nodeid()
       nproc = ga_nnodes()
@@ -296,47 +309,101 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:aa',MT_DBL,1,
      &                   fac_aa))
      &  fac_aa = 0.0d0
-      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_aa',MT_DBL,1,
-     &                   pow_z_aa))
-     &  pow_z_aa = 1.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:aa_hl',MT_DBL,1,
      &                   aa_hl))
      &  aa_hl = 0.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:ab',MT_DBL,1,
      &                   fac_ab))
      &  fac_ab = 0.0d0
-      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_ab',MT_DBL,1,
-     &                   pow_z_ab))
-     &  pow_z_ab = 1.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:ab_hl',MT_DBL,1,
      &                   ab_hl))
      &  ab_hl = 0.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_aa',MT_DBL,1,
      &                   fac_aa))
-     &  fac_aa = 0.0d0
+     &  fac_aa    = 0.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:trm_aa',MT_DBL,1,
      &                   trm_aa))
-     &  trm_aa = 0.0d0
-      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y_aa',MT_DBL,1,
-     &                   pow_y_aa))
-     &  pow_y_aa = 1.0d0
-      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z_aa',MT_DBL,1,
-     &                   pow_z_aa))
-     &  pow_z_aa = 1.0d0
+     &  trm_aa    = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_x_aa',MT_DBL,1,
+     &                   pow_x_aa))
+     &  pow_x_aa  = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y1_aa',MT_DBL,1,
+     &                   pow_y1_aa))
+     &  pow_y1_aa = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y2_aa',MT_DBL,1,
+     &                   pow_y2_aa))
+     &  pow_y2_aa = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y3_aa',MT_DBL,1,
+     &                   pow_y3_aa))
+     &  pow_y3_aa = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y4_aa',MT_DBL,1,
+     &                   pow_y4_aa))
+     &  pow_y4_aa = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y5_aa',MT_DBL,1,
+     &                   pow_y5_aa))
+     &  pow_y5_aa = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z1_aa',MT_DBL,1,
+     &                   pow_z1_aa))
+     &  pow_z1_aa = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z2_aa',MT_DBL,1,
+     &                   pow_z2_aa))
+     &  pow_z2_aa = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z3_aa',MT_DBL,1,
+     &                   pow_z3_aa))
+     &  pow_z3_aa = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z4_aa',MT_DBL,1,
+     &                   pow_z4_aa))
+     &  pow_z4_aa = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z5_aa',MT_DBL,1,
+     &                   pow_z5_aa))
+     &  pow_z5_aa = 0.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab',MT_DBL,1,
      &                   fac_ab))
-     &  fac_ab = 0.0d0
-      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:trm_ab',MT_DBL,1,
-     &                   trm_ab))
-     &  trm_ab = 0.0d0
-      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y_ab',MT_DBL,1,
-     &                   pow_y_ab))
-     &  pow_y_ab = 1.0d0
-      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z_ab',MT_DBL,1,
-     &                   pow_z_ab))
-     &  pow_z_ab = 1.0d0
-      call wfn1_set_entropy_fac(fac_aa,fac_ab,trm_aa,trm_ab,
-     &                          pow_y_aa,pow_y_ab,pow_z_aa,pow_z_ab)
+     &  fac_ab    = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:del_ab',MT_DBL,1,
+     &                   del_ab))
+     &  del_ab    = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_x_ab',MT_DBL,1,
+     &                   pow_x_ab))
+     &  pow_x_ab  = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y1_ab',MT_DBL,1,
+     &                   pow_y1_ab))
+     &  pow_y1_ab = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y2_ab',MT_DBL,1,
+     &                   pow_y2_ab))
+     &  pow_y2_ab = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y3_ab',MT_DBL,1,
+     &                   pow_y3_ab))
+     &  pow_y3_ab = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y4_ab',MT_DBL,1,
+     &                   pow_y4_ab))
+     &  pow_y4_ab = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_y5_ab',MT_DBL,1,
+     &                   pow_y5_ab))
+     &  pow_y5_ab = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z1_ab',MT_DBL,1,
+     &                   pow_z1_ab))
+     &  pow_z1_ab = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z2_ab',MT_DBL,1,
+     &                   pow_z2_ab))
+     &  pow_z2_ab = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z3_ab',MT_DBL,1,
+     &                   pow_z3_ab))
+     &  pow_z3_ab = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z4_ab',MT_DBL,1,
+     &                   pow_z4_ab))
+     &  pow_z4_ab = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_z5_ab',MT_DBL,1,
+     &                   pow_z5_ab))
+     &  pow_z5_ab = 0.0d0
+      call wfn1_set_entropy_fac(fac_aa,fac_ab,trm_aa,del_ab,
+     &                          pow_x_aa,pow_x_ab,
+     &                          pow_y1_aa,pow_y1_ab,pow_y2_aa,pow_y2_ab,
+     &                          pow_y3_aa,pow_y3_ab,pow_y4_aa,pow_y4_ab,
+     &                          pow_y5_aa,pow_y5_ab,
+     &                          pow_z1_aa,pow_z1_ab,pow_z2_aa,pow_z2_ab,
+     &                          pow_z3_aa,pow_z3_ab,pow_z4_aa,pow_z4_ab,
+     &                          pow_z5_aa,pow_z5_ab)
 c
 c     == Get the convergence criterion and maximum number of iterations
 c
@@ -488,15 +555,12 @@ c     == Allocate memory for the natural orbital energies
 c
       allocate(v_dna(1:wfn1_param%nmo), v_dnb(1:wfn1_param%nmo))
       allocate(v_dca(1:wfn1_param%nmo), v_dcb(1:wfn1_param%nmo))
+      allocate(v_dnna(1:wfn1_param%nmo),v_dnnb(1:wfn1_param%nmo))
       allocate(v_dcna(1:wfn1_param%nmo),v_dcnb(1:wfn1_param%nmo))
 cDEBUG
       read(70,*)v_dna(1:wfn1_param%nmo)
       read(70,*)v_dnb(1:wfn1_param%nmo)
       close(70)
-      read(71,*)v_dna(1:wfn1_param%nmo)
-      close(71)
-      read(71,*)v_dnb(1:wfn1_param%nmo)
-      close(71)
       call wfn1_set_entropy_eorb(v_dna,v_dnb,wfn1_param%nmo)
       v_dna = 0.0d0
       v_dnb = 0.0d0
@@ -506,6 +570,7 @@ c     == Allocate memory for the derivatives wrt the wavefunctions ==
 c
       call wfn1_allocate_drv(wfn1_param,wfn1_deriv)
       call wfn1_allocate_drv(wfn1_param,wfn1_trial_drv)
+      call wfn1_allocate_drv(wfn1_param,wfn1_part_drv)
 c
 c     == Populate the natural orbitals with the eigenfunctions of ==
 c     == the S^{-1/2} matrix                                      == 
@@ -564,7 +629,8 @@ c
       endif
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
      &              wfn1_energy,g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &              v_dna,v_dnb,v_dca,v_dcb,
+     &              v_dnna,v_dnnb,v_dcna,v_dcnb)
       call wfn1_skew(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
 c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
       error = wfn1_trace(wfn1_deriv,wfn1_deriv)
@@ -600,7 +666,8 @@ c
      &                       wfn1_deriv,wfn1_energy,
      &                       wfn1_trial_wv,wfn1_trial_drv,wfn1_trial_en,
      &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                       v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &                       v_dna,v_dnb,v_dca,v_dcb,
+     &                       v_dnna,v_dnnb,v_dcna,v_dcnb)
 c
         error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
         oconverged = (error%total < conv_tol)
@@ -635,16 +702,18 @@ c
       if (wfn1_param%solver.eq."linesearch") then
         oconverged = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
      &                    wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                    wfn1_trial_wv,wfn1_trial_drv,
+     &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
      &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                    v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb,
+     &                    v_dna,v_dnb,v_dca,v_dcb,
+     &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                    oprerr,curit)
       else if (wfn1_param%solver.eq."diagonalize") then
         oconverged = wfn1_solve_diag(wfn1_param,wfn1_inst,wfn1_mat,
      &                    wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                    wfn1_trial_wv,wfn1_trial_drv,
+     &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
      &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                    v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb,
+     &                    v_dna,v_dnb,v_dca,v_dcb,
+     &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                    oprerr,curit)
       else
         if (iproc.eq.0) then
@@ -690,7 +759,9 @@ c
       call wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
      &                         v_dna,v_dnb,v_dca,v_dcb,g_momo1,g_momo2)
 cDEBUG
-      call wfn1_print_orb_energies(wfn1_param,v_dna,v_dnb,v_dcna,v_dcnb)
+      call wfn1_print_orb_energies(wfn1_param,
+     &     v_dna,v_dnb,v_dca,v_dcb,
+     &     v_dnna,v_dnnb,v_dcna,v_dcnb)
 cDEBUG
 c
 c     == Store results ==
@@ -709,9 +780,11 @@ c
 cDEBUG
 c     wfn1_task_energy = .true.
 cDEBUG
+      call wfn1_deallocate_drv(wfn1_part_drv)
       call wfn1_deallocate_drv(wfn1_trial_drv)
       call wfn1_deallocate_drv(wfn1_deriv)
       deallocate(v_dcna,v_dcnb)
+      deallocate(v_dnna,v_dnnb)
       deallocate(v_dca, v_dcb)
       deallocate(v_dna, v_dnb)
       deallocate(wfn1_t_wv%dcntb)

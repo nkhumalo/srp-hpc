@@ -13,8 +13,10 @@ C>
      &function wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
      &                         wfn1_wave,wfn1_deriv,wfn1_energy,
      &                         wfn1_trial_wv,wfn1_trial_drv,
+     &                         wfn1_part_drv,
      &                         g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                         v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb,
+     &                         v_dna,v_dnb,v_dca,v_dcb,
+     &                         v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                         oprerr,curit)
       implicit none
 #include "wfn1_param.fh"
@@ -46,6 +48,8 @@ c
       type(wfn1_wfn), intent(inout)  :: wfn1_trial_wv
 !     The trial wave function derivative
       type(wfn1_drv), intent(inout)  :: wfn1_trial_drv
+!     The non-correlation, non-thermal part of wave function derivative
+      type(wfn1_drv), intent(inout)  :: wfn1_part_drv
 !     The trial energy terms
       type(wfn1_en)      :: wfn1_trial_en  ! the trial energy
 !     GA dimensions nbf x nmo
@@ -68,6 +72,8 @@ c
       double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dca(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcb(1:wfn1_param%nmo)
+      double precision, intent(out) :: v_dnna(1:wfn1_param%nmo)
+      double precision, intent(out) :: v_dnnb(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcna(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dcnb(1:wfn1_param%nmo)
 c
@@ -99,8 +105,10 @@ c
         endif
       endif
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
-     &              wfn1_energy,g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &              wfn1_part_drv,wfn1_energy,g_bfmo,
+     &              g_momo1,g_momo2,g_momo3,g_momo4,
+     &              v_dna,v_dnb,v_dca,v_dcb,
+     &              v_dnna,v_dnnb,v_dcna,v_dcnb)
       call wfn1_skew(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
 c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
       error      = wfn1_trace(wfn1_deriv,wfn1_deriv)
@@ -144,10 +152,11 @@ c
 c       end of alternating optimization
 c
         call wfn1_linesearch(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
-     &                       wfn1_deriv,wfn1_energy,
-     &                       wfn1_trial_wv,wfn1_trial_drv,wfn1_trial_en,
+     &                       wfn1_deriv,wfn1_energy,wfn1_trial_wv,
+     &                       wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
      &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                       v_dna,v_dnb,v_dca,v_dcb,v_dcna,v_dcnb)
+     &                       v_dna,v_dnb,v_dca,v_dcb,
+     &                       v_dnna,v_dnnb,v_dcna,v_dcnb)
 c
         error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
         oconverged = (error%total < conv_tol)

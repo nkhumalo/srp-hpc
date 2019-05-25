@@ -14,6 +14,7 @@ c
 c
       if(npg.gt.1) call md_partition
 c
+      ibl=-1
       if(me.eq.0) then
       if(npg.gt.1) then
       write(gid,3300) ipg
@@ -1660,6 +1661,7 @@ c
 c
       endif
 c
+      call util_flush(lfnout)
       endif
 c
       return

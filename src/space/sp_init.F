@@ -3161,8 +3161,8 @@ c
      + isl,islp,xs,vs,fs,ipl,nb,ibw,bxw,bvw,bfw,brw,ibs,bxs,bvs,bfs,
      + mdstep,maxstep)
 c
-!AD1  use adios_defs_mod
-!AD1  use adios_write_mod
+      use sp_io
+      use sp_io_vars
       implicit none
 c
 #include "sp_common.fh"
@@ -3209,11 +3209,6 @@ c
       integer nonh
 c
       integer*4 adios_comm_world
-      integer*4 adios_err
-      integer*8 m_adios_group
-      integer*8 varid
-      integer*8 adios_handle
-      integer*4 i2,i10,adiosrank
       integer   mdstep
       integer   maxstep
       integer   localWatoms, localWmolecules, localSatoms
@@ -3228,8 +3223,6 @@ c
       real*8,  pointer ::  localxw(:,:,:)
       real*8,  pointer ::  localxs(:,:)
 c
-      i2=2
-      i10=10     
       dumdst=0.02d0
 c
       lpw=.false.
@@ -3264,10 +3257,23 @@ c
 c
 c     end test code
 c
+c
+c     Loop over all processors
+c
       do 2 node=np-1,0,-1
+c
+c     Get information about the data held by a particular processor:
+c     - the number of water molecules
+c
       call ga_distribution(ga_ip,node,ilp,ihp,jlp,jhp)
       call ga_get(ga_ip,ilp,ihp,jlp,jhp,ipl,mbox)
+c
+c     Get the number of water molecules held by processor "node"
+c
       nwmn=ipl(1,2)
+c
+c     Get the rank of every water molecule in the global structure
+c
       if(nwmn.gt.0) then
       call ga_distribution(ga_iw,node,ili,ihi,jli,jhi)
       if(npackw.eq.0) then
@@ -3276,6 +3282,9 @@ c
       call ga_get(ga_iw,ili,ili+nwmn-1,jli,jli+npackw-1,iwlp,mwm)
       call sp_unpackw(nwmn,iwl,iwlp)
       endif
+c
+c     Get the atomic coordinates of the water molecules
+c
       call ga_distribution(ga_w,node,ilw,ihw,jlw,jhw)
       call ga_get(ga_w,ilw,ilw+nwmn-1,jlw,jlw+3*mwa-1,xw,mwm)
       if(lvw)
@@ -3284,6 +3293,9 @@ c
      + call ga_get(ga_w,ilw,ilw+nwmn-1,jlw+6*mwa+3,jlw+9*mwa+2,fw,mwm)
       do 3 i=1,nwmn
       j=iwl(i,lwgmn)-number
+c
+c     Put the water molecules from the buffer into the global structure
+c
       if(j.gt.0.and.j.le.numw) then
       do 4 k=1,nwa
       bxw(j,1,k)=xw(i,1,k)
@@ -3313,8 +3325,13 @@ c      endif
     3 continue
       endif
     2 continue
-c     begin solvent output
-c     low precision 
+c
+c     Done fetching water molecules from all processors
+c
+c     Write water molecule coordinates
+c     
+c       - Low precision
+c     
       if(nprec.eq.0) then
       if(lfw) then
       if(lvw) then
@@ -3346,7 +3363,9 @@ c     low precision
     7 continue
       endif
       endif
-c     high precision 
+c      
+c     - High precision 
+c
       else
       if(lfw) then
       if(lvw) then
@@ -3379,7 +3398,9 @@ c     high precision
       endif
       endif
       endif
-c     end of solvent output
+c      
+c     Done writing water molecule coordinates
+c
       number=number+numw
     1 continue
       endif
@@ -3400,10 +3421,23 @@ c
 c
 c     end test code
 c
+c
+c     Loop over all processors to collect solute atoms
+c
       do 9 node=np-1,0,-1
+c
+c     Get information about the data held by a particular processor:
+c     - the number of solute atoms
+c
       call ga_distribution(ga_ip,node,ilp,ihp,jlp,jhp)
       call ga_get(ga_ip,ilp,ihp,jlp,jhp,ipl,mbox)
+c
+c     Get the number of solute atoms held by processor "node"
+c
       nsan=ipl(2,2)
+c
+c     Get the rank of every solute atom in the global structure
+c
       if(nsan.gt.0) then
       call ga_distribution(ga_is,node,ili,ihi,jli,jhi)
       if(npack.eq.0) then
@@ -3413,6 +3447,9 @@ c
       call sp_unpack(nsan,isl,islp)
 c      print*,'-----node',node,isl(1:nsan,lsgan)
       endif
+c
+c     Get the atomic coordinates fo the solute atoms
+c
       call ga_distribution(ga_s,node,ils,ihs,jls,jhs)
       call ga_get(ga_s,ils,ils+nsan-1,jls,jls+2,xs,msa)
 c      print*,'=====node',xs(1:nsan,1)
@@ -3421,6 +3458,9 @@ c      print*,'=====node',xs(1:nsan,1)
       nonh=0
       do 10 i=1,nsan
       j=isl(i,lsgan)-number
+c
+c     Put the solute atoms from the buffer into the global structure
+c
       if(j.gt.0.and.j.le.nums) then
       bxs(j,1)=xs(i,1)
       bxs(j,2)=xs(i,2)
@@ -3453,8 +3493,13 @@ c      print*,'=====node',xs(1:nsan,1)
    10 continue
       endif
     9 continue
-c     begin solute output
-c     low precision
+c
+c     Done collecting the solute atom data
+c
+c     Write solute atom coordinates
+c 
+c     - Low precision
+c     
       if(nprec.eq.0) then
       if(lfs) then
       if(lvs) then
@@ -3487,7 +3532,9 @@ c     low precision
       endif
       endif
       else
-c     high precision
+c      
+c     - High precision
+c
       if(lfs) then
       if(lvs) then
       do 2111 i=1,nums
@@ -3519,7 +3566,9 @@ c     high precision
       endif
       endif
       end if
-c     end solute output
+c      
+c     Done writing solute atoms
+c
       number=number+nums
     8 continue
       endif
@@ -3664,121 +3713,38 @@ c
       offsetWatoms=nwmnlist(me)*nwa
       offsetSatoms=nsanlist(me)
   
-!AD1  if(mdstep.eq.1) then
-c      call ga_mpi_comm_pgroup_default(adios_comm_world)
-!AD1  adios_comm_world=mpi_comm_world
-!AD1  call adios_init_noxml(adios_comm_world, adios_err)
-!AD1  call adios_set_max_buffer_size(i10)
-!AD1  call adios_declare_group(m_adios_group, "coordinates", "iter",
-!AD1 +adios_stat_default, adios_err)
-!AD1  amlen=inp_strlen(adios_mode)
-!AD1  if (me.eq.0) then
-!AD1    write(lfnout,*)"ADIOS mode: ",adios_mode(1:amlen)
-!AD1  endif
-!AD1  call adios_select_method(m_adios_group, adios_mode(1:amlen),
-!AD1 +"verbose=3","",adios_err)
-!AD1  call adios_define_var(m_adios_group, "LWATOMS", "", i2,
-!AD1 +"", "", "", varid);
-!AD1  call adios_define_var(m_adios_group, "TWATOMS", "", i2,
-!AD1 +"", "", "", varid);
-!AD1  call adios_define_var(m_adios_group, "OWATOMS", "", i2,
-!AD1 +"", "", "", varid);
-!AD1  call adios_define_var(m_adios_group, "LWMOLECULES", "", i2,
-!AD1 +"", "", "", varid);
-!AD1  call adios_define_var(m_adios_group, "TWMOLECULES", "", i2,
-!AD1 +"", "", "", varid);
-!AD1  call adios_define_var(m_adios_group, "OWMOLECULES", "", i2,
-!AD1 +"", "", "", varid);
-!AD1  call adios_define_var(m_adios_group, "LSATOMS", "", i2,
-!AD1 +"", "", "", varid);
-!AD1  call adios_define_var(m_adios_group, "TSATOMS", "", i2,
-!AD1 +"", "", "", varid);
-!AD1  call adios_define_var(m_adios_group, "OSATOMS", "", i2,
-!AD1 +"", "", "", varid);
-!AD1  call adios_define_var(m_adios_group, "WLX", "", adios_double,
-!AD1 +"LWATOMS", "TWATOMS", "OWATOMS", varid);
-!AD1  call adios_define_var(m_adios_group, "WLY", "", adios_double,
-!AD1 +"LWATOMS", "TWATOMS", "OWATOMS", varid);
-!AD1  call adios_define_var(m_adios_group, "WLZ", "", adios_double,
-!AD1 +"LWATOMS", "TWATOMS", "OWATOMS", varid);
-!AD1  call adios_define_var(m_adios_group, "WID", "", adios_integer,
-!AD1 +"LWMOLECULES", "TWMOLECULES", "OWMOLECULES", varid);
-!AD1  call adios_define_var(m_adios_group, "SLX", "", adios_double,
-!AD1 +"LSATOMS", "TSATOMS", "OSATOMS", varid);
-!AD1  call adios_define_var(m_adios_group, "SLY", "", adios_double,
-!AD1 +"LSATOMS", "TSATOMS", "OSATOMS", varid);
-!AD1  call adios_define_var(m_adios_group, "SLZ", "", adios_double,
-!AD1 +"LSATOMS", "TSATOMS", "OSATOMS", varid);
-!AD1  call adios_define_var(m_adios_group, "SID", "", adios_integer,
-!AD1 +"LSATOMS", "TSATOMS", "OSATOMS", varid);
-!AD1  call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
-!AD1 +"w", adios_comm_world, adios_err)
-!AD1  call adios_write (adios_handle, "LWATOMS", localWatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "TWATOMS", totalWatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "OWATOMS", offsetWatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "LWMOLECULES", localWmolecules,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "TWMOLECULES", totalWmolecules,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "OWMOLECULES", offsetWmolecules,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "LSATOMS", localSatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "TSATOMS", totalSatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "OSATOMS", offsetSatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "WLX", localWx(:), adios_err)
-!AD1  call adios_write (adios_handle, "WLY", localWy(:), adios_err)
-!AD1  call adios_write (adios_handle, "WLZ", localWz(:), adios_err)
-!AD1  call adios_write (adios_handle, "WID", localiwl(:), adios_err)
-!AD1  call adios_write (adios_handle, "SLX", localSx(:), adios_err)
-!AD1  call adios_write (adios_handle, "SLY", localSy(:), adios_err)
-!AD1  call adios_write (adios_handle, "SLZ", localSz(:), adios_err)
-!AD1  call adios_write (adios_handle, "SID", localisl(:), adios_err)
-!AD1  call adios_close (adios_handle, adios_err)
-!AD1  else
-c      call ga_mpi_comm_pgroup_default(adios_comm_world)
-!AD1  adios_comm_world=mpi_comm_world
-!AD1  call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
-!AD1 +"a", adios_comm_world, adios_err)
-!AD1  call adios_write (adios_handle, "LWATOMS", localWatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "TWATOMS", totalWatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "OWATOMS", offsetWatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "LWMOLECULES", localWmolecules,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "TWMOLECULES", totalWmolecules,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "OWMOLECULES", offsetWmolecules,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "LSATOMS", localSatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "TSATOMS", totalSatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "OSATOMS", offsetSatoms,
-!AD1 +adios_err)
-!AD1  call adios_write (adios_handle, "WLX", localWx(:), adios_err)
-!AD1  call adios_write (adios_handle, "WLY", localWy(:), adios_err)
-!AD1  call adios_write (adios_handle, "WLZ", localWz(:), adios_err)
-!AD1  call adios_write (adios_handle, "WID", localiwl(:), adios_err)
-!AD1  call adios_write (adios_handle, "SLX", localSx(:), adios_err)
-!AD1  call adios_write (adios_handle, "SLY", localSy(:), adios_err)
-!AD1  call adios_write (adios_handle, "SLZ", localSz(:), adios_err)
-!AD1  call adios_write (adios_handle, "SID", localisl(:), adios_err)
-!AD1  call adios_close (adios_handle, adios_err)
-!AD1  endif
-c
-!AD1  if(mdstep.eq.maxstep) then
-!AD1  adiosrank = me
-!AD1  call adios_finalize(adiosrank, adios_err)
-!AD1  endif
-c
+      call ga_mpi_comm_pgroup_default(adios_comm_world)
+      app_comm=adios_comm_world
+      
+      lwa=localWatoms
+      lwm=localWmolecules
+      lwa=localSatoms
+
+      twa=totalWatoms
+      twm=totalWmolecules
+      tsa=totalSatoms
+
+      owa=offsetWatoms
+      owm=offsetWmolecules
+      osa=offsetSatoms
+
+      if (mdstep.eq.1) then
+        amlen=inp_strlen(adios_mode)
+        if (me.eq.0) then
+          write(lfnout,*)"ADIOS mode: ",adios_mode(1:amlen)
+        endif
+        engine_type=adios_mode
+        call io_init()
+      endif
+
+      call io_write(mdstep,
+     +localWx,localWy,localWz,localiwl,
+     +localSx,localSy,localSz,localisl)
+
+      if (mdstep.eq.maxstep) then
+        call io_finalize()
+      endif
+
       call util_flush(lfntrj)
 
       if(nwmn.gt.0) then

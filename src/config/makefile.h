@@ -2874,6 +2874,8 @@ endif
   CPPFLAGS = $(INCLUDES) $(DEFINES) $(LIB_DEFINES)
    LDFLAGS = $(LDOPTIONS) -L$(LIBDIR) $(LIBPATH)
       LIBS = $(NW_MODULE_LIBS) $(CORE_LIBS) -ldl
+  ADIOS2_FINC = $(shell adios2-config --fortran-flags)
+  ADIOS2_FLIB = $(shell adios2-config --fortran-libs)
 
 # I think this will work everywhere, but it might have to become
 # machine-dependent 
@@ -2941,7 +2943,7 @@ endif
 endif
 
 (%.o): %.f
-	$(NWFC) -c $(FFLAGS) $<
+	$(NWFC) -c $(FFLAGS) $(ADIOS2_FINC) $<
 
 (%.o): %.c
 	$(NWCC) -c $(CPPFLAGS) $(CFLAGS) -o $% $<

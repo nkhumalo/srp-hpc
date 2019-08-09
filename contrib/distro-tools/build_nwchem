@@ -2209,15 +2209,19 @@ if [ ${#IB_LIB_NAME} -ne 0 ] ; then
 fi
 if [ ${#SLURMOPT} -ne 0 ] ; then
   echo "SLURMOPT           =" ${SLURMOPT}
-  echo "SLURM              =" ${SLURM}
   echo "export SLURMOPT=\"${SLURMOPT}\"" >> ${NWCHEM_ENV_SH}
-  echo "export SLURM=${SLURM}"           >> ${NWCHEM_ENV_SH}
   echo "setenv SLURMOPT \"${SLURMOPT}\"" >> ${NWCHEM_ENV_CSH}
-  echo "setenv SLURM ${SLURM}"           >> ${NWCHEM_ENV_CSH}
   echo "unset SLURMOPT"                  >> ${NWCHEM_UNENV_SH}
-  echo "unset SLURM"                     >> ${NWCHEM_UNENV_SH}
   echo "unsetenv SLURMOPT"               >> ${NWCHEM_UNENV_CSH}
-  echo "unsetenv SLURM"                  >> ${NWCHEM_UNENV_CSH}
+  if [ "${SLURMOPT}" == " " ] ; then
+    unset SLURM
+  else
+    echo "SLURM              =" ${SLURM}
+    echo "export SLURM=${SLURM}"           >> ${NWCHEM_ENV_SH}
+    echo "setenv SLURM ${SLURM}"           >> ${NWCHEM_ENV_CSH}
+    echo "unset SLURM"                     >> ${NWCHEM_UNENV_SH}
+    echo "unsetenv SLURM"                  >> ${NWCHEM_UNENV_CSH}
+  fi
 fi
 if [ ${#BLASOPT} -ne 0 ] ; then
   echo "BLASOPT            =" ${BLASOPT} 

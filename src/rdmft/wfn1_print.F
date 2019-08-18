@@ -19,29 +19,39 @@ c
         write(LuOut,'(" The alpha natural orbitals")')
         write(LuOut,'(" --------------------------")')
         write(LuOut,*)
+        call util_flush(LuOut)
       endif
       call ga_print(wfn1_wave%g_na)
       if (iproc.eq.0) then
+        call util_flush(LuOut)
         write(LuOut,*)
         write(LuOut,'(" The beta natural orbitals")')
         write(LuOut,'(" -------------------------")')
         write(LuOut,*)
+        call util_flush(LuOut)
       endif
       call ga_print(wfn1_wave%g_nb)
       if (iproc.eq.0) then
+        call util_flush(LuOut)
         write(LuOut,*)
         write(LuOut,'(" The alpha correlation functions")')
         write(LuOut,'(" -------------------------------")')
         write(LuOut,*)
+        call util_flush(LuOut)
       endif
       call ga_print(wfn1_wave%g_ca)
       if (iproc.eq.0) then
+        call util_flush(LuOut)
         write(LuOut,*)
         write(LuOut,'(" The beta correlation functions")')
         write(LuOut,'(" ------------------------------")')
         write(LuOut,*)
+        call util_flush(LuOut)
       endif
       call ga_print(wfn1_wave%g_cb)
+      if (iproc.eq.0) then
+        call util_flush(LuOut)
+      endif
 c
       end subroutine wfn1_print_wave
 c
@@ -112,6 +122,9 @@ c
         write(LuOut,'(" Total WFN1 energy = ",f22.10)')wfn1_energy%E_tot
         write(LuOut,'(" 1-Electron energy = ",f22.10)')wfn1_energy%E_1el
         write(LuOut,'(" 2-Electron energy = ",f22.10)')wfn1_energy%E_2el
+        write(LuOut,'(" DFT XC energy     = ",f22.10)')wfn1_energy%E_dft
+        write(LuOut,'(" El. redistribution= ",f22.10)')
+     &              wfn1_energy%E_redist
         write(LuOut,'(" Entropy energy    = ",f22.10)')wfn1_energy%E_ent
         write(LuOut,'(" Nuclear energy    = ",f22.10)')wfn1_energy%E_nuc
         write(LuOut,*)
@@ -299,10 +312,10 @@ c
       call wfn1_sort(e1_nb,wfn1_param%nmo)
       call wfn1_sort(e1_ca,wfn1_param%nmo)
       call wfn1_sort(e1_cb,wfn1_param%nmo)
-      call wfn1_sort(e1_nna,wfn1_param%nmo)
-      call wfn1_sort(e1_nnb,wfn1_param%nmo)
-      call wfn1_sort(e1_cna,wfn1_param%nmo)
-      call wfn1_sort(e1_cnb,wfn1_param%nmo)
+c     call wfn1_sort(e1_nna,wfn1_param%nmo)
+c     call wfn1_sort(e1_nnb,wfn1_param%nmo)
+c     call wfn1_sort(e1_cna,wfn1_param%nmo)
+c     call wfn1_sort(e1_cnb,wfn1_param%nmo)
       write(LuOut,'(12x,"  Alpha ",4x,"  Beta  ",8x,
      &                  "  Alpha ",4x,"  Beta  ")')
       write(LuOut,'(12x,"--------",4x,"--------",8x,

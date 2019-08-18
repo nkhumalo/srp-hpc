@@ -13,7 +13,9 @@ C> - The Fock matrix for the correlation functions will be returned in
 C>   the correlation function basis (nmo x nmo)
 C>
       subroutine wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
-     &                    wfn1_deriv,wfn1_part_drv,wfn1_energy,g_bfmo,
+     &                    wfn1_deriv,wfn1_part_drv,wfn1_energy,
+     &                    g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
+     &                    g_bfmo,
      &                    g_momo,g_momo2,g_momo3,g_momo4,
      &                    v_dna,v_dnb,v_dca,v_dcb,
      &                    v_dnna,v_dnnb,v_dcna,v_dcnb)
@@ -36,6 +38,10 @@ c
       type(wfn1_drv),     intent(inout) :: wfn1_part_drv
       type(wfn1_en),      intent(out)   :: wfn1_energy
 c
+      integer, intent(in) :: g_bfbf  ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfbf2 ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfbf3 ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfbf4 ! nbf x nbf scratch GA
       integer, intent(in) :: g_bfmo  ! nbf x nmo scratch GA
       integer, intent(in) :: g_momo  ! nmo x nmo scratch GA
       integer, intent(in) :: g_momo2 ! nmo x nmo scratch GA
@@ -97,13 +103,17 @@ c     call ga_zero(g_momo)
       call ga_sync()
 cDEBUG
 c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g A")
+c     write(*,*)'HVD: wfn1_e_g'
+c     call wfn1_print_wave(wfn1_wave)
 cDEBUG
 c
-      wfn1_energy%E_tot = 0.0d0
-      wfn1_energy%E_1el = 0.0d0
-      wfn1_energy%E_2el = 0.0d0
-      wfn1_energy%E_nuc = wfn1_param%Enuc
-      wfn1_energy%E_ent = 0.0d0
+      wfn1_energy%E_tot    = 0.0d0
+      wfn1_energy%E_1el    = 0.0d0
+      wfn1_energy%E_2el    = 0.0d0
+      wfn1_energy%E_nuc    = wfn1_param%Enuc
+      wfn1_energy%E_ent    = 0.0d0
+      wfn1_energy%E_dft    = 0.0d0
+      wfn1_energy%E_redist = 0.0d0
 c
       nmo = wfn1_param%nmo
 c
@@ -153,6 +163,13 @@ c       obsolete
       call ga_dgop(1401,v_dcb,nmo,"+")
       call ga_dgop(1402,v_dpa,nmo,"+")
       call ga_dgop(1403,v_dpb,nmo,"+")
+c
+c     The DFT correlation terms
+c
+      call wfn1_e_g_dft(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                  wfn1_deriv,v_dca,v_dcb,
+     &                  g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,g_bfmo,g_momo,
+     &                  wfn1_energy%E_dft)
 cDEBUG
 c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g B")
 cDEBUG
@@ -169,6 +186,11 @@ c     The entropy term
 c
       call wfn1_e_g_ent(wfn1_param,wfn1_wave,v_dca,v_dcb,
      &                  wfn1_energy%E_ent)
+c
+c     The electron redistribution energy term
+c
+      call wfn1_e_g_redist(wfn1_param,wfn1_wave,v_dpa,v_dpb,
+     &                     wfn1_energy%E_redist)
 c
       call ga_sync()
 cDEBUG
@@ -246,6 +268,18 @@ c
       call ga_dgemm('N','N',nmo,nmo,nmo,1.0d0,g_momo,wfn1_wave%g_cb,
      &              0.0d0,wfn1_deriv%g_dcb)
 cDEBUG
+      if (ga_nodeid().eq.0) then
+        do ii = 1, wfn1_param%nmo
+          write(79,'(2x,f24.16,$)')v_dpa(ii)
+        enddo
+        write(79,*)
+        close(79)
+        do ii = 1, wfn1_param%nmo
+          write(85,'(2x,f24.16,$)')v_dnna(ii)-(v_dcna(ii)+v_dpa(ii))
+        enddo
+        write(85,*)
+        close(85)
+      endif
 c     call wfn1_print_max(wfn1_deriv,"wfn1_e_g E")
 cDEBUG
 c
@@ -348,12 +382,16 @@ c
       call ga_dgop(1406,v_dcna,nmo,"+")
       call ga_dgop(1407,v_dcnb,nmo,"+")
 cDEBUG
-      call wfn1_set_entropy_eorb(v_dca,v_dcb,nmo)
+      call wfn1_set_entropy_eorb(v_dcna,v_dcnb,nmo)
+c     call wfn1_print_orb_energies(wfn1_param,
+c    &     v_dna,v_dnb,v_dca,v_dcb,
+c    &     v_dnna,v_dnnb,v_dcna,v_dcnb)
 cDEBUG
       deallocate(v_dpa,v_dpb)
 c
       wfn1_energy%E_tot = wfn1_energy%E_1el + wfn1_energy%E_2el
      &                  + wfn1_energy%E_nuc + wfn1_energy%E_ent
+     &                  + wfn1_energy%E_dft + wfn1_energy%E_redist
 c
       call ga_sync()
 c

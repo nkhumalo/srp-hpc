@@ -21,6 +21,7 @@ C>
      &                           wfn1_wave,wfn1_deriv,wfn1_energy,
      &                           wfn1_trial_wv,wfn1_trial_drv,
      &                           wfn1_part_drv,wfn1_trial_en,
+     &                           g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                           g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                           v_dna,v_dnb,v_dca,v_dcb,
      &                           v_dnna,v_dnnb,v_dcna,v_dcnb)
@@ -45,6 +46,10 @@ c
       type(wfn1_drv),     intent(inout) :: wfn1_part_drv
       type(wfn1_en),      intent(inout) :: wfn1_trial_en
 c
+      integer, intent(inout) :: g_bfbf1 ! nbf x nbf scratch GA
+      integer, intent(inout) :: g_bfbf2 ! nbf x nbf scratch GA
+      integer, intent(inout) :: g_bfbf3 ! nbf x nbf scratch GA
+      integer, intent(inout) :: g_bfbf4 ! nbf x nbf scratch GA
       integer, intent(inout) :: g_bfmo  ! nbf x nmo scratch GA
       integer, intent(inout) :: g_momo1 ! nmo x nmo scratch GA
       integer, intent(inout) :: g_momo2 ! nmo x nmo scratch GA
@@ -143,6 +148,7 @@ c
 c     call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
      &              wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
+     &              g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &              v_dna,v_dnb,v_dca,v_dcb,
      &              v_dnna,v_dnnb,v_dcna,v_dcnb)
@@ -171,6 +177,7 @@ c
 c     call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
      &              wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
+     &              g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &              v_dna,v_dnb,v_dca,v_dcb,
      &              v_dnna,v_dnnb,v_dcna,v_dcnb)
@@ -235,6 +242,7 @@ c
 c       call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
         call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
      &                wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
+     &                g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                v_dna,v_dnb,v_dca,v_dcb,
      &                v_dnna,v_dnnb,v_dcna,v_dcnb)
@@ -352,6 +360,7 @@ c
 c       call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
         call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
      &                wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
+     &                g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                v_dna,v_dnb,v_dca,v_dcb,
      &                v_dnna,v_dnnb,v_dcna,v_dcnb)

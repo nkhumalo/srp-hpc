@@ -1,10 +1,12 @@
       module wfn1_fac
       double precision :: fac_aa
       double precision :: fac_ab
-      double precision :: trm_aa
+      double precision :: fac_redist
       double precision :: del_ab
-      double precision :: pow_x_aa
-      double precision :: pow_x_ab
+      double precision :: pow_x1_aa
+      double precision :: pow_x2_aa
+      double precision :: pow_x1_ab
+      double precision :: pow_x2_ab
       double precision :: pow_y1_aa
       double precision :: pow_y1_ab
       double precision :: pow_y2_aa
@@ -25,8 +27,30 @@
       double precision :: pow_z4_ab
       double precision :: pow_z5_aa
       double precision :: pow_z5_ab
+      double precision :: powhf_y1_aa
+      double precision :: powhf_y1_ab
+      double precision :: powhf_y2_aa
+      double precision :: powhf_y2_ab
+      double precision :: powhf_y3_aa
+      double precision :: powhf_y3_ab
+      double precision :: powhf_y4_aa
+      double precision :: powhf_y4_ab
+      double precision :: powhf_y5_aa
+      double precision :: powhf_y5_ab
+      double precision :: powhf_z1_aa
+      double precision :: powhf_z1_ab
+      double precision :: powhf_z2_aa
+      double precision :: powhf_z2_ab
+      double precision :: powhf_z3_aa
+      double precision :: powhf_z3_ab
+      double precision :: powhf_z4_aa
+      double precision :: powhf_z4_ab
+      double precision :: powhf_z5_aa
+      double precision :: powhf_z5_ab
       double precision, allocatable :: orb_ea(:)
       double precision, allocatable :: orb_eb(:)
+      double precision, allocatable :: orb_ea_hf(:)
+      double precision, allocatable :: orb_eb_hf(:)
       end module wfn1_fac
 c-----------------------------------------------------------------------
 c
@@ -521,13 +545,19 @@ c
 !> on the required parameters.
 !>
       subroutine wfn1_set_entropy_fac(faa,fab,taa,dab,
-     &                                pxaa,pxab,
+     &                                px1aa,px2aa,px1ab,px2ab,
      &                                py1aa,py1ab,py2aa,py2ab,
      &                                py3aa,py3ab,py4aa,py4ab,
      &                                py5aa,py5ab,
      &                                pz1aa,pz1ab,pz2aa,pz2ab,
      &                                pz3aa,pz3ab,pz4aa,pz4ab,
-     &                                pz5aa,pz5ab)
+     &                                pz5aa,pz5ab,
+     &                                hy1aa,hy1ab,hy2aa,hy2ab,
+     &                                hy3aa,hy3ab,hy4aa,hy4ab,
+     &                                hy5aa,hy5ab,
+     &                                hz1aa,hz1ab,hz2aa,hz2ab,
+     &                                hz3aa,hz3ab,hz4aa,hz4ab,
+     &                                hz5aa,hz5ab)
       use wfn1_fac
       implicit none
 !>    The same-spin overal scale factor
@@ -539,9 +569,11 @@ c
 !>    The opposite-spin same orbital scale factor
       double precision, intent(in) :: dab
 !>    The same-spin power-x
-      double precision, intent(in) :: pxaa
+      double precision, intent(in) :: px1aa
+      double precision, intent(in) :: px2aa
 !>    The opposite-spin power-x
-      double precision, intent(in) :: pxab
+      double precision, intent(in) :: px1ab
+      double precision, intent(in) :: px2ab
 !>    The same-spin power-y
       double precision, intent(in) :: py1aa
       double precision, intent(in) :: py2aa
@@ -566,6 +598,30 @@ c
       double precision, intent(in) :: pz3ab
       double precision, intent(in) :: pz4ab
       double precision, intent(in) :: pz5ab
+!>    The same-spin hf power-y
+      double precision, intent(in) :: hy1aa
+      double precision, intent(in) :: hy2aa
+      double precision, intent(in) :: hy3aa
+      double precision, intent(in) :: hy4aa
+      double precision, intent(in) :: hy5aa
+!>    The opposite-spin hf power-y
+      double precision, intent(in) :: hy1ab
+      double precision, intent(in) :: hy2ab
+      double precision, intent(in) :: hy3ab
+      double precision, intent(in) :: hy4ab
+      double precision, intent(in) :: hy5ab
+!>    The same-spin hf power-z
+      double precision, intent(in) :: hz1aa
+      double precision, intent(in) :: hz2aa
+      double precision, intent(in) :: hz3aa
+      double precision, intent(in) :: hz4aa
+      double precision, intent(in) :: hz5aa
+!>    The opposite-spin hf power-z
+      double precision, intent(in) :: hz1ab
+      double precision, intent(in) :: hz2ab
+      double precision, intent(in) :: hz3ab
+      double precision, intent(in) :: hz4ab
+      double precision, intent(in) :: hz5ab
 !>
 c     double precision :: fac_aa
 c     double precision :: fac_ab
@@ -584,10 +640,13 @@ c    +                pow_z_aa,pow_z_ab,
 c    +                orb_ea,orb_eb
       fac_aa    = faa
       fac_ab    = fab
-      trm_aa    = taa
+      fac_redist= taa
       del_ab    = dab
-      pow_x_aa  = pxaa
-      pow_x_ab  = pxab
+      pow_x1_aa = px1aa
+      pow_x2_aa = px2aa
+      pow_x1_ab = px1ab
+      pow_x2_ab = px2ab
+c
       pow_y1_aa = py1aa
       pow_y1_ab = py1ab
       pow_y2_aa = py2aa
@@ -608,6 +667,27 @@ c    +                orb_ea,orb_eb
       pow_z4_ab = pz4ab
       pow_z5_aa = pz5aa
       pow_z5_ab = pz5ab
+c
+      powhf_y1_aa = hy1aa
+      powhf_y1_ab = hy1ab
+      powhf_y2_aa = hy2aa
+      powhf_y2_ab = hy2ab
+      powhf_y3_aa = hy3aa
+      powhf_y3_ab = hy3ab
+      powhf_y4_aa = hy4aa
+      powhf_y4_ab = hy4ab
+      powhf_y5_aa = hy5aa
+      powhf_y5_ab = hy5ab
+      powhf_z1_aa = hz1aa
+      powhf_z1_ab = hz1ab
+      powhf_z2_aa = hz2aa
+      powhf_z2_ab = hz2ab
+      powhf_z3_aa = hz3aa
+      powhf_z3_ab = hz3ab
+      powhf_z4_aa = hz4aa
+      powhf_z4_ab = hz4ab
+      powhf_z5_aa = hz5aa
+      powhf_z5_ab = hz5ab
       end subroutine wfn1_set_entropy_fac
 c
 c-----------------------------------------------------------------------
@@ -657,6 +737,54 @@ cDEBUG
       close(111)
 cDEBUG
       end subroutine wfn1_set_entropy_eorb
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Set the Hartree-Fock orbital energies that define the entropy
+!>
+!> This subroutine is a temporary feature until there is more clarity
+!> on the required parameters.
+!>
+      subroutine wfn1_set_entropy_eorb_hf(eorb_a,eorb_b,nmo)
+      use wfn1_fac
+      implicit none
+!>    The number of MOs
+      integer, intent(in)          :: nmo
+!>    The alpha-spin orbital energies
+      double precision, intent(in) :: eorb_a(1:nmo)
+!>    The beta-spin orbital energies
+      double precision, intent(in) :: eorb_b(1:nmo)
+!>
+c     double precision :: fac_aa
+c     double precision :: fac_ab
+c     double precision :: trm_aa
+c     double precision :: trm_ab
+c     double precision :: pow_y_aa
+c     double precision :: pow_y_ab
+c     double precision :: pow_z_aa
+c     double precision :: pow_z_ab
+c     double precision, allocatable :: orb_ea(:)
+c     double precision, allocatable :: orb_eb(:)
+c     common/wfn1_fac/fac_aa,fac_ab,
+c    +                trm_aa,trm_ab,
+c    +                pow_y_aa,pow_y_ab,
+c    +                pow_z_aa,pow_z_ab,
+c    +                orb_ea,orb_eb
+      if (.not.allocated(orb_ea_hf)) then
+        allocate(orb_ea_hf(1:nmo))
+      endif
+      if (.not.allocated(orb_eb_hf)) then
+        allocate(orb_eb_hf(1:nmo))
+      endif
+      orb_ea_hf = eorb_a
+      orb_eb_hf = eorb_b
+cDEBUG
+      write(120,*)abs(eorb_a(1)-eorb_a(2))
+      write(121,*)abs(eorb_a(1)-eorb_a(2))
+      close(120)
+      close(121)
+cDEBUG
+      end subroutine wfn1_set_entropy_eorb_hf
 c
 c-----------------------------------------------------------------------
 c
@@ -721,6 +849,7 @@ c    +                pow_y_aa,pow_y_ab,
 c    +                pow_z_aa,pow_z_ab,
 c    +                orb_ea,orb_eb
       double precision :: de
+      double precision :: de_hf
 c
 #ifdef OLD
 c     call wfn1_entropy_si(0.5d0,ai,ds1_i)
@@ -809,14 +938,25 @@ c     call wfn1_entropy2_sij(pi,pj,s,dsi,dsj)
       else
         pjj = pj
       endif
-      de = orb_ea(ii)-orb_eb(jj)
-      call wfn1_thimble(pii,pjj,de,pow_x_ab,
+cDEBUG
+c     write(0,*)'HVD: ii,jj,Ea_ii,Eb_jj=',ii,jj,orb_ea(ii),orb_eb(jj)
+cDEBUG
+      de    = orb_ea(ii)-orb_eb(jj)
+      de_hf = orb_ea_hf(ii)-orb_eb_hf(jj)
+      call wfn1_thimble(pii,pjj,de_hf,de,
+     &                  pow_x1_ab,pow_x2_ab,
      &                  pow_y1_ab,pow_y2_ab,
      &                  pow_y3_ab,pow_y4_ab,
      &                  pow_y5_ab,
      &                  pow_z1_ab,pow_z2_ab,
      &                  pow_z3_ab,pow_z4_ab,
      &                  pow_z5_ab,
+     &                  powhf_y1_ab,powhf_y2_ab,
+     &                  powhf_y3_ab,powhf_y4_ab,
+     &                  powhf_y5_ab,
+     &                  powhf_z1_ab,powhf_z2_ab,
+     &                  powhf_z3_ab,powhf_z4_ab,
+     &                  powhf_z5_ab,
      &                  s,dsi,dsj)
       if (ii.eq.jj) then
         s   = d*s*f

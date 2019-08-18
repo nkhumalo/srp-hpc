@@ -25,6 +25,8 @@
          wfn1_e_g_2el_vx.o \
          wfn1_e_g_2el_hf.o \
          wfn1_e_g_2el_s.o \
+         wfn1_e_g_dft.o \
+         wfn1_e_g_redist.o \
          wfn1_exp.o \
          wfn1_f0df0f1.o \
          wfn1_f1f2f3.o \
@@ -36,6 +38,7 @@
          wfn1_guess_movecs.o \
          wfn1_gsl_wrap.o \
          wfn1_idmin.o \
+         wfn1_inpdft.o \
          wfn1_insert.o \
          wfn1_lindep.o \
          wfn1_linesearch.o \

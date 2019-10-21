@@ -110,6 +110,7 @@ c
       wfn1_energy%E_tot    = 0.0d0
       wfn1_energy%E_1el    = 0.0d0
       wfn1_energy%E_2el    = 0.0d0
+      wfn1_energy%E_corr   = 0.0d0
       wfn1_energy%E_nuc    = wfn1_param%Enuc
       wfn1_energy%E_ent    = 0.0d0
       wfn1_energy%E_dft    = 0.0d0
@@ -156,6 +157,15 @@ c       obsolete
      &                      v_dpa,v_dpb,
      &                      g_momo,g_momo2,g_momo3,g_momo4,
      &                      wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+      else if (wfn1_param%corr_expr == "wfn1c") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       wfn1_part_drv,v_dpa,v_dpb,
+     &                       g_momo,g_momo2,g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                         wfn1_part_drv,v_dpa,v_dpb,
+     &                         g_momo,g_momo2,g_momo3,g_momo4,
+     &                         wfn1_energy%E_corr)
       else
         call errquit("invalid correlation energy option",0,UERR)
       endif
@@ -392,6 +402,7 @@ c
       wfn1_energy%E_tot = wfn1_energy%E_1el + wfn1_energy%E_2el
      &                  + wfn1_energy%E_nuc + wfn1_energy%E_ent
      &                  + wfn1_energy%E_dft + wfn1_energy%E_redist
+     &                  + wfn1_energy%E_corr
 c
       call ga_sync()
 c

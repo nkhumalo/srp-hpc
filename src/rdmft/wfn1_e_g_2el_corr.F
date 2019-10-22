@@ -773,14 +773,6 @@ c
 c             - Third do the T4_ij terms
 c
               do jj = 1, nmo, nj
-                fc_ij_a(1:nmo,jj:min(nmo,jj+nj-1)) => buf_fc_ij_a
-                fc_ij_b(1:nmo,jj:min(nmo,jj+nj-1)) => buf_fc_ij_b
-                fc_ji_a(jj:min(nmo,jj+nj-1),1:nmo) => buf_fc_ji_a
-                fc_ji_b(jj:min(nmo,jj+nj-1),1:nmo) => buf_fc_ji_b
-                fc_ij_a = 0.0d0
-                fc_ij_b = 0.0d0
-                fc_ji_a = 0.0d0
-                fc_ji_b = 0.0d0
                 do jjj = jj, min(nmo,jj+nj-1)
                   do ii = 1, jjj-1
                     e_iijj_ab = 0.0d0
@@ -801,8 +793,10 @@ c
      &                          max(1.0d-10,p1p_a_14**3)
                     dp1p_b_14 = (0.25d0-0.5d0*p_b)/
      &                          max(1.0d-10,p1p_b_14**3)
-                    fc_ij_a(ii,jjj) = e_iijj_ab*dp1p_a_14
-                    fc_ij_b(ii,jjj) = e_iijj_ba*dp1p_b_14
+                    v_dc_a(ii) = v_dc_a(ii)
+     &              + e_iijj_ab*dp1p_a_14
+                    v_dc_b(ii) = v_dc_b(ii)
+     &              + e_iijj_ba*dp1p_b_14
                   enddo ! ii
                   do ii = jjj+1, nmo
                     e_iijj_ab = 0.0d0
@@ -823,24 +817,12 @@ c
      &                          max(1.0d-10,p1p_a_14**3)
                     dp1p_b_14 = (0.25d0-0.5d0*p_b)/
      &                          max(1.0d-10,p1p_b_14**3)
-                    fc_ij_a(ii,jjj) = e_iijj_ab*dp1p_a_14
-                    fc_ij_b(ii,jjj) = e_iijj_ba*dp1p_b_14
+                    v_dc_a(ii) = v_dc_a(ii)
+     &              + e_iijj_ab*dp1p_a_14
+                    v_dc_b(ii) = v_dc_b(ii)
+     &              + e_iijj_ba*dp1p_b_14
                   enddo ! ii
                 enddo ! jjj
-                do jjj = jj, min(nmo,jj+nj-1)
-                  do ii = 1, nmo
-                    fc_ji_a(jjj,ii) = fc_ij_a(ii,jjj)
-                    fc_ji_b(jjj,ii) = fc_ij_b(ii,jjj)
-                  enddo ! ii
-                enddo ! jjj
-                call ga_acc(wfn1_deriv%g_dca,1,nmo,jj,min(nmo,jj+nj-1),
-     &                      fc_ij_a,nmo,0.5d0)
-                call ga_acc(wfn1_deriv%g_dcb,1,nmo,jj,min(nmo,jj+nj-1),
-     &                      fc_ij_b,nmo,0.5d0)
-                call ga_acc(wfn1_deriv%g_dca,jj,min(nmo,jj+nj-1),1,nmo,
-     &                      fc_ji_a,nj,0.5d0)
-                call ga_acc(wfn1_deriv%g_dcb,jj,min(nmo,jj+nj-1),1,nmo,
-     &                      fc_ji_b,nj,0.5d0)
               enddo ! jj
 c
             enddo ! la
@@ -850,9 +832,9 @@ c
 c
       E_corr    = 0.5d0*E_corr
 cDEBUG
-      write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
-      write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
-      write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
+c     write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
+c     write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
+c     write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
 cDEBUG
 c
       call ga_dgop(1300,E_corr,1,"+")

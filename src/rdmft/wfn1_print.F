@@ -119,14 +119,22 @@ c
       if (iproc.eq.0) then
         write(LuOut,'(" WFN1                     :")')
         write(LuOut,'(" --------------------------")')
-        write(LuOut,'(" Total WFN1 energy = ",f22.10)')wfn1_energy%E_tot
-        write(LuOut,'(" 1-Electron energy = ",f22.10)')wfn1_energy%E_1el
-        write(LuOut,'(" 2-Electron energy = ",f22.10)')wfn1_energy%E_2el
-        write(LuOut,'(" DFT XC energy     = ",f22.10)')wfn1_energy%E_dft
-        write(LuOut,'(" El. redistribution= ",f22.10)')
+        write(LuOut,'(" Total WFN1 energy  = ",f22.10)')
+     &              wfn1_energy%E_tot
+        write(LuOut,'(" 1-Electron energy  = ",f22.10)')
+     &              wfn1_energy%E_1el
+        write(LuOut,'(" 2-Electron energy  = ",f22.10)')
+     &              wfn1_energy%E_2el
+        write(LuOut,'(" Correlation energy = ",f22.10)')
+     &              wfn1_energy%E_corr
+        write(LuOut,'(" DFT XC energy      = ",f22.10)')
+     &              wfn1_energy%E_dft
+        write(LuOut,'(" El. redistribution = ",f22.10)')
      &              wfn1_energy%E_redist
-        write(LuOut,'(" Entropy energy    = ",f22.10)')wfn1_energy%E_ent
-        write(LuOut,'(" Nuclear energy    = ",f22.10)')wfn1_energy%E_nuc
+        write(LuOut,'(" Entropy energy     = ",f22.10)')
+     &              wfn1_energy%E_ent
+        write(LuOut,'(" Nuclear energy     = ",f22.10)')
+     &              wfn1_energy%E_nuc
         write(LuOut,*)
         write(LuOut,'(" conventional Hartree-Fock:")')
         write(LuOut,'(" --------------------------")')

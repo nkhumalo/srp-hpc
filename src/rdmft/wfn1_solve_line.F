@@ -14,6 +14,7 @@ C>
      &                         wfn1_wave,wfn1_deriv,wfn1_energy,
      &                         wfn1_trial_wv,wfn1_trial_drv,
      &                         wfn1_part_drv,
+     &                         g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &                         g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                         v_dna,v_dnb,v_dca,v_dcb,
      &                         v_dnna,v_dnnb,v_dcna,v_dcnb,
@@ -52,6 +53,14 @@ c
       type(wfn1_drv), intent(inout)  :: wfn1_part_drv
 !     The trial energy terms
       type(wfn1_en)      :: wfn1_trial_en  ! the trial energy
+!     GA dimensions nbf x nbf
+      integer :: g_bfbf
+!     GA dimensions nbf x nbf
+      integer :: g_bfbf2
+!     GA dimensions nbf x nbf
+      integer :: g_bfbf3
+!     GA dimensions nbf x nbf
+      integer :: g_bfbf4
 !     GA dimensions nbf x nmo
       integer :: g_bfmo
 !     GA dimensions nmo x nmo
@@ -105,7 +114,9 @@ c
         endif
       endif
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
-     &              wfn1_part_drv,wfn1_energy,g_bfmo,
+     &              wfn1_part_drv,wfn1_energy,
+     &              g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
+     &              g_bfmo,
      &              g_momo1,g_momo2,g_momo3,g_momo4,
      &              v_dna,v_dnb,v_dca,v_dcb,
      &              v_dnna,v_dnnb,v_dcna,v_dcnb)
@@ -154,6 +165,7 @@ c
         call wfn1_linesearch(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
      &                       wfn1_deriv,wfn1_energy,wfn1_trial_wv,
      &                       wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
+     &                       g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                       v_dna,v_dnb,v_dca,v_dcb,
      &                       v_dnna,v_dnnb,v_dcna,v_dcnb)

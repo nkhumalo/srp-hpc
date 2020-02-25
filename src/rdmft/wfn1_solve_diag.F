@@ -104,6 +104,9 @@ c
       integer, parameter :: DIAG_N = 1 ! diagonalize nat orb Fock
       integer, parameter :: DIAG_C = 2 ! diagonalize cor fnc Fock
       integer  :: diag_NorC = DIAG_N
+cDEBUG
+c     double precision :: ea, eb
+cDEBUG
 c
       iproc    = ga_nodeid()
       conv_tol = wfn1_param%convergence
@@ -140,7 +143,7 @@ c
           write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
      &                                    error%total
         else
-          write(luout,'(i10,f20.8,5f16.6)')curit,wfn1_energy%E_tot,
+          write(luout,'(i10,f20.8,5e16.6)')curit,wfn1_energy%E_tot,
      &                                     error%total,
      &                                     error%errna,error%errnb,
      &                                     error%errca,error%errcb
@@ -169,8 +172,15 @@ c
 c       end of alternating optimization
 c
         if      (diag_NorC.eq.DIAG_C) then
-          call wfn1_scale_offdiag(wfn1_deriv%g_dca,0.002d0)
-          call wfn1_scale_offdiag(wfn1_deriv%g_dcb,0.002d0)
+cDEBUG
+c         do ii = 1, nmo
+c           call ga_get(wfn1_deriv%g_dca,ii,ii,ii,ii,ea,1)
+c           call ga_get(wfn1_deriv%g_dcb,ii,ii,ii,ii,eb,1)
+c           write(*,'(" HVD: eorb:",i4,2e18.6)')ii,ea,eb
+c         enddo
+cDEBUG
+          call wfn1_scale_offdiag(wfn1_deriv%g_dca,wfn1_param%damp_c)
+          call wfn1_scale_offdiag(wfn1_deriv%g_dcb,wfn1_param%damp_c)
           call ga_diag_std(wfn1_deriv%g_dca,g_momo1,v_dca)
           call ga_diag_std(wfn1_deriv%g_dcb,g_momo2,v_dcb)
 c         call wfn1_column_max(wfn1_param,g_momo1,icola)
@@ -186,8 +196,8 @@ c         call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
           call ga_copy(g_momo1,wfn1_wave%g_ca)
           call ga_copy(g_momo2,wfn1_wave%g_cb)
         else if (diag_NorC.eq.DIAG_N) then
-          call wfn1_scale_offdiag(wfn1_deriv%g_dna,0.01d0)
-          call wfn1_scale_offdiag(wfn1_deriv%g_dnb,0.01d0)
+          call wfn1_scale_offdiag(wfn1_deriv%g_dna,wfn1_param%damp_n)
+          call wfn1_scale_offdiag(wfn1_deriv%g_dnb,wfn1_param%damp_n)
           call ga_diag_std(wfn1_deriv%g_dna,g_momo1,v_dna)
           call ga_diag_std(wfn1_deriv%g_dnb,g_momo2,v_dnb)
           call wfn1_column_max(wfn1_param,g_momo1,icola)
@@ -221,11 +231,11 @@ c
      &                                      error%total
           else
             if      (diag_NorC.eq.diag_C) then
-              write(luout,'(i10,f20.8,5f16.6,a2)')
+              write(luout,'(i10,f20.8,5e16.6,a2)')
      &              curit,wfn1_energy%E_tot,error%total,
      &              error%errna,error%errnb,error%errca,error%errcb,'C'
             else if (diag_NorC.eq.diag_N) then
-              write(luout,'(i10,f20.8,5f16.6,a2)')
+              write(luout,'(i10,f20.8,5e16.6,a2)')
      &              curit,wfn1_energy%E_tot,error%total,
      &              error%errna,error%errnb,error%errca,error%errcb,'N'
             else

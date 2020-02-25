@@ -522,6 +522,14 @@ c
         call errquit(pname//" Initial temperature must be at least 0.0",
      &               0,INPUT_ERR)
       endif
+      if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:damp_n",MT_DBL,
+     &                  1,wfn1_param%damp_n)) wfn1_param%damp_n = 1.0d-2
+      if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:damp_c",MT_DBL,
+     &                  1,wfn1_param%damp_c)) wfn1_param%damp_c = 2.0d-3
+      if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:denom_min",MT_DBL,
+     &                  1,wfn1_param%denom_min)) 
+     &                                     wfn1_param%denom_min = 1.0d-8
+c    &                                     wfn1_param%denom_min = 0.01d0
       wfn1_param%convergence = conv_tol
       wfn1_param%maxiter     = maxit
 c

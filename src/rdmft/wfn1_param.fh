@@ -19,6 +19,12 @@ C>
          double precision :: Tbath       ! the bath temperature
          double precision :: fraca       ! fraction of alpha electron
          double precision :: fracb       ! fraction of beta electron
+         double precision :: damp_c      ! damping factor for correlation
+                                         ! function Fock matrices
+         double precision :: damp_n      ! damping factor for natural
+                                         ! orbital Fock matrices
+         double precision :: denom_min   ! the minimum denominator due to
+                                         ! differentiating sqrt-s.
          integer          :: maxiter     ! maximum number of iterations
          integer          :: nbf         ! number of basis functions
          integer          :: nmo         ! number of molecular orbitals

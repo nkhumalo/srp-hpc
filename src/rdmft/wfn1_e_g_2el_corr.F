@@ -290,10 +290,19 @@ c
       double precision, pointer             :: N_ai_a(:,:)
       double precision, allocatable, target :: buf_N_ai_b(:)
       double precision, pointer             :: N_ai_b(:,:)
+c
+      double precision :: c_ii
+      double precision :: c2_ij
+c
+      double precision :: c_a_j
+      double precision :: c_b_j
+      double precision :: Trenorm
+      logical          :: oTrenorm
 cDEBUG
       double precision E_ii_cor
       double precision E2_ij_cor
       double precision E4_ij_cor
+      double precision c2_ii
 cDEBUG
 c
 c     Functions:
@@ -311,6 +320,9 @@ cDEBUG
       E_ii_cor  = 0.0d0
       E2_ij_cor = 0.0d0
       E4_ij_cor = 0.0d0
+      c_ii      = 0.0d0
+      c2_ii     = 0.0d0
+      c2_ij     = 0.0d0
 cDEBUG
 c
       nbf  = wfn1_param%nbf
@@ -381,6 +393,45 @@ c
      &                   wfn1_wave%dcntb,occ_b)
 c
       call ga_sync()
+c
+c     Calculate renormalization quantities
+c
+      do ii = 1, nmo
+        c_ii  = c_ii  + sqrt(occ_a(ii)*occ_b(ii))-occ_a(ii)*occ_b(ii)
+        do jj = 1, ii-1
+          c2_ij = c2_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
+     &                         occ_b(jj)*(1.0d0-occ_b(jj)))
+        enddo
+        do jj = ii+1, nmo
+          c2_ij = c2_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
+     &                         occ_b(jj)*(1.0d0-occ_b(jj)))
+        enddo
+      enddo
+      oTrenorm = .true.
+      if (c2_ij.le.c_ii) then
+c       If there is no correlation then c_ii and c2_ij are both 0
+c       In that case the renormalization factor is 1 and its derivatives
+c       are 0.
+        oTrenorm = .false. 
+        Trenorm  = 1.0d0
+      else
+        oTrenorm = .true.
+        Trenorm  = c_ii/c2_ij
+      endif
+cDEBUG
+      do ii = 1, nmo
+        c2_ii = c2_ii + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
+     &                       occ_b(ii)*(1.0d0-occ_b(ii)))
+      enddo
+      write(*,'(" HVD: c_ii        = ",e22.8)')c_ii
+      write(*,'(" HVD: c2_ii       = ",e22.8)')c2_ii
+      write(*,'(" HVD: c2_ij       = ",e22.8)')c2_ij
+      write(*,'(" HVD: c2_IJ       = ",e22.8)')c2_ij+c2_ii
+      write(*,'(" HVD: c2_ij/c_ii  = ",e22.8)')c2_ij/c_ii
+      write(*,'(" HVD: c2_IJ/c_ii  = ",e22.8)')(c2_ij+c2_ii)/c_ii
+      write(*,'(" HVD: c2_ij/c2_ii = ",e22.8)')c2_ij/c2_ii
+      write(*,'(" HVD: c2_IJ/c2_ii = ",e22.8)')(c2_ij+c2_ii)/c2_ii
+cDEBUG
 c
       do ld = 1, nshell
         if (.not. bas_cn2bfr(wfn1_inst%basis, ld, id_lo, id_hi))
@@ -526,29 +577,29 @@ cDEBUG
                     do jj = 1, ii-1
                       E_corr = E_corr
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))
+     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))
+     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
 cDEBUG
                       E2_ij_cor = E2_ij_cor
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))
+     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))
+     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
 cDEBUG
                     enddo ! jj
                     do jj = ii+1, nmo
                       E_corr = E_corr
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))
+     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))
+     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
 cDEBUG
                       E2_ij_cor = E2_ij_cor
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))
+     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))
+     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
 cDEBUG
                     enddo ! jj
                   enddo ! ii
@@ -561,29 +612,29 @@ c
                     do jj = 1, ii-1
                       E_corr = E_corr
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))
+     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))
+     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
 cDEBUG
                       E4_ij_cor = E4_ij_cor
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))
+     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))
+     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
 cDEBUG
                     enddo ! jj
                     do jj = ii+1, nmo
                       E_corr = E_corr
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))
+     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))
+     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
 cDEBUG
                       E4_ij_cor = E4_ij_cor
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))
+     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))
+     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
 cDEBUG
                     enddo ! jj
                   enddo ! ii
@@ -620,10 +671,10 @@ c
                     do ia = ia_lo, ia_hi
                       fn_ic_a(ii,ic) = fn_ic_a(ii,ic)
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))
+     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
                       fn_ic_b(ii,ic) = fn_ic_b(ii,ic)
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))
+     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
                     enddo ! ia
                   enddo ! ic
                 enddo ! ii
@@ -632,10 +683,10 @@ c
                     do ia = ia_lo, ia_hi
                       fn_ic_a(ii,ic) = fn_ic_a(ii,ic)
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))
+     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
                       fn_ic_b(ii,ic) = fn_ic_b(ii,ic)
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))
+     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
                     enddo ! ia
                   enddo ! ic
                 enddo ! ii
@@ -653,10 +704,10 @@ c
                     do ia = ia_lo, ia_hi
                       fn_ib_b(ii,ib) = fn_ib_b(ii,ib)
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))
+     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
                       fn_ib_a(ii,ib) = fn_ib_a(ii,ib)
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))
+     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
                     enddo ! ia
                   enddo ! ib
                 enddo ! ii
@@ -665,10 +716,10 @@ c
                     do ia = ia_lo, ia_hi
                       fn_ib_b(ii,ib) = fn_ib_b(ii,ib)
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))
+     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
                       fn_ib_a(ii,ib) = fn_ib_a(ii,ib)
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))
+     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
                     enddo ! ia
                   enddo ! ib
                 enddo ! ii
@@ -725,8 +776,8 @@ c
                 p_b = occ_b(ii)
                 p_a_12 = sqrt(p_a)
                 p_b_12 = sqrt(p_b)
-                dp_a_12 = 0.5d0/max(1.0d-10,p_a_12)
-                dp_b_12 = 0.5d0/max(1.0d-10,p_b_12)
+                dp_a_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_a_12)
+                dp_b_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_b_12)
                 v_dc_a(ii) = v_dc_a(ii)
      &          + e_iiii_ab*(dp_a_12*p_b_12-p_b)
                 v_dc_b(ii) = v_dc_b(ii)
@@ -760,14 +811,42 @@ c
                 enddo ! jj
                 p_a = occ_a(ii)
                 p_b = occ_b(ii)
+                p_a_12 = sqrt(p_a)
+                p_b_12 = sqrt(p_b)
                 p1p_a_12 = sqrt(p_a*(1.0d0-p_a))
                 p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
-                dp1p_a_12 = (0.5d0-p_a)/max(1.0d-10,p1p_a_12)
-                dp1p_b_12 = (0.5d0-p_b)/max(1.0d-10,p1p_b_12)
+                dp_a_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_a_12)
+                dp_b_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_b_12)
+                dp1p_a_12 = (1.0d0-2.0d0*p_a)/
+     &                      max(wfn1_param%denom_min,2.0d0*p1p_a_12)
+                dp1p_b_12 = (1.0d0-2.0d0*p_b)/
+     &                      max(wfn1_param%denom_min,2.0d0*p1p_b_12)
                 v_dc_a(ii) = v_dc_a(ii)
-     &          + e_iijj_ab*dp1p_a_12
+     &          + e_iijj_ab*dp1p_a_12*Trenorm
                 v_dc_b(ii) = v_dc_b(ii)
-     &          + e_iijj_ba*dp1p_b_12
+     &          + e_iijj_ba*dp1p_b_12*Trenorm
+                if (oTrenorm) then
+                  c_b_j = 0.0d0
+                  c_a_j = 0.0d0
+                  do jj = 1, ii-1
+                    c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
+                    c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
+                  enddo
+                  do jj = ii+1, nmo
+                    c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
+                    c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
+                  enddo
+                  v_dc_a(ii) = v_dc_a(ii)
+     &            + e_iijj_ab*p1p_a_12*(dp_a_12*p_b_12-p_b)/
+     &              max(wfn1_param%denom_min,c2_ij)
+     &            - e_iijj_ab*p1p_a_12*Trenorm/
+     &              max(wfn1_param%denom_min,c2_ij)*c_b_j*dp1p_a_12
+                  v_dc_b(ii) = v_dc_b(ii)
+     &            + e_iijj_ba*p1p_b_12*(p_a_12*dp_b_12-p_a)/
+     &              max(wfn1_param%denom_min,c2_ij)
+     &            - e_iijj_ba*p1p_b_12*Trenorm/
+     &              max(wfn1_param%denom_min,c2_ij)*c_a_j*dp1p_b_12
+                endif
               enddo ! ii
 c
 c             - Third do the T4_ij terms
@@ -787,16 +866,44 @@ c
                     enddo ! ib
                     p_a = occ_a(ii)
                     p_b = occ_b(ii)
+                    p1p_a_12 = sqrt(p_a*(1.0d0-p_a))
+                    p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
                     p1p_a_14 = sqrt(sqrt(p_a*(1.0d0-p_a)))
                     p1p_b_14 = sqrt(sqrt(p_b*(1.0d0-p_b)))
-                    dp1p_a_14 = (0.25d0-0.5d0*p_a)/
-     &                          max(1.0d-10,p1p_a_14**3)
-                    dp1p_b_14 = (0.25d0-0.5d0*p_b)/
-     &                          max(1.0d-10,p1p_b_14**3)
+                    dp1p_a_12 = (1.0d0-2.0d0*p_a)/
+     &                     max(wfn1_param%denom_min,2.0d0*p1p_a_12)
+                    dp1p_b_12 = (1.0d0-2.0d0*p_b)/
+     &                     max(wfn1_param%denom_min,2.0d0*p1p_b_12)
+                    dp1p_a_14 = (1.0d0-2.0d0*p_a)/
+     &                     max(wfn1_param%denom_min,4.0d0*p1p_a_14**3)
+                    dp1p_b_14 = (1.0d0-2.0d0*p_b)/
+     &                     max(wfn1_param%denom_min,4.0d0*p1p_b_14**3)
                     v_dc_a(ii) = v_dc_a(ii)
-     &              + e_iijj_ab*dp1p_a_14
+     &              + e_iijj_ab*dp1p_a_14*Trenorm
                     v_dc_b(ii) = v_dc_b(ii)
-     &              + e_iijj_ba*dp1p_b_14
+     &              + e_iijj_ba*dp1p_b_14*Trenorm
+                    if (oTrenorm) then
+                      c_b_j = 0.0d0
+                      c_a_j = 0.0d0
+                      do kk = 1, ii-1
+                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+                      enddo
+                      do kk = ii+1, nmo
+                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+                      enddo
+                      v_dc_a(ii) = v_dc_a(ii)
+     &                + e_iijj_ab*p1p_a_14*(dp_a_12*p_b_12-p_b)/
+     &                  max(wfn1_param%denom_min,c2_ij)
+     &                - e_iijj_ab*p1p_a_14*Trenorm/
+     &                  max(wfn1_param%denom_min,c2_ij)*c_b_j*dp1p_a_12
+                      v_dc_b(ii) = v_dc_b(ii)
+     &                + e_iijj_ba*p1p_b_14*(p_a_12*dp_b_12-p_a)/
+     &                  max(wfn1_param%denom_min,c2_ij)
+     &                - e_iijj_ba*p1p_b_14*Trenorm/
+     &                  max(wfn1_param%denom_min,c2_ij)*c_a_j*dp1p_b_12
+                    endif
                   enddo ! ii
                   do ii = jjj+1, nmo
                     e_iijj_ab = 0.0d0
@@ -811,16 +918,44 @@ c
                     enddo ! ib
                     p_a = occ_a(ii)
                     p_b = occ_b(ii)
+                    p1p_a_12 = sqrt(p_a*(1.0d0-p_a))
+                    p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
                     p1p_a_14 = sqrt(sqrt(p_a*(1.0d0-p_a)))
                     p1p_b_14 = sqrt(sqrt(p_b*(1.0d0-p_b)))
-                    dp1p_a_14 = (0.25d0-0.5d0*p_a)/
-     &                          max(1.0d-10,p1p_a_14**3)
-                    dp1p_b_14 = (0.25d0-0.5d0*p_b)/
-     &                          max(1.0d-10,p1p_b_14**3)
+                    dp1p_a_12 = (1.0d0-2.0d0*p_a)/
+     &                     max(wfn1_param%denom_min,2.0d0*p1p_a_12)
+                    dp1p_b_12 = (1.0d0-2.0d0*p_b)/
+     &                     max(wfn1_param%denom_min,2.0d0*p1p_b_12)
+                    dp1p_a_14 = (1.0d0-2.0d0*p_a)/
+     &                     max(wfn1_param%denom_min,4.0d0*p1p_a_14**3)
+                    dp1p_b_14 = (1.0d0-2.0d0*p_b)/
+     &                     max(wfn1_param%denom_min,4.0d0*p1p_b_14**3)
                     v_dc_a(ii) = v_dc_a(ii)
-     &              + e_iijj_ab*dp1p_a_14
+     &              + e_iijj_ab*dp1p_a_14*Trenorm
                     v_dc_b(ii) = v_dc_b(ii)
-     &              + e_iijj_ba*dp1p_b_14
+     &              + e_iijj_ba*dp1p_b_14*Trenorm
+                    if (oTrenorm) then
+                      c_b_j = 0.0d0
+                      c_a_j = 0.0d0
+                      do kk = 1, ii-1
+                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+                      enddo
+                      do kk = ii+1, nmo
+                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+                      enddo
+                      v_dc_a(ii) = v_dc_a(ii)
+     &                + e_iijj_ab*p1p_a_14*(dp_a_12*p_b_12-p_b)/
+     &                  max(wfn1_param%denom_min,c2_ij)
+     &                - e_iijj_ab*p1p_a_14*Trenorm/
+     &                  max(wfn1_param%denom_min,c2_ij)*c_b_j*dp1p_a_12
+                      v_dc_b(ii) = v_dc_b(ii)
+     &                + e_iijj_ba*p1p_b_14*(p_a_12*dp_b_12-p_a)/
+     &                  max(wfn1_param%denom_min,c2_ij)
+     &                - e_iijj_ba*p1p_b_14*Trenorm/
+     &                  max(wfn1_param%denom_min,c2_ij)*c_a_j*dp1p_b_12
+                    endif
                   enddo ! ii
                 enddo ! jjj
               enddo ! jj
@@ -832,9 +967,9 @@ c
 c
       E_corr    = 0.5d0*E_corr
 cDEBUG
-c     write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
-c     write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
-c     write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
+      write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
+      write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
+      write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
 cDEBUG
 c
       call ga_dgop(1300,E_corr,1,"+")

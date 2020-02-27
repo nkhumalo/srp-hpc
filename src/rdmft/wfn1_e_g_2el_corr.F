@@ -861,7 +861,7 @@ c
                         e_iijj_ab = -e4_abj_ab(ia,ib,jjj)*
      &                               N_ai_a(ia,ii)*N_bi_b(ib,ii)
                         e_iijj_ba = -e4_abj_ba(ia,ib,jjj)*
-     &                               N_ai_a(ia,ii)*N_bi_b(ib,ii)
+     &                               N_ai_b(ia,ii)*N_bi_a(ib,ii)
                       enddo ! ia
                     enddo ! ib
                     p_a = occ_a(ii)
@@ -913,7 +913,7 @@ c
                         e_iijj_ab = -e4_abj_ab(ia,ib,jjj)*
      &                               N_ai_a(ia,ii)*N_bi_b(ib,ii)
                         e_iijj_ba = -e4_abj_ba(ia,ib,jjj)*
-     &                               N_ai_a(ia,ii)*N_bi_b(ib,ii)
+     &                               N_ai_b(ia,ii)*N_bi_a(ib,ii)
                       enddo ! ia
                     enddo ! ib
                     p_a = occ_a(ii)

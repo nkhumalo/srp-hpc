@@ -183,12 +183,12 @@ cDEBUG
           call wfn1_scale_offdiag(wfn1_deriv%g_dcb,wfn1_param%damp_c)
           call ga_diag_std(wfn1_deriv%g_dca,g_momo1,v_dca)
           call ga_diag_std(wfn1_deriv%g_dcb,g_momo2,v_dcb)
-c         call wfn1_column_max(wfn1_param,g_momo1,icola)
-c         call wfn1_column_max(wfn1_param,g_momo2,icolb)
-c         call wfn1_backorder(wfn1_param,g_momo1,icola,g_momo3)
-c         call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
-          call ga_copy(g_momo1,g_momo3)
-          call ga_copy(g_momo2,g_momo4)
+          call wfn1_column_max(wfn1_param,g_momo1,icola)
+          call wfn1_column_max(wfn1_param,g_momo2,icolb)
+          call wfn1_backorder(wfn1_param,g_momo1,icola,g_momo3)
+          call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
+c         call ga_copy(g_momo1,g_momo3)
+c         call ga_copy(g_momo2,g_momo4)
           call ga_dgemm('N','N',nmo,nmo,nmo,
      &                  1.0d0,wfn1_wave%g_ca,g_momo3,0.0d0,g_momo1)
           call ga_dgemm('N','N',nmo,nmo,nmo,

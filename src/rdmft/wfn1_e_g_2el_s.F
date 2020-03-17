@@ -1,27 +1,165 @@
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_e_g_2el_s(wfn1_param,wfn1_inst,
-     &                          wfn1_wave,wfn1_deriv,
-     &                          v_dca,v_dcb,g_2aa,g_2bb,
-     &                          g_x2aa,g_x2bb,E_2el,E_2el_hf)
+!> \ingroup wfn1
+!> @{
+!>
+!> \file wfn1_e_g_2el_s.F
+!> The correlated 2-electron contributions
+!>
+!> @}
+!>
+!> \ingroup wfn1_priv
+!> @{
+!>
+!> \brief Evaluate the correlated 2-electron contributions
+!>
+!> This subroutine evaluates the 2-electron contributions of the
+!> N-representable correlation formalism to the energy, the
+!> natural orbital Fock matrices, and the correlation function Fock
+!> matrices.
+!>
+!> Note that the Coulomb terms are added on to the v_dc_a and v_dc_b
+!> vectors as those contributions are diagonal in the natural orbital
+!> basis (just as the 1-electron terms are). The exchange terms do not
+!> have this property and are therefore immediately transformed and
+!> added onto the correlation function Fock matrices.
+!>
+!> Within the Hartree-Fock formalism the Coulomb terms can be
+!> constructed from regular 1RDMs. The exchange terms require the
+!> explicit evaluation of the 2RDM diagonal. The latter form 
+!> \f$O(N^2)\f$ data objects and are therefore distributed over 
+!> multiple nodes. 
+!>
+!> Note that naive evaluation of the 2RDM would have a complexity
+!> of \f$O(N^6)\f$ as is evident from the expression
+!> \f{eqnarray*}{
+!>   \Gamma_{abcd} &=& -\sum_{i,j}N_{ai}N^*_{di}N_{bj}N^*_{cj}d_{ij}
+!> \f}
+!> where all indices \f$a, b, c, d, i\f$ and \f$j\f$ run over all
+!> basis functions. This complexity can be reduced to \f$O(N^5)\f$
+!> by breaking the equations down into two steps
+!> \f{eqnarray*}{
+!>   \gamma_{adj} &=& -\sum_{i}N_{ai}N^*_{di}d_{ij} \\\\
+!>   \Gamma_{abcd} &=& \sum_{j}\gamma_{adj}N_{bj}N^*_{cj}
+!> \f}
+!> Note that this approach is still communication intensive as typically
+!> the loops over \f$a\f$ and \f$d\f$ would be partitioned into blocks,
+!> and for every block of \f$\gamma_{adj}\f$ all \f$O(N^2)\f$ elements
+!> of the diagonal \f$d_{ij}\f$ have to be accessed. Hence formally
+!> \f$O(N^4)\f$ data needs to be communicated.
+!>
+!> Ultimately, the effective complexities can be reduced using, for
+!> example, the Cauchy-Schwarz inequality [1-4]. For large molecules
+!> only \f$O(N^2)\f$ of the \f$a, b, c, d\f$ indeces, only \f$O(N)\f$
+!> of the \f$a, d\f$ indeces would survive. This implies that both the
+!> computational as well as the communication complexity are reduced to
+!> \f$O(N^3)\f$. At present the Cauchy-Schwarz inequality is not used.
+!>
+!> On the memory management aspects there are costs associated with
+!> allocating memory on the heap as in the Fortran ALLOCATE statement.
+!> To avoid these overheads, in particular in the inner loops, Fortran
+!> POINTERs are used. This means that the actual memory is associated
+!> with buffers allocated outside the loops. The pointers are set 
+!> inside the loops to provide convenient array views on the memory. 
+!> For clarity pairs of variables are used. The ALLOCATABLE arrays
+!> having names BUF_<name> are the buffers that hold the actual memory.
+!> Associated with each such array is a POINTER <name> that points to
+!> BUF_<name> and provides an appropriate number of dimensions and
+!> corresponding index limits.
+!>
+!> In addition this subroutine inherently deals with \f$\alpha\$ and
+!> \f$\beta\f$-spin variables. Variables related to \f$\alpha\f$-spin
+!> electrons are identified by names with a trailing "_a" whereas 
+!> \f$\beta\f$-electron variables are identified by names with a
+!> trailing "_b".
+!>
+!> Another naming convention is that variables include the remaining
+!> indeces. For example \f$\gamma_{adj}\f$ given above would have a
+!> name that lists the remaining indeces \f$a, d, j\f$ and the order
+!> of these indeces corresponds to the order of the dimensions of the
+!> 3-dimensional tensor.
+!>
+!> This subroutine computes the 2-electron energy term in two 
+!> different ways. Once in accordance to the N-representable
+!> correlation formalism [5], and once, for comparison, according to
+!> the conventional Hartree-Fock method [6-8].
+!>
+!> The electron correlation is modelled as a screened Coulomb
+!> interaction where the screening is determined by the entropy.
+!> Effectively the 2-electron occupation numbers are scaled by a 
+!> factor \f$(1-S(d_i,d_j))\f$ where \f$S\f$ is normalized such that
+!> \f$S(1/2,1/2)=1\f$.
+!>
+!> ### References ###
+!>
+!> [1] A.-L. Cauchy, "Sur les formules qui résultent de l'emploi du
+!>     signe > ou <, et sur les moyennes entre plusieurs quantités",
+!>     In Book: Cours d'analyse de l'École Royale Polytechnique, (1821).
+!>     Reprinted in Cambridge Library Collection - Mathematics,
+!>     Cambridge University Press (2009), pp. 438-459, DOI:
+!>     <a href="https://dx.doi.org/10.1017/CBO9780511693328.017>
+!>     10.1017/CBO9780511693328.017</a>.
+!>
+!> [2] V. Bouniakowsky, "Sur quelques inegalités concernant les
+!>     intégrales aux différences finies", Memoires de L'Academie
+!>     Imperiale des Sciences de St.-Petersbourg, VII, 1 (1859) Nr. 9,
+!>     pp. 1-18, URL:
+!>     <a href="https://books.google.com/books?id=wZhFAAAAcAAJ>
+!>     books.google.com/books?id=wZhFAAAAcAAJ</a>.
+!>
+!> [3] H. A. Schwarz, "Über ein Flächen kleinsten Flächeninhalts
+!>     betreffendes Problem der Variationsrechnung", Acta Societatis
+!>     Scientiarum Fennicae, XV: 318 (1885), URL:
+!>     <a href="https://books.google.com/books?id=BXtIAQAAMAAJ">
+!>     https://books.google.com/books?id=BXtIAQAAMAAJ</a>.
+!>
+!> [4] J. M. Steele, "The Cauchy-Schwarz Master Class", The Mathematical
+!>     Association of America (2004), ISBN: 
+!>     <a href="https://isbnsearch.org/isbn/052154677X">
+!>     0-521-54677-X</a>.
+!>
+!> [5] H. J. J. van Dam, "An N-representable Hartree-Fock approach for
+!>     non-idempotent density matrixes", in preparation (08/31/2017).
+!>
+!> [6] C. C. J. Roothaan, "New developments in molecular orbital
+!>     theory", Reviews of Modern Physics <b>23</b> (1951) pp. 69-89,
+!>     DOI: <a href="https://dx.doi.org/10.1103/RevModPhys.23.69">
+!>     10.1103/RevModPhys.23.69</a>.
+!>
+!> [7] G. G. Hall, "The Molecular Orbital Theory of Chemical Valency.
+!>     VIII. A Method of Calculating Ionization Potentials", 
+!>     Proceedings of the Royal Society A <b>205</b> (1951) pp. 541-552,
+!>     DOI: <a href="https://dx.doi.org/10.1098/rspa.1951.0048">
+!>     10.1098/rspa.1951.0048</a>.
+!>
+!> [8] J. A. Pople, R. K. Nesbet, "Self-consistent orbitals for
+!>     radicals", The Journal of Chemical Physics <b>22</b> (1954)
+!>     pp. 571-572,  DOI:
+!>     <a href="https://dx.doi.org/10.1063/1.1740120">
+!>     10.1063/1.1740120</a>.
+!>
+!> ### TO DO ###
+!>
+!> 1. Work out whether a given processor needs to execute anything
+!>    for a given index of ld, lc, lb, or la and skip empty loops.
+!>    At the moment a simple task counter is checked in the inner most
+!>    loop. Skipping loop bodies in outer loops can bring further 
+!>    efficiency improvements.
+!>
+!> 2. It seems like in some places consecutive jj loops could be merged
+!>    with the potential or reducing the order of intermediate tensors
+!>    by 1. If this is actually possible then this could save memory
+!>    as well as reduce memory access both of which would be beneficial.
+!>
+      subroutine wfn1_e_g_2el_s(wfn1_param,wfn1_inst,wfn1_mat,
+     &                          wfn1_wave,wfn1_deriv,wfn1_part_drv,
+     &                          v_dc_a,v_dc_b,v_dp_a,v_dp_b,
+     &                          g_x_aa,g_x_bb,g_dx_aa,g_dx_bb,
+     &                          E_2el,E_2el_chf)
       implicit none
-C>
-C> \brief Calculate the 2-electron terms with an entropy based
-C> correlation energy
-C>
-C> This subroutine implements the Hartree-Fock 2-electron terms within
-C> the wfn1 formulation. An electron correlation model will be added
-C> later. As a guiding principle we will not store any quantities that
-C> are larger than N^2. Larger quantities will be recomputed as needed.
-C>
-C> In the algorithm used here we assume that the 2-electron integrals
-C> are the most expensive part of the calculation. The cost of the
-C> calculation can be reduced by using the Gauchy-Schwarz inequality.
-C> The good thing is that we do not need to calculate factors for 
-C> integrals we do not calculate. At the moment the Gauchy-Schwarz
-C> inequality is not implemented but is planned to be added later.
-C>
+c
 #include "wfn1_param.fh"
+#include "wfn1_matcnst.fh"
 #include "wfn1_wfn.fh"
 #include "wfn1_drv.fh"
 #include "errquit.fh"
@@ -29,956 +167,1650 @@ C>
 #include "mafdecls.fh"
 #include "bas.fh"
 c
-      type(wfn1_prm), intent(in)     :: wfn1_param ! the job parameters
+      type(wfn1_prm),     intent(in) :: wfn1_param ! the job parameters
       type(wfn1_prminst), intent(in) :: wfn1_inst  ! the job instances
-      type(wfn1_wfn), intent(in)     :: wfn1_wave  ! the wavefunction
-      type(wfn1_drv), intent(inout)  :: wfn1_deriv ! the derivative
+      type(wfn1_matcnst), intent(in) :: wfn1_mat   ! matrix constants
+      type(wfn1_wfn),     intent(in) :: wfn1_wave  ! the wavefunction
 c
-      double precision, intent(inout) :: v_dca(1:wfn1_param%nmo)
-      double precision, intent(inout) :: v_dcb(1:wfn1_param%nmo)
+      type(wfn1_drv),  intent(inout) :: wfn1_deriv ! the derivatives
+!>    The non-correlation, non-thermal derivatives
+      type(wfn1_drv),  intent(inout) :: wfn1_part_drv
 c
-      integer, intent(inout) :: g_2aa  ! nmo x nmo matrix for aa-block
-                                       ! of the 2-electron density
-                                       ! matrix diagonal
-      integer, intent(inout) :: g_2bb  ! nmo x nmo matrix for bb-block
-                                       ! of the 2-electron density
-                                       ! matrix diagonal
+c     Correlation function Fock matrices in the natural orbital basis
+c     alpha-, and beta-spin respectively (excluding exchange)
 c
-      integer, intent(inout) :: g_x2aa  ! nmo x nmo matrix for the
-                                        ! exchange term derivative of
-                                        ! 2-electron density matrix
-                                        ! aa-block
-      integer, intent(inout) :: g_x2bb  ! nmo x nmo matrix for the
-                                        ! exchange term derivative of
-                                        ! 2-electron density matrix
-                                        ! bb-block
+      double precision, intent(inout) :: v_dc_a(1:wfn1_param%nmo)
+      double precision, intent(inout) :: v_dc_b(1:wfn1_param%nmo)
 c
-      double precision, intent(out) :: E_2el    ! the two-electron energy
-      double precision, intent(out) :: E_2el_hf ! the two-electron energy
-                                                ! of conventional Hartree-Fock
+c     Correlation function Fock matrices in the natural orbital basis
+c     alpha-, and beta-spin respectively (excluding exchange) the
+c     non-correlation and non-thermal parts
 c
-c     Local
+      double precision, intent(inout) :: v_dp_a(1:wfn1_param%nmo)
+      double precision, intent(inout) :: v_dp_b(1:wfn1_param%nmo)
 c
-      double precision, external :: ddot
+c     This implementation assumes that g_x_aa, g_x_bb, g_dx_aa,
+c     and g_dx_bb all have the same data distribution. If the actual
+c     data distributions are different then this will not affect the
+c     results as these differences will be resolved by the Global
+c     Arrays. However, this may generate additional communication and
+c     hence reduce the efficiency.
 c
-      double precision, allocatable :: occa(:)  ! a-occupation numbers
-      double precision, allocatable :: occb(:)  ! b-occupation numbers
+c     Nmo x nmo global arrays for the 2RDM exchange diagonals.
+c     See exchange terms of Eq.(34) of [5].
 c
-c     double precision, allocatable :: ocxa(:)  ! a-average exchange 
-c                                               ! occupation numbers
-c                                               ! of 2RDM
-c     double precision, allocatable :: ocxb(:)  ! b-average exchange
-c                                               ! occupation numbers
-c                                               ! of 2RDM
+      integer, intent(in) :: g_x_aa ! exchange alpha-alpha block
+      integer, intent(in) :: g_x_bb ! exchange beta-beta block
 c
-      integer :: nproc
-      integer :: iproc
-      integer :: jproc
+c     Nmo x nmo global arrays for the 2RDM exchange diagonals
+c     derivatives. See the diagonal terms of Eq.(119) of [5].
 c
-      integer :: nmo            ! number of MOs
-      integer :: nea            ! number of alpha electrons
-      integer :: neb            ! number of beta electrons
-      integer :: ir, is, it     ! correlation function labels
+      integer, intent(in) :: g_dx_aa ! exchange alpha-alpha block
+      integer, intent(in) :: g_dx_bb ! exchange beta-beta block
+c
+c     The Hartree-Fock 2-electron energies
+c
+c     The 2-electron energy [5]:
+c
+      double precision, intent(out) :: E_2el ! The 2-electron energy [5]
+c
+c     The conventional Hartree-Fock 2-electron energy [6-8]:
+c
+      double precision, intent(out) :: E_2el_chf 
+c
+c     Local variables:
+c
+      integer :: nproc ! the number of processors
+      integer :: iproc ! the rank of this processor
+      integer :: jproc ! a counter over processors
+      integer :: itask ! the current task number
+c
+      integer :: nbf   ! the number of basis functions
+      integer :: nmo   ! the number of MOs
+      integer :: ne_a  ! the number of alpha-electrons
+      integer :: ne_b  ! the number of beta-electrons
+c
       integer :: ii, jj, kk, ll ! natural orbital labels
       integer :: ia, ib, ic, id ! atomic orbital labels
       integer :: la, lb, lc, ld ! atomic orbital shell labels
       integer :: na, nb, nc, nd ! number of shell functions
-      integer :: nia, nja       ! number of natural orbitals (alpha)
-      integer :: nib, njb       ! number of natural orbitals (beta)
 c
-      integer :: ialo, iahi     ! atomic orbital limits
-      integer :: iblo, ibhi     ! atomic orbital limits
-      integer :: iclo, ichi     ! atomic orbital limits
-      integer :: idlo, idhi     ! atomic orbital limits
+      integer :: ni, nj ! number of natural orbitals
 c
-      integer :: iialo, iiahi   ! natural orbital limits (alpha)
-      integer :: ijalo, ijahi   ! natural orbital limits (alpha)
-      integer :: iiblo, iibhi   ! natural orbital limits (beta)
-      integer :: ijblo, ijbhi   ! natural orbital limits (beta)
+      integer :: ia_lo, ia_hi ! a-index atomic orbital limits
+      integer :: ib_lo, ib_hi ! b-index atomic orbital limits
+      integer :: ic_lo, ic_hi ! c-index atomic orbital limits
+      integer :: id_lo, id_hi ! d-index atomic orbital limits
 c
-      integer :: max2e          ! quartet maximum no. 2-el integrals
-      integer :: mem2           ! amount of scratch space needed
-      integer :: maxsbf         ! maximum no. of shell basis functions
-      integer :: nshell         ! the number of shells
+      integer :: ii_lo, ii_hi ! i-index natural orbital limits
+      integer :: jj_lo, jj_hi ! j-index natural orbital limits
 c
-      integer, parameter :: msg_null = 0
+      integer :: if_lo, if_hi ! i-index Fock matrix limits
+      integer :: jf_lo, jf_hi ! i-index Fock matrix limits
+      integer :: ldf          ! leading dimension on Fock matrix
+      integer :: idxf         ! index for Fock matrix in local memory
+      integer :: ip_lo, ip_hi ! i-index part Fock matrix limits
+      integer :: jp_lo, jp_hi ! i-index part Fock matrix limits
+      integer :: ldp          ! leading dimension on part Fock matrix
+      integer :: idxp         ! index for part Fock matrix in local
+                              ! memory
+      integer :: ix_lo, ix_hi ! i-index exchange occ. matrix limits
+      integer :: jx_lo, jx_hi ! i-index exchange occ. matrix limits
+      integer :: ldx          ! leading dimension on exchange occ matrix
+      integer :: idxx         ! index for exchange occ. matrix in memory
 c
-      double precision, pointer :: buf(:)
-      double precision, pointer :: eri(:,:,:,:)
-      double precision, pointer :: buf2(:)
-      double precision, pointer :: den(:,:,:,:)
-      double precision, pointer :: buf_hf(:)
-      double precision, pointer :: den_hf(:,:,:,:)
-      double precision, pointer :: denx(:,:,:,:)
+      integer :: max2e  ! quartet maximum no. 2-el integrals
+      integer :: mem2   ! amount of scratch space needed
+      integer :: maxsbf ! maximum no. of basis functions in a shell
+      integer :: nshell ! the number of shells
 c
-      double precision, pointer :: buf3aad(:)
-      double precision, pointer :: d3aad(:,:,:)
-      double precision, pointer :: buf3abd(:)
-      double precision, pointer :: d3abd(:,:,:)
-      double precision, pointer :: buf3bad(:)
-      double precision, pointer :: d3bad(:,:,:)
-      double precision, pointer :: buf3bbd(:)
-      double precision, pointer :: d3bbd(:,:,:)
+      logical :: ok_dist ! is the data distribution OK?
 c
-      double precision, pointer :: buf3aac(:)
-      double precision, pointer :: d3aac(:,:,:)
-      double precision, pointer :: buf3abc(:)
-      double precision, pointer :: d3abc(:,:,:)
-      double precision, pointer :: buf3bac(:)
-      double precision, pointer :: d3bac(:,:,:)
-      double precision, pointer :: buf3bbc(:)
-      double precision, pointer :: d3bbc(:,:,:)
+      double precision, allocatable :: occ_a(:) ! a-occupation numbers
+      double precision, allocatable :: occ_b(:) ! b-occupation numbers
 c
-      double precision, pointer :: bufx3aad(:)
-      double precision, pointer :: dx3aad(:,:,:)
-      double precision, pointer :: bufx3abd(:)
-      double precision, pointer :: dx3abd(:,:,:)
-      double precision, pointer :: bufx3bad(:)
-      double precision, pointer :: dx3bad(:,:,:)
-      double precision, pointer :: bufx3bbd(:)
-      double precision, pointer :: dx3bbd(:,:,:)
+c     Data structure for the electron repulsion integrals, as well as
+c     2RDM blocks for the density matrix of [5] and the conventional
+c     Hartree-Fock 2RDM.
 c
-      double precision, pointer :: bufx3aac(:)
-      double precision, pointer :: dx3aac(:,:,:)
-      double precision, pointer :: bufx3abc(:)
-      double precision, pointer :: dx3abc(:,:,:)
-      double precision, pointer :: bufx3bac(:)
-      double precision, pointer :: dx3bac(:,:,:)
-      double precision, pointer :: bufx3bbc(:)
-      double precision, pointer :: dx3bbc(:,:,:)
+      double precision, allocatable         :: scr(:)
+      double precision, allocatable, target :: buf_eri(:)
+      double precision, pointer             :: eri(:,:,:,:)
+      double precision, allocatable, target :: buf_rdm2(:)
+      double precision, pointer             :: rdm2(:,:,:,:)
+      double precision, allocatable, target :: buf_rdm2_chf(:)
+      double precision, pointer             :: rdm2_chf(:,:,:,:)
 c
-      double precision, pointer :: bufaa(:)
-      double precision, pointer :: naia(:,:)
-      double precision, pointer :: bufba(:)
-      double precision, pointer :: nbia(:,:)
-      double precision, pointer :: bufca(:)
-      double precision, pointer :: ncia(:,:)
-      double precision, pointer :: bufda(:)
-      double precision, pointer :: ndia(:,:)
+c     Intermediates in the 2RDM construction
 c
-      double precision, pointer :: bufab(:)
-      double precision, pointer :: naib(:,:)
-      double precision, pointer :: bufbb(:)
-      double precision, pointer :: nbib(:,:)
-      double precision, pointer :: bufcb(:)
-      double precision, pointer :: ncib(:,:)
-      double precision, pointer :: bufdb(:)
-      double precision, pointer :: ndib(:,:)
+      double precision, allocatable, target :: buf_rdm2_acj_aa(:)
+      double precision, pointer             :: rdm2_acj_aa(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_acj_ab(:)
+      double precision, pointer             :: rdm2_acj_ab(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_acj_ba(:)
+      double precision, pointer             :: rdm2_acj_ba(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_acj_bb(:)
+      double precision, pointer             :: rdm2_acj_bb(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_adj_aa(:)
+      double precision, pointer             :: rdm2_adj_aa(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_adj_ab(:)
+      double precision, pointer             :: rdm2_adj_ab(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_adj_ba(:)
+      double precision, pointer             :: rdm2_adj_ba(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_adj_bb(:)
+      double precision, pointer             :: rdm2_adj_bb(:,:,:)
 c
-      double precision, pointer :: bufija(:)
-      double precision, pointer :: occija(:,:)
-      double precision, pointer :: bufijb(:)
-      double precision, pointer :: occijb(:,:)
+c     Same intermediates in the 2RDM construction with entropy
 c
-      double precision, pointer :: bufxija(:)
-      double precision, pointer :: ocxija(:,:)
-      double precision, pointer :: bufxijb(:)
-      double precision, pointer :: ocxijb(:,:)
+      double precision, allocatable, target :: buf_rdm2s_acj_aa(:)
+      double precision, pointer             :: rdm2s_acj_aa(:,:,:)
+      double precision, allocatable, target :: buf_rdm2s_acj_ab(:)
+      double precision, pointer             :: rdm2s_acj_ab(:,:,:)
+      double precision, allocatable, target :: buf_rdm2s_acj_ba(:)
+      double precision, pointer             :: rdm2s_acj_ba(:,:,:)
+      double precision, allocatable, target :: buf_rdm2s_acj_bb(:)
+      double precision, pointer             :: rdm2s_acj_bb(:,:,:)
+      double precision, allocatable, target :: buf_rdm2s_adj_aa(:)
+      double precision, pointer             :: rdm2s_adj_aa(:,:,:)
+      double precision, allocatable, target :: buf_rdm2s_adj_ab(:)
+      double precision, pointer             :: rdm2s_adj_ab(:,:,:)
+      double precision, allocatable, target :: buf_rdm2s_adj_ba(:)
+      double precision, pointer             :: rdm2s_adj_ba(:,:,:)
+      double precision, allocatable, target :: buf_rdm2s_adj_bb(:)
+      double precision, pointer             :: rdm2s_adj_bb(:,:,:)
 c
-      double precision, pointer :: bufaca(:)
-      double precision, pointer :: daca(:,:) ! a,c 1-RDM alpha
-      double precision, pointer :: bufacb(:)
-      double precision, pointer :: dacb(:,:) ! a,c 1-RDM beta
-      double precision, pointer :: bufbda(:)
-      double precision, pointer :: dbda(:,:) ! b,d 1-RDM alpha
-      double precision, pointer :: bufbdb(:)
-      double precision, pointer :: dbdb(:,:) ! b,d 1-RDM beta
+c     Intermediates in the derivative of the 2RDM construction
 c
-      double precision, pointer :: bufada(:)
-      double precision, pointer :: dada(:,:) ! a,d 1-RDM alpha
-      double precision, pointer :: bufadb(:)
-      double precision, pointer :: dadb(:,:) ! a,d 1-RDM beta
-      double precision, pointer :: bufbca(:)
-      double precision, pointer :: dbca(:,:) ! b,c 1-RDM alpha
-      double precision, pointer :: bufbcb(:)
-      double precision, pointer :: dbcb(:,:) ! b,c 1-RDM beta
+      double precision, allocatable, target :: buf_rdm2_d_acj_a(:)
+      double precision, pointer             :: rdm2_d_acj_a(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_d_acj_b(:)
+      double precision, pointer             :: rdm2_d_acj_b(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_d_adj_a(:)
+      double precision, pointer             :: rdm2_d_adj_a(:,:,:)
+      double precision, allocatable, target :: buf_rdm2_d_adj_b(:)
+      double precision, pointer             :: rdm2_d_adj_b(:,:,:)
 c
-c     double precision, pointer :: bufxbda(:)
-c     double precision, pointer :: xbda(:,:) ! b,d 1-RDM alpha
-c     double precision, pointer :: bufxbdb(:)
-c     double precision, pointer :: xbdb(:,:) ! b,d 1-RDM beta
+c     Data structures for the 1RDM blocks for the Coulomb terms of 
+c     the 2RDM of [5] and the conventional Hartree-Fock 2RDM.
 c
-      double precision, pointer :: buffnaa(:)
-      double precision, pointer :: buffnab(:)
-      double precision, pointer :: buffnac(:)
-      double precision, pointer :: buffnad(:)
-      double precision, pointer :: fnac(:,:)
-      double precision, pointer :: fn1aca(:,:) ! a,c 1-electron natural
-                                               !     orbital Fock alpha
-      double precision, pointer :: fn1ica(:,:) ! i,c 1-electron natural
-                                               !     orbital Fock alpha
-      double precision, pointer :: fn2ica(:,:) ! i,c 2-electron natural
-                                               !     orbital Fock alpha
-      double precision, pointer :: fn2ida(:,:) ! i,d 2-electron natural
-                                               !     orbital Fock alpha
-      double precision, pointer :: fc1aca(:,:) ! a,c 1-electron
-                                               !     correlation function
-                                               !     Fock alpha
-      double precision, pointer :: fc1ada(:,:) ! a,d 1-electron
-                                               !     correlation function
-                                               !     Fock alpha
-      double precision, pointer :: fc1bca(:,:) ! b,c 1-electron
-                                               !     correlation function
-                                               !     Fock alpha
-      double precision, pointer :: fc1bda(:,:) ! b,d 1-electron
-                                               !     correlation function
-                                               !     Fock alpha
-      double precision, pointer :: buffnba(:)
-      double precision, pointer :: buffnbb(:)
-      double precision, pointer :: buffnbc(:)
-      double precision, pointer :: buffnbd(:)
-      double precision, pointer :: fnbc(:,:)
-      double precision, pointer :: fn1acb(:,:) ! a,c 1-electron natural
-                                               !     orbital Fock beta
-      double precision, pointer :: fn1icb(:,:) ! i,c 1-electron natural
-                                               !     orbital Fock beta
-      double precision, pointer :: fn2icb(:,:) ! i,c 2-electron natural
-                                               !     orbital Fock beta
-      double precision, pointer :: fn2idb(:,:) ! i,d 2-electron natural
-                                               !     orbital Fock beta
-      double precision, pointer :: fc1acb(:,:) ! a,c 1-electron
-                                               !     correlation function
-                                               !     Fock beta
-      double precision, pointer :: fc1adb(:,:) ! a,d 1-electron
-                                               !     correlation function
-                                               !     Fock beta
-      double precision, pointer :: fc1bcb(:,:) ! b,c 1-electron
-                                               !     correlation function
-                                               !     Fock beta
-      double precision, pointer :: fc1bdb(:,:) ! b,d 1-electron
-                                               !     correlation function
-                                               !     Fock beta
-      double precision, pointer :: buffna(:)
-      double precision, pointer :: fna(:,:)
-      double precision, pointer :: buffnb(:)
-      double precision, pointer :: fnb(:,:)
+c     1RDM factors for Coulomb terms
 c
-      double precision, allocatable :: scr(:)
+      double precision, allocatable, target :: buf_rdm1_ac_a(:)
+      double precision, pointer             :: rdm1_ac_a(:,:)
+      double precision, allocatable, target :: buf_rdm1_ac_b(:)
+      double precision, pointer             :: rdm1_ac_b(:,:)
+      double precision, allocatable, target :: buf_rdm1_bd_a(:)
+      double precision, pointer             :: rdm1_bd_a(:,:)
+      double precision, allocatable, target :: buf_rdm1_bd_b(:)
+      double precision, pointer             :: rdm1_bd_b(:,:)
+c
+c     1RDM factors for exchange terms of the conventional Hartree-Fock
+c
+      double precision, allocatable, target :: buf_rdm1_ad_a(:)
+      double precision, pointer             :: rdm1_ad_a(:,:)
+      double precision, allocatable, target :: buf_rdm1_ad_b(:)
+      double precision, pointer             :: rdm1_ad_b(:,:)
+      double precision, allocatable, target :: buf_rdm1_bc_a(:)
+      double precision, pointer             :: rdm1_bc_a(:,:)
+      double precision, allocatable, target :: buf_rdm1_bc_b(:)
+      double precision, pointer             :: rdm1_bc_b(:,:)
+c
+c     Fock matrix blocks. 
+c
+c     For the Fock matrices for the natural orbitals
+c
+      double precision, allocatable, target :: buf_fn_ac_a(:)
+      double precision, pointer             :: fn_ac_a(:,:)
+      double precision, allocatable, target :: buf_fn_ac_b(:)
+      double precision, pointer             :: fn_ac_b(:,:)
+      double precision, allocatable, target :: buf_fn_ad_a(:)
+      double precision, pointer             :: fn_ad_a(:,:)
+      double precision, allocatable, target :: buf_fn_ad_b(:)
+      double precision, pointer             :: fn_ad_b(:,:)
+      double precision, allocatable, target :: buf_fn_bcj_a(:)
+      double precision, pointer             :: fn_bcj_a(:,:,:)
+      double precision, allocatable, target :: buf_fn_bcj_b(:)
+      double precision, pointer             :: fn_bcj_b(:,:,:)
+      double precision, allocatable, target :: buf_fn_bdj_a(:)
+      double precision, pointer             :: fn_bdj_a(:,:,:)
+      double precision, allocatable, target :: buf_fn_bdj_b(:)
+      double precision, pointer             :: fn_bdj_b(:,:,:)
+c
+c     Same as above but including entropy
+c
+      double precision, allocatable, target :: buf_fns_ac_a(:)
+      double precision, pointer             :: fns_ac_a(:,:)
+      double precision, allocatable, target :: buf_fns_ac_b(:)
+      double precision, pointer             :: fns_ac_b(:,:)
+      double precision, allocatable, target :: buf_fns_ad_a(:)
+      double precision, pointer             :: fns_ad_a(:,:)
+      double precision, allocatable, target :: buf_fns_ad_b(:)
+      double precision, pointer             :: fns_ad_b(:,:)
+      double precision, allocatable, target :: buf_fns_bcj_a(:)
+      double precision, pointer             :: fns_bcj_a(:,:,:)
+      double precision, allocatable, target :: buf_fns_bcj_b(:)
+      double precision, pointer             :: fns_bcj_b(:,:,:)
+      double precision, allocatable, target :: buf_fns_bdj_a(:)
+      double precision, pointer             :: fns_bdj_a(:,:,:)
+      double precision, allocatable, target :: buf_fns_bdj_b(:)
+      double precision, pointer             :: fns_bdj_b(:,:,:)
+c
+c     - Same as above but partially transformed
+c
+      double precision, allocatable, target :: buf_fn_ic_a(:)
+      double precision, pointer             :: fn_ic_a(:,:)
+      double precision, allocatable, target :: buf_fn_ic_b(:)
+      double precision, pointer             :: fn_ic_b(:,:)
+      double precision, allocatable, target :: buf_fn_id_a(:)
+      double precision, pointer             :: fn_id_a(:,:)
+      double precision, allocatable, target :: buf_fn_id_b(:)
+      double precision, pointer             :: fn_id_b(:,:)
+      double precision, allocatable, target :: buf_fn_bj_a(:)
+      double precision, pointer             :: fn_bj_a(:,:)
+      double precision, allocatable, target :: buf_fn_bj_b(:)
+      double precision, pointer             :: fn_bj_b(:,:)
+c
+c     - With entropy
+c
+      double precision, allocatable, target :: buf_fns_ic_a(:)
+      double precision, pointer             :: fns_ic_a(:,:)
+      double precision, allocatable, target :: buf_fns_ic_b(:)
+      double precision, pointer             :: fns_ic_b(:,:)
+      double precision, allocatable, target :: buf_fns_id_a(:)
+      double precision, pointer             :: fns_id_a(:,:)
+      double precision, allocatable, target :: buf_fns_id_b(:)
+      double precision, pointer             :: fns_id_b(:,:)
+      double precision, allocatable, target :: buf_fns_bj_a(:)
+      double precision, pointer             :: fns_bj_a(:,:)
+      double precision, allocatable, target :: buf_fns_bj_b(:)
+      double precision, pointer             :: fns_bj_b(:,:)
+c
+c     - Same as above but fully transformed
+c
+      double precision, allocatable, target :: buf_fn_ij_a(:)
+      double precision, pointer             :: fn_ij_a(:,:)
+      double precision, allocatable, target :: buf_fn_ij_b(:)
+      double precision, pointer             :: fn_ij_b(:,:)
+c
+c     - With entropy
+c
+      double precision, allocatable, target :: buf_fns_ij_a(:)
+      double precision, pointer             :: fns_ij_a(:,:)
+      double precision, allocatable, target :: buf_fns_ij_b(:)
+      double precision, pointer             :: fns_ij_b(:,:)
+c
+c     For the Fock matrices for the correlation functions
+c
+      double precision, allocatable, target :: buf_fc_acj_a(:)
+      double precision, pointer             :: fc_acj_a(:,:,:)
+      double precision, allocatable, target :: buf_fc_acj_b(:)
+      double precision, pointer             :: fc_acj_b(:,:,:)
+      double precision, allocatable, target :: buf_fc_adj_a(:)
+      double precision, pointer             :: fc_adj_a(:,:,:)
+      double precision, allocatable, target :: buf_fc_adj_b(:)
+      double precision, pointer             :: fc_adj_b(:,:,:)
+c
+      double precision, allocatable, target :: buf_fc_ij_aa(:)
+      double precision, pointer             :: fc_ij_aa(:,:)
+      double precision, allocatable, target :: buf_fc_ij_ab(:)
+      double precision, pointer             :: fc_ij_ab(:,:)
+      double precision, allocatable, target :: buf_fc_ij_ba(:)
+      double precision, pointer             :: fc_ij_ba(:,:)
+      double precision, allocatable, target :: buf_fc_ij_bb(:)
+      double precision, pointer             :: fc_ij_bb(:,:)
+c     double precision, allocatable, target :: buf_fc_bdj_a(:)
+c     double precision, pointer             :: fc_bdj_a(:,:,:)
+c     double precision, allocatable, target :: buf_fc_bdj_b(:)
+c     double precision, pointer             :: fc_bdj_b(:,:,:)
+c
+c     Orbital coefficients
+c
+      double precision, allocatable, target :: buf_N_di_a(:)
+      double precision, pointer             :: N_di_a(:,:)
+      double precision, allocatable, target :: buf_N_di_b(:)
+      double precision, pointer             :: N_di_b(:,:)
+      double precision, allocatable, target :: buf_N_ci_a(:)
+      double precision, pointer             :: N_ci_a(:,:)
+      double precision, allocatable, target :: buf_N_ci_b(:)
+      double precision, pointer             :: N_ci_b(:,:)
+      double precision, allocatable, target :: buf_N_bi_a(:)
+      double precision, pointer             :: N_bi_a(:,:)
+      double precision, allocatable, target :: buf_N_bi_b(:)
+      double precision, pointer             :: N_bi_b(:,:)
+      double precision, allocatable, target :: buf_N_ai_a(:)
+      double precision, pointer             :: N_ai_a(:,:)
+      double precision, allocatable, target :: buf_N_ai_b(:)
+      double precision, pointer             :: N_ai_b(:,:)
+c
+c     Correlation function coefficients
+c
+      double precision, allocatable, target :: buf_C_is_a(:)
+      double precision, pointer             :: C_is_a(:,:)
+      double precision, allocatable, target :: buf_C_is_b(:)
+      double precision, pointer             :: C_is_b(:,:)
+      double precision, allocatable, target :: buf_C_jt_a(:)
+      double precision, pointer             :: C_jt_a(:,:)
+      double precision, allocatable, target :: buf_C_jt_b(:)
+      double precision, pointer             :: C_jt_b(:,:)
+c
+c     Occupation numbers of the 2RDM exchange terms
+c
+cDEBUG
+c     double precision, allocatable, target :: buf_d_aa(:)
+c     double precision, pointer             :: d_aa(:,:)
+cDEBUG
+      double precision, allocatable, target :: buf_x_aa(:)
+      double precision, pointer             :: x_aa(:,:)
+      double precision, allocatable, target :: buf_x_bb(:)
+      double precision, pointer             :: x_bb(:,:)
+      double precision, allocatable, target :: buf_dx_aa(:)
+      double precision, pointer             :: dx_aa(:,:)
+      double precision, allocatable, target :: buf_dx_bb(:)
+      double precision, pointer             :: dx_bb(:,:)
+#ifdef TEST_RDMS
+      double precision, allocatable :: da(:,:)
+      double precision, allocatable :: db(:,:)
+      double precision, allocatable :: gaa(:,:,:,:)
+      double precision, allocatable :: gab(:,:,:,:)
+      double precision, allocatable :: gbb(:,:,:,:)
+#endif
+c
+c     Entropy related quantities
+c
+      double precision :: saaij     ! The entropy for pair i,j
+      double precision :: dsaaij_i  ! The entropy derivative wrt d_i
+      double precision :: dsaaij_j  ! The entropy derivative wrt d_j
+      double precision :: dsaaij_ij ! The entropy derivative wrt d_ij
+      double precision :: sabij     ! The entropy for pair i,j
+      double precision :: dsabij_i  ! The entropy derivative wrt d_i
+      double precision :: dsabij_j  ! The entropy derivative wrt d_j
+      double precision :: sbaij     ! The entropy for pair i,j
+      double precision :: dsbaij_i  ! The entropy derivative wrt d_i
+      double precision :: dsbaij_j  ! The entropy derivative wrt d_j
+      double precision :: sbbij     ! The entropy for pair i,j
+      double precision :: dsbbij_i  ! The entropy derivative wrt d_i
+      double precision :: dsbbij_j  ! The entropy derivative wrt d_j
+      double precision :: dsbbij_ij ! The entropy derivative wrt d_ij
+c
+      double precision, target :: dummy(2)
+cDEBUG
+      double precision :: ac_aa_mx = 0.0d0
+      double precision :: ac_ab_mx = 0.0d0
+      double precision :: ac_ba_mx = 0.0d0
+      double precision :: ac_bb_mx = 0.0d0
+      double precision :: ad_aa_mx = 0.0d0
+      double precision :: ad_ab_mx = 0.0d0
+      double precision :: ad_ba_mx = 0.0d0
+      double precision :: ad_bb_mx = 0.0d0
+cDEBUG
+c
+c     Functions:
+c
+      double precision, external :: ddot
+c
+c     Code:
 c
       nproc = ga_nnodes()
       iproc = ga_nodeid()
+      itask = -1
 c
-      E_2el = 0.0d0
-      E_2el_hf = 0.0d0
-      nmo = wfn1_param%nmo
-      nea = wfn1_param%nea
-      neb = wfn1_param%neb
+      E_2el     = 0.0d0
+      E_2el_chf = 0.0d0
+c
+      nbf  = wfn1_param%nbf
+      nmo  = wfn1_param%nmo
+      ne_a = wfn1_param%nea
+      ne_b = wfn1_param%neb
+c
       if (.not. bas_numcont(wfn1_inst%basis, nshell)) call errquit
-     &     ('wfn1_e_g_2el: bas_numcont failed for basis', 
+     &     ('wfn1_e_g_2el_s: bas_numcont failed for basis',
      &      wfn1_inst%basis, BASIS_ERR)
       if (.not. bas_nbf_cn_max(wfn1_inst%basis, maxsbf)) call errquit
-     &     ('wfn1_e_g_2el: bas_nbf_cn_max failed for basis', 
+     &     ('wfn1_e_g_2el_s: bas_nbf_cn_max failed for basis',
      &      wfn1_inst%basis, BASIS_ERR)
-      call ga_distribution(g_2aa,0,iialo,iiahi,ijalo,ijahi)
-      call ga_distribution(g_2bb,0,iiblo,iibhi,ijblo,ijbhi)
-      nia = iiahi-iialo+1
-      nja = ijahi-ijalo+1
-      nib = iibhi-iiblo+1
-      njb = ijbhi-ijblo+1
+c
+      call ga_distribution(g_x_aa,0,ii_lo,ii_hi,jj_lo,jj_hi)
+      ni = ii_hi-ii_lo+1
+      nj = jj_hi-jj_lo+1
       call int_mem_2e4c(max2e,mem2)
-      allocate(occa(1:nmo),occb(1:nmo))
-c     allocate(ocxa(1:nmo),ocxb(1:nmo))
-      allocate(buf(max2e),buf2(max2e),buf_hf(max2e),scr(mem2))
-      allocate(bufaa(maxsbf*nmo),bufba(maxsbf*nmo))
-      allocate(bufca(maxsbf*nmo),bufda(maxsbf*nmo))
-      allocate(bufab(maxsbf*nmo),bufbb(maxsbf*nmo))
-      allocate(bufcb(maxsbf*nmo),bufdb(maxsbf*nmo))
-      allocate(bufija(nia*nja),bufijb(nib*njb))
-      allocate(bufxija(nia*nja),bufxijb(nib*njb))
-      allocate(bufaca(maxsbf*maxsbf),bufacb(maxsbf*maxsbf))
-      allocate(bufada(maxsbf*maxsbf),bufadb(maxsbf*maxsbf))
-      allocate(bufbca(maxsbf*maxsbf),bufbcb(maxsbf*maxsbf))
-      allocate(bufbda(maxsbf*maxsbf),bufbdb(maxsbf*maxsbf))
-c     allocate(bufxbda(maxsbf*maxsbf),bufxbdb(maxsbf*maxsbf))
 c
-      allocate(buf3aac(maxsbf*maxsbf*max(nia,nja)))
-      allocate(buf3aad(maxsbf*maxsbf*max(nia,nja)))
-      allocate(buf3abc(maxsbf*maxsbf*max(nia,nja)))
-      allocate(buf3abd(maxsbf*maxsbf*max(nia,nja)))
-      allocate(buf3bac(maxsbf*maxsbf*max(nib,njb)))
-      allocate(buf3bad(maxsbf*maxsbf*max(nib,njb)))
-      allocate(buf3bbc(maxsbf*maxsbf*max(nib,njb)))
-      allocate(buf3bbd(maxsbf*maxsbf*max(nib,njb)))
+#ifdef TEST_RDMS
+      allocate(da(nbf,nbf),db(nbf,nbf))
+      allocate(gaa(nbf,nbf,nbf,nbf))
+      allocate(gab(nbf,nbf,nbf,nbf))
+      allocate(gbb(nbf,nbf,nbf,nbf))
+      da  = 0.0d0
+      db  = 0.0d0
+      gaa = 0.0d0
+      gab = 0.0d0
+      gbb = 0.0d0
+#endif
 c
-      allocate(bufx3aac(maxsbf*maxsbf*max(nia,nja)))
-      allocate(bufx3aad(maxsbf*maxsbf*max(nia,nja)))
-      allocate(bufx3abc(maxsbf*maxsbf*max(nia,nja)))
-      allocate(bufx3abd(maxsbf*maxsbf*max(nia,nja)))
-      allocate(bufx3bac(maxsbf*maxsbf*max(nib,njb)))
-      allocate(bufx3bad(maxsbf*maxsbf*max(nib,njb)))
-      allocate(bufx3bbc(maxsbf*maxsbf*max(nib,njb)))
-      allocate(bufx3bbd(maxsbf*maxsbf*max(nib,njb)))
+      allocate(occ_a(1:nmo),occ_b(1:nmo))
+      allocate(scr(mem2))
+      allocate(buf_eri(max2e),buf_rdm2(max2e),buf_rdm2_chf(max2e))
 c
-      allocate(buffnaa(max(nia,nja,maxsbf)*nmo))
-      allocate(buffnab(max(nia,nja,maxsbf)*nmo))
-      allocate(buffnac(max(nia,nja,maxsbf)*nmo))
-      allocate(buffnad(max(nia,nja,maxsbf)*nmo))
-      allocate(buffnba(max(nib,njb,maxsbf)*nmo))
-      allocate(buffnbb(max(nib,njb,maxsbf)*nmo))
-      allocate(buffnbc(max(nib,njb,maxsbf)*nmo))
-      allocate(buffnbd(max(nib,njb,maxsbf)*nmo))
-      allocate(buffna(max(nia,nja)*nmo))
-      allocate(buffnb(max(nib,njb)*nmo))
+      allocate(buf_rdm2_acj_aa(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_acj_ab(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_acj_ba(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_acj_bb(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_adj_aa(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_adj_ab(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_adj_ba(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_adj_bb(maxsbf*maxsbf*nj))
+c
+      allocate(buf_rdm2s_acj_aa(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2s_acj_ab(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2s_acj_ba(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2s_acj_bb(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2s_adj_aa(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2s_adj_ab(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2s_adj_ba(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2s_adj_bb(maxsbf*maxsbf*nj))
+c
+      allocate(buf_rdm2_d_acj_a(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_d_acj_b(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_d_adj_a(maxsbf*maxsbf*nj))
+      allocate(buf_rdm2_d_adj_b(maxsbf*maxsbf*nj))
+c
+      allocate(buf_N_ai_a(maxsbf*nmo),buf_N_ai_b(maxsbf*nmo))
+      allocate(buf_N_bi_a(maxsbf*nmo),buf_N_bi_b(maxsbf*nmo))
+      allocate(buf_N_ci_a(maxsbf*nmo),buf_N_ci_b(maxsbf*nmo))
+      allocate(buf_N_di_a(maxsbf*nmo),buf_N_di_b(maxsbf*nmo))
+c
+      allocate(buf_C_is_a(ni*nmo),buf_C_is_b(ni*nmo))
+      allocate(buf_C_jt_a(nj*nmo),buf_C_jt_b(nj*nmo))
+c
+      allocate(buf_rdm1_ac_a(maxsbf*maxsbf))
+      allocate(buf_rdm1_ac_b(maxsbf*maxsbf))
+      allocate(buf_rdm1_bd_a(maxsbf*maxsbf))
+      allocate(buf_rdm1_bd_b(maxsbf*maxsbf))
+c
+      allocate(buf_rdm1_ad_a(maxsbf*maxsbf))
+      allocate(buf_rdm1_ad_b(maxsbf*maxsbf))
+      allocate(buf_rdm1_bc_a(maxsbf*maxsbf))
+      allocate(buf_rdm1_bc_b(maxsbf*maxsbf))
+c
+cDEBUG
+c     allocate(buf_d_aa(ni*nj))
+cDEBUG
+      allocate(buf_x_aa(ni*nj), buf_x_bb(ni*nj))
+      allocate(buf_dx_aa(ni*nj),buf_dx_bb(ni*nj))
+c
+      allocate(buf_fn_ac_a(maxsbf*maxsbf),buf_fn_ac_b(maxsbf*maxsbf))
+      allocate(buf_fn_ad_a(maxsbf*maxsbf),buf_fn_ad_b(maxsbf*maxsbf))
+      allocate(buf_fns_ac_a(maxsbf*maxsbf),buf_fns_ac_b(maxsbf*maxsbf))
+      allocate(buf_fns_ad_a(maxsbf*maxsbf),buf_fns_ad_b(maxsbf*maxsbf))
+c
+      allocate(buf_fn_bcj_a(maxsbf*maxsbf*nj))
+      allocate(buf_fn_bcj_b(maxsbf*maxsbf*nj))
+      allocate(buf_fn_bdj_a(maxsbf*maxsbf*nj))
+      allocate(buf_fn_bdj_b(maxsbf*maxsbf*nj))
+      allocate(buf_fns_bcj_a(maxsbf*maxsbf*nj))
+      allocate(buf_fns_bcj_b(maxsbf*maxsbf*nj))
+      allocate(buf_fns_bdj_a(maxsbf*maxsbf*nj))
+      allocate(buf_fns_bdj_b(maxsbf*maxsbf*nj))
+c
+      allocate(buf_fn_ic_a(nmo*maxsbf),buf_fn_ic_b(nmo*maxsbf))
+      allocate(buf_fn_id_a(nmo*maxsbf),buf_fn_id_b(nmo*maxsbf))
+      allocate(buf_fn_bj_a(maxsbf*nj),buf_fn_bj_b(maxsbf*nj))
+      allocate(buf_fn_ij_a(nmo*nj),buf_fn_ij_b(nmo*nj))
+      allocate(buf_fns_ic_a(nmo*maxsbf),buf_fns_ic_b(nmo*maxsbf))
+      allocate(buf_fns_id_a(nmo*maxsbf),buf_fns_id_b(nmo*maxsbf))
+      allocate(buf_fns_bj_a(maxsbf*nj),buf_fns_bj_b(maxsbf*nj))
+      allocate(buf_fns_ij_a(nmo*nj),buf_fns_ij_b(nmo*nj))
+c
+      allocate(buf_fc_acj_a(maxsbf*maxsbf*nj))
+      allocate(buf_fc_acj_b(maxsbf*maxsbf*nj))
+      allocate(buf_fc_adj_a(maxsbf*maxsbf*nj))
+      allocate(buf_fc_adj_b(maxsbf*maxsbf*nj))
+      allocate(buf_fc_ij_aa(ni*nj))
+      allocate(buf_fc_ij_ab(ni*nj))
+      allocate(buf_fc_ij_ba(ni*nj))
+      allocate(buf_fc_ij_bb(ni*nj))
+c     allocate(buf_fc_bdj_a(maxsbf*maxsbf*nj))
+c     allocate(buf_fc_bdj_b(maxsbf*maxsbf*nj))
 c
 c     Calculate occupation numbers
 c     ----------------------------
 c
 c     Calculate alpha-occupation numbers
 c
-      call wfn1_calc_occ(wfn1_wave%g_ca,nmo,nea,wfn1_wave%icnfa,
-     &                   wfn1_wave%dcnta,occa)
-c     call wfn1_calc_ocx(wfn1_wave%g_ca,nmo,nea,wfn1_wave%icnfa,ocxa)
+      call wfn1_calc_occ(wfn1_wave%g_ca,nmo,ne_a,wfn1_wave%icnfa,
+     &                   wfn1_wave%dcnta,occ_a)
 c
 c     Calculate beta-occupation numbers
 c
-      call wfn1_calc_occ(wfn1_wave%g_cb,nmo,neb,wfn1_wave%icnfb,
-     &                   wfn1_wave%dcntb,occb)
-c     call wfn1_calc_ocx(wfn1_wave%g_cb,nmo,neb,wfn1_wave%icnfb,ocxb)
+      call wfn1_calc_occ(wfn1_wave%g_cb,nmo,ne_b,wfn1_wave%icnfb,
+     &                   wfn1_wave%dcntb,occ_b)
 c
-c     Calculate alpha-alpha-occupation numbers
+c     Calculate exchange alpha-alpha-occupation numbers
 c
-      call wfn1_calc_occ2(wfn1_wave%g_ca,nmo,nea,wfn1_wave%icnfa,
-     &                    wfn1_wave%dcnta,g_2aa)
+      call wfn1_calc_ocx(wfn1_wave%g_ca,nmo,ne_a,wfn1_wave%icnfa,
+     &                   wfn1_wave%dcnta,g_x_aa)
 c
-c     Calculate beta-beta-occupation numbers
+c     Calculate exchange beta-beta-occupation numbers
 c
-      call wfn1_calc_occ2(wfn1_wave%g_cb,nmo,neb,wfn1_wave%icnfb,
-     &                    wfn1_wave%dcntb,g_2bb)
+      call wfn1_calc_ocx(wfn1_wave%g_cb,nmo,ne_b,wfn1_wave%icnfb,
+     &                   wfn1_wave%dcntb,g_x_bb)
 c
 c     Calculate exchange alpha-alpha-occupation number derivative
 c
-      call wfn1_calc_docx2(wfn1_wave%g_ca,nmo,nea,wfn1_wave%icnfa,
-     &                     wfn1_wave%dcnta,g_x2aa)
+      call wfn1_calc_docx(wfn1_wave%g_ca,nmo,ne_a,wfn1_wave%icnfa,
+     &                    wfn1_wave%dcnta,g_dx_aa)
 c
 c     Calculate exchange beta-beta-occupation number derivative
 c
-      call wfn1_calc_docx2(wfn1_wave%g_cb,nmo,neb,wfn1_wave%icnfb,
-     &                     wfn1_wave%dcntb,g_x2bb)
+      call wfn1_calc_docx(wfn1_wave%g_cb,nmo,ne_b,wfn1_wave%icnfb,
+     &                    wfn1_wave%dcntb,g_dx_bb)
+cDEBUG
+c     write(*,*)"HVD: occ_a: ",occ_a
+c     write(*,*)"HVD: occ_b: ",occ_b
+c     write(*,*)"HVD: ocx:"
+c     call util_flush(6)
+c     call ga_print(g_x_aa)
+c     call ga_print(g_x_bb)
+c     call util_flush(6)
+cDEBUG
+
 c
       call ga_sync()
 c
-c     Shell loops
-c     -----------
-c
       do ld = 1, nshell
-        if (.not. bas_cn2bfr(wfn1_inst%basis, ld, idlo, idhi))
-     &      call errquit('wfn1_e_g_2el: bas_cn2bfr', 
+        if (.not. bas_cn2bfr(wfn1_inst%basis, ld, id_lo, id_hi))
+     &      call errquit('wfn1_e_g_2el_s: bas_cn2bfr',
      &                   wfn1_inst%basis, BASIS_ERR)
-        nd = idhi-idlo+1
-        ndia(idlo:idhi,1:nmo)=>bufda
-        ndib(idlo:idhi,1:nmo)=>bufdb
-        call ga_get(wfn1_wave%g_na,idlo,idhi,1,nmo,ndia,nd)
-        call ga_get(wfn1_wave%g_nb,idlo,idhi,1,nmo,ndib,nd)
-        do lc = 1, nshell
-          if (.not. bas_cn2bfr(wfn1_inst%basis, lc, iclo, ichi))
-     &        call errquit('wfn1_e_g_2el: bas_cn2bfr',
-     &                     wfn1_inst%basis, BASIS_ERR)
-          nc = ichi-iclo+1
-          ncia(iclo:ichi,1:nmo)=>bufca
-          ncib(iclo:ichi,1:nmo)=>bufcb
-          call ga_get(wfn1_wave%g_na,iclo,ichi,1,nmo,ncia,nc)
-          call ga_get(wfn1_wave%g_nb,iclo,ichi,1,nmo,ncib,nc)
-          do lb = 1, nshell
-            if (.not. bas_cn2bfr(wfn1_inst%basis, lb, iblo, ibhi))
-     &          call errquit('wfn1_e_g_2el: bas_cn2bfr',
-     &                       wfn1_inst%basis, BASIS_ERR)
-            nb = ibhi-iblo+1
-            nbia(iblo:ibhi,1:nmo)=>bufba
-            nbib(iblo:ibhi,1:nmo)=>bufbb
-            call ga_get(wfn1_wave%g_na,iblo,ibhi,1,nmo,nbia,nb)
-            call ga_get(wfn1_wave%g_nb,iblo,ibhi,1,nmo,nbib,nb)
-            do la = 1, nshell
-              if (.not. bas_cn2bfr(wfn1_inst%basis, la, ialo, iahi))
-     &            call errquit('wfn1_e_g_2el: bas_cn2bfr',
-     &                         wfn1_inst%basis, BASIS_ERR)
-              na = iahi-ialo+1
-              naia(ialo:iahi,1:nmo)=>bufaa
-              naib(ialo:iahi,1:nmo)=>bufab
-              call ga_get(wfn1_wave%g_na,ialo,iahi,1,nmo,naia,na)
-              call ga_get(wfn1_wave%g_nb,ialo,iahi,1,nmo,naib,na)
-              eri(ialo:iahi,iclo:ichi,iblo:ibhi,idlo:idhi)=>buf
-              den(ialo:iahi,iclo:ichi,iblo:ibhi,idlo:idhi)=>buf2
-              den_hf(ialo:iahi,iclo:ichi,iblo:ibhi,idlo:idhi)=>buf_hf
 c
-c             calculate the 2-electron integrals
+        nd = id_hi-id_lo+1
+        N_di_a(id_lo:id_hi,1:nmo) => buf_N_di_a
+        N_di_b(id_lo:id_hi,1:nmo) => buf_N_di_b
+        call ga_get(wfn1_wave%g_na,id_lo,id_hi,1,nmo,N_di_a,nd)
+        call ga_get(wfn1_wave%g_nb,id_lo,id_hi,1,nmo,N_di_b,nd)
+c
+        do lb = 1, nshell
+          if (.not. bas_cn2bfr(wfn1_inst%basis, lb, ib_lo, ib_hi))
+     &        call errquit('wfn1_e_g_2el_s: bas_cn2bfr',
+     &                     wfn1_inst%basis, BASIS_ERR)
+c
+          nb = ib_hi-ib_lo+1
+          N_bi_a(ib_lo:ib_hi,1:nmo) => buf_N_bi_a
+          N_bi_b(ib_lo:ib_hi,1:nmo) => buf_N_bi_b
+          call ga_get(wfn1_wave%g_na,ib_lo,ib_hi,1,nmo,N_bi_a,nb)
+          call ga_get(wfn1_wave%g_nb,ib_lo,ib_hi,1,nmo,N_bi_b,nb)
+c
+c         Construct the bd 1RDM blocks
+c
+          rdm1_bd_a(ib_lo:ib_hi,id_lo:id_hi) => buf_rdm1_bd_a
+          rdm1_bd_b(ib_lo:ib_hi,id_lo:id_hi) => buf_rdm1_bd_b
+          rdm1_bd_a = 0.0d0
+          rdm1_bd_b = 0.0d0
+          do id = id_lo, id_hi
+            do ib = ib_lo, ib_hi
+              do ii = 1, nmo
+                rdm1_bd_a(ib,id) = rdm1_bd_a(ib,id)
+     &                           + N_bi_a(ib,ii)*N_di_a(id,ii)*occ_a(ii)
+                rdm1_bd_b(ib,id) = rdm1_bd_b(ib,id)
+     &                           + N_bi_b(ib,ii)*N_di_b(id,ii)*occ_b(ii)
+              enddo ! ii
+            enddo ! ib
+          enddo ! id
+#ifdef TEST_RDMS
+          do id = id_lo, id_hi
+            do ib = ib_lo, ib_hi
+              da(ib,id) = rdm1_bd_a(ib,id)
+              db(ib,id) = rdm1_bd_b(ib,id)
+            enddo ! ib
+          enddo ! id
+#endif
+c
+          do lc = 1, nshell 
+            if (.not. bas_cn2bfr(wfn1_inst%basis, lc, ic_lo, ic_hi))
+     &          call errquit('wfn1_e_g_2el_s: bas_cn2bfr',
+     &                       wfn1_inst%basis, BASIS_ERR)
+c
+            nc = ic_hi-ic_lo+1
+            N_ci_a(ic_lo:ic_hi,1:nmo) => buf_N_ci_a
+            N_ci_b(ic_lo:ic_hi,1:nmo) => buf_N_ci_b
+            call ga_get(wfn1_wave%g_na,ic_lo,ic_hi,1,nmo,N_ci_a,nc)
+            call ga_get(wfn1_wave%g_nb,ic_lo,ic_hi,1,nmo,N_ci_b,nc)
+c
+c           Construct the bc 1RDM blocks
+c
+            rdm1_bc_a(ib_lo:ib_hi,ic_lo:ic_hi) => buf_rdm1_bc_a
+            rdm1_bc_b(ib_lo:ib_hi,ic_lo:ic_hi) => buf_rdm1_bc_b
+            rdm1_bc_a = 0.0d0
+            rdm1_bc_b = 0.0d0
+            do ic = ic_lo, ic_hi
+              do ib = ib_lo, ib_hi
+                do ii = 1, nmo
+                  rdm1_bc_a(ib,ic) = rdm1_bc_a(ib,ic)
+     &                             + N_bi_a(ib,ii)*N_ci_a(ic,ii)*
+     &                               occ_a(ii)
+                  rdm1_bc_b(ib,ic) = rdm1_bc_b(ib,ic)
+     &                             + N_bi_b(ib,ii)*N_ci_b(ic,ii)*
+     &                               occ_b(ii)
+                enddo ! ii
+              enddo ! ib
+            enddo ! ic
+c
+            do la = 1, nshell
+              itask = itask + 1
+              if (mod(itask,nproc).ne.iproc) cycle
+              if (.not. bas_cn2bfr(wfn1_inst%basis, la, ia_lo, ia_hi))
+     &            call errquit('wfn1_e_g_2el_s: bas_cn2bfr',
+     &                         wfn1_inst%basis, BASIS_ERR)
+c
+              na = ia_hi-ia_lo+1
+              N_ai_a(ia_lo:ia_hi,1:nmo) => buf_N_ai_a
+              N_ai_b(ia_lo:ia_hi,1:nmo) => buf_N_ai_b
+              call ga_get(wfn1_wave%g_na,ia_lo,ia_hi,1,nmo,N_ai_a,na)
+              call ga_get(wfn1_wave%g_nb,ia_lo,ia_hi,1,nmo,N_ai_b,na)
+c
+c             Construct the ac 1RDM blocks
+c
+              rdm1_ac_a(ia_lo:ia_hi,ic_lo:ic_hi) => buf_rdm1_ac_a
+              rdm1_ac_b(ia_lo:ia_hi,ic_lo:ic_hi) => buf_rdm1_ac_b
+              rdm1_ac_a = 0.0d0
+              rdm1_ac_b = 0.0d0
+              do ic = ic_lo, ic_hi
+                do ia = ia_lo, ia_hi
+                  do ii = 1, nmo
+                    rdm1_ac_a(ia,ic) = rdm1_ac_a(ia,ic)
+     &                               + N_ai_a(ia,ii)*N_ci_a(ic,ii)*
+     &                                 occ_a(ii)
+                    rdm1_ac_b(ia,ic) = rdm1_ac_b(ia,ic)
+     &                               + N_ai_b(ia,ii)*N_ci_b(ic,ii)*
+     &                                 occ_b(ii)
+                  enddo ! ii
+                enddo ! ia
+              enddo ! ic
+c
+c             Construct the ad 1RDM blocks (conventional Hartree-
+c             Fock exchange)
+c
+              rdm1_ad_a(ia_lo:ia_hi,id_lo:id_hi) => buf_rdm1_ad_a
+              rdm1_ad_b(ia_lo:ia_hi,id_lo:id_hi) => buf_rdm1_ad_b
+              rdm1_ad_a = 0.0d0
+              rdm1_ad_b = 0.0d0
+              do id = id_lo, id_hi
+                do ia = ia_lo, ia_hi
+                  do ii = 1, nmo
+                    rdm1_ad_a(ia,id) = rdm1_ad_a(ia,id)
+     &                               + N_ai_a(ia,ii)*N_di_a(id,ii)*
+     &                                 occ_a(ii)
+                    rdm1_ad_b(ia,id) = rdm1_ad_b(ia,id)
+     &                               + N_ai_b(ia,ii)*N_di_b(id,ii)*
+     &                                 occ_b(ii)
+                  enddo ! ii
+                enddo ! ia
+              enddo ! id
+c
+c             Set up eri, and rdm2 buffers
+c
+              eri(ia_lo:ia_hi,ic_lo:ic_hi,ib_lo:ib_hi,id_lo:id_hi)
+     &        => buf_eri
+              rdm2(ia_lo:ia_hi,ic_lo:ic_hi,ib_lo:ib_hi,id_lo:id_hi)
+     &        => buf_rdm2
+              rdm2_chf(ia_lo:ia_hi,ic_lo:ic_hi,ib_lo:ib_hi,id_lo:id_hi)
+     &        => buf_rdm2_chf
+c
+c             Calculate the 2-electron integrals
 c
               call int_2e4c(wfn1_inst%basis, ld, lb,
      &                      wfn1_inst%basis, lc, la,
      &                      mem2, scr, max2e, eri)
-              den = 0.0d0
-              den_hf = 0.0d0
 c
-c             calculate the 1RDM terms
+              rdm2     = 0.0d0
+              rdm2_chf = 0.0d0
 c
-              fn1aca(ialo:iahi,iclo:ichi)=>buffnad
-              fn1acb(ialo:iahi,iclo:ichi)=>buffnbd
-              fn1aca = 0.0d0
-              fn1acb = 0.0d0
-              daca(ialo:iahi,iclo:ichi)=>bufaca
-              dacb(ialo:iahi,iclo:ichi)=>bufacb
-              dada(ialo:iahi,idlo:idhi)=>bufada
-              dadb(ialo:iahi,idlo:idhi)=>bufadb
-              dbca(iblo:ibhi,iclo:ichi)=>bufbca
-              dbcb(iblo:ibhi,iclo:ichi)=>bufbcb
-              dbda(iblo:ibhi,idlo:idhi)=>bufbda
-              dbdb(iblo:ibhi,idlo:idhi)=>bufbdb
-c             xbda(iblo:ibhi,idlo:idhi)=>bufxbda
-c             xbdb(iblo:ibhi,idlo:idhi)=>bufxbdb
-              daca = 0.0d0
-              dacb = 0.0d0
-              dada = 0.0d0
-              dadb = 0.0d0
-              dbca = 0.0d0
-              dbcb = 0.0d0
-              dbda = 0.0d0
-              dbdb = 0.0d0
-c             xbda = 0.0d0
-c             xbdb = 0.0d0
+c             Add the 2RDM terms that can be constructed from
+c             1RDM factors.
 c
-c             Construct the 1RDM and 2RDM density matrix terms
-c
-              do ic = iclo, ichi
-                do ib = iblo, ibhi
-                  do ii = 1, nmo
-                    dbca(ib,ic) = dbca(ib,ic)
-     &                          + nbia(ib,ii)*ncia(ic,ii)*occa(ii)
-                    dbcb(ib,ic) = dbcb(ib,ic)
-     &                          + nbib(ib,ii)*ncib(ic,ii)*occb(ii)
-                  enddo
-                enddo
-              enddo
-              do id = idlo, idhi
-                do ib = iblo, ibhi
-                  do ii = 1, nmo
-                    dbda(ib,id) = dbda(ib,id)
-     &                          + nbia(ib,ii)*ndia(id,ii)*occa(ii)
-                    dbdb(ib,id) = dbdb(ib,id)
-     &                          + nbib(ib,ii)*ndib(id,ii)*occb(ii)
-c                   xbda(ib,id) = xbda(ib,id)
-c    &                          + nbia(ib,ii)*ndia(id,ii)*ocxa(ii)
-c                   xbdb(ib,id) = xbdb(ib,id)
-c    &                          + nbib(ib,ii)*ndib(id,ii)*ocxb(ii)
-                  enddo
-                enddo
-              enddo
-              do ic = iclo, ichi
-                do ia = ialo, iahi
-                  do ii = 1, nmo
-                    daca(ia,ic) = daca(ia,ic)
-     &                          + naia(ia,ii)*ncia(ic,ii)*occa(ii)
-                    dacb(ia,ic) = dacb(ia,ic)
-     &                          + naib(ia,ii)*ncib(ic,ii)*occb(ii)
-                  enddo
-                enddo
-              enddo
-              do id = idlo, idhi
-                do ia = ialo, iahi
-                  do ii = 1, nmo
-                    dada(ia,id) = dada(ia,id)
-     &                          + naia(ia,ii)*ndia(id,ii)*occa(ii)
-                    dadb(ia,id) = dadb(ia,id)
-     &                          + naib(ia,ii)*ndib(id,ii)*occb(ii)
-                  enddo
-                enddo
-              enddo
-              do id = idlo, idhi
-                do ib = iblo, ibhi
-                  do ic = iclo, ichi
-                    do ia = ialo, iahi
-                      den(ia,ic,ib,id) = den(ia,ic,ib,id) 
-     &                                 + daca(ia,ic)*dbdb(ib,id)
-     &                                 + dacb(ia,ic)*dbda(ib,id)
-                      den_hf(ia,ic,ib,id) = den_hf(ia,ic,ib,id) 
-     &                                    + daca(ia,ic)*dbda(ib,id)
-     &                                    + daca(ia,ic)*dbdb(ib,id)
-     &                                    + dacb(ia,ic)*dbda(ib,id)
-     &                                    + dacb(ia,ic)*dbdb(ib,id)
-     &                                    - dada(ia,id)*dbca(ib,ic)
-     &                                    - dadb(ia,id)*dbcb(ib,ic)
+              do id = id_lo, id_hi
+                do ib = ib_lo, ib_hi
+                  do ic = ic_lo, ic_hi
+                    do ia = ia_lo, ia_hi
+c                     We cannot construct the screened density matrix
+c                     this way
+c                     rdm2(ia,ic,ib,id) = rdm2(ia,ic,ib,id)
+c    &                  + rdm1_ac_a(ia,ic)*rdm1_bd_a(ib,id)
+c    &                  - rdm1_ad_a(ia,id)*rdm1_bc_a(ib,ic)
+c    &                  + rdm1_ac_b(ia,ic)*rdm1_bd_b(ib,id)
+c    &                  - rdm1_ad_b(ia,id)*rdm1_bc_b(ib,ic)
+c    &                  + rdm1_ac_a(ia,ic)*rdm1_bd_b(ib,id)
+c    &                  + rdm1_ac_b(ia,ic)*rdm1_bd_a(ib,id)
+#ifdef TEST_RDMS
+c                     This is OK for N-representability testing
+                      gaa(ia,ic,ib,id) = gaa(ia,ic,ib,id)
+     &                  + rdm1_ac_a(ia,ic)*rdm1_bd_a(ib,id)
+     &                  - rdm1_ad_a(ia,id)*rdm1_bc_a(ib,ic)
+                      gab(ia,ic,ib,id) = gab(ia,ic,ib,id)
+     &                  + rdm1_ac_a(ia,ic)*rdm1_bd_b(ib,id)
+                      gbb(ia,ic,ib,id) = gbb(ia,ic,ib,id)
+     &                  + rdm1_ac_b(ia,ic)*rdm1_bd_b(ib,id)
+     &                  - rdm1_ad_b(ia,id)*rdm1_bc_b(ib,ic)
+#endif
+c                     This is OK for the conventional Hartree-Fock
+c                     method
+                      rdm2_chf(ia,ic,ib,id) = rdm2_chf(ia,ic,ib,id)
+     &                  + rdm1_ac_a(ia,ic)*rdm1_bd_a(ib,id)
+     &                  + rdm1_ac_b(ia,ic)*rdm1_bd_b(ib,id)
+     &                  + rdm1_ac_a(ia,ic)*rdm1_bd_b(ib,id)
+     &                  + rdm1_ac_b(ia,ic)*rdm1_bd_a(ib,id)
+     &                  - rdm1_ad_a(ia,id)*rdm1_bc_a(ib,ic)
+     &                  - rdm1_ad_b(ia,id)*rdm1_bc_b(ib,ic)
                     enddo ! ia
                   enddo ! ic
                 enddo ! ib
               enddo ! id
 c
-c             Derivatives wrt the natural orbitals
+c             Construct contributions to the natural orbital Fock
+c             matrices.
 c
-              do id = idlo, idhi
-                do ib = iblo, ibhi
-                  do ic = iclo, ichi
-                    do ia = ialo, iahi
-                      fn1aca(ia,ic) = fn1aca(ia,ic)
-     &                              + eri(ia,ic,ib,id)*dbdb(ib,id)
-                      fn1acb(ia,ic) = fn1acb(ia,ic)
-     &                              + eri(ia,ic,ib,id)*dbda(ib,id)
-                    enddo ! ia
-                  enddo ! ic
-                enddo ! ib
-              enddo ! id
-              fn1ica(1:nmo,iclo:ichi)=>buffnac
-              fn1icb(1:nmo,iclo:ichi)=>buffnbc
-              fn1ica = 0.0d0
-              fn1icb = 0.0d0
-              do ic = iclo, ichi
-                do ia = ialo, iahi
-                  do ii = 1, nmo
-                    fn1ica(ii,ic) = fn1ica(ii,ic)
-     &                            + naia(ia,ii)*occa(ii)*fn1aca(ia,ic)
-                    fn1icb(ii,ic) = fn1icb(ii,ic)
-     &                            + naib(ia,ii)*occb(ii)*fn1acb(ia,ic)
-                  enddo
-                enddo
-              enddo
-              do jj = 1, nmo, nja
-                fna(1:nmo,jj:min(nmo,jj+nja-1))=>buffna
-                fna = 0.0d0
-                do kk = jj, min(nmo,jj+nja-1)
-                  do ic = iclo, ichi
-                    do ii = 1, nmo
-                      fna(ii,kk) = fna(ii,kk) 
-     &                           + 1.0d0*fn1ica(ii,ic)*ncia(ic,kk)
-                    enddo ! ii
-                  enddo ! ic
-                enddo ! kk
-                call ga_acc(wfn1_deriv%g_dna,1,nmo,jj,min(nmo,jj+nja-1),
-     &                      fna,nmo,1.0d0)
-              enddo ! jj
-              do jj = 1, nmo, njb
-                fnb(1:nmo,jj:min(nmo,jj+njb-1))=>buffnb
-                fnb = 0.0d0
-                do kk = jj, min(nmo,jj+njb-1)
-                  do ic = iclo, ichi
-                    do ii = 1, nmo
-                      fnb(ii,kk) = fnb(ii,kk) 
-     &                           + 1.0d0*fn1icb(ii,ic)*ncib(ic,kk)
-                    enddo ! ii
-                  enddo ! ic
-                enddo ! kk
-                call ga_acc(wfn1_deriv%g_dnb,1,nmo,jj,min(nmo,jj+njb-1),
-     &                      fnb,nmo,1.0d0)
-              enddo
+              fn_ac_a(ia_lo:ia_hi,ic_lo:ic_hi) => buf_fn_ac_a
+              fn_ac_b(ia_lo:ia_hi,ic_lo:ic_hi) => buf_fn_ac_b
+              fn_ad_a(ia_lo:ia_hi,id_lo:id_hi) => buf_fn_ad_a
+              fn_ad_b(ia_lo:ia_hi,id_lo:id_hi) => buf_fn_ad_b
+              fn_ac_a = 0.0d0
+              fn_ac_b = 0.0d0
+              fn_ad_a = 0.0d0
+              fn_ad_b = 0.0d0
 c
-c             Derivatives wrt the correlation functions
+              fn_ic_a(1:nmo,ic_lo:ic_hi) => buf_fn_ic_a
+              fn_ic_b(1:nmo,ic_lo:ic_hi) => buf_fn_ic_b
+              fn_id_a(1:nmo,id_lo:id_hi) => buf_fn_id_a
+              fn_id_b(1:nmo,id_lo:id_hi) => buf_fn_id_b
+              fn_ic_a = 0.0d0
+              fn_ic_b = 0.0d0
+              fn_id_a = 0.0d0
+              fn_id_b = 0.0d0
 c
-              fc1aca(ialo:iahi,iclo:ichi)=>buffnac
-              fc1ada(ialo:iahi,idlo:idhi)=>buffnad
-              fc1bca(iblo:ibhi,iclo:ichi)=>buffnaa
-              fc1bda(iblo:ibhi,idlo:idhi)=>buffnab
-              fc1acb(ialo:iahi,iclo:ichi)=>buffnbc
-              fc1adb(ialo:iahi,idlo:idhi)=>buffnbd
-              fc1bcb(iblo:ibhi,iclo:ichi)=>buffnba
-              fc1bdb(iblo:ibhi,idlo:idhi)=>buffnbb
-              fc1aca = 0.0d0
-              fc1ada = 0.0d0
-              fc1bca = 0.0d0
-              fc1bda = 0.0d0
-              fc1acb = 0.0d0
-              fc1adb = 0.0d0
-              fc1bcb = 0.0d0
-              fc1bdb = 0.0d0
-              do id = idlo, idhi
-                do ib = iblo, ibhi
-                  do ic = iclo, ichi
-                    do ia = ialo, iahi
+              fns_ac_a(ia_lo:ia_hi,ic_lo:ic_hi) => buf_fns_ac_a
+              fns_ac_b(ia_lo:ia_hi,ic_lo:ic_hi) => buf_fns_ac_b
+              fns_ad_a(ia_lo:ia_hi,id_lo:id_hi) => buf_fns_ad_a
+              fns_ad_b(ia_lo:ia_hi,id_lo:id_hi) => buf_fns_ad_b
+              fns_ac_a = 0.0d0
+              fns_ac_b = 0.0d0
+              fns_ad_a = 0.0d0
+              fns_ad_b = 0.0d0
 c
-c                     Fock matrix Coulomb terms a-a and a-b
+              fns_ic_a(1:nmo,ic_lo:ic_hi) => buf_fns_ic_a
+              fns_ic_b(1:nmo,ic_lo:ic_hi) => buf_fns_ic_b
+              fns_id_a(1:nmo,id_lo:id_hi) => buf_fns_id_a
+              fns_id_b(1:nmo,id_lo:id_hi) => buf_fns_id_b
+              fns_ic_a = 0.0d0
+              fns_ic_b = 0.0d0
+              fns_id_a = 0.0d0
+              fns_id_b = 0.0d0
 c
-                      fc1aca(ia,ic) = fc1aca(ia,ic)
-     &                              + eri(ia,ic,ib,id)*
-     &                                (0.50d0*dbda(ib,id)+
-     &                                 0.50d0*dbdb(ib,id))
-                      fc1ada(ia,id) = fc1ada(ia,id)
-     &                              + eri(ia,ic,ib,id)*
-     &                                0.50d0*dbca(ib,ic)
-                      fc1bca(ib,ic) = fc1bca(ib,ic)
-     &                              + eri(ia,ic,ib,id)*
-     &                                0.50d0*dada(ia,id)
-                      fc1bda(ib,id) = fc1bda(ib,id)
-     &                              + eri(ia,ic,ib,id)*
-     &                                (0.50d0*daca(ia,ic)+
-     &                                 0.50d0*dacb(ia,ic))
+c             This does not work for the correlated approach
+c             do id = id_lo, id_hi
+c               do ib = ib_lo, ib_hi
+c                 do ic = ic_lo, ic_hi
+c                   do ia = ia_lo, ia_hi
+c                     fn_ac_a(ia,ic) = fn_ac_a(ia,ic)
+c    &                  + eri(ia,ic,ib,id)*rdm1_bd_a(ib,id)
+c    &                  + eri(ia,ic,ib,id)*rdm1_bd_b(ib,id)
+c                     fn_ac_b(ia,ic) = fn_ac_b(ia,ic)
+c    &                  + eri(ia,ic,ib,id)*rdm1_bd_a(ib,id)
+c    &                  + eri(ia,ic,ib,id)*rdm1_bd_b(ib,id)
+c                     fn_ad_a(ia,id) = fn_ad_a(ia,id)
+c    &                  - eri(ia,ic,ib,id)*rdm1_bc_a(ib,ic)
+c                     fn_ad_b(ia,id) = fn_ad_b(ia,id)
+c    &                  - eri(ia,ic,ib,id)*rdm1_bc_b(ib,ic)
+c                   enddo ! ia
+c                 enddo ! ic
+c               enddo ! ib
+c             enddo ! id
 c
-c                     Fock matrix Coulomb terms b-b and b-a
+c             do ic = ic_lo, ic_hi
+c               do ia = ia_lo, ia_hi
+c                 do ii = 1, nmo
+c                   fn_ic_a(ii,ic) = fn_ic_a(ii,ic)
+c    &                + fn_ac_a(ia,ic)*occ_a(ii)*N_ai_a(ia,ii)
+c                   fn_ic_b(ii,ic) = fn_ic_b(ii,ic)
+c    &                + fn_ac_b(ia,ic)*occ_b(ii)*N_ai_b(ia,ii)
+c                 enddo ! ii
+c               enddo ! ia
+c             enddo ! ic
+c             do id = id_lo, id_hi
+c               do ia = ia_lo, ia_hi
+c                 do ii = 1, nmo
+c                   fn_id_a(ii,id) = fn_id_a(ii,id)
+c    &                + fn_ad_a(ia,id)*occ_a(ii)*N_ai_a(ia,ii)
+c                   fn_id_b(ii,id) = fn_id_b(ii,id)
+c    &                + fn_ad_b(ia,id)*occ_b(ii)*N_ai_b(ia,ii)
+c                 enddo ! ii
+c               enddo ! ia
+c             enddo ! ic
 c
-                      fc1acb(ia,ic) = fc1acb(ia,ic)
-     &                              + eri(ia,ic,ib,id)*
-     &                                (0.5d0*dbdb(ib,id)+
-     &                                 0.5d0*dbda(ib,id))
-                      fc1adb(ia,id) = fc1adb(ia,id)
-     &                              + eri(ia,ic,ib,id)*
-     &                                0.5d0*dbcb(ib,ic)
-                      fc1bcb(ib,ic) = fc1bcb(ib,ic)
-     &                              + eri(ia,ic,ib,id)*
-     &                                0.5d0*dadb(ia,id)
-                      fc1bdb(ib,id) = fc1bdb(ib,id)
-     &                              + eri(ia,ic,ib,id)*
-     &                                (0.5d0*dacb(ia,ic)+
-     &                                 0.5d0*daca(ia,ic))
-                    enddo ! ia
-                  enddo ! ic
-                enddo ! ib
-              enddo ! id
-              do ii = 1, nmo
-                do ic = iclo, ichi
-                  do ia = ialo, iahi
-                    v_dca(ii) = v_dca(ii)
-     &                        + 1.0d0*naia(ia,ii)*
-     &                          fc1aca(ia,ic)*ncia(ic,ii)
-                    v_dcb(ii) = v_dcb(ii)
-     &                        + 1.0d0*naib(ia,ii)*
-     &                          fc1acb(ia,ic)*ncib(ic,ii)
-                  enddo
-                enddo
-                do id = idlo, idhi
-                  do ia = ialo, iahi
-                    v_dca(ii) = v_dca(ii)
-     &                        - 1.0d0*naia(ia,ii)*
-     &                          fc1ada(ia,id)*ndia(id,ii)
-                    v_dcb(ii) = v_dcb(ii)
-     &                        - 1.0d0*naib(ia,ii)*
-     &                          fc1adb(ia,id)*ndib(id,ii)
-                  enddo
-                enddo
-                do ic = iclo, ichi
-                  do ib = iblo, ibhi
-                    v_dca(ii) = v_dca(ii)
-     &                        - 1.0d0*nbia(ib,ii)*
-     &                          fc1bca(ib,ic)*ncia(ic,ii)
-                    v_dcb(ii) = v_dcb(ii)
-     &                        - 1.0d0*nbib(ib,ii)*
-     &                          fc1bcb(ib,ic)*ncib(ic,ii)
-                  enddo
-                enddo
-                do id = idlo, idhi
-                  do ib = iblo, ibhi
-                    v_dca(ii) = v_dca(ii)
-     &                        + 1.0d0*nbia(ib,ii)*
-     &                          fc1bda(ib,id)*ndia(id,ii)
-                    v_dcb(ii) = v_dcb(ii)
-     &                        + 1.0d0*nbib(ib,ii)*
-     &                          fc1bdb(ib,id)*ndib(id,ii)
-                  enddo
-                enddo
-              enddo
+c             do jj = 1, nmo, nj
+c               fn_ij_a(1:nmo,jj:min(nmo,jj+nj-1)) => buf_fn_ij_a
+c               fn_ij_b(1:nmo,jj:min(nmo,jj+nj-1)) => buf_fn_ij_b
+c               fn_ij_a = 0.0d0
+c               fn_ij_b = 0.0d0
+c               do kk = jj, min(nmo,jj+nj-1)
+c                 do ic = ic_lo, ic_hi
+c                   do ii = 1, nmo
+c                     fn_ij_a(ii,kk) = fn_ij_a(ii,kk)
+c    &                  + fn_ic_a(ii,ic)*N_ci_a(ic,kk)
+c                     fn_ij_b(ii,kk) = fn_ij_b(ii,kk)
+c    &                  + fn_ic_b(ii,ic)*N_ci_b(ic,kk)
+c                   enddo ! ii
+c                 enddo ! ic
+c                 do id = id_lo, id_hi
+c                   do ii = 1, nmo
+c                     fn_ij_a(ii,kk) = fn_ij_a(ii,kk)
+c    &                  + fn_id_a(ii,id)*N_di_a(id,kk)
+c                     fn_ij_b(ii,kk) = fn_ij_b(ii,kk)
+c    &                  + fn_id_b(ii,id)*N_di_b(id,kk)
+c                   enddo ! ii
+c                 enddo ! id
+c               enddo ! kk
+c               call ga_acc(wfn1_deriv%g_dna,1,nmo,jj,min(nmo,jj+nj-1),
+c    &                      fn_ij_a,nmo,1.0d0)
+c               call ga_acc(wfn1_deriv%g_dnb,1,nmo,jj,min(nmo,jj+nj-1),
+c    &                      fn_ij_b,nmo,1.0d0)
+c             enddo ! jj
 c
-c             calculate the 2RDM terms
+c             Reuse the fn_ac_* data to construct the Coulomb terms
+c             to the correlation function Fock matrices.
+c
+c             do ii = 1, nmo
+c               do ic = ic_lo, ic_hi
+c                 do ia = ia_lo, ia_hi
+c                   v_dc_a(ii) = v_dc_a(ii)
+c    &                + fn_ac_a(ia,ic)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+c                   v_dc_b(ii) = v_dc_b(ii)
+c    &                + fn_ac_b(ia,ic)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+c                 enddo ! ia
+c               enddo ! ic
+c               do id = id_lo, id_hi
+c                 do ia = ia_lo, ia_hi
+c                   v_dc_a(ii) = v_dc_a(ii)
+c    &                + fn_ad_a(ia,id)*N_ai_a(ia,ii)*N_di_a(id,ii)
+c                   v_dc_b(ii) = v_dc_b(ii)
+c    &                + fn_ad_b(ia,id)*N_ai_b(ia,ii)*N_di_b(id,ii)
+c                 enddo ! ia
+c               enddo ! id
+c             enddo ! ii
+c
+c             Add the 2RDM terms that come from the 2-electron
+c             occupation number terms of [5].
 c
               do jproc = 0, nproc-1
-                call ga_distribution(g_2aa,jproc,iialo,iiahi,
-     &                                           ijalo,ijahi)
-                call ga_distribution(g_2bb,jproc,iiblo,iibhi,
-     &                                           ijblo,ijbhi)
-                nia = iiahi-iialo+1
-                nib = iibhi-iiblo+1
-                occija(iialo:iiahi,ijalo:ijahi)=>bufija
-                occijb(iiblo:iibhi,ijblo:ijbhi)=>bufijb
-                ocxija(iialo:iiahi,ijalo:ijahi)=>bufxija
-                ocxijb(iiblo:iibhi,ijblo:ijbhi)=>bufxijb
-                call ga_get(g_2aa, iialo,iiahi,ijalo,ijahi,occija,nia)
-                call ga_get(g_x2aa,iialo,iiahi,ijalo,ijahi,ocxija,nia)
-                call ga_get(g_2bb, iiblo,iibhi,ijblo,ijbhi,occijb,nib)
-                call ga_get(g_x2bb,iiblo,iibhi,ijblo,ijbhi,ocxijb,nib)
-                d3aac(ialo:iahi,iclo:ichi,iialo:iiahi)=>buf3aac
-                d3aad(ialo:iahi,idlo:idhi,iialo:iiahi)=>buf3aad
-                d3abc(iblo:ibhi,iclo:ichi,iialo:iiahi)=>buf3abc
-                d3abd(iblo:ibhi,idlo:idhi,iialo:iiahi)=>buf3abd
-                d3bac(ialo:iahi,iclo:ichi,iiblo:iibhi)=>buf3bac
-                d3bad(ialo:iahi,idlo:idhi,iiblo:iibhi)=>buf3bad
-                d3bbc(iblo:ibhi,iclo:ichi,iiblo:iibhi)=>buf3bbc
-                d3bbd(iblo:ibhi,idlo:idhi,iiblo:iibhi)=>buf3bbd
-                d3aac = 0.0d0
-                d3aad = 0.0d0
-                d3abc = 0.0d0
-                d3abd = 0.0d0
-                d3bac = 0.0d0
-                d3bad = 0.0d0
-                d3bbc = 0.0d0
-                d3bbd = 0.0d0
-                dx3aac(ialo:iahi,iclo:ichi,iialo:iiahi)=>bufx3aac
-                dx3aad(ialo:iahi,idlo:idhi,iialo:iiahi)=>bufx3aad
-                dx3abc(iblo:ibhi,iclo:ichi,iialo:iiahi)=>bufx3abc
-                dx3abd(iblo:ibhi,idlo:idhi,iialo:iiahi)=>bufx3abd
-                dx3bac(ialo:iahi,iclo:ichi,iiblo:iibhi)=>bufx3bac
-                dx3bad(ialo:iahi,idlo:idhi,iiblo:iibhi)=>bufx3bad
-                dx3bbc(iblo:ibhi,iclo:ichi,iiblo:iibhi)=>bufx3bbc
-                dx3bbd(iblo:ibhi,idlo:idhi,iiblo:iibhi)=>bufx3bbd
-                dx3aac = 0.0d0
-                dx3aad = 0.0d0
-                dx3abc = 0.0d0
-                dx3abd = 0.0d0
-                dx3bac = 0.0d0
-                dx3bad = 0.0d0
-                dx3bbc = 0.0d0
-                dx3bbd = 0.0d0
-                fn2ica(iialo:iiahi,iclo:ichi)=>buffnac
-                fn2ida(iialo:iiahi,idlo:idhi)=>buffnad
-                fn2icb(iiblo:iibhi,iclo:ichi)=>buffnbc
-                fn2idb(iiblo:iibhi,idlo:idhi)=>buffnbd
-                fn2ica = 0.0d0
-                fn2ida = 0.0d0
-                fn2icb = 0.0d0
-                fn2idb = 0.0d0
-                fna(iialo:iiahi,1:nmo)=>buffna
-                fnb(iiblo:iibhi,1:nmo)=>buffnb
-                fna = 0.0d0
-                fnb = 0.0d0
-                do id = idlo, idhi
-                  do ib = iblo, ibhi
-                    do ii = iialo, iiahi
-                      do jj = ijalo, ijahi
-                        d3abd(ib,id,ii)  = d3abd(ib,id,ii) 
-     &                                   + nbia(ib,jj)*ndia(id,jj)*
-     &                                     occija(ii,jj)
-                        dx3abd(ib,id,ii) = dx3abd(ib,id,ii) 
-     &                                   + nbia(ib,jj)*ndia(id,jj)*
-     &                                     ocxija(ii,jj)
-                      enddo ! jj
-                    enddo ! ii
-                    do ii = iiblo, iibhi
-                      do jj = ijblo, ijbhi
-                        d3bbd(ib,id,ii)  = d3bbd(ib,id,ii) 
-     &                                   + nbib(ib,jj)*ndib(id,jj)*
-     &                                     occijb(ii,jj)
-                        dx3bbd(ib,id,ii) = dx3bbd(ib,id,ii) 
-     &                                   + nbib(ib,jj)*ndib(id,jj)*
-     &                                     ocxijb(ii,jj)
-                      enddo ! jj
-                    enddo ! ii
-                  enddo ! ib
-                  do ia = ialo, iahi
-                    do ii = iialo, iiahi
-                      do jj = ijalo, ijahi
-                        d3aad(ia,id,ii)  = d3aad(ia,id,ii) 
-     &                                   + naia(ia,jj)*ndia(id,jj)*
-     &                                     occija(ii,jj)
-                        dx3aad(ia,id,ii) = dx3aad(ia,id,ii) 
-     &                                   + naia(ia,jj)*ndia(id,jj)*
-     &                                     ocxija(ii,jj)
-                      enddo ! jj
-                    enddo ! ii
-                    do ii = iiblo, iibhi
-                      do jj = ijblo, ijbhi
-                        d3bad(ia,id,ii)  = d3bad(ia,id,ii) 
-     &                                   + naib(ia,jj)*ndib(id,jj)*
-     &                                     occijb(ii,jj)
-                        dx3bad(ia,id,ii) = dx3bad(ia,id,ii) 
-     &                                   + naib(ia,jj)*ndib(id,jj)*
-     &                                     ocxijb(ii,jj)
-                      enddo ! jj
-                    enddo ! ii
-                  enddo ! ia
-                enddo ! id
-                do ic = iclo, ichi
-                  do ib = iblo, ibhi
-                    do ii = iialo, iiahi
-                      do jj = ijalo, ijahi
-                        d3abc(ib,ic,ii)  = d3abc(ib,ic,ii) 
-     &                                   + nbia(ib,jj)*ncia(ic,jj)*
-     &                                     occija(ii,jj)
-                        dx3abc(ib,ic,ii) = dx3abc(ib,ic,ii) 
-     &                                   + nbia(ib,jj)*ncia(ic,jj)*
-     &                                     ocxija(ii,jj)
-                      enddo ! jj
-                    enddo ! ii
-                    do ii = iiblo, iibhi
-                      do jj = ijblo, ijbhi
-                        d3bbc(ib,ic,ii)  = d3bbc(ib,ic,ii) 
-     &                                   + nbib(ib,jj)*ncib(ic,jj)*
-     &                                     occijb(ii,jj)
-                        dx3bbc(ib,ic,ii) = dx3bbc(ib,ic,ii) 
-     &                                   + nbib(ib,jj)*ncib(ic,jj)*
-     &                                     ocxijb(ii,jj)
-                      enddo ! jj
-                    enddo ! ii
-                  enddo ! ib
-                  do ia = ialo, iahi
-                    do ii = iialo, iiahi
-                      do jj = ijalo, ijahi
-                        d3aac(ia,ic,ii)  = d3aac(ia,ic,ii) 
-     &                                   + naia(ia,jj)*ncia(ic,jj)*
-     &                                     occija(ii,jj)
-                        dx3aac(ia,ic,ii) = dx3aac(ia,ic,ii) 
-     &                                   + naia(ia,jj)*ncia(ic,jj)*
-     &                                     ocxija(ii,jj)
-                      enddo ! jj
-                    enddo ! ii
-                    do ii = iiblo, iibhi
-                      do jj = ijblo, ijbhi
-                        d3bac(ia,ic,ii)  = d3bac(ia,ic,ii) 
-     &                                   + naib(ia,jj)*ncib(ic,jj)*
-     &                                     occijb(ii,jj)
-                        dx3bac(ia,ic,ii) = dx3bac(ia,ic,ii) 
-     &                                   + naib(ia,jj)*ncib(ic,jj)*
-     &                                     ocxijb(ii,jj)
-                      enddo ! jj
-                    enddo ! ii
-                  enddo ! ia
-                enddo ! ic
-                do id = idlo, idhi
-                  do ib = iblo, ibhi
-                    do ic = iclo, ichi
-                      do ia = ialo, iahi
-                        do ii = iialo, iiahi
-                          den(ia,ic,ib,id) = den(ia,ic,ib,id) 
-     &                                     + naia(ia,ii)*ncia(ic,ii)*
-     &                                       d3abd(ib,id,ii)*0.5d0
-     &                                     + nbia(ib,ii)*ndia(id,ii)*
-     &                                       d3aac(ia,ic,ii)*0.5d0
-     &                                     - nbia(ib,ii)*ncia(ic,ii)*
-     &                                       d3aad(ia,id,ii)*0.5d0
-     &                                     - naia(ia,ii)*ndia(id,ii)*
-     &                                       d3abc(ib,ic,ii)*0.5d0
-                        enddo ! ii
-                        do ii = iiblo, iibhi
-                          den(ia,ic,ib,id) = den(ia,ic,ib,id) 
-     &                                     + naib(ia,ii)*ncib(ic,ii)*
-     &                                       d3bbd(ib,id,ii)*0.5d0
-     &                                     + nbib(ib,ii)*ndib(id,ii)*
-     &                                       d3bac(ia,ic,ii)*0.5d0
-     &                                     - nbib(ib,ii)*ncib(ic,ii)*
-     &                                       d3bad(ia,id,ii)*0.5d0
-     &                                     - naib(ia,ii)*ndib(id,ii)*
-     &                                       d3bbc(ib,ic,ii)*0.5d0
-                        enddo ! ii
-                        do ii = iialo, iiahi
-                          fn2ica(ii,ic) = fn2ica(ii,ic) 
-     &                                  + naia(ia,ii)*d3abd(ib,id,ii)*
-     &                                    eri(ia,ic,ib,id)*0.5d0
-     &                                  - nbia(ib,ii)*d3aad(ia,id,ii)*
-     &                                    eri(ia,ic,ib,id)*0.5d0
-                          fn2ida(ii,id) = fn2ida(ii,id) 
-     &                                  - naia(ia,ii)*d3abc(ib,ic,ii)*
-     &                                    eri(ia,ic,ib,id)*0.5d0
-     &                                  + nbia(ib,ii)*d3aac(ia,ic,ii)*
-     &                                    eri(ia,ic,ib,id)*0.5d0
-                        enddo ! ii
-                        do ii = iiblo, iibhi
-                          fn2icb(ii,ic) = fn2icb(ii,ic) 
-     &                                  + naib(ia,ii)*d3bbd(ib,id,ii)*
-     &                                    eri(ia,ic,ib,id)*0.5d0
-     &                                  - nbib(ib,ii)*d3bad(ia,id,ii)*
-     &                                    eri(ia,ic,ib,id)*0.5d0
-                          fn2idb(ii,id) = fn2idb(ii,id) 
-     &                                  - naib(ia,ii)*d3bbc(ib,ic,ii)*
-     &                                    eri(ia,ic,ib,id)*0.5d0
-     &                                  + nbib(ib,ii)*d3bac(ia,ic,ii)*
-     &                                    eri(ia,ic,ib,id)*0.5d0
-                        enddo ! ii
-                        do ii = iialo, iiahi
-                          v_dca(ii) = v_dca(ii)
-     &                              - 0.5d0*eri(ia,ic,ib,id)*
-     &                                (
-     &                                 dx3aac(ia,ic,ii)*nbia(ib,ii)*
-     &                                 ndia(id,ii)
-     &                                +dx3abd(ib,id,ii)*naia(ia,ii)*
-     &                                 ncia(ic,ii)
-     &                                -dx3aad(ia,id,ii)*nbia(ib,ii)*
-     &                                 ncia(ic,ii)
-     &                                -dx3abc(ib,ic,ii)*naia(ia,ii)*
-     &                                 ndia(id,ii)
-     &                                )
-     
-                        enddo ! ii
-                        do ii = iiblo, iibhi
-                          v_dcb(ii) = v_dcb(ii)
-     &                              - 0.5d0*eri(ia,ic,ib,id)*
-     &                                (
-     &                                 dx3bac(ia,ic,ii)*nbib(ib,ii)*
-     &                                 ndib(id,ii)
-     &                                +dx3bbd(ib,id,ii)*naib(ia,ii)*
-     &                                 ncib(ic,ii)
-     &                                -dx3bad(ia,id,ii)*nbib(ib,ii)*
-     &                                 ncib(ic,ii)
-     &                                -dx3bbc(ib,ic,ii)*naib(ia,ii)*
-     &                                 ndib(id,ii)
-     &                                )
-                        enddo ! ii
+                call ga_distribution(g_x_aa,jproc,ii_lo,ii_hi,
+     &                                            jj_lo,jj_hi)
+                ni = ii_hi-ii_lo+1
+c
+c               d_aa(ii_lo:ii_hi,jj_lo:jj_hi)  => buf_d_aa
+c               d_bb(ii_lo:ii_hi,jj_lo:jj_hi)  => buf_d_bb
+                x_aa(ii_lo:ii_hi,jj_lo:jj_hi)  => buf_x_aa
+                x_bb(ii_lo:ii_hi,jj_lo:jj_hi)  => buf_x_bb
+                dx_aa(ii_lo:ii_hi,jj_lo:jj_hi) => buf_dx_aa
+                dx_bb(ii_lo:ii_hi,jj_lo:jj_hi) => buf_dx_bb
+                C_is_a(ii_lo:ii_hi,1:nmo)      => buf_C_is_a
+                C_is_b(ii_lo:ii_hi,1:nmo)      => buf_C_is_b
+                C_jt_a(jj_lo:jj_hi,1:nmo)      => buf_C_jt_a
+                C_jt_b(jj_lo:jj_hi,1:nmo)      => buf_C_jt_b
+c
+c               call ga_get(g_2aa,ii_lo,ii_hi,jj_lo,jj_hi,d_aa,ni)
+c               call ga_get(g_2bb,ii_lo,ii_hi,jj_lo,jj_hi,d_bb,ni)
+c
+                call ga_get(g_x_aa,ii_lo,ii_hi,jj_lo,jj_hi,x_aa,ni)
+                call ga_get(g_x_bb,ii_lo,ii_hi,jj_lo,jj_hi,x_bb,ni)
+                call ga_get(g_dx_aa,ii_lo,ii_hi,jj_lo,jj_hi,dx_aa,ni)
+                call ga_get(g_dx_bb,ii_lo,ii_hi,jj_lo,jj_hi,dx_bb,ni)
+                call ga_get(wfn1_wave%g_ca,ii_lo,ii_hi,1,nmo,C_is_a,ni)
+                call ga_get(wfn1_wave%g_cb,ii_lo,ii_hi,1,nmo,C_is_b,ni)
+                call ga_get(wfn1_wave%g_ca,jj_lo,jj_hi,1,nmo,C_jt_a,nj)
+                call ga_get(wfn1_wave%g_cb,jj_lo,jj_hi,1,nmo,C_jt_b,nj)
+c
+                rdm2_acj_aa(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_acj_aa
+                rdm2_acj_ab(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_acj_ab
+                rdm2_acj_ba(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_acj_ba
+                rdm2_acj_bb(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_acj_bb
+                rdm2_adj_aa(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_adj_aa
+                rdm2_adj_ab(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_adj_ab
+                rdm2_adj_ba(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_adj_ba
+                rdm2_adj_bb(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_adj_bb
+c
+                rdm2_acj_aa = 0.0d0
+                rdm2_acj_ab = 0.0d0
+                rdm2_acj_ba = 0.0d0
+                rdm2_acj_bb = 0.0d0
+                rdm2_adj_aa = 0.0d0
+                rdm2_adj_ab = 0.0d0
+                rdm2_adj_ba = 0.0d0
+                rdm2_adj_bb = 0.0d0
+c
+                rdm2_d_acj_a(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_d_acj_a
+                rdm2_d_acj_b(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_d_acj_b
+                rdm2_d_adj_a(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_d_adj_a
+                rdm2_d_adj_b(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2_d_adj_b
+c
+                rdm2_d_acj_a = 0.0d0
+                rdm2_d_acj_b = 0.0d0
+                rdm2_d_adj_a = 0.0d0
+                rdm2_d_adj_b = 0.0d0
+c
+                rdm2s_acj_aa(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2s_acj_aa
+                rdm2s_acj_ab(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2s_acj_ab
+                rdm2s_acj_ba(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2s_acj_ba
+                rdm2s_acj_bb(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_rdm2s_acj_bb
+                rdm2s_adj_aa(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2s_adj_aa
+                rdm2s_adj_ab(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2s_adj_ab
+                rdm2s_adj_ba(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2s_adj_ba
+                rdm2s_adj_bb(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_rdm2s_adj_bb
+c
+                rdm2s_acj_aa = 0.0d0
+                rdm2s_acj_ab = 0.0d0
+                rdm2s_acj_ba = 0.0d0
+                rdm2s_acj_bb = 0.0d0
+                rdm2s_adj_aa = 0.0d0
+                rdm2s_adj_ab = 0.0d0
+                rdm2s_adj_ba = 0.0d0
+                rdm2s_adj_bb = 0.0d0
+c
+                do jj = jj_lo, jj_hi
+                  do ii = ii_lo, ii_hi
+                    call wfn1_entropy2_aa(
+     &                   occ_a(ii),occ_a(jj),
+     &                   x_aa(ii,jj)+occ_a(ii)*occ_a(jj),
+     &                   saaij,dsaaij_i,dsaaij_j,dsaaij_ij)
+                    sabij    = 0.0d0
+                    sbaij    = 0.0d0
+                    dsabij_i = 0.0d0
+                    dsabij_j = 0.0d0
+                    dsbaij_i = 0.0d0
+                    dsbaij_j = 0.0d0
+c                   if (ii.eq.jj) then
+                      call wfn1_entropy2_ab(ii,jj,occ_a(ii),occ_b(jj),
+     &                                      sabij,
+     &                                      dsabij_i,dsabij_j)
+                      call wfn1_entropy2_ab(jj,ii,occ_b(ii),occ_a(jj),
+     &                                      sbaij,
+     &                                      dsbaij_i,dsbaij_j)
+cDEBUG
+c      write(*,*)'HVD: ii,jj,sabij = ',ii,jj,occ_a(ii),occ_b(jj),sabij
+c      write(*,*)'HVD: ii,jj,sbaij = ',ii,jj,occ_b(ii),occ_a(jj),sbaij
+cDEBUG
+c                   endif
+                    call wfn1_entropy2_aa(
+     &                   occ_b(ii),occ_b(jj),
+     &                   x_bb(ii,jj)+occ_b(ii)*occ_b(jj),
+     &                   sbbij,dsbbij_i,dsbbij_j,dsbbij_ij)
+                    do ic = ic_lo, ic_hi
+                      do ia = ia_lo, ia_hi
+                        rdm2_acj_aa(ia,ic,jj) = rdm2_acj_aa(ia,ic,jj)
+     &                    + N_ai_a(ia,ii)*N_ci_a(ic,ii)*
+     &                      (x_aa(ii,jj)+occ_a(ii)*occ_a(jj))
+                        rdm2_acj_ab(ia,ic,jj) = rdm2_acj_ab(ia,ic,jj)
+     &                    + N_ai_a(ia,ii)*N_ci_a(ic,ii)*
+     &                      occ_a(ii)*occ_b(jj)
+                        rdm2_acj_ba(ia,ic,jj) = rdm2_acj_ba(ia,ic,jj)
+     &                    + N_ai_a(ia,ii)*N_ci_a(ic,ii)*
+     &                      occ_b(ii)*occ_a(jj)
+                        rdm2_acj_bb(ia,ic,jj) = rdm2_acj_bb(ia,ic,jj)
+     &                    + N_ai_b(ia,ii)*N_ci_b(ic,ii)*
+     &                      (x_bb(ii,jj)+occ_b(ii)*occ_b(jj))
+c
+                        rdm2s_acj_aa(ia,ic,jj) = rdm2s_acj_aa(ia,ic,jj)
+     &                    + N_ai_a(ia,ii)*N_ci_a(ic,ii)*
+     &                      (x_aa(ii,jj)+occ_a(ii)*occ_a(jj))*
+     &                      (-saaij)
+                        rdm2s_acj_ab(ia,ic,jj) = rdm2s_acj_ab(ia,ic,jj)
+     &                    + N_ai_a(ia,ii)*N_ci_a(ic,ii)*
+     &                      occ_a(ii)*occ_b(jj)*(-sabij)
+                        rdm2s_acj_ba(ia,ic,jj) = rdm2s_acj_ba(ia,ic,jj)
+     &                    + N_ai_a(ia,ii)*N_ci_a(ic,ii)*
+     &                      occ_b(ii)*occ_a(jj)*(-sbaij)
+                        rdm2s_acj_bb(ia,ic,jj) = rdm2s_acj_bb(ia,ic,jj)
+     &                    + N_ai_b(ia,ii)*N_ci_b(ic,ii)*
+     &                      (x_bb(ii,jj)+occ_b(ii)*occ_b(jj))*
+     &                      (-sbbij)
                       enddo ! ia
                     enddo ! ic
-                  enddo ! ib
-                enddo ! id
-                do jj = 1, nmo
-                  do ii = iialo, iiahi
-                    do ic = iclo, ichi
-                      fna(ii,jj) = fna(ii,jj) 
-     &                           + 1.0d0*fn2ica(ii,ic)*ncia(ic,jj)
-                    enddo
-                    do id = idlo, idhi
-                      fna(ii,jj) = fna(ii,jj) 
-     &                           + 1.0d0*fn2ida(ii,id)*ndia(id,jj)
-                    enddo
-                  enddo
-                enddo
-                do jj = 1, nmo
-                  do ii = iiblo, iibhi
-                    do ic = iclo, ichi
-                      fnb(ii,jj) = fnb(ii,jj)
-     &                           + 1.0d0*fn2icb(ii,ic)*ncib(ic,jj)
-                    enddo
-                    do id = idlo, idhi
-                      fnb(ii,jj) = fnb(ii,jj)
-     &                           + 1.0d0*fn2idb(ii,id)*ndib(id,jj)
-                    enddo
-                  enddo
-                enddo
-                call ga_acc(wfn1_deriv%g_dna,iialo,iiahi,1,nmo,
-     &                      fna,nia,1.0d0)
-                call ga_acc(wfn1_deriv%g_dnb,iiblo,iibhi,1,nmo,
-     &                      fnb,nib,1.0d0)
+                    do id = id_lo, id_hi
+                      do ia = ia_lo, ia_hi
+                        rdm2_adj_aa(ia,id,jj) = rdm2_adj_aa(ia,id,jj)
+     &                    + N_ai_a(ia,ii)*N_di_a(id,ii)*
+     &                      (x_aa(ii,jj)+occ_a(ii)*occ_a(jj))
+c                       rdm2_adj_ab(ia,id,jj) = rdm2_adj_ab(ia,id,jj)
+c    &                    + N_ai_a(ia,ii)*N_di_a(id,ii)*
+c    &                      occ_a(ii)*occ_b(jj)*(1.0d0-sabij)
+c                       rdm2_adj_ba(ia,id,jj) = rdm2_adj_ba(ia,id,jj)
+c    &                    + N_ai_a(ia,ii)*N_di_a(id,ii)*
+c    &                      occ_b(ii)*occ_a(jj)*(1.0d0-sbaij)
+                        rdm2_adj_bb(ia,id,jj) = rdm2_adj_bb(ia,id,jj)
+     &                    + N_ai_b(ia,ii)*N_di_b(id,ii)*
+     &                      (x_bb(ii,jj)+occ_b(ii)*occ_b(jj))
+c
+                        rdm2s_adj_aa(ia,id,jj) = rdm2s_adj_aa(ia,id,jj)
+     &                    + N_ai_a(ia,ii)*N_di_a(id,ii)*
+     &                      (x_aa(ii,jj)+occ_a(ii)*occ_a(jj))*
+     &                      (-saaij)
+                        rdm2s_adj_bb(ia,id,jj) = rdm2s_adj_bb(ia,id,jj)
+     &                    + N_ai_b(ia,ii)*N_di_b(id,ii)*
+     &                      (x_bb(ii,jj)+occ_b(ii)*occ_b(jj))*
+     &                      (-sbbij)
+                      enddo ! ia
+                    enddo ! id
+                  enddo ! ii
+                enddo ! jj
+cDEBUG
+                ac_aa_mx = max(ac_aa_mx,maxval(rdm2_acj_aa))
+                ac_ab_mx = max(ac_ab_mx,maxval(rdm2_acj_ab))
+                ac_ba_mx = max(ac_ba_mx,maxval(rdm2_acj_ba))
+                ac_bb_mx = max(ac_bb_mx,maxval(rdm2_acj_bb))
+                ad_aa_mx = max(ad_aa_mx,maxval(rdm2_adj_aa))
+                ad_ab_mx = max(ad_ab_mx,maxval(rdm2_adj_ab))
+                ad_ba_mx = max(ad_ba_mx,maxval(rdm2_adj_ba))
+                ad_bb_mx = max(ad_bb_mx,maxval(rdm2_adj_bb))
+cDEBUG
+c
+cDEBUG
+c               do jj = jj_lo, jj_hi
+c                 do ii = ii_lo, ii_hi
+c                   do id = id_lo, id_hi
+c                     do ib = ib_lo, ib_hi
+c                       do ic = ic_lo, ic_hi
+c                         do ia = ia_lo, ia_hi
+c                           gaa(ia,ic,ib,id) = gaa(ia,ic,ib,id)
+c    &                        + d_aa(ii,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)*
+c    &                          N_bi_a(ib,jj)*N_di_a(id,jj)
+c    &                        + d_aa(ii,jj)*N_ai_a(ia,jj)*N_ci_a(ic,jj)*
+c    &                          N_bi_a(ib,ii)*N_di_a(id,ii)
+c    &                        - d_aa(ii,jj)*N_ai_a(ia,ii)*N_di_a(id,ii)*
+c    &                          N_bi_a(ib,jj)*N_ci_a(ic,jj)
+c    &                        - d_aa(ii,jj)*N_bi_a(ib,ii)*N_ci_a(ic,ii)*
+c    &                          N_ai_a(ia,jj)*N_di_a(id,jj)
+c                         enddo ! ia
+c                       enddo ! ic
+c                     enddo ! ib
+c                   enddo ! id
+c                 enddo ! ii
+c               enddo ! jj
+cDEBUG
+c
+                do jj = jj_lo, jj_hi
+                  do id = id_lo, id_hi
+                    do ib = ib_lo, ib_hi
+                      do ic = ic_lo, ic_hi
+                        do ia = ia_lo, ia_hi
+c
+                         rdm2(ia,ic,ib,id) = rdm2(ia,ic,ib,id)
+     &                   -(rdm2_adj_aa(ia,id,jj)+rdm2s_adj_aa(ia,id,jj))
+     &                    *N_bi_a(ib,jj)*N_ci_a(ic,jj)
+     &                   +(rdm2_acj_aa(ia,ic,jj)+rdm2s_acj_aa(ia,ic,jj))
+     &                    *N_bi_a(ib,jj)*N_di_a(id,jj)
+     &                   +(rdm2_acj_ab(ia,ic,jj)+rdm2s_acj_ab(ia,ic,jj))
+     &                    *N_bi_b(ib,jj)*N_di_b(id,jj)
+     &                   +(rdm2_acj_ba(ia,ic,jj)+rdm2s_acj_ba(ia,ic,jj))
+     &                    *N_bi_a(ib,jj)*N_di_a(id,jj)
+     &                   -(rdm2_adj_bb(ia,id,jj)+rdm2s_adj_bb(ia,id,jj))
+     &                    *N_bi_b(ib,jj)*N_ci_b(ic,jj)
+     &                   +(rdm2_acj_bb(ia,ic,jj)+rdm2s_acj_bb(ia,ic,jj))
+     &                    *N_bi_b(ib,jj)*N_di_b(id,jj)
+#ifdef TEST_RDMS
+c This is non-sense now
+c                         gaa(ia,ic,ib,id) = gaa(ia,ic,ib,id)
+c    &                      - rdm2_adj_aa(ia,id,jj)*N_bi_a(ib,jj)*
+c    &                        N_ci_a(ic,jj)
+c    &                      + rdm2_acj_aa(ia,ic,jj)*N_bi_a(ib,jj)*
+c    &                        N_di_a(id,jj)
+c                         gbb(ia,ic,ib,id) = gbb(ia,ic,ib,id)
+c    &                      - rdm2_adj_bb(ia,id,jj)*N_bi_b(ib,jj)*
+c    &                        N_ci_b(ic,jj)
+c    &                      + rdm2_acj_bb(ia,ic,jj)*N_bi_b(ib,jj)*
+c    &                        N_di_b(id,jj)
+#endif
+                        enddo ! ia
+                      enddo ! ic
+                    enddo ! ib
+                  enddo ! id
+                enddo ! jj
+c
+c               Calculate the natural orbital Fock matrix contributions
+c               (Exchange term from the 2RDM occupation numbers)
+c
+                fn_bcj_a(ib_lo:ib_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_fn_bcj_a
+                fn_bcj_b(ib_lo:ib_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_fn_bcj_b
+                fn_bdj_a(ib_lo:ib_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_fn_bdj_a
+                fn_bdj_b(ib_lo:ib_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_fn_bdj_b
+                fn_bcj_a = 0.0d0
+                fn_bcj_b = 0.0d0
+                fn_bdj_a = 0.0d0
+                fn_bdj_b = 0.0d0
+c
+                fns_bcj_a(ib_lo:ib_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_fns_bcj_a
+                fns_bcj_b(ib_lo:ib_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_fns_bcj_b
+                fns_bdj_a(ib_lo:ib_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_fns_bdj_a
+                fns_bdj_b(ib_lo:ib_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_fns_bdj_b
+                fns_bcj_a = 0.0d0
+                fns_bcj_b = 0.0d0
+                fns_bdj_a = 0.0d0
+                fns_bdj_b = 0.0d0
+c
+                do jj = jj_lo, jj_hi
+                  do id = id_lo, id_hi
+                    do ib = ib_lo, ib_hi
+                      do ic = ic_lo, ic_hi
+                        do ia = ia_lo, ia_hi
+                          fn_bcj_a(ib,ic,jj) = fn_bcj_a(ib,ic,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2_adj_aa(ia,id,jj)
+!    &                      + eri(ia,ic,ib,id)*rdm2_adj_ba(ia,id,jj) !hvd
+                          fn_bcj_b(ib,ic,jj) = fn_bcj_b(ib,ic,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2_adj_bb(ia,id,jj)
+!    &                      + eri(ia,ic,ib,id)*rdm2_adj_ab(ia,id,jj)
+                          fn_bdj_a(ib,id,jj) = fn_bdj_a(ib,id,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2_acj_aa(ia,ic,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2_acj_ba(ia,ic,jj)
+                          fn_bdj_b(ib,id,jj) = fn_bdj_b(ib,id,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2_acj_bb(ia,ic,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2_acj_ab(ia,ic,jj)
+c
+                          fns_bcj_a(ib,ic,jj) = fns_bcj_a(ib,ic,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2s_adj_aa(ia,id,jj)
+!    &                      + eri(ia,ic,ib,id)*rdm2s_adj_ba(ia,id,jj) !hvd
+                          fns_bcj_b(ib,ic,jj) = fns_bcj_b(ib,ic,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2s_adj_bb(ia,id,jj)
+!    &                      + eri(ia,ic,ib,id)*rdm2s_adj_ab(ia,id,jj)
+                          fns_bdj_a(ib,id,jj) = fns_bdj_a(ib,id,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2s_acj_aa(ia,ic,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2s_acj_ba(ia,ic,jj)
+                          fns_bdj_b(ib,id,jj) = fns_bdj_b(ib,id,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2s_acj_bb(ia,ic,jj)
+     &                      + eri(ia,ic,ib,id)*rdm2s_acj_ab(ia,ic,jj)
+                        enddo ! ia
+                      enddo ! ic
+                    enddo ! ib
+                  enddo ! id
+                enddo ! jj
+c
+                fn_bj_a(ib_lo:ib_hi,jj_lo:jj_hi) => buf_fn_bj_a
+                fn_bj_b(ib_lo:ib_hi,jj_lo:jj_hi) => buf_fn_bj_b
+                fn_bj_a = 0.0d0
+                fn_bj_b = 0.0d0
+c
+                fns_bj_a(ib_lo:ib_hi,jj_lo:jj_hi) => buf_fns_bj_a
+                fns_bj_b(ib_lo:ib_hi,jj_lo:jj_hi) => buf_fns_bj_b
+                fns_bj_a = 0.0d0
+                fns_bj_b = 0.0d0
+c
+                do jj = jj_lo, jj_hi
+                  do ic = ic_lo, ic_hi
+                    do ib = ib_lo, ib_hi
+                      fn_bj_a(ib,jj) = fn_bj_a(ib,jj)
+     &                  - fn_bcj_a(ib,ic,jj)*N_ci_a(ic,jj)
+                      fn_bj_b(ib,jj) = fn_bj_b(ib,jj)
+     &                  - fn_bcj_b(ib,ic,jj)*N_ci_b(ic,jj)
+c
+                      fns_bj_a(ib,jj) = fns_bj_a(ib,jj)
+     &                  - fns_bcj_a(ib,ic,jj)*N_ci_a(ic,jj)
+                      fns_bj_b(ib,jj) = fns_bj_b(ib,jj)
+     &                  - fns_bcj_b(ib,ic,jj)*N_ci_b(ic,jj)
+                    enddo ! ib
+                  enddo ! ic
+                  do id = id_lo, id_hi
+                    do ib = ib_lo, ib_hi
+                      fn_bj_a(ib,jj) = fn_bj_a(ib,jj)
+     &                  + fn_bdj_a(ib,id,jj)*N_di_a(id,jj)
+                      fn_bj_b(ib,jj) = fn_bj_b(ib,jj)
+     &                  + fn_bdj_b(ib,id,jj)*N_di_b(id,jj)
+c
+                      fns_bj_a(ib,jj) = fns_bj_a(ib,jj)
+     &                  + fns_bdj_a(ib,id,jj)*N_di_a(id,jj)
+                      fns_bj_b(ib,jj) = fns_bj_b(ib,jj)
+     &                  + fns_bdj_b(ib,id,jj)*N_di_b(id,jj)
+                    enddo ! ib
+                  enddo ! ic
+                enddo ! jj
+c
+                fn_ij_a(1:nmo,jj_lo:jj_hi) => buf_fn_ij_a
+                fn_ij_b(1:nmo,jj_lo:jj_hi) => buf_fn_ij_b
+                fn_ij_a = 0.0d0
+                fn_ij_b = 0.0d0
+c
+                fns_ij_a(1:nmo,jj_lo:jj_hi) => buf_fns_ij_a
+                fns_ij_b(1:nmo,jj_lo:jj_hi) => buf_fns_ij_b
+                fns_ij_a = 0.0d0
+                fns_ij_b = 0.0d0
+c
+                do jj = jj_lo, jj_hi
+                  do ii = 1, nmo
+                    do ib = ib_lo, ib_hi
+                      fn_ij_a(ii,jj) = fn_ij_a(ii,jj)
+     &                  + fn_bj_a(ib,jj)*N_bi_a(ib,ii)
+                      fn_ij_b(ii,jj) = fn_ij_b(ii,jj)
+     &                  + fn_bj_b(ib,jj)*N_bi_b(ib,ii)
+c
+                      fns_ij_a(ii,jj) = fns_ij_a(ii,jj)
+     &                  + fns_bj_a(ib,jj)*N_bi_a(ib,ii)
+                      fns_ij_b(ii,jj) = fns_ij_b(ii,jj)
+     &                  + fns_bj_b(ib,jj)*N_bi_b(ib,ii)
+                    enddo ! ib
+                  enddo ! ii
+                enddo ! jj
+cDEBUG
+c               fn_ij_a = 0.5d0*fn_ij_a
+c               fn_ij_b = 0.5d0*fn_ij_b
+cDEBUG
+c
+                call ga_acc(wfn1_deriv%g_dna,1,nmo,jj_lo,jj_hi,
+     &                      fn_ij_a,nmo,1.0d0)
+                call ga_acc(wfn1_deriv%g_dnb,1,nmo,jj_lo,jj_hi,
+     &                      fn_ij_b,nmo,1.0d0)
+c
+                call ga_acc(wfn1_part_drv%g_dna,1,nmo,jj_lo,jj_hi,
+     &                      fns_ij_a,nmo,1.0d0)
+                call ga_acc(wfn1_part_drv%g_dnb,1,nmo,jj_lo,jj_hi,
+     &                      fns_ij_b,nmo,1.0d0)
+c
+c               Calculate the correlation function Fock matrix
+c               contributions (Exchange term from the 2RDM occupation
+c               numbers)
+c
+c We need a loop over all jj here
+c Taken care of by the loop over jproc
+                fc_acj_a(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_fc_acj_a
+                fc_acj_b(ia_lo:ia_hi,ic_lo:ic_hi,jj_lo:jj_hi)
+     &            => buf_fc_acj_b
+                fc_adj_a(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_fc_adj_a
+                fc_adj_b(ia_lo:ia_hi,id_lo:id_hi,jj_lo:jj_hi)
+     &            => buf_fc_adj_b
+                fc_acj_a = 0.0d0
+                fc_acj_b = 0.0d0
+                fc_adj_a = 0.0d0
+                fc_adj_b = 0.0d0
+c
+c We need a loop over all ii here
+c Taken care of by the loop over jproc
+                fc_ij_aa(ii_lo:ii_hi,jj_lo:jj_hi)
+     &            => buf_fc_ij_aa
+                fc_ij_ab(ii_lo:ii_hi,jj_lo:jj_hi)
+     &            => buf_fc_ij_ab
+                fc_ij_ba(ii_lo:ii_hi,jj_lo:jj_hi)
+     &            => buf_fc_ij_ba
+                fc_ij_bb(ii_lo:ii_hi,jj_lo:jj_hi)
+     &            => buf_fc_ij_bb
+                fc_ij_aa = 0.0d0
+                fc_ij_ab = 0.0d0
+                fc_ij_ba = 0.0d0
+                fc_ij_bb = 0.0d0
+c               fc_bdj_a = 0.0d0
+c               fc_bdj_b = 0.0d0
+c
+                do jj = jj_lo, jj_hi
+                  do id = id_lo, id_hi
+                    do ib = ib_lo, ib_hi
+                      do ic = ic_lo, ic_hi
+                        do ia = ia_lo, ia_hi
+                          fc_acj_a(ia,ic,jj) = fc_acj_a(ia,ic,jj)
+     &                    + eri(ia,ic,ib,id)*N_bi_a(ib,jj)*N_di_a(id,jj)
+                          fc_acj_b(ia,ic,jj) = fc_acj_b(ia,ic,jj)
+     &                    + eri(ia,ic,ib,id)*N_bi_b(ib,jj)*N_di_b(id,jj)
+                          fc_adj_a(ia,id,jj) = fc_adj_a(ia,id,jj)
+     &                    + eri(ia,ic,ib,id)*N_bi_a(ib,jj)*N_ci_a(ic,jj)
+                          fc_adj_b(ia,id,jj) = fc_adj_b(ia,id,jj)
+     &                    + eri(ia,ic,ib,id)*N_bi_b(ib,jj)*N_ci_b(ic,jj)
+                        enddo ! ia
+                      enddo ! ic
+                    enddo ! ib
+                  enddo ! id
+                enddo ! jj
+c
+                do jj = jj_lo, jj_hi
+                  do ii = ii_lo, ii_hi
+                    do ic = ic_lo, ic_hi
+                      do ia = ia_lo, ia_hi
+                        fc_ij_aa(ii,jj) = fc_ij_aa(ii,jj)
+     &                  + fc_acj_a(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+                        fc_ij_ab(ii,jj) = fc_ij_ab(ii,jj)
+     &                  + fc_acj_b(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+                        fc_ij_ba(ii,jj) = fc_ij_ba(ii,jj)
+     &                  + fc_acj_a(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+                        fc_ij_bb(ii,jj) = fc_ij_bb(ii,jj)
+     &                  + fc_acj_b(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+                      enddo ! ia
+                    enddo ! ic
+c We need to compute all ii and jj
+c Taken care of by the loop over jproc
+                    do id = id_lo, id_hi
+                      do ia = ia_lo, ia_hi
+                        fc_ij_aa(ii,jj) = fc_ij_aa(ii,jj)
+     &                  - fc_adj_a(ia,id,jj)*N_ai_a(ia,ii)*N_di_a(id,ii)
+!                       fc_ij_ab(ii,jj) = fc_ij_ab(ii,jj) !hvd
+!    &                  - fc_adj_b(ia,id,jj)*N_ai_a(ia,ii)*N_di_a(id,ii)
+!                       fc_ij_ba(ii,jj) = fc_ij_ba(ii,jj)
+!    &                  - fc_adj_a(ia,id,jj)*N_ai_b(ia,ii)*N_di_b(id,ii)
+                        fc_ij_bb(ii,jj) = fc_ij_bb(ii,jj)
+     &                  - fc_adj_b(ia,id,jj)*N_ai_b(ia,ii)*N_di_b(id,ii)
+                      enddo ! ia
+                    enddo ! id
+                  enddo ! ii
+                enddo ! jj
+c
+c               All non-exchange derivative terms (the derivatives
+c               of the exchange occupation numbers are dealt with
+c               towards the end of the subroutine
+c
+c               1. Terms differentiated occupation numbers in
+c                  position ii
+c                  Alpha result:
+c                  1.1 occ_a(ii)*occ_a(jj)
+c                  1.2 occ_a(ii)*occ_b(jj)
+c                  Beta result:
+c                  1.3 occ_b(ii)*occ_a(jj)
+c                  1.4 occ_b(ii)*occ_b(jj)
+c               2. Term differentiated entropy in position ii
+c                  Alpha result:
+c                  2.1 x_aa(ii,jj)+occ_a(ii)*occ_a(jj)
+c                  2.2 occ_a(ii)*occ_b(jj)
+c                  Beta result:
+c                  2.3 occ_b(ii)*occ_a(jj)
+c                  2.4 x_bb(ii,jj)+occ_b(ii)*occ_b(jj)
+c
+                do jj = jj_lo, jj_hi
+                  do ii = ii_lo, ii_hi
+                    call wfn1_entropy2_aa(
+     &                   occ_a(ii),occ_a(jj),
+     &                   x_aa(ii,jj)+occ_a(ii)*occ_a(jj),
+     &                   saaij,dsaaij_i,dsaaij_j,dsaaij_ij)
+                    sabij    = 0.0d0
+                    sbaij    = 0.0d0
+                    dsabij_i = 0.0d0
+                    dsabij_j = 0.0d0
+                    dsbaij_i = 0.0d0
+                    dsbaij_j = 0.0d0
+c                   if (ii.eq.jj) then
+                      call wfn1_entropy2_ab(ii,jj,occ_a(ii),occ_b(jj),
+     &                                      sabij,
+     &                                      dsabij_i,dsabij_j)
+                      call wfn1_entropy2_ab(jj,ii,occ_b(ii),occ_a(jj),
+     &                                      sbaij,
+     &                                      dsbaij_i,dsbaij_j)
+c                   endif
+                    call wfn1_entropy2_aa(
+     &                   occ_b(ii),occ_b(jj),
+     &                   x_bb(ii,jj)+occ_b(ii)*occ_b(jj),
+     &                   sbbij,dsbbij_i,dsbbij_j,dsbbij_ij)
+                    v_dc_a(ii) = v_dc_a(ii)
+!                   1.1 occ_a(ii)*occ_a(jj)
+c    &              + 0.25d0*(1.0d0-saaij)*occ_a(jj)*fc_ij_aa(ii,jj)
+     &              + 1.00d0*(-saaij)*occ_a(jj)*fc_ij_aa(ii,jj)
+!                   1.2 occ_a(ii)*occ_b(jj)
+c    &              + 0.25d0*(1.0d0-sabij)*occ_b(jj)*fc_ij_ab(ii,jj)
+     &              + 1.00d0*(-sabij)*occ_b(jj)*fc_ij_ab(ii,jj)
+                    v_dc_b(ii) = v_dc_b(ii)
+!                   1.3 occ_b(ii)*occ_a(jj)
+c    &              + 0.25d0*(1.0d0-sbaij)*occ_a(jj)*fc_ij_ba(ii,jj)
+     &              + 1.00d0*(-sbaij)*occ_a(jj)*fc_ij_ba(ii,jj)
+!                   1.4 occ_b(ii)*occ_b(jj)
+c    &              + 0.25d0*(1.0d0-sbbij)*occ_b(jj)*fc_ij_bb(ii,jj)
+     &              + 1.00d0*(-sbbij)*occ_b(jj)*fc_ij_bb(ii,jj)
+                    v_dc_a(ii) = v_dc_a(ii)
+!                   2.1 x_aa(ii,jj)+occ_a(ii)*occ_a(jj)
+     &              - 1.0d0*(dsaaij_i+dsaaij_ij*occ_a(jj))*
+     &                (x_aa(ii,jj)+occ_a(ii)*occ_a(jj))*
+     &                fc_ij_aa(ii,jj)
+!                   2.2 occ_a(ii)*occ_b(jj)
+     &              - 1.0d0*dsabij_i*occ_a(ii)*occ_b(jj)*fc_ij_ab(ii,jj)
+                    v_dc_b(ii) = v_dc_b(ii)
+!                   2.3 occ_b(ii)*occ_a(jj)
+     &              - 1.0d0*dsbaij_i*occ_b(ii)*occ_a(jj)*fc_ij_ba(ii,jj)
+!                   2.4 x_bb(ii,jj)+occ_b(ii)*occ_b(jj)
+     &              - 1.0d0*(dsbbij_i+dsbbij_ij*occ_b(jj))*
+     &                (x_bb(ii,jj)+occ_b(ii)*occ_b(jj))*
+     &                fc_ij_bb(ii,jj)
+c
+                    v_dp_a(ii) = v_dp_a(ii)
+!                   1.1 occ_a(ii)*occ_a(jj)
+c    &              + 0.25d0*(1.0d0-saaij)*occ_a(jj)*fc_ij_aa(ii,jj)
+     &              + 1.00d0*occ_a(jj)*fc_ij_aa(ii,jj)
+!                   1.2 occ_a(ii)*occ_b(jj)
+c    &              + 0.25d0*(1.0d0-sabij)*occ_b(jj)*fc_ij_ab(ii,jj)
+     &              + 1.00d0*occ_b(jj)*fc_ij_ab(ii,jj)
+                    v_dp_b(ii) = v_dp_b(ii)
+!                   1.3 occ_b(ii)*occ_a(jj)
+c    &              + 0.25d0*(1.0d0-sbaij)*occ_a(jj)*fc_ij_ba(ii,jj)
+     &              + 1.00d0*occ_a(jj)*fc_ij_ba(ii,jj)
+!                   1.4 occ_b(ii)*occ_b(jj)
+c    &              + 0.25d0*(1.0d0-sbbij)*occ_b(jj)*fc_ij_bb(ii,jj)
+     &              + 1.00d0*occ_b(jj)*fc_ij_bb(ii,jj)
+                  enddo ! ii
+                enddo ! jj
+cDEBUG
+c               fc_ij_a = 0.5d0*fc_ij_a
+c               fc_ij_b = 0.5d0*fc_ij_b
+cDEBUG
+c
+                call ga_acc(wfn1_deriv%g_dca,ii_lo,ii_hi,jj_lo,jj_hi,
+     &                      fc_ij_aa,ni,1.0d0)
+                call ga_acc(wfn1_deriv%g_dcb,ii_lo,ii_hi,jj_lo,jj_hi,
+     &                      fc_ij_bb,ni,1.0d0)
+c
+                call ga_acc(wfn1_part_drv%g_dca,ii_lo,ii_hi,jj_lo,jj_hi,
+     &                      fc_ij_aa,ni,1.0d0)
+                call ga_acc(wfn1_part_drv%g_dcb,ii_lo,ii_hi,jj_lo,jj_hi,
+     &                      fc_ij_bb,ni,1.0d0)
+c
               enddo ! jproc
 c
-c             Add the 2-electron energy
+c             Add the 2-electron energy terms
 c
-              E_2el = E_2el + 0.5d0*ddot(na*nb*nc*nd,eri,1,den,1)
-              E_2el_hf = E_2el_hf+0.5d0*ddot(na*nb*nc*nd,eri,1,den_hf,1)
+              E_2el     = E_2el     + ddot(na*nb*nc*nd,eri,1,rdm2,1)
+              E_2el_chf = E_2el_chf + ddot(na*nb*nc*nd,eri,1,rdm2_chf,1)
 c
             enddo ! la
-          enddo ! lb
-        enddo ! lc
+          enddo ! lc
+        enddo ! lb
       enddo ! ld
 c
-c     Clean up memory
-c     ---------------
+c     At this point g_dca and g_dcb contain exchange part of the 
+c     2-electron occupation numbers. We have not taken into account
+c     the derivatives of the 2-electron exchange occupation numbers.
+c     Those factor are introduced here.
 c
-      deallocate(buffna,   buffnb)
-      deallocate(buffnad,  buffnbd)
-      deallocate(buffnac,  buffnbc)
-      deallocate(buffnab,  buffnbb)
-      deallocate(buffnaa,  buffnba)
-c
-      deallocate(bufx3aac, bufx3bac)
-      deallocate(bufx3aad, bufx3bad)
-      deallocate(bufx3abc, bufx3bbc)
-      deallocate(bufx3abd, bufx3bbd)
-c
-      deallocate(buf3aac,  buf3bac)
-      deallocate(buf3aad,  buf3bad)
-      deallocate(buf3abc,  buf3bbc)
-      deallocate(buf3abd,  buf3bbd)
-c     deallocate(bufxbda,  bufxbdb)
-c
-      deallocate(bufbda,   bufbdb)
-      deallocate(bufbca,   bufbcb)
-      deallocate(bufada,   bufadb)
-      deallocate(bufaca,   bufacb)
-c
-      deallocate(bufxija,  bufxijb)
-      deallocate(bufija,   bufijb)
-c
-      deallocate(bufcb,    bufdb)
-      deallocate(bufab,    bufbb)
-      deallocate(bufca,    bufda)
-      deallocate(bufaa,    bufba)
-c
-      deallocate(buf,      buf2, buf_hf, scr)
-c     deallocate(ocxa,     ocxb)
-      deallocate(occa,     occb)
-c
-c     Global sums
-c     -----------
+c     It is assumed that the data distribution of the correlation 
+c     function Fock matrices and the exchange occupation number 
+c     derivatives are the same.
 c
       call ga_sync()
-      call ga_dgop(msg_null,E_2el,1,'+')
+c
+c     do alpha-alpha-spin
+c
+      call ga_distribution(wfn1_deriv%g_dca,iproc,if_lo,if_hi,
+     &                     jf_lo,jf_hi)
+      call ga_distribution(wfn1_part_drv%g_dca,iproc,ip_lo,ip_hi,
+     &                     jp_lo,jp_hi)
+      call ga_distribution(g_dx_aa,iproc,ix_lo,ix_hi,jx_lo,jx_hi)
+      ok_dist =             if_lo.eq.ip_lo.and.if_hi.eq.ip_hi
+      ok_dist = ok_dist.and.jf_lo.eq.jp_lo.and.jf_hi.eq.jp_hi
+      ok_dist = ok_dist.and.if_lo.eq.ix_lo.and.if_hi.eq.ix_hi
+      ok_dist = ok_dist.and.jf_lo.eq.jx_lo.and.jf_hi.eq.jx_hi
+      if (.not.ok_dist) then
+        call errquit("Wfn1_e_g_2el: Data distribution mismatch",0,UERR)
+      endif
+      call ga_access(wfn1_deriv%g_dca,if_lo,if_hi,jf_lo,jf_hi,idxf,ldf)
+      call ga_access(wfn1_part_drv%g_dca,ip_lo,ip_hi,jp_lo,jp_hi,
+     &               idxp,ldp)
+      call ga_access(g_dx_aa,ix_lo,ix_hi,jx_lo,jx_hi,idxx,ldx)
+      do jj=0,jf_hi-jf_lo
+        do ii=0,if_hi-if_lo
+          call wfn1_entropy2_aa(occ_a(ii),occ_a(jj),
+     &                          x_aa(ii,jj)+occ_a(ii)*occ_a(jj),saaij,
+     &                          dsaaij_i,dsaaij_j,dsaaij_ij)
+          dbl_mb(idxf+ii+jj*ldf) = dbl_mb(idxf+ii+jj*ldf)
+     &                           * ((     -saaij)-dsaaij_ij)
+     &                           * dbl_mb(idxx+ii+jj*ldx)
+          dbl_mb(idxp+ii+jj*ldp) = dbl_mb(idxp+ii+jj*ldp)
+     &                           * ((1.0d0      )          )
+     &                           * dbl_mb(idxx+ii+jj*ldx)
+        enddo
+      enddo
+c
+c     do beta-beta-spin
+c
+      call ga_distribution(wfn1_deriv%g_dcb,iproc,if_lo,if_hi,
+     &                     jf_lo,jf_hi)
+      call ga_distribution(wfn1_part_drv%g_dcb,iproc,ip_lo,ip_hi,
+     &                     jp_lo,jp_hi)
+      call ga_distribution(g_dx_bb,iproc,ix_lo,ix_hi,jx_lo,jx_hi)
+      ok_dist =             if_lo.eq.ip_lo.and.if_hi.eq.ip_hi
+      ok_dist = ok_dist.and.jf_lo.eq.jp_lo.and.jf_hi.eq.jp_hi
+      ok_dist = ok_dist.and.if_lo.eq.ix_lo.and.if_hi.eq.ix_hi
+      ok_dist = ok_dist.and.jf_lo.eq.jx_lo.and.jf_hi.eq.jx_hi
+      if (.not.ok_dist) then
+        call errquit("Wfn1_e_g_2el: Data distribution mismatch",0,UERR)
+      endif
+      call ga_access(wfn1_deriv%g_dcb,if_lo,if_hi,jf_lo,jf_hi,idxf,ldf)
+      call ga_access(wfn1_part_drv%g_dcb,ip_lo,ip_hi,jp_lo,jp_hi,
+     &               idxp,ldp)
+      call ga_access(g_dx_bb,ix_lo,ix_hi,jx_lo,jx_hi,idxx,ldx)
+      do jj=0,jf_hi-jf_lo
+        do ii=0,if_hi-if_lo
+          call wfn1_entropy2_aa(occ_b(ii),occ_b(jj),
+     &                          x_bb(ii,jj)+occ_b(ii)*occ_b(jj),sbbij,
+     &                          dsbbij_i,dsbbij_j,dsbbij_ij)
+          dbl_mb(idxf+ii+jj*ldf) = dbl_mb(idxf+ii+jj*ldf)
+     &                           * ((     -sbbij)-dsbbij_ij)
+     &                           * dbl_mb(idxx+ii+jj*ldx)
+          dbl_mb(idxp+ii+jj*ldp) = dbl_mb(idxp+ii+jj*ldp)
+     &                           * ((1.0d0      )          )
+     &                           * dbl_mb(idxx+ii+jj*ldx)
+        enddo
+      enddo
+c
+      E_2el     = 0.5d0*E_2el
+      E_2el_chf = 0.5d0*E_2el_chf
+c
+      call ga_dgop(1300,E_2el,1,"+")
+      call ga_dgop(1301,E_2el_chf,1,"+")
+cDEBUG
+c     write(*,*)'HVD: ac_aa_mx = ',ac_aa_mx
+c     write(*,*)'HVD: ac_ab_mx = ',ac_ab_mx
+c     write(*,*)'HVD: ac_ba_mx = ',ac_ba_mx
+c     write(*,*)'HVD: ac_bb_mx = ',ac_bb_mx
+c     write(*,*)'HVD: ad_aa_mx = ',ad_aa_mx
+c     write(*,*)'HVD: ad_ab_mx = ',ad_ab_mx
+c     write(*,*)'HVD: ad_ba_mx = ',ad_ba_mx
+c     write(*,*)'HVD: ad_bb_mx = ',ad_bb_mx
+cDEBUG
+c
+#ifdef TEST_RDMS
+      flush(6)
+c     gaa = 0.25d0*gaa
+      call wfn1_test_rdms(wfn1_param,wfn1_mat,da,db,gaa,gab,gbb,
+     &                    1.0d-7)
+#endif
+c
+c     fc_bcj_a(0:0,0:0,0:0) => dummy
+c     fc_bcj_b(0:0,0:0,0:0) => dummy
+c     fc_bdj_a(0:0,0:0,0:0) => dummy
+c     fc_bdj_b(0:0,0:0,0:0) => dummy
+c     fn_ij_a(0:0,0:0) => dummy
+c     fn_ij_b(0:0,0:0) => dummy
+c     fn_bj_a(0:0,0:0) => dummy
+c     fn_bj_b(0:0,0:0) => dummy
+c     fn_ic_a(0:0,0:0) => dummy
+c     fn_ic_b(0:0,0:0) => dummy
+c     fn_id_a(0:0,0:0) => dummy
+c     fn_id_b(0:0,0:0) => dummy
+c
+      deallocate(buf_fc_acj_a,buf_fc_acj_b)
+      deallocate(buf_fc_adj_a,buf_fc_adj_b)
+      deallocate(buf_fc_ij_aa,buf_fc_ij_bb)
+      deallocate(buf_fc_ij_ab,buf_fc_ij_ba)
+c
+      deallocate(buf_fns_ij_a,buf_fns_ij_b)
+      deallocate(buf_fns_bj_a,buf_fns_bj_b)
+      deallocate(buf_fns_ic_a,buf_fns_ic_b)
+      deallocate(buf_fns_id_a,buf_fns_id_b)
+      deallocate(buf_fns_bcj_a,buf_fns_bcj_b)
+      deallocate(buf_fns_bdj_a,buf_fns_bdj_b)
+      deallocate(buf_fns_ac_a,buf_fns_ac_b)
+      deallocate(buf_fns_ad_a,buf_fns_ad_b)
+c
+      deallocate(buf_fn_ij_a,buf_fn_ij_b)
+      deallocate(buf_fn_bj_a,buf_fn_bj_b)
+      deallocate(buf_fn_ic_a,buf_fn_ic_b)
+      deallocate(buf_fn_id_a,buf_fn_id_b)
+      deallocate(buf_fn_bcj_a,buf_fn_bcj_b)
+      deallocate(buf_fn_bdj_a,buf_fn_bdj_b)
+      deallocate(buf_fn_ac_a,buf_fn_ac_b)
+      deallocate(buf_fn_ad_a,buf_fn_ad_b)
+c
+      deallocate(buf_dx_aa,buf_dx_bb)
+      deallocate(buf_x_aa, buf_x_bb)
+cDEBUG
+c     deallocate(buf_d_aa)
+cDEBUG
+c
+      deallocate(buf_rdm1_bc_a,buf_rdm1_bc_b)
+      deallocate(buf_rdm1_ad_a,buf_rdm1_ad_b)
+c
+      deallocate(buf_rdm1_bd_a,buf_rdm1_bd_b)
+      deallocate(buf_rdm1_ac_a,buf_rdm1_ac_b)
+c
+      deallocate(buf_N_di_a,buf_N_di_b)
+      deallocate(buf_N_ci_a,buf_N_ci_b)
+      deallocate(buf_N_bi_a,buf_N_bi_b)
+      deallocate(buf_N_ai_a,buf_N_ai_b)
+c
+      deallocate(buf_rdm2_d_acj_a,buf_rdm2_d_acj_b)
+      deallocate(buf_rdm2_d_adj_a,buf_rdm2_d_adj_b)
+c
+      deallocate(buf_rdm2s_acj_aa,buf_rdm2s_acj_bb)
+      deallocate(buf_rdm2s_acj_ab,buf_rdm2s_acj_ba)
+      deallocate(buf_rdm2s_adj_aa,buf_rdm2s_adj_bb)
+      deallocate(buf_rdm2s_adj_ab,buf_rdm2s_adj_ba)
+c
+      deallocate(buf_rdm2_acj_aa,buf_rdm2_acj_bb)
+      deallocate(buf_rdm2_acj_ab,buf_rdm2_acj_ba)
+      deallocate(buf_rdm2_adj_aa,buf_rdm2_adj_bb)
+      deallocate(buf_rdm2_adj_ab,buf_rdm2_adj_ba)
+c
+      deallocate(buf_eri,buf_rdm2,buf_rdm2_chf)
+      deallocate(scr)
+      deallocate(occ_a,occ_b)
+#ifdef TEST_RDMS
+      deallocate(da,db)
+      deallocate(gaa,gab,gbb)
+#endif
 c
       end subroutine wfn1_e_g_2el_s
+!>
+!> @}
 c
 c-----------------------------------------------------------------------

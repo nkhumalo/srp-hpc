@@ -87,8 +87,16 @@ c
       allocate(vi(islo:ishi,nbf))
       allocate(vj(jslo:jshi,nbf))
       allocate(s12(islo:ishi,jslo:jshi))
-      call ga_get(g_v,islo,ishi,1,nbf,vi,ishi-islo+1)
-      call ga_get(g_v,jslo,jshi,1,nbf,vj,jshi-jslo+1)
+      if (ishi.ge.islo) then
+        call ga_get(g_v,islo,ishi,1,nbf,vi,ishi-islo+1)
+      else
+c       This rank holds no part of g_s12
+      endif
+      if (jshi.ge.jslo) then
+        call ga_get(g_v,jslo,jshi,1,nbf,vj,jshi-jslo+1)
+      else
+c       This rank holds no part of g_s12
+      endif
       s12 = 0.0d0
       do kk = 1, nbf
         do jj = jslo, jshi
@@ -98,13 +106,21 @@ c
           enddo ! ii
         enddo ! jj
       enddo ! kk
-      call ga_put(g_s12,islo,ishi,jslo,jshi,s12,ishi-islo+1)
+      if (ishi.ge.islo.and.jshi.ge.jslo) then
+        call ga_put(g_s12,islo,ishi,jslo,jshi,s12,ishi-islo+1)
+      else
+c       This rank holds no part of g_s12
+      endif
       deallocate(vi,vj,s12)
 c
 c     scale eigenvectors to obtain S^{-1/2}
 c
       call ga_distribution(g_v,iproc,ilo,ihi,jlo,jhi)
-      call ga_access(g_v,ilo,ihi,jlo,jhi,k_v,ldv)
+      if (ihi.ge.ilo.and.jhi.ge.jlo) then
+        call ga_access(g_v,ilo,ihi,jlo,jhi,k_v,ldv)
+      else
+c       This rank holds no part of g_v
+      endif
       do jj = 0, jhi-jlo
         dnrm = 1.0d0/sqrt(eigval(jlo+jj))
         do ii = 0, ihi-ilo

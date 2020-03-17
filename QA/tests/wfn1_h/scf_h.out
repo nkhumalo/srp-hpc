@@ -10,7 +10,7 @@ geometry
   h 0 0 0
 end
 basis
-  * library 6-31g*
+  * library 6-31g**
 end
 
 dft
@@ -38,7 +38,7 @@ task dft energy
                                          
 
 
-              Northwest Computational Chemistry Package (NWChem) 6.6
+              Northwest Computational Chemistry Package (NWChem) 6.8
               ------------------------------------------------------
 
 
@@ -71,15 +71,16 @@ task dft energy
            Job information
            ---------------
 
-    hostname        = ldc-153112.home
-    program         = ../../../bin/MACX64/nwchem
-    date            = Fri Jan  6 23:13:35 2017
+    hostname        = erato
+    program         = ../../../bin/LINUX64/nwchem
+    date            = Sat May  5 00:01:22 2018
 
-    compiled        = Thu_Jan_05_23:21:47_2017
-    source          = /Users/vandam/nwchem-wfn1-dev
+    compiled        = Wed_May_02_15:29:17_2018
+    source          = /home/hvandam/nwchem-1-wfn1
     nwchem branch   = Development
-    nwchem revision = 28658
-    ga revision     = 10724
+    nwchem revision = nwchem_on_git-51-gcccac83fc2a4226c5c513281d68ab773edcb0a0d
+    ga revision     = nwchem_on_git-43-g1da910a
+    use scalapack   = F
     input           = scf_h.nw
     prefix          = wfn1_h_dat.
     data base       = ./wfn1_h_dat.db
@@ -92,10 +93,10 @@ task dft energy
            Memory information
            ------------------
 
-    heap     =   13107196 doubles =    100.0 Mbytes
-    stack    =   13107201 doubles =    100.0 Mbytes
+    heap     =   13107198 doubles =    100.0 Mbytes
+    stack    =   13107195 doubles =    100.0 Mbytes
     global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
-    total    =   52428797 doubles =    400.0 Mbytes
+    total    =   52428793 doubles =    400.0 Mbytes
     verify   = yes
     hardfail = no 
 
@@ -155,7 +156,7 @@ task dft energy
  ------------------------------------------------------------------------------
        Tag                 Description            Shells   Functions and Types
  ---------------- ------------------------------  ------  ---------------------
- *                           6-31g*                   on all atoms 
+ *                          6-31g**                   on all atoms 
 
 
   xc_inp: hfexch multiplicative factor not found.
@@ -176,14 +177,7 @@ task dft energy
 
   2 S  1.61277800E-01  1.000000
 
-
-
- Summary of "ao basis" -> "ao basis" (cartesian)
- ------------------------------------------------------------------------------
-       Tag                 Description            Shells   Functions and Types
- ---------------- ------------------------------  ------  ---------------------
- h                           6-31g*                  2        2   2s
-
+  3 P  1.10000000E+00  1.000000
 
 
 
@@ -191,7 +185,16 @@ task dft energy
  ------------------------------------------------------------------------------
        Tag                 Description            Shells   Functions and Types
  ---------------- ------------------------------  ------  ---------------------
- h                           6-31g*                  2        2   2s
+ h                          6-31g**                  3        5   2s1p
+
+
+
+
+ Summary of "ao basis" -> "ao basis" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ h                          6-31g**                  3        5   2s1p
 
 
   Caching 1-el integrals 
@@ -208,8 +211,8 @@ task dft energy
           Spin multiplicity:     2
           Use of symmetry is: off; symmetry adaption is: off
           Maximum number of iterations:  30
-          AO basis - number of functions:     2
-                     number of shells:     2
+          AO basis - number of functions:     5
+                     number of shells:     3
           Convergence on energy requested:  1.00D-06
           Convergence on density requested:  1.00D-05
           Convergence on gradient requested:  5.00D-04
@@ -257,29 +260,28 @@ task dft energy
  HOMO         =      -0.498233
  LUMO         =       0.460935
 
-   Time after variat. SCF:      0.4
-   Time prior to 1st pass:      0.4
+   Time after variat. SCF:      1.1
+   Time prior to 1st pass:      1.1
 
- #quartets = 6.000D+00 #integrals = 6.000D+00 #direct =  0.0% #cached =100.0%
+ #quartets = 2.100D+01 #integrals = 4.500D+01 #direct =  0.0% #cached =100.0%
 
 
  Integral file          = ./wfn1_h_dat.aoints.0
- Record size in doubles =  65536        No. of integs per rec  =  43688
- Max. records in memory =      2        Max. records in file   =  46821
- No. of bits per label  =      8        No. of bits per value  =     64
+ Record size in doubles =    65536    No. of integs per rec  =    43688
+ Max. records in memory =        2    Max. records in file   =  4251448
+ No. of bits per label  =        8    No. of bits per value  =       64
 
 
            Memory utilization after 1st SCF pass: 
-           Heap Space remaining (MW):       12.98            12975588
-          Stack Space remaining (MW):       13.11            13107068
+           Heap Space remaining (MW):       12.98            12975494
+          Stack Space remaining (MW):       13.11            13107028
 
    convergence    iter        energy       DeltaE   RMS-Dens  Diis-err    time
  ---------------- ----- ----------------- --------- --------- ---------  ------
- d= 0,ls=0.0,diis     1     -0.4982329107 -4.98D-01  1.50D-16  6.16D-33     0.4
+ d= 0,ls=0.0,diis     1     -0.4982329107 -4.98D-01  1.45D-16  1.22D-31     1.1
                                                      0.00D+00  0.00D+00
   Singularity in Pulay matrix. Error and Fock matrices removed. 
-  Resetting Diis
- d= 0,ls=0.0,diis     2     -0.4982329107  1.67D-16  8.40D-16  1.54D-33     0.4
+ d= 0,ls=0.0,diis     2     -0.4982329107  5.55D-16  1.94D-16  6.58D-32     1.2
                                                      0.00D+00  0.00D+00
 
 
@@ -299,41 +301,77 @@ task dft energy
                     ------------------------------------------
 
  Vector    1  Occ=1.000000D+00  E=-4.982329D-01
-              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 8.0D-01
+              MO Center=  0.0D+00,  0.0D+00,  9.8D-18, r^2= 8.0D-01
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      2      0.665449  1 H  s                  1      0.427430  1 H  s          
 
  Vector    2  Occ=0.000000D+00  E= 9.161928D-01
-              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 1.2D+00
+              MO Center=  0.0D+00,  0.0D+00,  2.1D-17, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      1      1.257798  1 H  s                  2     -1.149752  1 H  s          
+
+ Vector    3  Occ=0.000000D+00  E= 2.230899D+00
+              MO Center=  0.0D+00,  0.0D+00, -3.1D-17, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     5      1.000000  1 H  pz         
+
+ Vector    4  Occ=0.000000D+00  E= 2.230899D+00
+              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     4      1.000000  1 H  py         
+
+ Vector    5  Occ=0.000000D+00  E= 2.230899D+00
+              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     3      1.000000  1 H  px         
 
 
                      DFT Final Beta Molecular Orbital Analysis
                      -----------------------------------------
 
  Vector    1  Occ=0.000000D+00  E=-4.982329D-01
-              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 8.0D-01
+              MO Center=  0.0D+00,  0.0D+00, -1.1D-33, r^2= 8.0D-01
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      2      0.665449  1 H  s                  1      0.427430  1 H  s          
 
  Vector    2  Occ=0.000000D+00  E= 4.609347D-01
-              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 1.2D+00
+              MO Center=  0.0D+00,  0.0D+00, -1.2D-17, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      1      1.257798  1 H  s                  2     -1.149752  1 H  s          
+
+ Vector    3  Occ=0.000000D+00  E= 1.634229D+00
+              MO Center=  0.0D+00,  0.0D+00,  2.0D-17, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     5      1.000000  1 H  pz         
+
+ Vector    4  Occ=0.000000D+00  E= 1.634229D+00
+              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     4      1.000000  1 H  py         
+
+ Vector    5  Occ=0.000000D+00  E= 1.634229D+00
+              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     3      1.000000  1 H  px         
 
 
    alpha - beta orbital overlaps 
    ----------------------------- 
 
 
-   alpha      1      2
-    beta      1      2
- overlap   1.000  1.000
+   alpha      1      2      3      4      5
+    beta      1      2      3      4      5
+ overlap   1.000  1.000  1.000  1.000  1.000
 
      --------------------------
      Expectation value of S2:  
@@ -344,7 +382,7 @@ task dft energy
  Parallel integral file used       1 records with       0 large values
 
 
- Task  times  cpu:        0.3s     wall:        0.3s
+ Task  times  cpu:        0.0s     wall:        0.4s
 
 
                                 NWChem Input Module
@@ -363,7 +401,7 @@ task dft energy
  ------------------------------------------------------------------------------
        Tag                 Description            Shells   Functions and Types
  ---------------- ------------------------------  ------  ---------------------
- h                           6-31g*                  2        2   2s
+ h                          6-31g**                  3        5   2s1p
 
 
   Caching 1-el integrals 
@@ -380,8 +418,8 @@ task dft energy
           Spin multiplicity:     2
           Use of symmetry is: off; symmetry adaption is: off
           Maximum number of iterations:  50
-          AO basis - number of functions:     2
-                     number of shells:     2
+          AO basis - number of functions:     5
+                     number of shells:     3
           Convergence on energy requested:  1.00D-06
           Convergence on density requested:  1.00D-05
           Convergence on gradient requested:  5.00D-04
@@ -419,123 +457,162 @@ task dft energy
 
 
 
-   Time after variat. SCF:      0.5
- sigma=  0.15D+01 eFermi=  0.00000 T*S= -1.43E+00 nel(1)=    1.00 nel(2)=    0.00
+   Time after variat. SCF:      1.2
+ sigma=  0.15D+01 eFermi=  0.00000 T*S= -1.96E+00 nel(1)=    1.00 nel(2)=    0.00
 
-   Time prior to 1st pass:      0.5
+   Time prior to 1st pass:      1.2
 
- #quartets = 6.000D+00 #integrals = 6.000D+00 #direct =  0.0% #cached =100.0%
+ #quartets = 2.100D+01 #integrals = 4.500D+01 #direct =  0.0% #cached =100.0%
 
 
  Integral file          = ./wfn1_h_dat.aoints.0
- Record size in doubles =  65536        No. of integs per rec  =  43688
- Max. records in memory =      2        Max. records in file   =  46821
- No. of bits per label  =      8        No. of bits per value  =     64
+ Record size in doubles =    65536    No. of integs per rec  =    43688
+ Max. records in memory =        2    Max. records in file   =  4251452
+ No. of bits per label  =        8    No. of bits per value  =       64
 
- sigma=  0.15D+01 eFermi=  0.20898 T*S= -6.78E-01 nel(1)=    1.00 nel(2)=    0.00
+ sigma=  0.15D+01 eFermi=  0.09837 T*S= -8.44E-01 nel(1)=    1.00 nel(2)=    0.00
 
-  Resetting Diis
 
            Memory utilization after 1st SCF pass: 
-           Heap Space remaining (MW):       12.98            12975668
-          Stack Space remaining (MW):       13.11            13107036
+           Heap Space remaining (MW):       12.98            12975494
+          Stack Space remaining (MW):       13.11            13106980
 
    convergence    iter        energy       DeltaE   RMS-Dens  Diis-err    time
  ---------------- ----- ----------------- --------- --------- ---------  ------
- d= 0,ls=0.0,diis     1     -1.1758392896 -1.18D+00  3.73D-01  1.39D-30     0.6
+ d= 0,ls=0.0,diis     1     -1.3419898124 -1.34D+00  1.32D-01  1.89D-31     1.2
                                                      0.00D+00  0.00D+00
- sigma=  0.15D+01 eFermi=  0.20898 T*S= -7.24E-01 nel(1)=    1.00 nel(2)=    0.00
+ sigma=  0.15D+01 eFermi=  0.09837 T*S= -8.44E-01 nel(1)=    1.00 nel(2)=    0.00
 
- d= 0,ls=0.0,diis     2     -0.8942755175  2.82D-01  5.29D-02  1.58D-30     0.6
-                                                     0.00D+00  0.00D+00
-  Singularity in Pulay matrix. Error and Fock matrices removed. 
- sigma=  0.15D+01 eFermi=  0.20898 T*S= -7.30E-01 nel(1)=    1.00 nel(2)=    0.00
-
- d= 0,ls=0.0,diis     3     -0.8585828122  3.57D-02  7.78D-03  1.58D-30     0.7
+ d= 0,ls=0.0,diis     2     -0.8783498143  4.64D-01  9.93D-16  6.46D-05     1.2
                                                      0.00D+00  0.00D+00
   Singularity in Pulay matrix. Error and Fock matrices removed. 
- sigma=  0.15D+01 eFermi=  0.20898 T*S= -7.31E-01 nel(1)=    1.00 nel(2)=    0.00
+  Singularity in Pulay matrix. Error and Fock matrices removed. 
+ sigma=  0.15D+01 eFermi=  0.12584 T*S= -8.97E-01 nel(1)=    1.00 nel(2)=    0.00
 
- d= 0,ls=0.0,diis     4     -0.8534194292  5.16D-03  1.15D-03  2.00D-30     0.7
+ d= 0,ls=0.0,diis     3     -0.9313978513 -5.30D-02  2.03D-02  6.46D-05     1.2
+                                                     0.00D+00  0.00D+00
+ sigma=  0.15D+01 eFermi=  0.12808 T*S= -9.05E-01 nel(1)=    1.00 nel(2)=    0.00
+
+ d= 0,ls=0.0,diis     4     -0.8913915739  4.00D-02  3.84D-03  2.77D-06     1.2
                                                      0.00D+00  0.00D+00
   Singularity in Pulay matrix. Error and Fock matrices removed. 
- sigma=  0.15D+01 eFermi=  0.20898 T*S= -7.31E-01 nel(1)=    1.00 nel(2)=    0.00
+ sigma=  0.15D+01 eFermi=  0.12784 T*S= -9.05E-01 nel(1)=    1.00 nel(2)=    0.00
 
- d= 0,ls=0.0,diis     5     -0.8526579382  7.61D-04  1.70D-04  1.89D-30     0.7
+ d= 0,ls=0.0,diis     5     -0.8825670907  8.82D-03  2.50D-04  3.01D-09     1.2
                                                      0.00D+00  0.00D+00
   Singularity in Pulay matrix. Error and Fock matrices removed. 
- sigma=  0.15D+01 eFermi=  0.20898 T*S= -7.31E-01 nel(1)=    1.00 nel(2)=    0.00
+ sigma=  0.15D+01 eFermi=  0.12783 T*S= -9.05E-01 nel(1)=    1.00 nel(2)=    0.00
 
- d= 0,ls=0.0,diis     6     -0.8525453136  1.13D-04  2.52D-05  1.78D-30     0.8
+ d= 0,ls=0.0,diis     6     -0.8830716640 -5.05D-04  2.01D-05  1.46D-12     1.2
                                                      0.00D+00  0.00D+00
   Singularity in Pulay matrix. Error and Fock matrices removed. 
- sigma=  0.15D+01 eFermi=  0.20898 T*S= -7.31E-01 nel(1)=    1.00 nel(2)=    0.00
+ sigma=  0.15D+01 eFermi=  0.12782 T*S= -9.05E-01 nel(1)=    1.00 nel(2)=    0.00
 
- d= 0,ls=0.0,diis     7     -0.8525286493  1.67D-05  3.73D-06  1.48D-30     0.8
+ d= 0,ls=0.0,diis     7     -0.8831072867 -3.56D-05  2.02D-06  2.35D-15     1.2
                                                      0.00D+00  0.00D+00
   Singularity in Pulay matrix. Error and Fock matrices removed. 
- sigma=  0.15D+01 eFermi=  0.20898 T*S= -7.31E-01 nel(1)=    1.00 nel(2)=    0.00
+ sigma=  0.15D+01 eFermi=  0.12782 T*S= -9.05E-01 nel(1)=    1.00 nel(2)=    0.00
 
- d= 0,ls=0.0,diis     8     -0.8525261835  2.47D-06  5.52D-07  1.68D-30     0.8
+ d= 0,ls=0.0,diis     8     -0.8831100834 -2.80D-06  4.89D-07  1.00D-16     1.2
                                                      0.00D+00  0.00D+00
   Singularity in Pulay matrix. Error and Fock matrices removed. 
- sigma=  0.15D+01 eFermi=  0.20898 T*S= -7.31E-01 nel(1)=    1.00 nel(2)=    0.00
+  Singularity in Pulay matrix. Error and Fock matrices removed. 
+ sigma=  0.15D+01 eFermi=  0.12782 T*S= -9.05E-01 nel(1)=    1.00 nel(2)=    0.00
 
- d= 0,ls=0.0,diis     9     -0.8525258186  3.65D-07  8.16D-08  1.58D-30     0.9
+ d= 0,ls=0.0,diis     9     -0.8831109849 -9.01D-07  5.43D-09  1.74D-20     1.2
                                                      0.00D+00  0.00D+00
 
 
-         Total DFT energy =       -0.121204161433
-      One electron energy =       -0.215787300311
-           Coulomb energy =        0.311409150809
-    Exchange-Corr. energy =       -0.216826011932
+         Total DFT energy =        0.021487246753
+      One electron energy =       -0.098736477981
+           Coulomb energy =        0.316621840593
+    Exchange-Corr. energy =       -0.196398115859
  Nuclear repulsion energy =        0.000000000000
 
  Numeric. integr. density =        0.000000000000
 
-     Total iterative time =      0.3s
+     Total iterative time =      0.0s
 
 
 
                     DFT Final Alpha Molecular Orbital Analysis
                     ------------------------------------------
 
- Vector    1  Occ=7.055305D-01  E=-3.641733D-01
-              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 8.0D-01
+ Vector    1  Occ=6.697630D-01  E=-3.380797D-01
+              MO Center=  0.0D+00,  0.0D+00,  3.6D-19, r^2= 8.2D-01
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
-     2      0.665449  1 H  s                  1      0.427430  1 H  s          
+     2      0.679985  1 H  s                  1      0.411436  1 H  s          
 
- Vector    2  Occ=2.944695D-01  E= 7.821332D-01
-              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 1.2D+00
+ Vector    2  Occ=2.597684D-01  E= 8.109529D-01
+              MO Center=  0.0D+00,  0.0D+00,  5.0D-18, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
-     1      1.257798  1 H  s                  2     -1.149752  1 H  s          
+     1      1.263120  1 H  s                  2     -1.141216  1 H  s          
+
+ Vector    3  Occ=2.348955D-02  E= 2.234814D+00
+              MO Center=  0.0D+00,  0.0D+00, -1.3D-17, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     5      1.000000  1 H  pz         
+
+ Vector    4  Occ=2.348955D-02  E= 2.234814D+00
+              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     4      1.000000  1 H  py         
+
+ Vector    5  Occ=2.348955D-02  E= 2.234814D+00
+              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     3      1.000000  1 H  px         
 
 
                      DFT Final Beta Molecular Orbital Analysis
                      -----------------------------------------
 
  Vector    1  Occ=0.000000D+00  E=-4.982329D-01
-              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 8.0D-01
+              MO Center= -7.5D-34, -5.1D-34, -1.6D-33, r^2= 8.0D-01
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      2      0.665449  1 H  s                  1      0.427430  1 H  s          
 
  Vector    2  Occ=0.000000D+00  E= 4.609347D-01
-              MO Center=  0.0D+00,  0.0D+00,  0.0D+00, r^2= 1.2D+00
+              MO Center= -7.1D-18,  1.7D-17,  3.3D-19, r^2= 1.2D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
      1      1.257798  1 H  s                  2     -1.149752  1 H  s          
+
+ Vector    3  Occ=0.000000D+00  E= 1.634229D+00
+              MO Center=  1.0D-18,  7.2D-18, -2.3D-18, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     4      0.944448  1 H  py                 5     -0.300925  1 H  pz         
+     3      0.132144  1 H  px         
+
+ Vector    4  Occ=0.000000D+00  E= 1.634229D+00
+              MO Center= -2.6D-18,  7.9D-19,  1.4D-18, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     3      0.854496  1 H  px                 5     -0.448310  1 H  pz         
+     4     -0.262401  1 H  py         
+
+ Vector    5  Occ=0.000000D+00  E= 1.634229D+00
+              MO Center= -1.3D-17, -5.0D-18, -2.1D-17, r^2= 3.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     5      0.841702  1 H  pz                 3      0.502368  1 H  px         
+     4      0.197898  1 H  py         
 
 
    alpha - beta orbital overlaps 
    ----------------------------- 
 
 
-   alpha      1      2
-    beta      1      2
- overlap   1.000  1.000
+   alpha      1      2      3      4      5
+    beta      1      2      5      3      4
+ overlap   1.000  1.000  0.842  0.944  0.854
 
      --------------------------
      Expectation value of S2:  
@@ -546,7 +623,7 @@ task dft energy
  Parallel integral file used       1 records with       0 large values
 
 
- Task  times  cpu:        0.5s     wall:        0.5s
+ Task  times  cpu:        0.0s     wall:        0.1s
 
 
                                 NWChem Input Module
@@ -563,11 +640,11 @@ task dft energy
                          ------------------------------
 
        create   destroy   get      put      acc     scatter   gather  read&inc
-calls:  396      396      938      486      249        0        0      100     
+calls:  356      356     1136      663      249        0        0      100     
 number of processes/call 1.00e+00 1.00e+00 1.00e+00 0.00e+00 0.00e+00
-bytes total:             2.80e+04 1.38e+04 7.97e+03 0.00e+00 0.00e+00 8.00e+02
+bytes total:             1.73e+05 8.58e+04 4.98e+04 0.00e+00 0.00e+00 8.00e+02
 bytes remote:            0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
-Max memory consumed for GA by this process: 2080 bytes
+Max memory consumed for GA by this process: 13000 bytes
 
 MA_summarize_allocated_blocks: starting scan ...
 MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
@@ -579,8 +656,8 @@ MA usage statistics:
 	current number of blocks	         0	         0
 	maximum number of blocks	        19	        25
 	current total bytes		         0	         0
-	maximum total bytes		   1052888	  22509672
-	maximum total K-bytes		      1053	     22510
+	maximum total bytes		   1053640	  22509944
+	maximum total K-bytes		      1054	     22510
 	maximum total M-bytes		         2	        23
 
 
@@ -602,12 +679,12 @@ MA usage statistics:
           E. Apra, E. J. Bylaska, W. A. de Jong, N. Govind, K. Kowalski,
        T. P. Straatsma, M. Valiev, H. J. J. van Dam, D. Wang, T. L. Windus,
         J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec, K. Lopata,
-       S. A. Fischer, S. Krishnamoorthy, W. Ma, M. Klemm, O. Villa, Y. Chen,
-    V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler, V. Konjkov, T. Risthaus,
-       M. Malagoli, A. Marenich, A. Otero-de-la-Roza, J. Mullin, P. Nichols,
-      R. Peverati, J. Pittner, Y. Zhao, P.-D. Fan, A. Fonari, M. Williamson,
-      R. J. Harrison, J. R. Rehr, M. Dupuis, D. Silverstein, D. M. A. Smith,
-            J. Nieplocha, V. Tipparaju, M. Krishnan, B. E. Van Kuiken,
+    S. A. Fischer, S. Krishnamoorthy, M. Jacquelin, W. Ma, M. Klemm, O. Villa,
+      Y. Chen, V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler, V. Konjkov,
+      T. Risthaus, M. Malagoli, A. Marenich, A. Otero-de-la-Roza, J. Mullin,
+        P. Nichols, R. Peverati, J. Pittner, Y. Zhao, P.-D. Fan, A. Fonari,
+       M. Williamson, R. J. Harrison, J. R. Rehr, M. Dupuis, D. Silverstein,
+    D. M. A. Smith, J. Nieplocha, V. Tipparaju, M. Krishnan, B. E. Van Kuiken,
         A. Vazquez-Mayagoitia, L. Jensen, M. Swart, Q. Wu, T. Van Voorhis,
      A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown, G. Cisneros, G. I. Fann,
    H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall, J. A. Nichols, K. Tsemekhman,
@@ -618,4 +695,4 @@ MA usage statistics:
    K. Glaesemann, G. Sandrone, M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe,
                                A. T. Wong, Z. Zhang.
 
- Total times  cpu:        1.0s     wall:        1.0s
+ Total times  cpu:        0.0s     wall:        1.3s

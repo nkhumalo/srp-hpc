@@ -13,7 +13,7 @@ c
 !> \ingroup wfn1_priv
 !> @{
 !>
-!> \brief Test the RDM traces
+!> \brief Test the 1RDM traces
 !>
 !> The 1RDMs are supposed to satisfy 
 !> \f{eqnarray*}{
@@ -22,6 +22,58 @@ c
 !>   n_e^\beta  &=& \tr(D^\beta) \\\\
 !>              &=& \sum_{a,b=1}^{n_b}D^\beta_{ab}S_{ab}
 !> \f}
+!> This subroutine evaluates the relevant traces and checks whether
+!> the results match the required data.
+!>
+      subroutine wfn1_test_rdm_trace1(nbf,nea,s,da,tol)
+      implicit none
+      integer,          intent(in) :: nbf
+      integer,          intent(in) :: nea
+c
+c     Overlap matrix
+c
+      double precision, intent(in) :: s(nbf,nbf)
+c
+c     1RDMs
+c
+      double precision, intent(in) :: da(nbf,nbf)
+c
+      double precision, intent(in) :: tol ! tolerance
+c
+c     Local variables
+c
+      double precision :: tr_da ! trace of alpha 1RDM
+c
+      integer :: ia, ib, ic, id  ! counters over atomic basis functions
+c
+      character*21 pname
+      parameter(pname = "wfn1_test_rdm_trace1")
+c
+c     Code
+c
+c     Calculate tr(da)
+c
+      tr_da = 0.0d0
+      do ib = 1, nbf
+        do ia = 1, nbf
+          tr_da = tr_da + da(ia,ib)*s(ia,ib)
+        enddo
+      enddo
+      if (abs(tr_da-1.0d0*nea).gt.tol) then
+        write(*,*)pname//" tr(da) failed ",nea,tr_da
+      endif
+c
+      end
+!>
+!> @}
+c
+c-----------------------------------------------------------------------
+c
+!> \ingroup wfn1_priv
+!> @{
+!>
+!> \brief Test the 2RDM traces
+!>
 !> The 2RDM consists of 4 different blocks: the \f$\alpha\alpha\f$
 !> block, the \f$\alpha\beta\f$ block, the \f$\beta\alpha\f$ block,
 !> and the \f$\beta\beta\f$ block.
@@ -46,8 +98,7 @@ c
 !> This subroutine evaluates the relevant traces and checks whether
 !> the results match the required data.
 !>
-      subroutine wfn1_test_rdms_trace(wfn1_param,s,da,db,gaa,gab,gbb,
-     &                                tol)
+      subroutine wfn1_test_rdm_trace2(wfn1_param,s,gaa,gab,gbb,tol)
       implicit none
 #include "wfn1_param.fh"
       type(wfn1_prm),   intent(in) :: wfn1_param
@@ -55,11 +106,6 @@ c
 c     Overlap matrix
 c
       double precision, intent(in) :: s(wfn1_param%nbf,wfn1_param%nbf)
-c
-c     1RDMs
-c
-      double precision, intent(in) :: da(wfn1_param%nbf,wfn1_param%nbf)
-      double precision, intent(in) :: db(wfn1_param%nbf,wfn1_param%nbf)
 c
 c     2RDMs
 c
@@ -78,47 +124,20 @@ c
       integer :: nea ! the number of alpha electrons
       integer :: neb ! the number of beta electrons
 c
-      double precision :: tr_da ! trace of alpha 1RDM
-      double precision :: tr_db ! trace of beta 1RDM
-c
       double precision :: tr_gaa ! trace of alpha-alpha 2RDM block
       double precision :: tr_gab ! trace of alpha-beta 2RDM block
       double precision :: tr_gbb ! trace of beta-beta 2RDM block
 c
       integer :: ia, ib, ic, id  ! counters over atomic basis functions
 c
-      character*20 pname
-      parameter(pname = "wfn1_test_rdms_trace")
+      character*21 pname
+      parameter(pname = "wfn1_test_rdm_trace2")
 c
 c     Code
 c
       nbf = wfn1_param%nbf
       nea = wfn1_param%nea
       neb = wfn1_param%neb
-c
-c     Calculate tr(da)
-c
-      tr_da = 0.0d0
-      do ib = 1, nbf
-        do ia = 1, nbf
-          tr_da = tr_da + da(ia,ib)*s(ia,ib)
-        enddo
-      enddo
-      if (abs(tr_da-1.0d0*nea).gt.tol) then
-        write(*,*)pname//" tr(da) failed ",nea,tr_da
-      endif
-c
-c     Calculate tr(db)
-c
-      tr_db = 0.0d0
-      do ib = 1, nbf
-        do ia = 1, nbf
-          tr_db = tr_db + db(ia,ib)*s(ia,ib)
-        enddo
-      enddo
-      if (abs(tr_db-1.0d0*neb).gt.tol) then
-        write(*,*)pname//" tr(db) failed ",neb,tr_db
-      endif
 c
 c     Calculate tr(gaa)
 c
@@ -132,8 +151,8 @@ c
           enddo ! ib
         enddo ! ic
       enddo ! id
-      if (abs(tr_gaa-0.5d0*nea*(nea-1)).gt.tol) then
-        write(*,*)pname//" tr(gaa) failed ",nea*(nea-1)/2,tr_gaa
+      if (abs(tr_gaa-nea*(nea-1)).gt.tol) then
+        write(*,*)pname//" tr(gaa) failed ",nea*(nea-1)/2,tr_gaa/2
       endif
 c
 c     Calculate tr(gab)
@@ -148,8 +167,8 @@ c
           enddo ! ib
         enddo ! ic
       enddo ! id
-      if (abs(tr_gab-0.5d0*nea*neb).gt.tol) then
-        write(*,*)pname//" tr(gab) failed ",nea,neb,tr_gab
+      if (abs(tr_gab-nea*neb).gt.tol) then
+        write(*,*)pname//" tr(gab) failed ",nea,neb,nea*neb,tr_gab
       endif
 c
 c     Calculate tr(gbb)
@@ -164,8 +183,8 @@ c
           enddo ! ib
         enddo ! ic
       enddo ! id
-      if (abs(tr_gbb-0.5d0*neb*(neb-1)).gt.tol) then
-        write(*,*)pname//" tr(gbb) failed ",neb*(neb-1)/2,tr_gbb
+      if (abs(tr_gbb-neb*(neb-1)).gt.tol) then
+        write(*,*)pname//" tr(gbb) failed ",neb*(neb-1)/2,tr_gbb/2
       endif
 c
       end
@@ -177,14 +196,57 @@ c
 !> \ingroup wfn1_priv
 !> @{
 !>
-!> \brief Test the RDM permutation symmetries
+!> \brief Test the 1RDM permutation symmetries
 !>
-!> The 1RDM and the 2RDM have to satisfy certain permutation symmetries.
-!> Here we consider real valued RDMs. In that case the 1RDM is 
+!> The 1RDM have to satisfy certain permutation symmetries.
+!> Here we consider real valued 1RDMs. In that case the 1RDM is 
 !> symmetric as in
 !> \f{eqnarray*}{
 !>   D^\sigma_{ab} &=& D^\sigma_{ba}
 !> \f}
+!>
+      subroutine wfn1_test_rdm_permute1(nbf,rdm1,tol)
+      implicit none
+c
+      integer, intent(in) :: nbf ! the number of basis functions
+c
+c     rdm1 is a sigma spin 1RDM
+c
+      double precision, intent(in) :: rdm1(nbf,nbf)
+c
+      double precision, intent(in) :: tol ! the tolerance
+c
+c     Local
+c
+      integer :: ia ! counter over labels a
+      integer :: ib ! counter over labels b
+      integer :: ic ! counter over labels c
+      integer :: id ! counter over labels d
+c
+c     Code
+c
+      do ia = 1, nbf
+        do ib = 1, ia
+          if (abs(rdm1(ia,ib)-rdm1(ib,ia)).gt.tol) then
+            write(*,*)'failed 1rdm not symmetric'
+            write(*,*)ia,ib
+            write(*,*)rdm1(ia,ib),rdm1(ib,ia)
+          endif
+        enddo
+      enddo
+      end
+!>
+!> @}
+c
+c-----------------------------------------------------------------------
+c
+!> \ingroup wfn1_priv
+!> @{
+!>
+!> \brief Test the 2RDM permutation symmetries
+!>
+!> The 2RDM have to satisfy certain permutation symmetries.
+!> Here we consider real valued 2RDMs.
 !> The 2RDM is symmetric under interchanging the labels that belong to
 !> electron 1 as well as under interchanging the labels that belong to
 !> electron 2. However, interchanging one of the labels belonging to
@@ -204,15 +266,13 @@ c
 !> \Gamma^{\sigma\sigma}_{abcd} &=&  \Gamma^{\sigma\sigma}_{dcba}
 !> \f}
 !>
-      subroutine wfn1_test_rdms_permute(nbf,rdm1,rdm2,tol)
+      subroutine wfn1_test_rdm_permute2(nbf,rdm2,tol)
       implicit none
 c
       integer, intent(in) :: nbf ! the number of basis functions
 c
-c     rdm1 is a sigma spin 1RDM
 c     rdm2 is a sigma,sigma spin 2RDM (no sigma,sigma' spin)
 c
-      double precision, intent(in) :: rdm1(nbf,nbf)
       double precision, intent(in) :: rdm2(nbf,nbf,nbf,nbf)
 c
       double precision, intent(in) :: tol ! the tolerance
@@ -227,16 +287,6 @@ c
       double precision, allocatable :: gaa(:,:,:,:)
 c
 c     Code
-c
-      do ia = 1, nbf
-        do ib = 1, ia
-          if (abs(rdm1(ia,ib)-rdm1(ib,ia)).gt.tol) then
-            write(*,*)'failed 1rdm not symmetric'
-            write(*,*)ia,ib
-            write(*,*)rdm1(ia,ib),rdm1(ib,ia)
-          endif
-        enddo
-      enddo
 c
       allocate(gaa(nbf,nbf,nbf,nbf))
       do id = 1, nbf
@@ -315,7 +365,7 @@ c
 !> produce \f$(n^\sigma_e-1)/2\f$ times the 1RDM (assuming electron
 !> 1 and 2 are of same spin). This subroutine tests this requirement.
 !>
-      subroutine wfn1_test_rdms_integrate(nbf,nea,s,da,gaa,tol)
+      subroutine wfn1_test_rdm_integrate(nbf,nea,s,s12,da,gaa,tol)
       implicit none
 c
       integer, intent(in) :: nbf ! the number of basis functions
@@ -324,6 +374,7 @@ c
 c     Overlap matrix
 c
       double precision, intent(in) :: s(nbf,nbf)
+      double precision, intent(in) :: s12(nbf,nbf)
 c
 c     1RDM
 c
@@ -360,6 +411,7 @@ c
       if (nea.gt.1) then
         do ic = 1, nbf
           do ia = 1, nbf
+c           dd(ia,ic) = dd(ia,ic)*(1.0d0/(1.0d0*nea))
             dd(ia,ic) = dd(ia,ic)*(1.0d0/(1.0d0*nea-1.0d0))
           enddo ! ia
         enddo ! ic
@@ -372,6 +424,17 @@ c
           endif
         enddo ! ia
       enddo ! ic
+c
+c     Test dd
+c
+      write(*,*)'ENTER test integrated'
+      write(*,*)'      test integrated: permute'
+      call wfn1_test_rdm_permute1(nbf,dd,tol)
+      write(*,*)'      test integrated: trace'
+      call wfn1_test_rdm_trace1(nbf,nea,s,dd,tol)
+      write(*,*)'      test integrated: eigval'
+      call wfn1_test_rdm_eigval1(nbf,s12,dd,tol)
+      write(*,*)'LEAVE test integrated'
 c
       deallocate(dd)
 c
@@ -411,6 +474,8 @@ c
       double precision, allocatable :: work(:)
 c
       double precision :: epsilon = 1.0d-15
+c
+      double precision :: total
 c
 c     LAPACK variables
 c
@@ -487,7 +552,9 @@ c
         write(*,*)'eigval: dsyev: failed to converge ',info
       endif
 c
+      total = 0.0d0
       do ia = 1, nbf
+        total = total + eig(ia)
         write(*,*)'eigval: ',ia,eig(ia)
         if (eig(ia).lt.-epsilon) then
 c
@@ -497,6 +564,7 @@ c
           write(*,*)'1RDM eigenvalue < 0 ',ia,eig(ia)
         endif
       enddo
+      write(*,*)'sum of eigval1: ',total
 c
       deallocate(work,eig,da2)
 c
@@ -536,6 +604,8 @@ c
       double precision, allocatable :: work(:)
 c
       double precision :: epsilon = 1.0d-15
+c
+      double precision :: total
 c
 c     LAPACK variables
 c
@@ -658,8 +728,13 @@ c
         write(*,*)'eigval: dsyev: failed to converge ',info
       endif
 c
+      total = 0.0d0
+      write(*,*)'Effectively zero eigenvalues not printed'
       do ia = 1, nbf2
-        write(*,*)'eigval: ',ia,eig(ia)
+        total = total + eig(ia)
+        if (abs(eig(ia)).ge.epsilon) then
+          write(*,*)'eigval: ',ia,eig(ia)
+        endif
         if (eig(ia).lt.-epsilon) then
 c
 c         If the eigenvalue is less than negative the machine
@@ -668,6 +743,7 @@ c
           write(*,*)'2RDM eigenvalue < 0 ',ia,eig(ia)
         endif
       enddo
+      write(*,*)'sum of eigval2: ',total
 c
       deallocate(work,eig,gaa2)
 c
@@ -738,15 +814,24 @@ c
         call wfn1_print_mat(s,nbf,nbf)
         write(*,*)'Print alpha 1RDM'
         call wfn1_print_mat(da,nbf,nbf)
-        write(*,*)'Print alpha-alpha 2RDM'
-        call wfn1_print_mat2(gaa,nbf)
+c       write(*,*)'Print alpha-alpha 2RDM'
+c       call wfn1_print_mat2(gaa,nbf)
         write(*,*)'Start: test trace'
-        call wfn1_test_rdms_trace(wfn1_param,s,da,db,gaa,gab,gbb,tol)
+        write(*,*)'Start: test number of electron 1RDM alpha'
+        call wfn1_test_rdm_trace1(nbf,nea,s,da,tol)
+        write(*,*)'Start: test number of electron 1RDM beta'
+        call wfn1_test_rdm_trace1(nbf,neb,s,db,tol)
+        write(*,*)'Start: test number of electron 2RDM'
+        call wfn1_test_rdm_trace2(wfn1_param,s,gaa,gab,gbb,tol)
         write(*,*)'Done : test trace'
+        write(*,*)'Start: test permutations alpha'
+        call wfn1_test_rdm_permute1(nbf,da,tol)
+        write(*,*)'Start: test permutations beta'
+        call wfn1_test_rdm_permute1(nbf,db,tol)
         write(*,*)'Start: test permutations alpha-alpha'
-        call wfn1_test_rdms_permute(nbf,da,gaa,tol)
+        call wfn1_test_rdm_permute2(nbf,gaa,tol)
         write(*,*)'Do beta-beta'
-        call wfn1_test_rdms_permute(nbf,db,gbb,tol)
+        call wfn1_test_rdm_permute2(nbf,gbb,tol)
         write(*,*)'Done : test permutations'
         write(*,*)'Start: test positivity alpha'
         call wfn1_test_rdm_eigval1(nbf,s12,da,tol)
@@ -758,9 +843,9 @@ c
         call wfn1_test_rdm_eigval2(nbf,s12,gbb,tol)
         write(*,*)'Done : test positivity'
         write(*,*)'Start: test integration alpha-alpha'
-        call wfn1_test_rdms_integrate(nbf,nea,s,da,gaa,tol)
+        call wfn1_test_rdm_integrate(nbf,nea,s,s12,da,gaa,tol)
         write(*,*)'Do beta-beta'
-        call wfn1_test_rdms_integrate(nbf,neb,s,db,gbb,tol)
+        call wfn1_test_rdm_integrate(nbf,neb,s,s12,db,gbb,tol)
         write(*,*)'Done : test integration'
         write(*,*)'LEAVE RDM tests'
         deallocate(s,s12)

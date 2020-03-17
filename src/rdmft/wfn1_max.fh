@@ -1,0 +1,8 @@
+      integer, parameter :: MAT_C  = 1
+      integer, parameter :: MAT_N  = 2
+      integer, parameter :: SPIN_A = 3
+      integer, parameter :: SPIN_B = 4
+      integer :: mat_kind
+      integer :: spin_kind
+      integer :: elm_pos(2) ! position of element
+      common/wfn1_max/mat_kind,spin_kind,elm_pos

@@ -1,0 +1,23 @@
+echo
+start mcscf_beh2_dat
+
+geometry
+  symmetry d2h
+  be     0.00000000     0.00000000     0.00000000
+  h      0.00000000     0.00000000     1.33749627
+  h      0.00000000     0.00000000    -1.33749627
+end
+
+basis
+  * library 6-31g*
+end
+
+task scf
+
+mcscf
+  active       17
+  actelec      6
+  multiplicity 1
+end
+
+task mcscf

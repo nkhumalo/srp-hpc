@@ -154,7 +154,11 @@ c
          j = idamax(nbf*nbf, dens(i,1), nfock)
          denmax = max(denmax, abs(dens(i,j)))
       end do
-      den_tol = min(dentolmax,tol2e/denmax,tol2e/denmax**2) ! Threshold to screen integs only
+      if (denmax.gt.1.0d-50) then
+        den_tol = min(dentolmax,tol2e/denmax,tol2e/denmax**2) ! Threshold to screen integs only
+      else
+        den_tol = dentolmax
+      endif
 c
       if (ga_nodeid().eq.0 .and. util_print('fockfile',print_debug))
      $     write(6,*) 'fockfile: tols ',tol2e, dentolmax, denmax,den_tol

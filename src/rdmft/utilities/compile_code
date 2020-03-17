@@ -1,0 +1,3 @@
+#!/bin/bash
+#gfortran generate_taylor.F -o generate_taylor -L${HOME}/lib -lgsl -lcblas -llapack -lblas
+gcc generate_taylor.c -o generate_taylor -I${HOME}/include -L${HOME}/lib -lgsl -lcblas -llapack -lblas -lgfortran

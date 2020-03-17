@@ -599,6 +599,12 @@ c
          endif
          call output(dbl_mb(k_evals), 1, nbf, 1, 1, nbf, 1, 1)
          write(6,*)
+cDEBUG
+         do i = 0, nbf-1
+           write(71,'(2x,f24.16,$)')dbl_mb(k_evals+i)
+         enddo
+         write(71,*)
+cDEBUG
       endif
 c     
 c     Solve CI for Canonical orbitals

@@ -1,10 +1,14 @@
 c-----------------------------------------------------------------------
 c
-      function wfn1_trace(wfn1_drva,wfn1_drvb)
-      implicit none
 C>
 C> \brief Compute the trace of the gradients
 C>
+C> Only the off-diagonal elements are included. Hence this routine can
+C> be used for both regular Fock matrices and their skew symmetric
+C> variants.
+C>
+      function wfn1_trace(wfn1_drva,wfn1_drvb)
+      implicit none
 #include "errquit.fh"
 #include "mafdecls.fh"
 #include "global.fh"
@@ -61,6 +65,8 @@ c
       if (nrowa.ne.nrowb) call errquit("wrong nrow g_dcb",0,UERR)
       if (ncola.ne.ncolb) call errquit("wrong ncol g_dcb",0,UERR)
 c
+      call ga_sync() ! make sure g_dna and g_dnb are completed
+c
       call ga_distribution(wfn1_drva%g_dna,iproc,ilo,ihi,jlo,jhi)
       allocate(bufa(ilo:ihi,jlo:jhi))
       allocate(bufb(ilo:ihi,jlo:jhi))
@@ -68,7 +74,9 @@ c
       call ga_get(wfn1_drvb%g_dna,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
-          error%errna = error%errna + bufa(ii,jj)*bufb(ii,jj)
+          if (ii.ne.jj) then
+            error%errna = error%errna + bufa(ii,jj)*bufb(ii,jj)
+          endif
         enddo
       enddo
       deallocate(bufb)
@@ -81,7 +89,9 @@ c
       call ga_get(wfn1_drvb%g_dnb,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
-          error%errnb = error%errnb + bufa(ii,jj)*bufb(ii,jj)
+          if (ii.ne.jj) then
+            error%errnb = error%errnb + bufa(ii,jj)*bufb(ii,jj)
+          endif
         enddo
       enddo
       deallocate(bufb)
@@ -94,7 +104,9 @@ c
       call ga_get(wfn1_drvb%g_dca,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
-          error%errca = error%errca + bufa(ii,jj)*bufb(ii,jj)
+          if (ii.ne.jj) then
+            error%errca = error%errca + bufa(ii,jj)*bufb(ii,jj)
+          endif
         enddo
       enddo
       deallocate(bufb)
@@ -107,7 +119,9 @@ c
       call ga_get(wfn1_drvb%g_dcb,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
-          error%errcb = error%errcb + bufa(ii,jj)*bufb(ii,jj)
+          if (ii.ne.jj) then
+            error%errcb = error%errcb + bufa(ii,jj)*bufb(ii,jj)
+          endif
         enddo
       enddo
       deallocate(bufb)
@@ -116,7 +130,7 @@ c
       error%total = error%errna + error%errnb 
      &            + error%errca + error%errcb
 c
-      call ga_dgop(MT_DBL,error,5,"+")
+      call ga_dgop(1700,error,5,"+")
       wfn1_trace = error
 c
       return
@@ -292,7 +306,7 @@ c
       error%total = error%errna + error%errnb 
      &            + error%errca + error%errcb
 c
-      call ga_dgop(MT_DBL,error,5,"+")
+      call ga_dgop(1701,error,5,"+")
       wfn1_etrace = error
 c
       return

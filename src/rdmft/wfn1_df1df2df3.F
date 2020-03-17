@@ -46,7 +46,17 @@ c
       b = b - 2.0d0*x2*a
       c = c - x2*x2*a - b*x2
 c
-      if (a.gt.0.0d0) then
+      if (abs(a).lt.1.0d-10) then
+        if (abs(b).lt.1.0d-10) then
+          if (b.gt.0.0d0) then
+            xm = -1.0d0
+          else
+            xm =  1.0d0
+          endif
+        else
+          xm = -c/b
+        endif
+      else if (a.gt.0.0d0) then
         xm = -b/(2.0d0*a)
       else
 c

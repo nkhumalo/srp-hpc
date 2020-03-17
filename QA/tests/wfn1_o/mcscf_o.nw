@@ -1,0 +1,24 @@
+echo
+start mcscf_o_dat
+
+geometry
+  o 0 0 0
+end
+
+basis
+  * library 6-31g*
+end
+
+scf
+  nopen 2
+end
+
+task scf
+
+mcscf
+  active       15
+  actelec      8
+  multiplicity 3
+end
+
+task mcscf

@@ -418,7 +418,11 @@ c
 
 *      if (owritefile) denmax = max(denmax,10.0d0) ! If do this not consistent
 c
-      dentol = min(dentolmax,tol2e/denmax,tol2e/denmax**2) ! Threshold to screen integs only
+      if (denmax.gt.1.0d-50) then
+        dentol = min(dentolmax,tol2e/denmax,tol2e/denmax**2) ! Threshold to screen integs only
+      else
+        dentol = dentolmax
+      endif
 c
 c     If this is the first call for a potential semi-direct calculation 
 c     then we must save the tol2e since the definition of the tasks 

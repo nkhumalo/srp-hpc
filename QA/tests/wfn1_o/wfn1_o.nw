@@ -1,0 +1,24 @@
+echo
+start wfn1_o_dat
+
+geometry
+  o      0.00000000     0.00000000     0.00000000
+end
+basis
+  * library 6-31g*
+end
+
+set wfn1:nopen  2
+set wfn1:t_bath 0.0
+set wfn1:maxit  600
+set wfn1:print_error T
+
+task wfn1 energy
+
+set wfn1:nopen  2
+set wfn1:t_initial 0.5
+set wfn1:t_bath    0.3
+set wfn1:maxit  5000
+set wfn1:print_error T
+
+task wfn1 energy

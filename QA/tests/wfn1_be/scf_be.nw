@@ -5,7 +5,7 @@ geometry
   be 0 0 0
 end
 basis
-  * library 6-31g
+  * library 6-31g*
 end
 
 dft

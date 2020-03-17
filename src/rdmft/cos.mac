@@ -1,0 +1,22 @@
+optimprefix: t;
+
+fortran_block(l,e) := block( [n : 0],
+  for n:1 thru length(e) do
+    fortran(l[n] = l[n] + e[n])
+  );
+
+fortran_optimize(l,e) := block(
+  for p in rest(args(optimize(e))) do
+    if op(p)=":" then fortran(apply("=",args(p)))
+    else if listp(p) then fortran_block(l,p)
+    else fortran(p)
+  );
+
+c(x):=cos(2*%pi*x);
+h(r1,r2,y):=((1-c(r1)-c(r2)+c(r1)*c(r2))/(1-c(1/2)-c(1/2)+c(1/2)*c(1/2)))**y;
+
+dhdr1(r1,r2,y):=diff(h(r1,r2,y),r1);
+dhdr2(r1,r2,y):=diff(h(r1,r2,y),r2);
+with_stdout("cos.F",
+    fortran_optimize([h,dhdr1,dhdr2],[h(r1,r2,y),dhdr1(r1,r2,y),dhdr2(r1,r2,y)]));
+

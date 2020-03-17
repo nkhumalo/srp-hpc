@@ -1,0 +1,25 @@
+optimprefix: t;
+
+fortran_block(l,e) := block( [n : 0],
+  for n:1 thru length(e) do
+    fortran(l[n] = l[n] + e[n])
+  );
+
+fortran_optimize(l,e) := block(
+  for p in rest(args(optimize(e))) do
+    if op(p)=":" then fortran(apply("=",args(p)))
+    else if listp(p) then fortran_block(l,p)
+    else fortran(p)
+  );
+
+t(r,y):=r**y;
+u(r):=2*r-1;
+h(u):=(3.0/2.0)*u-(u**3)/2.0;
+g(x,y):=(x+1)/(y+1);
+
+s(r1,r2,a,y,z):=g(h(u(t(r1,y)))*h(u(t(1.0-r1,y))),h(u(t(0.5,y)))*h(u(t(0.5,y))))*g(h(u(t(r2,y)))*h(u(t(1.0-r2,y))),h(u(t(0.5,y)))*h(u(t(0.5,y))));
+dsdr1(r1,r2,a,y,z):=diff(s(r1,r2,a,y,z),r1);
+dsdr2(r1,r2,a,y,z):=diff(s(r1,r2,a,y,z),r2);
+with_stdout("thimble.F",
+    fortran_optimize([h,dhdr1,dhdr2],[s(r1,r2,a,y,z),dsdr1(r1,r2,a,y,z),dsdr2(r1,r2,a,y,z)]));
+

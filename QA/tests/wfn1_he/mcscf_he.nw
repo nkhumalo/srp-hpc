@@ -1,0 +1,20 @@
+echo
+start mcscf_he_dat
+
+geometry
+  he 0 0 0
+end
+
+basis
+  * library 6-31g**
+end
+
+task scf
+
+mcscf
+  active       5
+  actelec      2
+  multiplicity 1
+end
+
+task mcscf

@@ -25,6 +25,7 @@ C>
                                          ! orbital Fock matrices
          double precision :: denom_min   ! the minimum denominator due to
                                          ! differentiating sqrt-s.
+         double precision :: fac_a       ! factor A
          integer          :: maxiter     ! maximum number of iterations
          integer          :: nbf         ! number of basis functions
          integer          :: nmo         ! number of molecular orbitals

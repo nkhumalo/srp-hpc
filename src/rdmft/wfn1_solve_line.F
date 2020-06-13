@@ -27,6 +27,7 @@ C>
 #include "wfn1_size.fh"
 #include "wfn1_trace.fh"
 #include "wfn1_en.fh"
+#include "errquit.fh"
 #include "global.fh"
 #include "stdio.fh"
 c
@@ -76,6 +77,7 @@ c
       logical :: oprerr
 !     The current iteration count
       integer :: curit
+      integer :: curit0
 c
       double precision, intent(out) :: v_dna(1:wfn1_param%nmo)
       double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
@@ -97,6 +99,13 @@ c
       type(wfn1_wfn)   :: wfn1_t_wv
       type(wfn1_drv)   :: wfn1_t_drv
       type(wfn1_error) :: error
+c
+      double precision :: error_nst ! Natural orbital error at start
+      double precision :: error_cst ! Correlation function error at start
+c
+      integer, parameter :: DIAG_N = 1 ! diagonalize nat orb Fock
+      integer, parameter :: DIAG_C = 2 ! diagonalize cor fnc Fock
+      integer  :: diag_NorC = DIAG_C
 c
       iproc    = ga_nodeid()
       conv_tol = wfn1_param%convergence
@@ -120,11 +129,14 @@ c
      &              g_momo1,g_momo2,g_momo3,g_momo4,
      &              v_dna,v_dnb,v_dca,v_dcb,
      &              v_dnna,v_dnnb,v_dcna,v_dcnb)
-      call wfn1_skew(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
+c     call wfn1_skew(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
 c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
       error      = wfn1_trace(wfn1_deriv,wfn1_deriv)
       oconverged = (error%total < conv_tol)
       curit      = 0
+      curit0     = 0
+      error_nst  = min(error%errna+error%errnb,error%errca+error%errcb)
+      error_cst  = min(error%errna+error%errnb,error%errca+error%errcb)
       if (iproc.eq.0) then
         if (.not.oprerr) then
           write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
@@ -144,18 +156,35 @@ c       functions for better convergence.
 c
         if (error%errna+error%errnb > 0.5d0*conv_tol .and.
      &      error%errca+error%errcb > 0.5d0*conv_tol) then
-          if (mod(curit,2).eq.0) then
+          if      (diag_NorC.eq.diag_N) then
+            if (error%errna+error%errnb < 0.1d0*error_nst .or.
+     &          curit-curit0 > 2) then
+              diag_NorC = diag_C
+              curit0    = curit
+            endif
+          else if (diag_NorC.eq.diag_C) then
+            if (error%errca+error%errcb < 0.1d0*error_cst .or.
+     &          curit-curit0 > 2) then
+              diag_NorC = diag_N
+              curit0    = curit
+            endif
+          endif
+          if      (diag_NorC.eq.diag_N) then
+            error_cst = error%errca+error%errcb
             call ga_zero(wfn1_deriv%g_dca)
             call ga_zero(wfn1_deriv%g_dcb)
-          else
+          else if (diag_NorC.eq.diag_C) then
+            error_nst = error%errna+error%errnb
             call ga_zero(wfn1_deriv%g_dna)
             call ga_zero(wfn1_deriv%g_dnb)
           endif
         else if (error%errna+error%errnb >
      &           error%errca+error%errcb) then
+          diag_NorC = diag_N
           call ga_zero(wfn1_deriv%g_dca)
           call ga_zero(wfn1_deriv%g_dcb)
         else
+          diag_NorC = diag_C
           call ga_zero(wfn1_deriv%g_dna)
           call ga_zero(wfn1_deriv%g_dnb)
         endif
@@ -191,10 +220,21 @@ c
             write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
      &                                      error%total
           else
-            write(luout,'(i10,f20.8,5f16.6)')curit,wfn1_energy%E_tot,
-     &                                       error%total,
-     &                                       error%errna,error%errnb,
-     &                                       error%errca,error%errcb
+            if      (diag_NorC.eq.diag_C) then
+              write(luout,'(i10,f20.8,5f16.6,a2)')
+     &              curit,wfn1_energy%E_tot,
+     &              error%total,
+     &              error%errna,error%errnb,
+     &              error%errca,error%errcb,'C'
+            else if (diag_NorC.eq.diag_N) then
+              write(luout,'(i10,f20.8,5f16.6,a2)')
+     &              curit,wfn1_energy%E_tot,
+     &              error%total,
+     &              error%errna,error%errnb,
+     &              error%errca,error%errcb,'N'
+            else
+              call errquit("should never get here",0,UERR)
+            endif
           endif
         endif
       enddo

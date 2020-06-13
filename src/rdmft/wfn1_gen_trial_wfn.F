@@ -32,30 +32,33 @@ c
       nmo = wfn1_param%nmo
       call ga_sync()
 c     call wfn1_tst_exp(alpha,wfn1_deriv%g_dna,g_t,g_exp)
-      call wfn1_exp(alpha,wfn1_deriv%g_dna,g_t,g_exp)
+c     call wfn1_exp(alpha,wfn1_deriv%g_dna,g_t,g_exp)
+      call wfn1_diag(wfn1_param,alpha,wfn1_deriv%g_dna,g_t,g_exp)
       call ga_sync()
       call ga_dgemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,g_exp,
      &              0.0d0,wfn1_trial_wv%g_na)
 c
 c     call wfn1_tst_exp(alpha,wfn1_deriv%g_dnb,g_t,g_exp)
-      call wfn1_exp(alpha,wfn1_deriv%g_dnb,g_t,g_exp)
+c     call wfn1_exp(alpha,wfn1_deriv%g_dnb,g_t,g_exp)
+      call wfn1_diag(wfn1_param,alpha,wfn1_deriv%g_dnb,g_t,g_exp)
       call ga_sync()
       call ga_dgemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_nb,g_exp,
      &              0.0d0,wfn1_trial_wv%g_nb)
 c
 c     call wfn1_tst_exp(alpha,wfn1_deriv%g_dca,g_t,g_exp)
-      call wfn1_exp(alpha,wfn1_deriv%g_dca,g_t,g_exp)
+c     call wfn1_exp(alpha,wfn1_deriv%g_dca,g_t,g_exp)
+      call wfn1_diag(wfn1_param,alpha,wfn1_deriv%g_dca,g_t,g_exp)
       call ga_sync()
       call ga_dgemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,g_exp,
      &              0.0d0,wfn1_trial_wv%g_ca)
 c
 c     call wfn1_tst_exp(alpha,wfn1_deriv%g_dcb,g_t,g_exp)
-      call wfn1_exp(alpha,wfn1_deriv%g_dcb,g_t,g_exp)
+c     call wfn1_exp(alpha,wfn1_deriv%g_dcb,g_t,g_exp)
+      call wfn1_diag(wfn1_param,alpha,wfn1_deriv%g_dca,g_t,g_exp)
       call ga_sync()
       call ga_dgemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_cb,g_exp,
      &              0.0d0,wfn1_trial_wv%g_cb)
       call ga_sync()
-
 c
       end
 c

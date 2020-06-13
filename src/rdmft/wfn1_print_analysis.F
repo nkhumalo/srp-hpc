@@ -181,8 +181,13 @@ c
         write(LuOut,'(12x,"--------",4x,"--------",8x,
      &                    "--------",4x,"--------")')
         do ii = ilo, ihi
-          write(LuOut,'(i8,f12.4,f12.4,4x,f12.4,f12.4)')ii,
-     &          ec1a(ii),ec1b(ii),occa(ii),occb(ii)
+          if (abs(ec1a(ii)).gt.1.0d5.or.abs(ec1b(ii)).gt.1.0d5) then
+            write(LuOut,'(i8,e12.1,e12.1,4x,f12.4,f12.4)')ii,
+     &            ec1a(ii),ec1b(ii),occa(ii),occb(ii)
+          else
+            write(LuOut,'(i8,f12.4,f12.4,4x,f12.4,f12.4)')ii,
+     &            ec1a(ii),ec1b(ii),occa(ii),occb(ii)
+          endif
         enddo
       endif
 c

@@ -152,8 +152,8 @@ c     call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
      &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &              v_dna,v_dnb,v_dca,v_dcb,
      &              v_dnna,v_dnnb,v_dcna,v_dcnb)
-      call wfn1_skew(wfn1_param,wfn1_trial_drv,
-     &               v_dna,v_dnb,v_dca,v_dcb)
+c     call wfn1_skew(wfn1_param,wfn1_trial_drv,
+c    &               v_dna,v_dnb,v_dca,v_dcb)
 c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_trial_drv)
       fx(npts) = wfn1_trial_en%E_tot
 c     error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
@@ -165,6 +165,13 @@ c     error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
         xm = -tr
       else if (xm.gt.1.0d0+tr) then
         xm =  1.0d0+tr
+      endif
+      if (abs(xm).le.tol) then
+        if (xm.lt.0.0d0) then
+          xm = -tol
+        else
+          xm =  tol
+        endif
       endif
       call wfn1_fix_xm(npts,xx,xm)
 c
@@ -181,8 +188,8 @@ c     call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
      &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &              v_dna,v_dnb,v_dca,v_dcb,
      &              v_dnna,v_dnnb,v_dcna,v_dcnb)
-      call wfn1_skew(wfn1_param,wfn1_trial_drv,
-     &               v_dna,v_dnb,v_dca,v_dcb)
+c     call wfn1_skew(wfn1_param,wfn1_trial_drv,
+c    &               v_dna,v_dnb,v_dca,v_dcb)
 c     error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
       error = wfn1_fetch_max(wfn1_trial_drv)
       dfm = dnrm*(error%total**2)
@@ -235,6 +242,13 @@ c
             xm = 0.5d0*(xx(indxmin+1)+xx(indxmin))
           endif
         endif
+        if (abs(xm).le.tol) then
+          if (xm.lt.0.0d0) then
+            xm = -tol
+          else
+            xm =  tol
+          endif
+        endif
 c
         call wfn1_gen_trial_wfn(xm,wfn1_param,wfn1_wave,wfn1_deriv,
      &                          wfn1_trial_wv,g_momo1,g_momo2)
@@ -246,8 +260,8 @@ c       call wfn1_tst_ortho(wfn1_mat,wfn1_trial_wv,g_bfmo,g_momo1)
      &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                v_dna,v_dnb,v_dca,v_dcb,
      &                v_dnna,v_dnnb,v_dcna,v_dcnb)
-        call wfn1_skew(wfn1_param,wfn1_trial_drv,
-     &                 v_dna,v_dnb,v_dca,v_dcb)
+c       call wfn1_skew(wfn1_param,wfn1_trial_drv,
+c    &                 v_dna,v_dnb,v_dca,v_dcb)
 c       call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_trial_drv)
 c       error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
         error = wfn1_fetch_max(wfn1_trial_drv)
@@ -263,10 +277,19 @@ c
      &                   xx(ix1),xx(ix2),xx(ix3),
      &                   fx(ix1),fx(ix2),fx(ix3),
      &                   aa,bb,cc,xm,fxm)
+        if (abs(xm).le.tol) then
+          if (xm.lt.0.0d0) then
+            xm = -tol*100d0
+          else
+            xm =  tol*100d0
+          endif
+        endif
         o_reduced = (abs(2.0d0*aa*xx(ipos)+bb).lt.0.1d0*bb)
         o_eminimized = (abs(bb).lt.tol*0.01d0).and..not.o_reduced
       enddo
 cHvD
+      write(*,*)'HVD: ',npts,xm
+      return
       if (wfn1_param%corr_expr.eq."wfn1s") return
 cHvD
 c     if (npts.ge.mxpts) then

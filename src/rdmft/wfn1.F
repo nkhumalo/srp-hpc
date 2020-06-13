@@ -324,6 +324,15 @@ c
      &                   wfn1_param%corr_expr)) then
          wfn1_param%corr_expr="wfn1_mx"
       endif
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_a',MT_DBL,1,
+     &                   wfn1_param%fac_a))
+     &  wfn1_param%fac_a = 0.0d0
+      if (wfn1_param%fac_a.lt.0.0d0) then
+        call errquit(pname//" factor A less than 0", 0,INPUT_ERR)
+      endif
+      if (wfn1_param%fac_a.gt.1.0d0) then
+        call errquit(pname//" factor A greater than 1", 0,INPUT_ERR)
+      endif
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:aa',MT_DBL,1,
      &                   fac_aa))
      &  fac_aa = 0.0d0
@@ -523,12 +532,15 @@ c
      &               0,INPUT_ERR)
       endif
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:damp_n",MT_DBL,
-     &                  1,wfn1_param%damp_n)) wfn1_param%damp_n = 1.0d-2
+     &                  1,wfn1_param%damp_n)) wfn1_param%damp_n = 1.0d-3
+c    &                  1,wfn1_param%damp_n)) wfn1_param%damp_n = 1.0d-2
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:damp_c",MT_DBL,
-     &                  1,wfn1_param%damp_c)) wfn1_param%damp_c = 2.0d-3
+     &                  1,wfn1_param%damp_c)) wfn1_param%damp_c = 1.0d-3
+c    &                  1,wfn1_param%damp_c)) wfn1_param%damp_c = 2.0d-3
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:denom_min",MT_DBL,
      &                  1,wfn1_param%denom_min)) 
-     &                                     wfn1_param%denom_min = 1.0d-8
+     &                                     wfn1_param%denom_min = 1.0d-2
+c    &                                     wfn1_param%denom_min = 1.0d-8
 c    &                                     wfn1_param%denom_min = 0.01d0
       wfn1_param%convergence = conv_tol
       wfn1_param%maxiter     = maxit
@@ -703,6 +715,11 @@ c
      &     wfn1_wave%g_na,1,wfn1_param%nbf,1,wfn1_param%nmo)
       call ga_copy(wfn1_wave%g_na,wfn1_wave%g_nb)
 c
+c     == Set up electron configuration ==
+c
+      call wfn1_configuration(wfn1_param,wfn1_wave)
+      call wfn1_configuration(wfn1_param,wfn1_trial_wv)
+c
 c     == Set up initial wave functions ==
 c
 cDEBUG
@@ -729,14 +746,18 @@ c
         call wfn1_guess_corr(wfn1_param,wfn1_wave,eig,wfn1_param%nmo)
         deallocate(eig)
 c
+c       call wfn1_rot_natorb(wfn1_param,wfn1_inst,wfn1_mat,
+c    &                       wfn1_wave,wfn1_deriv,wfn1_energy,
+c    &                       wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
+c    &                       g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+c    &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+c    &                       v_dna,v_dnb,v_dca,v_dcb,
+c    &                       v_dnna,v_dnnb,v_dcna,v_dcnb,
+c    &                       oprerr,curit)
+c
       else
         call wfn1_guess_movecs(wfn1_param,wfn1_wave)
       endif
-c
-c     == Set up electron configuration ==
-c
-      call wfn1_configuration(wfn1_param,wfn1_wave)
-      call wfn1_configuration(wfn1_param,wfn1_trial_wv)
 c
 c     == Initial wavefunction complete ==
 c

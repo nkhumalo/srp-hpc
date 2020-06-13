@@ -13,6 +13,7 @@
          wfn1_column_max.o \
          wfn1_configuration.o \
          wfn1_df1df2df3.o \
+         wfn1_diag.o \
          wfn1_dlasyf.o \
          wfn1_dnrm2.o \
          wfn1_dsytf2.o \
@@ -21,7 +22,7 @@
          wfn1_element.o \
          wfn1_entropy.o \
          wfn1_e_g.o \
-         wfn1_e_g_2el_corr.o \
+         wfn1_e_g_2el_corr_fix.o \
          wfn1_e_g_2el_mx.o \
          wfn1_e_g_2el_vx.o \
          wfn1_e_g_2el_hf.o \
@@ -47,6 +48,7 @@
          wfn1_print.o \
          wfn1_print_analysis.o \
          wfn1_print_occ.o \
+         wfn1_rot_natorb.o \
          wfn1_scale_offdiag.o \
          wfn1_size.o \
          wfn1_skew.o \

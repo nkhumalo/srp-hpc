@@ -128,6 +128,7 @@ c
       logical, external :: int_normalize
       logical, external :: wfn1_solve_line
       logical, external :: wfn1_solve_diag
+      logical, external :: wfn1_solve_mc
 c
       double precision aa_hl, ab_hl
       double precision fac_redist
@@ -542,6 +543,10 @@ c    &                  1,wfn1_param%damp_c)) wfn1_param%damp_c = 2.0d-3
      &                                     wfn1_param%denom_min = 1.0d-2
 c    &                                     wfn1_param%denom_min = 1.0d-8
 c    &                                     wfn1_param%denom_min = 0.01d0
+      if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:pfac",MT_DBL,
+     &                  1,wfn1_param%pfac)) wfn1_param%pfac = 256.0d0
+      if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:rlim",MT_DBL,
+     &                  1,wfn1_param%rlim)) wfn1_param%rlim = 1.0d-2
       wfn1_param%convergence = conv_tol
       wfn1_param%maxiter     = maxit
 c
@@ -866,12 +871,22 @@ c
      &                    v_dna,v_dnb,v_dca,v_dcb,
      &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                    oprerr,curit)
+      else if (wfn1_param%solver.eq."monte-carlo") then
+        oconverged = wfn1_solve_mc(wfn1_param,wfn1_inst,wfn1_mat,
+     &                    wfn1_wave,wfn1_deriv,wfn1_energy,
+     &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
+     &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+     &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                    v_dna,v_dnb,v_dca,v_dcb,
+     &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
+     &                    oprerr,curit)
       else
         if (iproc.eq.0) then
           write(luout,*)pname//" solver = ",wfn1_param%solver
           write(luout,*)pname//" valid options are:"
           write(luout,*)pname//" - linesearch"
           write(luout,*)pname//" - diagonalize"
+          write(luout,*)pname//" - monte-carlo"
         endif
         call errquit(pname//" invalid solver",0)
       endif

@@ -31,6 +31,7 @@
          wfn1_e_g_redist.o \
          wfn1_exp.o \
          wfn1_f0df0f1.o \
+         wfn1_f0f1df1.o \
          wfn1_f1f2f3.o \
          wfn1_fix_phase.o \
          wfn1_fix_xm.o \
@@ -44,6 +45,7 @@
          wfn1_insert.o \
          wfn1_lindep.o \
          wfn1_linesearch.o \
+         wfn1_mcsearch.o \
          wfn1_ortho.o \
          wfn1_print.o \
          wfn1_print_analysis.o \
@@ -54,10 +56,12 @@
          wfn1_skew.o \
          wfn1_solve_diag.o \
          wfn1_solve_line.o \
+         wfn1_solve_mc.o \
          wfn1_symm.o \
          wfn1_test_rdms.o \
          wfn1_thimble.o \
 	 wfn1_trace.o \
+	 wfn1_transform.o \
          wfn1_write_movecs.o \
          wfn1_zero_vv.o 
 

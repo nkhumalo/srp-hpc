@@ -32,6 +32,13 @@ c
             endif
           endif
         endif
+        if (abs(xm).le.tol) then
+          if (xm.lt.0.0d0) then
+            xm = xm-tol
+          else
+            xm = xm+tol
+          endif
+        endif
       enddo
       end subroutine wfn1_fix_xm
 C> @}

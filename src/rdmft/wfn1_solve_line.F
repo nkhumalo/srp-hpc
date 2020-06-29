@@ -154,40 +154,54 @@ c
 c       Alternating optimization of natural orbitals and correlation
 c       functions for better convergence.
 c
-        if (error%errna+error%errnb > 0.5d0*conv_tol .and.
-     &      error%errca+error%errcb > 0.5d0*conv_tol) then
-          if      (diag_NorC.eq.diag_N) then
-            if (error%errna+error%errnb < 0.1d0*error_nst .or.
-     &          curit-curit0 > 2) then
-              diag_NorC = diag_C
-              curit0    = curit
-            endif
-          else if (diag_NorC.eq.diag_C) then
-            if (error%errca+error%errcb < 0.1d0*error_cst .or.
-     &          curit-curit0 > 2) then
-              diag_NorC = diag_N
-              curit0    = curit
-            endif
-          endif
-          if      (diag_NorC.eq.diag_N) then
-            error_cst = error%errca+error%errcb
-            call ga_zero(wfn1_deriv%g_dca)
-            call ga_zero(wfn1_deriv%g_dcb)
-          else if (diag_NorC.eq.diag_C) then
-            error_nst = error%errna+error%errnb
-            call ga_zero(wfn1_deriv%g_dna)
-            call ga_zero(wfn1_deriv%g_dnb)
-          endif
-        else if (error%errna+error%errnb >
-     &           error%errca+error%errcb) then
+        if      (error%errca+error%errcb > 0.5d0*conv_tol) then
+          diag_NorC = diag_C
+        else if (error%errna+error%errnb > 0.5d0*conv_tol) then
           diag_NorC = diag_N
+        endif
+        if      (diag_NorC.eq.diag_N) then
+          error_cst = error%errca+error%errcb
           call ga_zero(wfn1_deriv%g_dca)
           call ga_zero(wfn1_deriv%g_dcb)
-        else
-          diag_NorC = diag_C
+        else if (diag_NorC.eq.diag_C) then
+          error_nst = error%errna+error%errnb
           call ga_zero(wfn1_deriv%g_dna)
           call ga_zero(wfn1_deriv%g_dnb)
         endif
+c       if (error%errna+error%errnb > 0.5d0*conv_tol .and.
+c    &      error%errca+error%errcb > 0.5d0*conv_tol) then
+c         if      (diag_NorC.eq.diag_N) then
+c           if (error%errna+error%errnb < 0.1d0*error_nst .or.
+c    &          curit-curit0 > 2) then
+c             diag_NorC = diag_C
+c             curit0    = curit
+c           endif
+c         else if (diag_NorC.eq.diag_C) then
+c           if (error%errca+error%errcb < 0.1d0*error_cst .or.
+c    &          curit-curit0 > 2) then
+c             diag_NorC = diag_N
+c             curit0    = curit
+c           endif
+c         endif
+c         if      (diag_NorC.eq.diag_N) then
+c           error_cst = error%errca+error%errcb
+c           call ga_zero(wfn1_deriv%g_dca)
+c           call ga_zero(wfn1_deriv%g_dcb)
+c         else if (diag_NorC.eq.diag_C) then
+c           error_nst = error%errna+error%errnb
+c           call ga_zero(wfn1_deriv%g_dna)
+c           call ga_zero(wfn1_deriv%g_dnb)
+c         endif
+c       else if (error%errna+error%errnb >
+c    &           error%errca+error%errcb) then
+c         diag_NorC = diag_N
+c         call ga_zero(wfn1_deriv%g_dca)
+c         call ga_zero(wfn1_deriv%g_dcb)
+c       else
+c         diag_NorC = diag_C
+c         call ga_zero(wfn1_deriv%g_dna)
+c         call ga_zero(wfn1_deriv%g_dnb)
+c       endif
 c
 c       end of alternating optimization
 c

@@ -110,6 +110,12 @@ c
 c
       if (a.gt.0.0d0) then
         xm = -b/(2.0d0*a)
+        if (xm.lt.xmin) then
+          xm = xmin
+        endif
+        if (xm.gt.xmax) then
+          xm = xmax
+        endif
       else
 c
 c       the function has no minimum 

@@ -26,6 +26,8 @@ C>
          double precision :: denom_min   ! the minimum denominator due to
                                          ! differentiating sqrt-s.
          double precision :: fac_a       ! factor A
+         double precision :: pfac        ! Monte-Carlo exponent
+         double precision :: rlim        ! Monte-Carlo random # limit
          integer          :: maxiter     ! maximum number of iterations
          integer          :: nbf         ! number of basis functions
          integer          :: nmo         ! number of molecular orbitals

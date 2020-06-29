@@ -155,18 +155,38 @@ c
 c       Alternating optimization of natural orbitals and correlation
 c       functions for better convergence.
 c
-        if (error%errna+error%errnb > 0.5d0*conv_tol .and.
-     &      error%errca+error%errcb > 0.5d0*conv_tol) then
-          if (mod(curit,2).eq.0) then
-            diag_NorC = DIAG_N
-          else
-            diag_NorC = DIAG_C
-          endif
-        else if (error%errna+error%errnb >
-     &           error%errca+error%errcb) then
-          diag_NorC = DIAG_N
-        else
+c       if (error%errna+error%errnb > 0.5d0*conv_tol .and.
+c    &      error%errca+error%errcb > 0.5d0*conv_tol) then
+c         if (mod(curit,2).eq.0) then
+c           diag_NorC = DIAG_N
+c         else
+c           diag_NorC = DIAG_C
+c         endif
+c       else if (error%errna+error%errnb >
+c    &           error%errca+error%errcb) then
+c         diag_NorC = DIAG_N
+c       else
+c         diag_NorC = DIAG_C
+c       endif
+c
+c       Different convergence scheme where the natural orbitals are
+c       converged first, and only then the correlation functions
+c       are converged.
+c
+c       if (error%errna+error%errnb > 0.5d0*conv_tol) then
+c         diag_NorC = DIAG_N
+c       else
+c         diag_NorC = DIAG_C
+c       endif
+c
+c       Different convergence scheme where the correlation functions are
+c       converged first, and only then the natural orbitals
+c       are converged.
+c
+        if (error%errca+error%errcb > 0.5d0*conv_tol) then
           diag_NorC = DIAG_C
+        else
+          diag_NorC = DIAG_N
         endif
 c
 c       end of alternating optimization

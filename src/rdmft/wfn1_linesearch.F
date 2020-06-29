@@ -5,12 +5,14 @@ C> \brief Perform a linesearch for the minimum total energy
 C>
 C> Given the gradient of the energy wrt. the wave function parameters
 C> this gradient is used as the search direction to find the minimum
-C> of the total energy. The basic approach is to start from the
-C> energy and gradient at the initial, and the energy after taking a
-C> step, and fit a parabola through these three data points. Looking
-C> for the minimum of that parabola a suggestion for the minimum is
-C> obtained. In subsequent steps the energy at three points might be
-C> used to fit a parabola. 
+C> of the total energy.
+C>
+C> The basic approach is to start from the energy at the initial point,
+C> take a step and calculate the energy and gradient. Fit a parabola
+C> through these three data points. Looking for the minimum of the
+C> parabola predict the minimum energy point. In subsequent points
+C> a parabola may be fitted through the energy values around the
+C> minimum energy.
 C>
 C> When enough progress has been made the subroutine returns the 
 C> current energies, the current wavefunction, and the current gradients
@@ -83,20 +85,26 @@ c
 c
       integer             npts        !< The number of points
       integer             mxpts       !< The maximum number of points
-      parameter          (mxpts = 20) !< Set the number points
-      double precision xx(mxpts)      !< The x-coordinates
-      double precision fx(mxpts)      !< The function values
-      double precision df(mxpts)      !< The function gradient
+      parameter          (mxpts = 5)  !< Set the number points
+      double precision xx(0:mxpts)    !< The x-coordinates
+      double precision xb(0:mxpts)    !< The b-coordinates
+      double precision fx(0:mxpts)    !< The function values
+      double precision df(0:mxpts)    !< The function gradient
       double precision de             !< The energy gradient
       double precision tr             !< The trust radius
+      double precision tl             !< The trust lower limit
+      double precision th             !< The trust upper limit
       double precision aa, bb, cc     !< The factor of the parabola
-      double precision xm, fxm, dfm
+      double precision xxm, xbm, fxm, dfm
       double precision tol
       double precision dnrm           !< Normalization factor
+cDEBUG
+      double precision xm
+cDEBUG
 c
       integer indxmin
       integer ix1, ix2, ix3
-      integer ipos          !< The position where xm was inserted
+      integer ipos          !< The position where xxm was inserted
       logical o_eminimized  !< If b=0 then only redundant
                             !< transformations remain.
                             !< Interestingly even if a!=0 and b=0 the
@@ -110,6 +118,8 @@ c
                             !< A limited Fock matrix has been reduced
                             !< to one element (the largest one from the
                             !< full Fock matrix).
+      logical otl           !< Have we hit the lower limit?
+      logical oth           !< Have we hit the upper limit?
 c
       integer iproc         !< The current rank
       type(wfn1_en)  :: et  !< Temporary energy structure
@@ -117,31 +127,115 @@ c
       type(wfn1_drv) :: dt  !< Temporary wave function derivative
                             !< structure
 c
+cDEBUG
+      integer ii, imin
+      double precision :: wfn1_func_b, wfn1_func_d, wfn1_func_dd
+cDEBUG
       character*17 pname
       parameter(pname = "wfn1_linesearch: ")
 c
       iproc = ga_nodeid()
-      tol = wfn1_param%convergence
-      tr = 1.0d0
+      tol   = wfn1_param%convergence
+      otl   = .false.
+      oth   = .false.
+      tl    = wfn1_func_b(1.0d-3)
+      th    = 0.45d0
       o_limited = .false.
 c
 c     Store the initial point
 c
- 10   npts = 1
+      npts     = 0
       xx       = 0.0d0
+      xb       = 0.0d0
       fx(npts) = wfn1_energy%E_tot
-      error = wfn1_etrace(wfn1_param,wfn1_wave,wfn1_deriv,wfn1_deriv)
-      de = error%total
+      error = wfn1_trace(wfn1_deriv,wfn1_deriv)
+      de = error%total*wfn1_func_dd(0.000001d0)
 c     error = wfn1_trace(wfn1_deriv,wfn1_deriv)
-      error = wfn1_select_max(wfn1_deriv)
+c     error = wfn1_select_max(wfn1_deriv)
       dnrm = error%total**2
       dnrm = 1.0d0/dnrm
-      df(npts) = 1.0d0
+      df(npts) = de
+      write(*,*)'HVDam: ',npts,xx(npts),xb(npts),fx(npts),df(npts)
 c
-c     Take one step
+c     Take first step
 c
-      npts = npts + 1
+      npts     = npts + 1
       xx(npts) = 1.0d0
+      xb(npts) = wfn1_func_b(xx(npts))
+      call wfn1_gen_trial_wfn(xx(npts),wfn1_param,
+     &                        wfn1_wave,wfn1_deriv,
+     &                        wfn1_trial_wv,g_momo1,g_momo2)
+      call wfn1_ortho(wfn1_mat,wfn1_trial_wv)
+      call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
+     &              wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
+     &              g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+     &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &              v_dna,v_dnb,v_dca,v_dcb,
+     &              v_dnna,v_dnnb,v_dcna,v_dcnb)
+      fx(npts) = wfn1_trial_en%E_tot
+      error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
+      de = error%total*wfn1_func_dd(1.0d0)
+      df(npts) = de
+      call wfn1_f0f1df1(xb(1),fx(0),fx(1),df(1),tl,th,aa,bb,cc,xbm,fxm)
+      write(*,*)'HVDam: ',npts,xx(npts),xb(npts),fx(npts),df(npts)
+      otl = otl.or.(xbm.le.tl)
+      oth = oth.or.(xbm.ge.th)
+c
+c     Find minimum energy
+c
+      imin = 1
+      do ii = 2, mxpts-1
+        xxm = wfn1_func_d(xbm)
+        call wfn1_gen_trial_wfn(xxm,wfn1_param,
+     &                          wfn1_wave,wfn1_deriv,
+     &                          wfn1_trial_wv,g_momo1,g_momo2)
+        call wfn1_ortho(wfn1_mat,wfn1_trial_wv)
+        call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
+     &                wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
+     &                g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+     &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                v_dna,v_dnb,v_dca,v_dcb,
+     &                v_dnna,v_dnnb,v_dcna,v_dcnb)
+c       fx(npts) = wfn1_trial_en%E_tot
+        error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
+        de = error%total*wfn1_func_dd(xxm)
+c       df(npts) = dnrm*(error%total**2)
+        call wfn1_insert(mxpts,npts,xx,xb,fx,df,
+     &                   xxm,xbm,wfn1_trial_en%E_tot,de,ipos)
+        write(*,*)'HVDam: ',npts,xxm,xbm,wfn1_trial_en%E_tot,de
+        indxmin = wfn1_idmin(npts,fx(1:npts),1)
+        call wfn1_closest_three(npts,xb,indxmin,ix1,ix2,ix3)
+        call wfn1_f1f2f3(tl,th,
+     &                   xb(ix1),xb(ix2),xb(ix3),
+     &                   fx(ix1),fx(ix2),fx(ix3),
+     &                   aa,bb,cc,xbm,fxm)
+        if (wfn1_trial_en%E_tot.le.fx(0)) then
+c         we have made progress which is good enough
+          exit
+        else if ((xbm.le.tl).and.otl) then
+c         revisiting points were we have already been is not helpful
+          exit
+        else if ((xbm.ge.th).and.oth) then
+c         revisiting points were we have already been is not helpful
+          exit
+        endif
+        otl = otl.or.(xbm.le.tl)
+        oth = oth.or.(xbm.ge.th)
+      enddo
+c     Let's take what we can get
+c     wt = wfn1_wave
+c     wfn1_wave = wfn1_trial_wv
+c     wfn1_trial_wv = wt
+c
+c     dt = wfn1_deriv
+c     wfn1_deriv = wfn1_trial_drv
+c     wfn1_trial_drv = dt
+c
+c     wfn1_energy = wfn1_trial_en
+      return
+cEND
+      npts = npts + 1
+      xx(npts) = wfn1_func_b(1.0d0)
       call wfn1_gen_trial_wfn(xx(npts),wfn1_param,wfn1_wave,wfn1_deriv,
      &                        wfn1_trial_wv,g_momo1,g_momo2)
       call wfn1_ortho(wfn1_mat,wfn1_trial_wv)
@@ -156,9 +250,9 @@ c     call wfn1_skew(wfn1_param,wfn1_trial_drv,
 c    &               v_dna,v_dnb,v_dca,v_dcb)
 c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_trial_drv)
       fx(npts) = wfn1_trial_en%E_tot
-c     error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
+      error = wfn1_trace(wfn1_deriv,wfn1_trial_drv)
 c     error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
-      error = wfn1_fetch_max(wfn1_trial_drv)
+c     error = wfn1_fetch_max(wfn1_trial_drv)
       df(npts) = dnrm*(error%total**2)
       call wfn1_f0df0f1(xx(2),fx(1),de,fx(2),tr,aa,bb,cc,xm,fxm)
       if (xm.lt.-tr) then
@@ -347,7 +441,7 @@ c
         o_reduced = .false.
         o_limited = .true.
 c
-        goto 10
+c       goto 10
       endif
       o_reduced = .false.
 c     error = wfn1_limit_max(wfn1_deriv)

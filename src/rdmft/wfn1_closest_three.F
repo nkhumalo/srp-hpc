@@ -12,7 +12,7 @@ C>
       implicit none
 c
       integer,          intent(in)  :: npts     !< The number of points
-      double precision, intent(in)  :: xx(npts) !< The coordinates of
+      double precision, intent(in)  :: xx(0:npts) !< The coordinates of
                                                 !< the points
       integer,          intent(in)  :: ix       !< The index of the
                                                 !< given point
@@ -20,15 +20,15 @@ c
       integer,          intent(out) :: ix2      !< The index of point 2
       integer,          intent(out) :: ix3      !< The index of point 3
 c
-      if (npts.eq.3) then
+      if (npts.eq.2) then
 c
 c       there is only one possible set of three points
 c
-        ix1 = 1
-        ix2 = 2
-        ix3 = 3
+        ix1 = 0
+        ix2 = 1
+        ix3 = 2
 c
-      else if (ix.eq.1) then
+      else if (ix.eq.0) then
 c
 c       there are no previous points
 c

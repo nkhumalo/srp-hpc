@@ -102,7 +102,7 @@ c
       Ewf     = wfn1_energy%E_tot
       sfac    = wfn1_param%nea*(nmo-wfn1_param%nea)
       sfac    = 1.0d0/sfac 
-      sfac    = 0.9d0**sfac
+      sfac    = 0.5d0**sfac
       ntries  = 0
       call ga_distribution(g_momo1,iproc,ilo,ihi,jlo,jhi)
       allocate(buf(ilo:ihi,jlo:jhi))
@@ -143,23 +143,24 @@ c
         Ewf_trial = wfn1_trial_en%E_tot
         de = Ewf - Ewf_trial
         if (iproc.eq.0) then
-          call random_number(random)
+c         call random_number(random)
 c         ostop = random.le.exp(pfac*de)
           ostop = de.gt.0.0d0
         endif
         call ga_brdcst(1200,ostop,ma_sizeof(MT_LOG,1,MT_BYTE),0)
-        if (.not.ostop.and.ntries.gt.100) then
-          ostop = .true.
+        if (.not.ostop.and.(mod(ntries,100).eq.0)) then
+c         ostop = .true.
           wfn1_param%rlim = sfac*wfn1_param%rlim
-          wfn1_trial_en = wfn1_energy
-          call ga_copy(wfn1_wave%g_na,wfn1_trial_wv%g_na)
-          call ga_copy(wfn1_wave%g_nb,wfn1_trial_wv%g_nb)
-          call ga_copy(wfn1_wave%g_ca,wfn1_trial_wv%g_ca)
-          call ga_copy(wfn1_wave%g_cb,wfn1_trial_wv%g_cb)
-          call ga_copy(wfn1_deriv%g_dna,wfn1_trial_drv%g_dna)
-          call ga_copy(wfn1_deriv%g_dnb,wfn1_trial_drv%g_dnb)
-          call ga_copy(wfn1_deriv%g_dca,wfn1_trial_drv%g_dca)
-          call ga_copy(wfn1_deriv%g_dcb,wfn1_trial_drv%g_dcb)
+          rlim = wfn1_param%rlim
+c         wfn1_trial_en = wfn1_energy
+c         call ga_copy(wfn1_wave%g_na,wfn1_trial_wv%g_na)
+c         call ga_copy(wfn1_wave%g_nb,wfn1_trial_wv%g_nb)
+c         call ga_copy(wfn1_wave%g_ca,wfn1_trial_wv%g_ca)
+c         call ga_copy(wfn1_wave%g_cb,wfn1_trial_wv%g_cb)
+c         call ga_copy(wfn1_deriv%g_dna,wfn1_trial_drv%g_dna)
+c         call ga_copy(wfn1_deriv%g_dnb,wfn1_trial_drv%g_dnb)
+c         call ga_copy(wfn1_deriv%g_dca,wfn1_trial_drv%g_dca)
+c         call ga_copy(wfn1_deriv%g_dcb,wfn1_trial_drv%g_dcb)
         endif
         if (ostop) then
 c         accept the trial wave function

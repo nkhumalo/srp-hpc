@@ -694,6 +694,14 @@ c
       allocate(v_dca(1:wfn1_param%nmo), v_dcb(1:wfn1_param%nmo))
       allocate(v_dnna(1:wfn1_param%nmo),v_dnnb(1:wfn1_param%nmo))
       allocate(v_dcna(1:wfn1_param%nmo),v_dcnb(1:wfn1_param%nmo))
+      v_dna = 0.0d0
+      v_dnb = 0.0d0
+      v_dca = 0.0d0
+      v_dcb = 0.0d0
+      v_dnna = 0.0d0
+      v_dnnb = 0.0d0
+      v_dcna = 0.0d0
+      v_dcnb = 0.0d0
 cDEBUG
       if (wfn1_param%corr_expr.eq."wfn1s") then
         read(70,*)v_dna(1:wfn1_param%nmo)
@@ -728,7 +736,8 @@ c
 c     == Set up initial wave functions ==
 c
 cDEBUG
-      write(*,*)'HVD: wfn1: movecs_in = ',wfn1_param%movecs_in
+      write(*,*)'HVD: wfn1: movecs_in  = ',wfn1_param%movecs_in
+      write(*,*)'HVD: wfn1: movecs_out = ',wfn1_param%movecs_out
 cDEBUG
       if (wfn1_param%movecs_in == "atomic") then
 c
@@ -763,6 +772,10 @@ c
       else
         call wfn1_guess_movecs(wfn1_param,wfn1_wave)
       endif
+cDEBUG
+c     call wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
+c    &                         v_dna,v_dnb,v_dca,v_dcb,g_momo1,g_momo2)
+cDEBUG
 c
 c     == Initial wavefunction complete ==
 c
@@ -916,6 +929,17 @@ c
         write(LuOut,*)
       endif
 c
+c     == Store results ==
+c
+      if (.not.rtdb_put(rtdb,'wfn1:energy',MT_DBL,1,wfn1_energy%E_tot))
+     &  call errquit(pname//' failed to store energy in rtdb', 
+     &               0, RTDB_ERR)
+      if (.not.rtdb_put(rtdb,'wfn1:converged',MT_LOG,1,oconverged))
+     &  call errquit(pname//' failed to store converged in rtdb', 
+     &               0, RTDB_ERR)
+      call wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave,
+     &                       v_dna,v_dnb,v_dca,v_dcb)
+c
 c     == Print results ==
 c
       call ga_sync() ! for good measure
@@ -929,17 +953,6 @@ cDEBUG
      &     v_dna,v_dnb,v_dca,v_dcb,
      &     v_dnna,v_dnnb,v_dcna,v_dcnb)
 cDEBUG
-c
-c     == Store results ==
-c
-      if (.not.rtdb_put(rtdb,'wfn1:energy',MT_DBL,1,wfn1_energy%E_tot))
-     &  call errquit(pname//' failed to store energy in rtdb', 
-     &               0, RTDB_ERR)
-      if (.not.rtdb_put(rtdb,'wfn1:converged',MT_LOG,1,oconverged))
-     &  call errquit(pname//' failed to store converged in rtdb', 
-     &               0, RTDB_ERR)
-      call wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave,
-     &                       v_dna,v_dnb,v_dca,v_dcb)
 c
 c     == Clean up ==
 c

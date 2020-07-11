@@ -56,7 +56,7 @@ c     recalculate step
       if(ga_nodeid().eq.0) then
       buffer = "PARAMETERS of gaussian cube file"
       call util_print_centered(luout, trim(buffer),.true., .true.)
-      WRITE(*,'(1X,A,T12,":",3F12.3)') "step (Ang)",step
+      WRITE(*,'(1X,A,T12,":",3F12.3)') "step (Ang)",step*cau2ang
       write(*,'(1X,A,T12,":",3I4)') "ngrid",ngrid
       write(*,'(1X,A,T12,":",I9)') "npoints",npoints
       write(*,'(1X,A,T12,":",3(F12.3,4X))') "rmax (Ang)",rmax*cau2ang
@@ -231,8 +231,8 @@ c
 #include "rtdb.fh"
 c
       integer geom
-      double precision v(n)
       integer n
+      double precision v(n)
       character*(*) fname
       integer i,ii
 
@@ -335,8 +335,8 @@ c
 #include "rtdb.fh"
 c
       integer geom
-      double precision v(n)
       integer n
+      double precision v(n)
       character*(*) fname
       integer i,ii
 

@@ -110,14 +110,14 @@ cccc#include "frac_occ.fh"
 
 
 *     **** external functions ****
-      real*8      psp_zv,psp_rc,ewald_rcut,ion_amass
+      real*8      psp_zv,psp_rc,ewald_rcut,ion_amass,nwpw_cosmo_qc0
       real*8      ewald_mandelung,lattice_omega_small
       real*8      lattice_omega,lattice_unita,lattice_ecut,lattice_wcut
       real*8      lattice_unitg,lattice_unitg_small,lattice_unita_small
       integer     ewald_ncut,ewald_nshl3d
       integer     psp_lmmax,psp_lmax,psp_locp
       character*4 ion_aname,ion_atom
-      external    psp_zv,psp_rc,ewald_rcut,ion_amass
+      external    psp_zv,psp_rc,ewald_rcut,ion_amass,nwpw_cosmo_qc0
       external    ewald_mandelung,lattice_omega_small
       external    lattice_omega,lattice_unita,lattice_ecut,lattice_wcut
       external    lattice_unitg,lattice_unitg_small,lattice_unita_small
@@ -142,11 +142,13 @@ cccc#include "frac_occ.fh"
       integer  pack_nwave_all
       integer  control_it_in,control_it_out,control_gga,control_version
       integer  control_ngrid,pack_nwave
-      integer  ion_nion,ion_natm,ion_katm,ion_nkatm
+      integer  ion_nion,ion_natm,ion_katm,ion_nkatm,ion_nkatm0
+      integer  ion_nion_qm,ion_nion_mm,ion_nion_q
       external pack_nwave_all
       external control_it_in,control_it_out,control_gga,control_version
       external control_ngrid,pack_nwave
-      external  ion_nion,ion_natm,ion_katm,ion_nkatm
+      external ion_nion,ion_natm,ion_katm,ion_nkatm,ion_nkatm0
+      external ion_nion_qm,ion_nion_mm,ion_nion_q
 
       character*12 control_boundry
       external     control_boundry
@@ -193,6 +195,10 @@ c#include "Parallel.fh"
 
       logical  control_mparallelized
       external control_mparallelized
+      logical  nwpw_cosmo_on
+      external nwpw_cosmo_on
+      real*8   nwpw_cosmo_screen
+      external nwpw_cosmo_screen
 
 *                            |************|
 *****************************|  PROLOGUE  |****************************
@@ -241,6 +247,7 @@ c#include "Parallel.fh"
       
       value = control_read(1,rtdb)
 
+
       mparallelized = control_mparallelized()
       call Parallel2d_Init(control_np_orbital())
       call Parallel2d_np_i(np_i)
@@ -255,6 +262,7 @@ c#include "Parallel.fh"
       oprint = omaster.and.control_print(print_medium)
       lprint = omaster.and.control_print(print_low)
       hprint = omaster.and.control_print(print_high)
+
 
 *     **** initialize psi_data ****
       call psi_data_init(100)
@@ -476,7 +484,13 @@ c         end if
       call psp_U_init()
 
 *     **** initialize META GGA ****
-      call nwpw_meta_gga_init()
+      call nwpw_meta_gga_init(control_gga())
+
+*     **** initialize vdw ****
+      call vdw_DF_init()
+
+*     **** initialize rho_symmetry  ****
+      call rho_symmetrizer_init()
 
 *     **** initialize metadynamics ****
       call meta_initialize(rtdb)
@@ -484,6 +498,7 @@ c         end if
 *     **** initialize QM/MM ****
       call pspw_init_APC(rtdb)
       call pspw_qmmm_init(rtdb)
+      !call pspw_cdft_init(rtdb)
 
 *     **** initialize frac_occ data structure ****
 c      call frac_occ_init(rtdb,ispin,ne)
@@ -531,6 +546,7 @@ c      call frac_occ_init(rtdb,ispin,ne)
          if (fractional) write(luout,1132)
          call pspw_print_SIC(luout)
          call pspw_print_HFX(luout)
+         call nwpw_meta_gga_print(luout)
          if (ion_makehmass2()) write(luout,1135)
          write(luout,1140)
          do ia = 1,ion_nkatm()
@@ -560,7 +576,7 @@ c           write(luout,1151) (psp_rc(i,ia),i=0,psp_lmax(ia))
             end do
          end if
             
-         do ia=1,ion_nkatm()
+         do ia=1,ion_nkatm0()
            icharge = icharge + ion_natm(ia)*psp_zv(ia)
          end do
          write(luout,1159) icharge
@@ -568,8 +584,11 @@ c           write(luout,1151) (psp_rc(i,ia),i=0,psp_lmax(ia))
          write(luout,1160)
          write(luout,1170) (ion_atom(K),ion_natm(K),K=1,ion_nkatm())
          write(luout,1180)
-         do I=1,ion_nion()
-           if (ion_q_FixIon(I)) then
+         do I=1,ion_nion()+ion_nion_q()
+           if (I.gt.ion_nion()) then
+           write(luout,1195) I,ion_aname(I),(ion_rion(K,I),K=1,3),
+     >                       nwpw_cosmo_qc0(I-ion_nion()),ion_amm(i)
+           else if (ion_q_FixIon(I)) then
            write(luout,1191) I,ion_aname(I),(ion_rion(K,I),K=1,3),
      >                   ion_amass(I)/1822.89d0,ion_amm(i)
            else if (ion_q_xyzFixIon(I)) then
@@ -656,6 +675,8 @@ c           write(luout,1151) (psp_rc(i,ia),i=0,psp_lmax(ia))
      >                 pack_nwave_all(3),pack_nwave(3)
          end if
 
+         call rho_symmetrizer_print(luout)
+
          write(luout,1270)
          if (.not.control_translation()) write(luout,1271)
          if (.not.control_rotation())    write(luout,1272)
@@ -673,7 +694,8 @@ c           write(luout,1151) (psp_rc(i,ia),i=0,psp_lmax(ia))
 *                |***************************|
 
       if (oprint) call current_second(cpu2)
-      if (oprint) CALL nwpw_MESSAGE(2)
+      if (oprint) call nwpw_message(14)
+     
       it_in  = control_it_in()
       it_out = control_it_out()
       icount = 0
@@ -711,12 +733,12 @@ c           write(luout,1151) (psp_rc(i,ia),i=0,psp_lmax(ia))
       if (icount.lt.it_out) go to 1
       if (oprint) 
      > write(luout,*) 
-     > '*** arived at the Maximum iiteration.   terminated.'
+     > '*** arrived at the Maximum iteration.   terminated.'
 
 *::::::::::::::::::::  end of iteration loop  :::::::::::::::::::::::::
 
    2  continue
-      if (oprint) CALL nwpw_MESSAGE(3)
+      if (oprint) CALL nwpw_message(3)
       if (oprint) call current_second(cpu3)
 
 *         |****************************************|
@@ -853,8 +875,11 @@ c         end do
          write(luout,1300)
          write(luout,1410)
          write(luout,1420)
-         do I=1,ion_nion()
-           if (ion_q_FixIon(I)) then
+         do I=1,ion_nion()+ion_nion_q()
+           if (I.gt.ion_nion()) then
+           write(luout,1195) I,ion_aname(I),(ion_rion(k,i),K=1,3),
+     >                   nwpw_cosmo_qc0(I-ion_nion()),ion_amm(i)
+           else if (ion_q_FixIon(I)) then
            write(luout,1191) I,ion_aname(I),(ion_rion(k,i),K=1,3),
      >                   ion_amass(I)/1822.89d0,ion_amm(i)
            else if (ion_q_xyzFixIon(I)) then
@@ -1020,6 +1045,17 @@ c            write(luout,1706) E(18)
          end if
          end if
 
+*      **** write out COSMO energies ****
+       if (nwpw_cosmo_on()) then
+            write(luout,1730) 
+            write(luout,1731) nwpw_cosmo_screen()
+            write(luout,1732) E(46)
+            write(luout,1733) E(47)
+            write(luout,1734) E(48)
+            write(luout,1735) E(46)+E(47)+E(48),
+     >                        (E(46)+E(47)+E(48))*27.2116d0*23.06d0
+       end if
+
       end if
 
       if (mparallelized) then
@@ -1089,7 +1125,9 @@ c            write(luout,1706) E(18)
       call psp_end()
       call ion_end_FixIon()
       call psp_U_end()
+      call vdw_DF_end()
       call nwpw_meta_gga_end()
+      call rho_symmetrizer_end()
       call pspw_end_SIC()
       call pspw_end_HFX()
       call pspw_end_APC()
@@ -1180,7 +1218,9 @@ c      call frac_occ_end()
  1132 FORMAT(5X,' using fractional occupation')
  1135 FORMAT(/' The masses of QM H atoms converted to 2.0 amu. ',
      >       /' To turn off this default',
-     >        ' set nwpw:makehmass2 .false.')
+     >       /' nwpw',
+     >       /'    makehmass2 off',
+     >       /' end')
  1140 FORMAT(/' elements involved in the cluster:')
  1150 FORMAT(5X,I2,': ',A4,'  core charge:',F4.1,'  lmax=',I1)
  1151 FORMAT(5X,'        cutoff =',4F8.3)
@@ -1201,6 +1241,7 @@ c      call frac_occ_end()
      >       ' ) - atomic mass= ',F7.3,' - z fixed')
  1194 FORMAT(5X, I4, A5, ' (',3F11.5,
      >       ' ) - atomic mass= ',F7.3,A)
+ 1195 FORMAT(5X, I4, A5, ' (',3F11.5,' ) -      charge= ',E13.6,' ',A)
  1200 FORMAT(5X,'   G.C.  ',' (',3F11.5,' )')
  1210 FORMAT(5X,'   C.O.M.',' (',3F11.5,' )')
  1211 FORMAT(5X,'   number of constraints = ', I6,' ( DOF = ',I6,' )' )
@@ -1234,7 +1275,7 @@ c      call frac_occ_end()
  1251 FORMAT(5X,' wavefnc cutoff=',F7.3,'  fft=',I3,'x',I3,'x',I3,
      &       '( ',I8,' waves ',I8,' per task)')
  1260 FORMAT(5X,' Ewald summation: cut radius=',F8.2,'  and',I3)
- 1261 FORMAT(5X,'                   madelung=',f11.8)
+ 1261 FORMAT(5X,'                   madelung=',f14.8)
  1270 FORMAT(/' technical parameters:')
  1271 FORMAT(5x, ' translation constrained')
  1272 FORMAT(5x, ' rotation constrained')
@@ -1244,7 +1285,8 @@ c      call frac_occ_end()
  1290 FORMAT(5X, ' tolerance=',E8.3,' (energy)',E12.3,
      &        ' (electron)',E12.3,' (ion)')
  1300 FORMAT(//)
- 1305 FORMAT(10X,'================ iteration =========================')
+ 1305 FORMAT(10X,
+     >       '==================== iteration =========================')
  1310 FORMAT(I8,E20.10,3E15.5)
  1320 FORMAT(' number of electrons: spin up=',F11.5,'  down=',F11.5,A)
  1321 FORMAT(' total charge of system:',F11.5,A)
@@ -1321,6 +1363,14 @@ c      call frac_occ_end()
  1706 FORMAT( ' (QM+MM)/Cavity energy  :',E19.10)
 
  1720 FORMAT(/' Dispersion energy   :',E19.10)
+
+ 1730 FORMAT(/' COSMO energies:')
+ 1731 FORMAT(5x,' screen=(epsilon-1)/(epsilon+1/2):',F11.6)
+ 1732 FORMAT(5x,' screen*Qelc*B*q energy  :',E19.10)
+ 1733 FORMAT(5x,' screen*Qion*B*q energy  :',E19.10)
+ 1734 FORMAT(5x,' screen*0.5*q*A*q energy :',E19.10)
+ 1735 FORMAT(5x,' solvation energy (w/o QM polarization) :',E19.10,
+     >   /45x,' (',F8.3,' kcal/mol)')
 
  9010 FORMAT(//' >> job terminated due to code =',I3,' <<')
 

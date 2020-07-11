@@ -19,7 +19,6 @@ C>
 #include "geom.fh"
 #include "bas.fh"
 #include "rtdb.fh"
-#include "tcgmsg.fh"
 #include "msgtypesf.h"
 #include "msgids.fh"
 #include "inp.fh"
@@ -87,9 +86,11 @@ c     Check if single differencing is requested
      &    numerical_single)) then
          numerical_single = .false.
       else
+         if (oprint) then
          write (6,*)
          write (6,*) 'Single differencing is requested'
          write (6,*)
+         end if
       endif
 c
       call util_print_get_level(print_level) ! Save for later
@@ -215,7 +216,7 @@ c     set no xyz options
       call ga_sync()
       ignore_status = rtdb_parallel(.false.)
       if ( whoiam .eq. master ) then
-        if (o_directions) then
+        if ((o_directions).and.(oprint)) then
           if (no_x) write(luout,*)' stpr_gen_hess_at: no X steps taken'
           if (no_y) write(luout,*)' stpr_gen_hess_at: no Y steps taken'
           if (no_z) write(luout,*)' stpr_gen_hess_at: no Z steps taken'
@@ -291,7 +292,8 @@ c
 c     
 c     broadcast number of atoms
 c     
-      call ga_brdcst(Msg_gen_at_nat+MSGINT, nat, mitob(1), 0)
+      call ga_brdcst(Msg_gen_at_nat+MSGINT, nat,
+     $     MA_sizeof(MT_INT,1,MT_BYTE), 0)
 c     
 *
       if (o_stepper_debug) then
@@ -354,7 +356,8 @@ c
 c
 c     Read gradient and dipole at the central point
 c
-      call ga_brdcst(Msg_gen_at_nat+MSGINT, rank_hess, mitob(1), 0)
+      call ga_brdcst(Msg_gen_at_nat+MSGINT, rank_hess,
+     $        MA_sizeof(MT_INT,1,MT_BYTE), 0)
 c
 c     me.ne.0 need gradient
 c

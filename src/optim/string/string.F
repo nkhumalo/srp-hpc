@@ -253,7 +253,7 @@ c        **** impose ****
       else
          middle = -1
 
-         if (.not.rtdb_get(rtdb,'bead_list:size',
+         if (.not.rtdb_get(rtdb,'bead:size',
      >                     mt_int,1,nbeads_exist))
      >     call errquit('getting string:nbeads_exist failed',4,RTDB_ERR)
 
@@ -357,8 +357,8 @@ c        **** impose ****
 
 
 !     *** Set the coordinates of beads to new geometry objects ***
-      if (.not.rtdb_put(rtdb,'bead_list:size',mt_int,1,nbeads))
-     >   call errquit('setting bead_list:size failed',4,RTDB_ERR)
+      if (.not.rtdb_put(rtdb,'bead:size',mt_int,1,nbeads))
+     >   call errquit('setting bead:size failed',4,RTDB_ERR)
 
       do i=1,nbeads
          size = k_coords + (i-1)*3*natoms
@@ -1358,7 +1358,7 @@ C> @}
           else if (r .lt. min_dist) then
            siner = (coords(3,i)-coords(3,j))/r
            coser = sqrt(1.0d0-siner*siner)
-           if(coser .lt. 1.0d-10) then ! Force 0*0/0 to be zero
+           if(coser .lt. 1d-8) then ! Force 0*0/0 to be zero
              cosed = 0.0d0
              sined = 0.0d0
            else
@@ -1657,7 +1657,7 @@ C> @}
       implicit none
       integer rtdb,geom
       integer natoms,nbeads,nstep
-      logical freeze1,freezeN,projection1
+      logical freeze1,freezeN,projection1,tmpVar
       real*8 coords(3,natoms,nbeads)
       real*8 energy(nbeads)
       real*8 dVdx(3,natoms,nbeads)
@@ -1726,7 +1726,9 @@ C> @}
 
             if (oprint) write(*,*) "string: running bead ",i
             call ga_sync()
-            if ( .not. (task_gradient(rtdb).or.ignore))
+*            if ( .not. (task_gradient(rtdb).or.ignore))
+            tmpVar = task_gradient(rtdb)
+            if ( .not. (tmpVar.or.ignore))
      >         call errquit('zts_meps: gradient failed',0, 0)
 
 

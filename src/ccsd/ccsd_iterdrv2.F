@@ -59,6 +59,27 @@ C
 #include "ccsd_data.fh"
 #include "chemio.h"
 #include "eaf.fh"
+#ifdef USE_F90INTERFACE
+      interface
+      subroutine ccsd_pampt2(basis,idiis,nsh,ncor,nocc,nvir,nact,nbf,
+     $                      iprt,cmo,eorb,t1,ht1,
+     $                      scra,scrb,hiu,hia,habe,giu,gabe,
+     $                      g_t2,g_ht2,g_nt2,g_nht2,
+     $                      eccsd,g_ncoul,g_nexch,
+     &        tklst, Tol2E, occd, eccsdos,use_ccsd_omp)
+      integer basis,idiis,nsh,ncor,nocc,nvir,nact,nbf,iprt,
+     &        g_t2,g_ht2,g_ncoul,g_nexch,g_nt2,g_nht2,
+     &        tklst(*)
+      double precision cmo(nbf,*),eorb(*),t1(*),
+     &                 ht1(*),scra(*),scrb(*),
+     &                 hiu(*),hia(*),habe(*),giu(*),gabe(*)
+      double precision tol2e
+      double precision eccsd,fac, eccsdos
+      logical occd
+      logical, optional, intent(in) :: use_ccsd_omp
+      end subroutine
+      end interface
+#endif         
 c
       double precision zip
       data zip/0.0d00/
@@ -120,6 +141,8 @@ c - else check if one can restart
      $   use_inmem_st2=.true. ! Old default kept ST2 in GA
       if(.not.rtdb_get(rtdb,'ccsd:rdonly_st2',mt_log, 1,use_rdonly_st2))
      $   use_rdonly_st2=.false. ! use ga_set_property read_only
+      if(.not.rtdb_get(rtdb,'ccsd:mirr_st2',mt_log, 1,use_mirr_st2))
+     $   use_mirr_st2=.false. ! use ga_set_property read_only
 
       if (orestart.or.oconverged) then
           orestart = ccsd_read_restart(t2file, g_t2, nvir, lhoov)
@@ -267,6 +290,12 @@ c form ``sigma'' vector
 c ----------------------------------------------------------
       call dfill(lnov,zip,ht1,1)
       call dfill(lhoov,zip,scra,1)
+      if(g_ht2.eq.123456789) then
+c     ga_created moved here from aoccsd
+      if (.not.ga_create(MT_DBL,mxvec*lhoov,nvir+1,'g_ht2', 
+     &                   mxvec*lhoov,0,g_ht2))
+     &     call errquit('ga_create failed for g_ht2',0, GA_ERR)
+      endif
       call ga_distribution(g_ht2,iam,jlo,jhi,ilo,ihi)
       call ga_sync
       do bev=1,nvir+1

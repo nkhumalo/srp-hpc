@@ -23,13 +23,13 @@ C>
 C> [1] A. Klamt, V. Jonas, T. B&uuml;rger, J.C.W. Lohrenz,
 C>     "Refinement and parametrization of COSMO-RS",
 C>     <i>J. Phys. Chem. A</i> (1998) <b>102</b>, pp 5074-5085, DOI:
-C>     <a href="http://dx.doi.org/10.1021/jp980017s">
+C>     <a href="https://doi.org/10.1021/jp980017s">
 C>     10.1021/jp980017s</a>.
 C>
 C> [2] A. Bondi,
 C>     "van der Waals volumes and radii",
 C>     <i>J. Phys. Chem.</i> (1964) <b>68</b>, pp 441-451, DOI:
-C>     <a href="http://dx.doi.org/10.1021/j100785a001">
+C>     <a href="https://doi.org/10.1021/j100785a001">
 C>     10.1021/j100785a001</a>.
 C>
 C> [3] M. Mantina, R. Valero, C.J. Cramer, D.G. Truhlar,
@@ -72,6 +72,7 @@ c
       character*2 symb
       character*16 elem
       integer atn
+      logical isbq
 c
 c MN solvation models -->
 C
@@ -318,9 +319,45 @@ c
              
             endif
          enddo
-         if(.not.geom_tag_to_element(aname, symb, elem, atn))
-     +     call errquit('cosmo def radii:cannot resolve tag'
-     +                  //aname, 0,0)
+         if(aname(1:1).eq.'X'.or.aname(1:1).eq.'x') then
+c     minuscule radius for X                   
+            radius(iat)=1d-9
+            cycle atomloop
+         endif
+         if(.not.geom_tag_to_element(aname, symb, elem, atn)) then
+            if (symb .ne. 'bq') then
+               call errquit
+     &              ('cosmodefradii: center is neither atom nor bq'
+     +           //aname, 0,0)
+            else
+#if 0               
+               isbq=.true.
+               if(abs(atn).gt.1d-6) then
+c     point-charge with non zero charge
+                  call errquit
+     &                 ('cosmodefradii: not ready for charged bqs'
+     +                 //aname, 0,0)
+               else
+c bq with zero charge. extract element
+                  if (.not. geom_tag_to_element(aname(3:), symb, 
+     &                 elem, atn)) 
+     C                 call errquit
+     &                 ('cosmodefradii: failed extract bq elem name'
+     +                 //aname, 0,0)
+               endif
+#else
+            if(ga_nodeid().eq.0) then
+               write(6,*) 
+               write(6,*) ' Solvation models not compatible with bqs '
+               write(6,*) ' Please remove bqs from geometry '
+               write(6,*) 
+            endif
+            call errquit
+     &           ('cosmodefradii: not ready for '
+     +           //aname, 0,0)
+#endif
+            endif
+         endif
          do i=1,nmap
             if(inp_compare(.false.,
      &                     symb,
@@ -332,7 +369,6 @@ c
              
             endif
          enddo
-
          rad=vander(nint(dbl_mb(k_coszan+iat-1)))
          if (geom_any_ecp(geom).and.geom_ecp_get(geom,iat)) then
             if (.not.geom_tag_to_element(byte_mb(k_costag+16*(iat-1)), 

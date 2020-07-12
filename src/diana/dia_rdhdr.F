@@ -7,8 +7,8 @@ c
 #include "dia_common.fh"
 #include "mafdecls.fh"
 c
-      integer ftell
-      external ftell
+c     integer ftell
+c     external ftell
 c
       character*16 sgmnam(msa)
       character*255 fname
@@ -148,8 +148,8 @@ c
 c
 #include "dia_common.fh"
 c
-      integer ftell
-      external ftell
+c     integer ftell
+c     external ftell
 c
       character*5 string
 c

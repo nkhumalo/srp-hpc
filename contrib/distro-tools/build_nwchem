@@ -2221,6 +2221,13 @@ if [ ${#SLURMOPT} -ne 0 ] ; then
   echo "unsetenv SLURMOPT"               >> ${NWCHEM_UNENV_CSH}
   echo "unsetenv SLURM"                  >> ${NWCHEM_UNENV_CSH}
 fi
+if [ ${#USE_INTERNALBLAS} -ne 0 ] ; then
+  echo "USE_INTERNALBLAS   =" ${USE_INTERNALBLAS}
+  echo "export USE_INTERNALBLAS=\"${USE_INTERNALBLAS}\"" >> ${NWCHEM_ENV_SH}
+  echo "setenv USE_INTERNALBLAS \"${USE_INTERNALBLAS}\"" >> ${NWCHEM_ENV_CSH}
+  echo "unset USE_INTERNALBLAS"                          >> ${NWCHEM_UNENV_SH}
+  echo "unsetenv USE_INTERNALBLAS"                       >> ${NWCHEM_UNENV_CSH}
+fi
 if [ ${#BLASOPT} -ne 0 ] ; then
   echo "BLASOPT            =" ${BLASOPT} 
   echo "export BLASOPT=\"${BLASOPT}\"" >> ${NWCHEM_ENV_SH}

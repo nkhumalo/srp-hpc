@@ -7,7 +7,8 @@ include config/makefile.h
 
   LIB_DEFINES =  -DCOMPILATION_DATE="'`date +%a_%b_%d_%H:%M:%S_%Y`'" \
                  -DCOMPILATION_DIR="'$(TOPDIR)'" \
-                 -DNWCHEM_BRANCH="'$(CODE_BRANCH)'"
+                 -DNWCHEM_BRANCH="'$(CODE_BRANCH)'" \
+		 -DMULTI_GROUP
 ifeq ($(XLFMAC),y)
   FOPTIONS +=  -WF,-DCOMPILATION_DATE="'`date +%a_%b_%d_%H:%M:%S_%Y`'" \
                  -WF,-DCOMPILATION_DIR="'$(TOPDIR)'" \

@@ -89,6 +89,15 @@ c
       integer omp_get_max_threads
       external omp_get_max_threads
 #endif
+#ifdef MULTI_GROUP
+      integer group_id0
+      integer group_id1
+      integer group_num
+      integer group_size(2)
+      integer, allocatable :: group_procs(:)
+      integer ii
+      group_size(2) = 8
+#endif
 c
 c     Create parallel processes and initialize IPC layer
 c
@@ -148,6 +157,39 @@ C
      &      call errquit('nwchem.F: ma_init failed (ga_uses_ma=F)',911,
      &      MA_ERR)
       endif
+#ifdef MULTI_GROUP
+      call ga_brdcst(10,input_filename,len(input_filename),0)
+      allocate(group_procs(ga_nnodes()))
+      group_size(1)=ga_nnodes()-group_size(2)
+      if (ga_nodeid().lt.group_size(1)) then
+        group_num=1
+        do ii = 0, group_size(1)-1
+          group_procs(ii+1)=ii
+        enddo
+      else
+        group_num=2
+        do ii = 0, group_size(2)-1
+          group_procs(ii+1)=group_size(1)+ii
+        enddo
+      endif
+      group_id0=ga_pgroup_get_default()
+      group_id1=ga_pgroup_create(group_procs,group_size(group_num))
+      deallocate(group_procs)
+      call ga_pgroup_set_default(group_id1)
+      if (ga_nodeid().eq.0.and.group_num.eq.2) then
+        ii=inp_strlen(input_filename)
+        input_filename(ii+1:ii+2)=".2"
+        ii=ii+2
+        open(LuIn, file=input_filename, status='old', form='formatted',
+     $       err=10000)
+        close(LuOut)
+        open(LuOut, file=input_filename(1:ii)//".out", err=10010)
+        goto 10012
+10010   call errquit('nwchem: failed to open the output file', 0,
+     &       UERR)
+10012   continue
+      endif
+#endif
 !
 !     Touch OpenMP here so that any runtime initialization happens up-front.
 !     This ensures that any printout that the OpenMP runtime generates,
@@ -389,6 +431,9 @@ c
 c
 c     Tidy up the global memory
 c
+#ifdef MULTI_GROUP
+      call ga_pgroup_set_default(group_id0)
+#endif
       call ga_terminate()
 c
 c     Tidy up the parallel environment

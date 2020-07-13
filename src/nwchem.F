@@ -1,5 +1,6 @@
       program nwchem
       implicit none
+#include "mpif.h"
 #include "errquit.fh"
 #include "mafdecls.fh"
 #include "global.fh"
@@ -101,6 +102,12 @@ c
 c
 c     Create parallel processes and initialize IPC layer
 c
+#ifdef MULTI_GROUP2
+      integer ierr
+      call mpi_init(ierr)
+      call tcgsetcom(MPI_COMM_WORLD)
+      call ga_set_comm(MPI_COMM_WORLD)
+#endif
       call pbeginf()
 c
 c     MXINIT is needed by PeIGS and PFFT to initialize

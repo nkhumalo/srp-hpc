@@ -2403,7 +2403,7 @@ if [ ${#MRCC_METHODS} -ne 0 ] ; then
 fi
 
 if [ "x$option" = "xrealclean" ]; then
-  rm -f nwchem_make_env.* nwchem_make_unenv.*
+  rm -f nwchem_make_env.sh nwchem_make_unenv.sh nwchem_make_env.csh nwchem_make_unenv.csh
   if [ ${#USE_TAU} -ne 0 ] ; then
     rm -f bin/${MPI_F90} bin/${MPI_CC} bin/${MPI_CXX}
   fi

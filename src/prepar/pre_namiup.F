@@ -1331,6 +1331,10 @@ c          C2' ->  C2*
 c          H2' -> 2H2*
 c         H2'' -> 3H2*
 c         HO3' ->  H3T
+c          OP1 ->  O1P
+c          OP2 ->  O2P
+c          H41 ->  2H4
+c          H42 ->  3H4
 c
       cres='DC'
       do 25 i=1,natm
@@ -1431,6 +1435,30 @@ c
       catm(2,i)(1:4)=' H3T'
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),"HO3' to  H3T"
+      endif
+      endif
+      if(catm(2,i)(1:4).eq." OP1") then
+      catm(2,i)(1:4)=' O1P'
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i)," OP1 to  O1P"
+      endif
+      endif
+      if(catm(2,i)(1:4).eq." OP2") then
+      catm(2,i)(1:4)=' O2P'
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i)," OP2 to  O2P"
+      endif
+      endif
+      if(catm(2,i)(1:4).eq." H41") then
+      catm(2,i)(1:4)='2H4 '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i)," H41 to 2H4 "
+      endif
+      endif
+      if(catm(2,i)(1:4).eq." H42") then
+      catm(2,i)(1:4)='3H4 '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i)," H42 to 3H4 "
       endif
       endif
       endif

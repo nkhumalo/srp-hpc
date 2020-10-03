@@ -771,6 +771,7 @@ c
 c     PHE  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 4HB
 c
       cres='PHE'
       do 16 i=1,natm
@@ -791,6 +792,12 @@ c
       catm(2,i)(1:4)='3HB '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='4HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 4HB'
       endif
       endif
       endif
@@ -1323,6 +1330,7 @@ c          H3' ->  H3*
 c          C2' ->  C2*
 c          H2' -> 2H2*
 c         H2'' -> 3H2*
+c         HO3' ->  H3T
 c
       cres='DC'
       do 25 i=1,natm
@@ -1417,6 +1425,12 @@ c
       catm(2,i)(1:4)='3H2*'
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),"H2'' to 3H2*"
+      endif
+      endif
+      if(catm(2,i)(1:4).eq."HO3'") then
+      catm(2,i)(1:4)=' H3T'
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),"HO3' to  H3T"
       endif
       endif
       endif

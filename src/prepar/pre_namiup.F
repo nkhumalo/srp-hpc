@@ -127,14 +127,21 @@ c
 c     ARG  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
 c          HG1 -> 2HG
 c          HG2 -> 3HG
+c          HG3 -> 2HG
 c          HD1 -> 2HD
 c          HD2 -> 3HD
+c          HD3 -> 2HD
 c         HH11 -> 2HH1
 c         HH12 -> 3HH1
 c         HH21 -> 2HH2
 c         HH22 -> 3HH2
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3. Similary for HG1, HG2 and HD1, HD2.
 c
       cres='ARG'
       do 4 i=1,natm
@@ -157,6 +164,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       if(catm(2,i)(1:4).eq.' HG1') then
       catm(2,i)(1:4)='2HG '
       if(util_print('sequence',print_high)) then
@@ -169,6 +182,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HG2 to 3HG'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HG3') then
+      catm(2,i)(1:4)='2HG '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HG3 to 2HG'
+      endif
+      endif
       if(catm(2,i)(1:4).eq.' HD1') then
       catm(2,i)(1:4)='2HD '
       if(util_print('sequence',print_high)) then
@@ -179,6 +198,12 @@ c
       catm(2,i)(1:4)='3HD '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HD2 to 3HD'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' HD3') then
+      catm(2,i)(1:4)='2HD '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HD3 to 2HD'
       endif
       endif
       if(catm(2,i)(1:4).eq.'HH11') then
@@ -211,8 +236,13 @@ c
 c     ASN  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
 c         HD21 -> 2HD2
 c         HD22 -> 3HD2
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3.
 c
       cres='ASN'
       do 5 i=1,natm
@@ -235,6 +265,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       if(catm(2,i)(1:4).eq.'HD21') then
       catm(2,i)(1:4)='2HD2'
       if(util_print('sequence',print_high)) then
@@ -253,6 +289,11 @@ c
 c     ASP  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3.
 c
       cres='ASP'
       do 6 i=1,natm
@@ -275,12 +316,23 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       endif
     6 continue
 c
 c     CYS  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3.
 c
       cres='CYS'
       do 7 i=1,natm
@@ -304,16 +356,28 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       endif
     7 continue
 c
 c     GLN  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
 c          HG1 -> 2HG
 c          HG2 -> 3HG
+c          HG3 -> 2HG
 c         HE21 -> 2HE2
 c         HE22 -> 3HE2
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3. Likewise for the HG atoms.
 c
       cres='GLN'
       do 8 i=1,natm
@@ -336,6 +400,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       if(catm(2,i)(1:4).eq.' HG1') then
       catm(2,i)(1:4)='2HG '
       if(util_print('sequence',print_high)) then
@@ -346,6 +416,12 @@ c
       catm(2,i)(1:4)='3HG '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HG2 to 3HG'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' HG3') then
+      catm(2,i)(1:4)='2HG '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HG3 to 2HG'
       endif
       endif
       if(catm(2,i)(1:4).eq.'HE21') then
@@ -366,8 +442,14 @@ c
 c     GLU  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
 c          HG1 -> 2HG
 c          HG2 -> 3HG
+c          HG3 -> 2HG
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3. Likewise for the HG atoms.
 c
       cres='GLU'
       do 9 i=1,natm
@@ -390,6 +472,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       if(catm(2,i)(1:4).eq.' HG1') then
       catm(2,i)(1:4)='2HG '
       if(util_print('sequence',print_high)) then
@@ -402,12 +490,23 @@ c
       write(lfnout,2002) cres,latm(1,i),'HG2 to 3HG'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HG3') then
+      catm(2,i)(1:4)='2HG '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HG3 to 2HG'
+      endif
+      endif
       endif
     9 continue
 c
 c     GLY  HN  ->  H 
 c          HA1 -> 2HA
 c          HA2 -> 3HA
+c          HA3 -> 2HA
+c
+c     Some PDB files list HA1, HA2, some list HA2, HA3, ultimately both
+c     cases need to map to 2HA, 3HA. Hence the funky mapping of HA1,
+c     HA2, and HA3.
 c
       cres='GLY'
       do 10 i=1,natm
@@ -430,12 +529,23 @@ c
       write(lfnout,2002) cres,latm(1,i),'HA2 to 3HA'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HA3') then
+      catm(2,i)(1:4)='2HA '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HA3 to 2HA'
+      endif
+      endif
       endif
    10 continue
 c
 c     HIS  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3.
 c
       cres='HIS'
       do 11 i=1,natm
@@ -464,6 +574,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       endif
    11 continue
 c
@@ -473,10 +589,20 @@ c         HG22 -> 3HG2
 c         HG23 -> 4HG2
 c         HG11 -> 2HG1
 c         HG12 -> 3HG1
+c         HG13 -> 2HG1
 c          CD1 ->  CD
 c          HD1 -> 2HD
 c          HD2 -> 3HD
 c          HD3 -> 4HD
+c         HD11 -> 2HD
+c         HD12 -> 3HD
+c         HD13 -> 4HD
+c
+c     Some PDB files list HG11, HG12, some list HG12, HG13, ultimately
+c     both cases need to map to 2HG1, 3HG1. Hence the funky mapping of 
+c     HG11, HG12, and HG13.
+c     Also some PDB files list HD1, HD2, and HD3, some instead list
+c     HD11, HD12, and HD13.
 c
       cres='ILE'
       do 12 i=1,natm
@@ -517,6 +643,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HG12 to 3HG1'
       endif
       endif
+      if(catm(2,i)(1:4).eq.'HG13') then
+      catm(2,i)(1:4)='2HG1'
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HG13 to 2HG1'
+      endif
+      endif
       if(catm(2,i)(1:4).eq.' CD1') then
       catm(2,i)(1:4)=' CD '
       if(util_print('sequence',print_high)) then
@@ -541,18 +673,41 @@ c
       write(lfnout,2002) cres,latm(1,i),'HD3 to 4HD'
       endif
       endif
+      if(catm(2,i)(1:4).eq.'HD11') then
+      catm(2,i)(1:4)='2HD '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HD11 to 2HD'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.'HD12') then
+      catm(2,i)(1:4)='3HD '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HD12 to 3HD'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.'HD13') then
+      catm(2,i)(1:4)='4HD '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HD13 to 4HD'
+      endif
+      endif
       endif
    12 continue
 c
 c     LEU  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
 c         HD11 -> 2HD1
 c         HD12 -> 3HD1
 c         HD13 -> 4HD1
 c         HD21 -> 2HD2
 c         HD22 -> 3HD2
 c         HD23 -> 4HD2
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3.
 c
       cres='LEU'
       do 13 i=1,natm
@@ -573,6 +728,12 @@ c
       catm(2,i)(1:4)='3HB '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
       endif
       endif
       if(catm(2,i)(1:4).eq.'HD11') then
@@ -617,15 +778,23 @@ c
 c     LYS  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
 c          HG1 -> 2HG
 c          HG2 -> 3HG
+c          HG3 -> 2HG
 c          HD1 -> 2HD
 c          HD2 -> 3HD
+c          HD3 -> 2HD
 c          HE1 -> 2HE
 c          HE2 -> 3HE
+c          HE3 -> 2HE
 c          HZ1 -> 2HZ
 c          HZ2 -> 3HZ
 c          HZ3 -> 4HZ
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3. Similarly for HG, HD, and HE atoms.
 c
       cres='LYS'
       do 14 i=1,natm
@@ -648,6 +817,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       if(catm(2,i)(1:4).eq.' HG1') then
       catm(2,i)(1:4)='2HG '
       if(util_print('sequence',print_high)) then
@@ -658,6 +833,12 @@ c
       catm(2,i)(1:4)='3HG '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HG2 to 3HG'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' HG3') then
+      catm(2,i)(1:4)='2HG '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HG3 to 2HG'
       endif
       endif
       if(catm(2,i)(1:4).eq.' HD1') then
@@ -672,6 +853,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HD2 to 3HD'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HD3') then
+      catm(2,i)(1:4)='2HD '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HD3 to 2HD'
+      endif
+      endif
       if(catm(2,i)(1:4).eq.' HE1') then
       catm(2,i)(1:4)='2HE '
       if(util_print('sequence',print_high)) then
@@ -682,6 +869,12 @@ c
       catm(2,i)(1:4)='3HE '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HE2 to 3HE'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' HE3') then
+      catm(2,i)(1:4)='2HE '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HE3 to 2HE'
       endif
       endif
       if(catm(2,i)(1:4).eq.' HZ1') then
@@ -708,11 +901,17 @@ c
 c     MET  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
 c          HG1 -> 2HG
 c          HG2 -> 3HG
+c          HG3 -> 2HG
 c          HE1 -> 2HE
 c          HE2 -> 3HE
 c          HE3 -> 4HE
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3. Similarly HG1, HG2.
 c
       cres='MET'
       do 15 i=1,natm
@@ -735,6 +934,12 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       if(catm(2,i)(1:4).eq.' HG1') then
       catm(2,i)(1:4)='2HG '
       if(util_print('sequence',print_high)) then
@@ -745,6 +950,12 @@ c
       catm(2,i)(1:4)='3HG '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HG2 to 3HG'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' HG3') then
+      catm(2,i)(1:4)='2HG '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HG3 to 2HG'
       endif
       endif
       if(catm(2,i)(1:4).eq.' HE1') then
@@ -771,13 +982,35 @@ c
 c     PHE  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
-c          HB3 -> 4HB
+c          HB3 -> 2HB
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3.
 c
       cres='PHE'
       do 16 i=1,natm
       if(cseq(1,latm(1,i))(1:3).eq.'PHE') then
       if(catm(2,i)(1:4).eq.' HN ') then
       catm(2,i)(1:4)=' H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HN  to H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H1 ') then
+      catm(2,i)(1:4)='2H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HN  to H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H2 ') then
+      catm(2,i)(1:4)='3H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HN  to H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H3 ') then
+      catm(2,i)(1:4)='4H  '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HN  to H'
       endif
@@ -795,9 +1028,9 @@ c
       endif
       endif
       if(catm(2,i)(1:4).eq.' HB3') then
-      catm(2,i)(1:4)='4HB '
+      catm(2,i)(1:4)='2HB '
       if(util_print('sequence',print_high)) then
-      write(lfnout,2002) cres,latm(1,i),'HB3 to 4HB'
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
       endif
       endif
       endif
@@ -880,7 +1113,12 @@ c
 c     SER  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
 c          HG1 ->  HG
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3.
 c
       cres='SER'
       do 18 i=1,natm
@@ -899,6 +1137,12 @@ c
       endif
       if(catm(2,i)(1:4).eq.' HB2') then
       catm(2,i)(1:4)='3HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
@@ -950,6 +1194,11 @@ c
 c     TRP  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3.
 c
       cres='TRP'
       do 20 i=1,natm
@@ -972,12 +1221,23 @@ c
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
       endif
       endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
+      endif
+      endif
       endif
    20 continue
 c
 c     TYR  HN  ->  H 
 c          HB1 -> 2HB
 c          HB2 -> 3HB
+c          HB3 -> 2HB
+c
+c     Some PDB files list HB1, HB2, some list HB2, HB3, ultimately both
+c     cases need to map to 2HB, 3HB. Hence the funky mapping of HB1,
+c     HB2, and HB3.
 c
       cres='TYR'
       do 21 i=1,natm
@@ -998,6 +1258,12 @@ c
       catm(2,i)(1:4)='3HB '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HB2 to 3HB'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' HB3') then
+      catm(2,i)(1:4)='2HB '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'HB3 to 2HB'
       endif
       endif
       endif

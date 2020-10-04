@@ -244,7 +244,7 @@ c
       nmis=0
       do 4 i=1,msa
       if(isfnd(i).eq.0) then
-      write(lfnout,2004)i,cwa(i)(11:14)
+      write(lfnout,2004)i,csa(i)(11:14)
  2004 format(' Not found atom #',i7,' named ',a4)
       nmis=nmis+1
       endif

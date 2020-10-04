@@ -2,7 +2,8 @@ echo
 start md_dat
 
 prepare
-  print sequence
+  #print sequence atomtypes where
+  print sequence 
   system 1h9t_md
   new_rst
   new_top new_seq

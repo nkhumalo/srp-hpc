@@ -7,10 +7,12 @@ echo
 start md_dat
 
 prepare
+  #print sequence atomtypes where
+  print sequence
   system 1h9t_md
   new_rst
   new_top new_seq
-  source start_md_final.pdb
+  source start_md_neutral.pdb
   #solvent name HOH model spce
   #solvate
   vacuo
@@ -57,14 +59,14 @@ task prepare
            Job information
            ---------------
 
-    hostname        = hpc1.csc.bnl.gov
+    hostname        = erato
     program         = ../../../bin/LINUX64/nwchem
-    date            = Wed Aug  8 18:28:02 2018
+    date            = Sun Oct  4 19:19:58 2020
 
-    compiled        = Wed_Aug_08_18:27:54_2018
-    source          = /home/hvandam/nwchem-1-codar
+    compiled        = Sun_Oct_04_19:19:54_2020
+    source          = /home/hvandam/nwchem-1
     nwchem branch   = Development
-    nwchem revision = nwchem_on_git-509-g452f955
+    nwchem revision = nwchem_on_git-600-ga52652c
     ga revision     = 5.6.5
     use scalapack   = F
     input           = 1h9t_prep.nw
@@ -72,17 +74,17 @@ task prepare
     data base       = ./md_dat.db
     status          = startup
     nproc           =        1
-    time left       =      0s
+    time left       =     -1s
 
 
 
            Memory information
            ------------------
 
-    heap     =     217724 doubles =      1.7 Mbytes
-    stack    =  178884395 doubles =   1364.8 Mbytes
-    global   =  357768789 doubles =   2729.6 Mbytes (distinct from heap & stack)
-    total    =  536870908 doubles =   4096.0 Mbytes
+    heap     =   13107196 doubles =    100.0 Mbytes
+    stack    =   13107201 doubles =    100.0 Mbytes
+    global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
+    total    =   52428797 doubles =    400.0 Mbytes
     verify   = yes
     hardfail = no 
 
@@ -108,78 +110,3457 @@ task prepare
 
  Directories used for fragment and segment files
 
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_s/
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_x/
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_q/
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_t/
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_u/
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_s/
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_x/
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_q/
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_t/
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_u/
                                        ./
 
  Parameter files used to resolve force field parameters
 
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_s/amber.par
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_x/amber.par
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_q/amber.par
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_t/amber.par
-                                       /home/hvandam/nwchem-1-codar/QA/../src/data/amber_u/amber.par
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_s/amber.par
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_x/amber.par
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_q/amber.par
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_t/amber.par
+                                       /home/hvandam/nwchem-1/QA/../src/data/amber_u/amber.par
                                        ./amber.par
- PDB geometry                          start_md_final.pdb
+
+ Deleted existing topology             1h9t.top
+
+ Deleted existing sequence             ./1h9t.seq
+
+ SEQUENCE GENERATION
+
+ PDB geometry                          start_md_neutral.pdb
 
 
- Creating fragment for residue PRO_M
+pre_namiup 
+Renamed ALA002 HB1 to 2HB
+Renamed ALA002 HB2 to 3HB
+Renamed ALA002 HB3 to 4HB
+Renamed ALA009 HB1 to 2HB
+Renamed ALA009 HB2 to 3HB
+Renamed ALA009 HB3 to 4HB
+Renamed ALA013 HB1 to 2HB
+Renamed ALA013 HB2 to 3HB
+Renamed ALA013 HB3 to 4HB
+Renamed ALA016 HB1 to 2HB
+Renamed ALA016 HB2 to 3HB
+Renamed ALA016 HB3 to 4HB
+Renamed ALA037 HB1 to 2HB
+Renamed ALA037 HB2 to 3HB
+Renamed ALA037 HB3 to 4HB
+Renamed ALA060 HB1 to 2HB
+Renamed ALA060 HB2 to 3HB
+Renamed ALA060 HB3 to 4HB
+Renamed ALA091 HB1 to 2HB
+Renamed ALA091 HB2 to 3HB
+Renamed ALA091 HB3 to 4HB
+Renamed ALA120 HB1 to 2HB
+Renamed ALA120 HB2 to 3HB
+Renamed ALA120 HB3 to 4HB
+Renamed ALA128 HB1 to 2HB
+Renamed ALA128 HB2 to 3HB
+Renamed ALA128 HB3 to 4HB
+Renamed ALA133 HB1 to 2HB
+Renamed ALA133 HB2 to 3HB
+Renamed ALA133 HB3 to 4HB
+Renamed ALA135 HB1 to 2HB
+Renamed ALA135 HB2 to 3HB
+Renamed ALA135 HB3 to 4HB
+Renamed ALA139 HB1 to 2HB
+Renamed ALA139 HB2 to 3HB
+Renamed ALA139 HB3 to 4HB
+Renamed ALA142 HB1 to 2HB
+Renamed ALA142 HB2 to 3HB
+Renamed ALA142 HB3 to 4HB
+Renamed ALA144 HB1 to 2HB
+Renamed ALA144 HB2 to 3HB
+Renamed ALA144 HB3 to 4HB
+Renamed ALA146 HB1 to 2HB
+Renamed ALA146 HB2 to 3HB
+Renamed ALA146 HB3 to 4HB
+Renamed ALA157 HB1 to 2HB
+Renamed ALA157 HB2 to 3HB
+Renamed ALA157 HB3 to 4HB
+Renamed ALA159 HB1 to 2HB
+Renamed ALA159 HB2 to 3HB
+Renamed ALA159 HB3 to 4HB
+Renamed ALA185 HB1 to 2HB
+Renamed ALA185 HB2 to 3HB
+Renamed ALA185 HB3 to 4HB
+Renamed ALA189 HB1 to 2HB
+Renamed ALA189 HB2 to 3HB
+Renamed ALA189 HB3 to 4HB
+Renamed ALA193 HB1 to 2HB
+Renamed ALA193 HB2 to 3HB
+Renamed ALA193 HB3 to 4HB
+Renamed ALA202 HB1 to 2HB
+Renamed ALA202 HB2 to 3HB
+Renamed ALA202 HB3 to 4HB
+Renamed ALA208 HB1 to 2HB
+Renamed ALA208 HB2 to 3HB
+Renamed ALA208 HB3 to 4HB
+Renamed ALA239 HB1 to 2HB
+Renamed ALA239 HB2 to 3HB
+Renamed ALA239 HB3 to 4HB
+Renamed ALA245 HB1 to 2HB
+Renamed ALA245 HB2 to 3HB
+Renamed ALA245 HB3 to 4HB
+Renamed ALA252 HB1 to 2HB
+Renamed ALA252 HB2 to 3HB
+Renamed ALA252 HB3 to 4HB
+Renamed ALA256 HB1 to 2HB
+Renamed ALA256 HB2 to 3HB
+Renamed ALA256 HB3 to 4HB
+Renamed ALA259 HB1 to 2HB
+Renamed ALA259 HB2 to 3HB
+Renamed ALA259 HB3 to 4HB
+Renamed ALA280 HB1 to 2HB
+Renamed ALA280 HB2 to 3HB
+Renamed ALA280 HB3 to 4HB
+Renamed ALA303 HB1 to 2HB
+Renamed ALA303 HB2 to 3HB
+Renamed ALA303 HB3 to 4HB
+Renamed ALA334 HB1 to 2HB
+Renamed ALA334 HB2 to 3HB
+Renamed ALA334 HB3 to 4HB
+Renamed ALA363 HB1 to 2HB
+Renamed ALA363 HB2 to 3HB
+Renamed ALA363 HB3 to 4HB
+Renamed ALA371 HB1 to 2HB
+Renamed ALA371 HB2 to 3HB
+Renamed ALA371 HB3 to 4HB
+Renamed ALA376 HB1 to 2HB
+Renamed ALA376 HB2 to 3HB
+Renamed ALA376 HB3 to 4HB
+Renamed ALA378 HB1 to 2HB
+Renamed ALA378 HB2 to 3HB
+Renamed ALA378 HB3 to 4HB
+Renamed ALA382 HB1 to 2HB
+Renamed ALA382 HB2 to 3HB
+Renamed ALA382 HB3 to 4HB
+Renamed ALA385 HB1 to 2HB
+Renamed ALA385 HB2 to 3HB
+Renamed ALA385 HB3 to 4HB
+Renamed ALA387 HB1 to 2HB
+Renamed ALA387 HB2 to 3HB
+Renamed ALA387 HB3 to 4HB
+Renamed ALA389 HB1 to 2HB
+Renamed ALA389 HB2 to 3HB
+Renamed ALA389 HB3 to 4HB
+Renamed ALA400 HB1 to 2HB
+Renamed ALA400 HB2 to 3HB
+Renamed ALA400 HB3 to 4HB
+Renamed ALA402 HB1 to 2HB
+Renamed ALA402 HB2 to 3HB
+Renamed ALA402 HB3 to 4HB
+Renamed ALA428 HB1 to 2HB
+Renamed ALA428 HB2 to 3HB
+Renamed ALA428 HB3 to 4HB
+Renamed ALA432 HB1 to 2HB
+Renamed ALA432 HB2 to 3HB
+Renamed ALA432 HB3 to 4HB
+Renamed ALA436 HB1 to 2HB
+Renamed ALA436 HB2 to 3HB
+Renamed ALA436 HB3 to 4HB
+Renamed ALA445 HB1 to 2HB
+Renamed ALA445 HB2 to 3HB
+Renamed ALA445 HB3 to 4HB
+Renamed ALA451 HB1 to 2HB
+Renamed ALA451 HB2 to 3HB
+Renamed ALA451 HB3 to 4HB
+Renamed ALA482 HB1 to 2HB
+Renamed ALA482 HB2 to 3HB
+Renamed ALA482 HB3 to 4HB
+Renamed ARG004 HB2 to 3HB
+Renamed ARG004 HB3 to 2HB
+Renamed ARG004 HG2 to 3HG
+Renamed ARG004 HG3 to 2HG
+Renamed ARG004 HD2 to 3HD
+Renamed ARG004 HD3 to 2HD
+Renamed ARG004 HH11 to 2HH1
+Renamed ARG004 HH12 to 3HH1
+Renamed ARG004 HH21 to 2HH2
+Renamed ARG004 HH22 to 3HH2
+Renamed ARG028 HB2 to 3HB
+Renamed ARG028 HB3 to 2HB
+Renamed ARG028 HG2 to 3HG
+Renamed ARG028 HG3 to 2HG
+Renamed ARG028 HD2 to 3HD
+Renamed ARG028 HD3 to 2HD
+Renamed ARG028 HH11 to 2HH1
+Renamed ARG028 HH12 to 3HH1
+Renamed ARG028 HH21 to 2HH2
+Renamed ARG028 HH22 to 3HH2
+Renamed ARG039 HB2 to 3HB
+Renamed ARG039 HB3 to 2HB
+Renamed ARG039 HG2 to 3HG
+Renamed ARG039 HG3 to 2HG
+Renamed ARG039 HD2 to 3HD
+Renamed ARG039 HD3 to 2HD
+Renamed ARG039 HH11 to 2HH1
+Renamed ARG039 HH12 to 3HH1
+Renamed ARG039 HH21 to 2HH2
+Renamed ARG039 HH22 to 3HH2
+Renamed ARG049 HB2 to 3HB
+Renamed ARG049 HB3 to 2HB
+Renamed ARG049 HG2 to 3HG
+Renamed ARG049 HG3 to 2HG
+Renamed ARG049 HD2 to 3HD
+Renamed ARG049 HD3 to 2HD
+Renamed ARG049 HH11 to 2HH1
+Renamed ARG049 HH12 to 3HH1
+Renamed ARG049 HH21 to 2HH2
+Renamed ARG049 HH22 to 3HH2
+Renamed ARG053 HB2 to 3HB
+Renamed ARG053 HB3 to 2HB
+Renamed ARG053 HG2 to 3HG
+Renamed ARG053 HG3 to 2HG
+Renamed ARG053 HD2 to 3HD
+Renamed ARG053 HD3 to 2HD
+Renamed ARG053 HH11 to 2HH1
+Renamed ARG053 HH12 to 3HH1
+Renamed ARG053 HH21 to 2HH2
+Renamed ARG053 HH22 to 3HH2
+Renamed ARG058 HB2 to 3HB
+Renamed ARG058 HB3 to 2HB
+Renamed ARG058 HG2 to 3HG
+Renamed ARG058 HG3 to 2HG
+Renamed ARG058 HD2 to 3HD
+Renamed ARG058 HD3 to 2HD
+Renamed ARG058 HH11 to 2HH1
+Renamed ARG058 HH12 to 3HH1
+Renamed ARG058 HH21 to 2HH2
+Renamed ARG058 HH22 to 3HH2
+Renamed ARG061 HB2 to 3HB
+Renamed ARG061 HB3 to 2HB
+Renamed ARG061 HG2 to 3HG
+Renamed ARG061 HG3 to 2HG
+Renamed ARG061 HD2 to 3HD
+Renamed ARG061 HD3 to 2HD
+Renamed ARG061 HH11 to 2HH1
+Renamed ARG061 HH12 to 3HH1
+Renamed ARG061 HH21 to 2HH2
+Renamed ARG061 HH22 to 3HH2
+Renamed ARG092 HB2 to 3HB
+Renamed ARG092 HB3 to 2HB
+Renamed ARG092 HG2 to 3HG
+Renamed ARG092 HG3 to 2HG
+Renamed ARG092 HD2 to 3HD
+Renamed ARG092 HD3 to 2HD
+Renamed ARG092 HH11 to 2HH1
+Renamed ARG092 HH12 to 3HH1
+Renamed ARG092 HH21 to 2HH2
+Renamed ARG092 HH22 to 3HH2
+Renamed ARG109 HB2 to 3HB
+Renamed ARG109 HB3 to 2HB
+Renamed ARG109 HG2 to 3HG
+Renamed ARG109 HG3 to 2HG
+Renamed ARG109 HD2 to 3HD
+Renamed ARG109 HD3 to 2HD
+Renamed ARG109 HH11 to 2HH1
+Renamed ARG109 HH12 to 3HH1
+Renamed ARG109 HH21 to 2HH2
+Renamed ARG109 HH22 to 3HH2
+Renamed ARG118 HB2 to 3HB
+Renamed ARG118 HB3 to 2HB
+Renamed ARG118 HG2 to 3HG
+Renamed ARG118 HG3 to 2HG
+Renamed ARG118 HD2 to 3HD
+Renamed ARG118 HD3 to 2HD
+Renamed ARG118 HH11 to 2HH1
+Renamed ARG118 HH12 to 3HH1
+Renamed ARG118 HH21 to 2HH2
+Renamed ARG118 HH22 to 3HH2
+Renamed ARG122 HB2 to 3HB
+Renamed ARG122 HB3 to 2HB
+Renamed ARG122 HG2 to 3HG
+Renamed ARG122 HG3 to 2HG
+Renamed ARG122 HD2 to 3HD
+Renamed ARG122 HD3 to 2HD
+Renamed ARG122 HH11 to 2HH1
+Renamed ARG122 HH12 to 3HH1
+Renamed ARG122 HH21 to 2HH2
+Renamed ARG122 HH22 to 3HH2
+Renamed ARG154 HB2 to 3HB
+Renamed ARG154 HB3 to 2HB
+Renamed ARG154 HG2 to 3HG
+Renamed ARG154 HG3 to 2HG
+Renamed ARG154 HD2 to 3HD
+Renamed ARG154 HD3 to 2HD
+Renamed ARG154 HH11 to 2HH1
+Renamed ARG154 HH12 to 3HH1
+Renamed ARG154 HH21 to 2HH2
+Renamed ARG154 HH22 to 3HH2
+Renamed ARG178 HB2 to 3HB
+Renamed ARG178 HB3 to 2HB
+Renamed ARG178 HG2 to 3HG
+Renamed ARG178 HG3 to 2HG
+Renamed ARG178 HD2 to 3HD
+Renamed ARG178 HD3 to 2HD
+Renamed ARG178 HH11 to 2HH1
+Renamed ARG178 HH12 to 3HH1
+Renamed ARG178 HH21 to 2HH2
+Renamed ARG178 HH22 to 3HH2
+Renamed ARG181 HB2 to 3HB
+Renamed ARG181 HB3 to 2HB
+Renamed ARG181 HG2 to 3HG
+Renamed ARG181 HG3 to 2HG
+Renamed ARG181 HD2 to 3HD
+Renamed ARG181 HD3 to 2HD
+Renamed ARG181 HH11 to 2HH1
+Renamed ARG181 HH12 to 3HH1
+Renamed ARG181 HH21 to 2HH2
+Renamed ARG181 HH22 to 3HH2
+Renamed ARG190 HB2 to 3HB
+Renamed ARG190 HB3 to 2HB
+Renamed ARG190 HG2 to 3HG
+Renamed ARG190 HG3 to 2HG
+Renamed ARG190 HD2 to 3HD
+Renamed ARG190 HD3 to 2HD
+Renamed ARG190 HH11 to 2HH1
+Renamed ARG190 HH12 to 3HH1
+Renamed ARG190 HH21 to 2HH2
+Renamed ARG190 HH22 to 3HH2
+Renamed ARG217 HB2 to 3HB
+Renamed ARG217 HB3 to 2HB
+Renamed ARG217 HG2 to 3HG
+Renamed ARG217 HG3 to 2HG
+Renamed ARG217 HD2 to 3HD
+Renamed ARG217 HD3 to 2HD
+Renamed ARG217 HH11 to 2HH1
+Renamed ARG217 HH12 to 3HH1
+Renamed ARG217 HH21 to 2HH2
+Renamed ARG217 HH22 to 3HH2
+Renamed ARG218 HB2 to 3HB
+Renamed ARG218 HB3 to 2HB
+Renamed ARG218 HG2 to 3HG
+Renamed ARG218 HG3 to 2HG
+Renamed ARG218 HD2 to 3HD
+Renamed ARG218 HD3 to 2HD
+Renamed ARG218 HH11 to 2HH1
+Renamed ARG218 HH12 to 3HH1
+Renamed ARG218 HH21 to 2HH2
+Renamed ARG218 HH22 to 3HH2
+Renamed ARG229 HB2 to 3HB
+Renamed ARG229 HB3 to 2HB
+Renamed ARG229 HG2 to 3HG
+Renamed ARG229 HG3 to 2HG
+Renamed ARG229 HD2 to 3HD
+Renamed ARG229 HD3 to 2HD
+Renamed ARG229 HH11 to 2HH1
+Renamed ARG229 HH12 to 3HH1
+Renamed ARG229 HH21 to 2HH2
+Renamed ARG229 HH22 to 3HH2
+Renamed ARG243 HB2 to 3HB
+Renamed ARG243 HB3 to 2HB
+Renamed ARG243 HG2 to 3HG
+Renamed ARG243 HG3 to 2HG
+Renamed ARG243 HD2 to 3HD
+Renamed ARG243 HD3 to 2HD
+Renamed ARG243 HH11 to 2HH1
+Renamed ARG243 HH12 to 3HH1
+Renamed ARG243 HH21 to 2HH2
+Renamed ARG243 HH22 to 3HH2
+Renamed ARG247 HB2 to 3HB
+Renamed ARG247 HB3 to 2HB
+Renamed ARG247 HG2 to 3HG
+Renamed ARG247 HG3 to 2HG
+Renamed ARG247 HD2 to 3HD
+Renamed ARG247 HD3 to 2HD
+Renamed ARG247 HH11 to 2HH1
+Renamed ARG247 HH12 to 3HH1
+Renamed ARG247 HH21 to 2HH2
+Renamed ARG247 HH22 to 3HH2
+Renamed ARG271 HB2 to 3HB
+Renamed ARG271 HB3 to 2HB
+Renamed ARG271 HG2 to 3HG
+Renamed ARG271 HG3 to 2HG
+Renamed ARG271 HD2 to 3HD
+Renamed ARG271 HD3 to 2HD
+Renamed ARG271 HH11 to 2HH1
+Renamed ARG271 HH12 to 3HH1
+Renamed ARG271 HH21 to 2HH2
+Renamed ARG271 HH22 to 3HH2
+Renamed ARG282 HB2 to 3HB
+Renamed ARG282 HB3 to 2HB
+Renamed ARG282 HG2 to 3HG
+Renamed ARG282 HG3 to 2HG
+Renamed ARG282 HD2 to 3HD
+Renamed ARG282 HD3 to 2HD
+Renamed ARG282 HH11 to 2HH1
+Renamed ARG282 HH12 to 3HH1
+Renamed ARG282 HH21 to 2HH2
+Renamed ARG282 HH22 to 3HH2
+Renamed ARG292 HB2 to 3HB
+Renamed ARG292 HB3 to 2HB
+Renamed ARG292 HG2 to 3HG
+Renamed ARG292 HG3 to 2HG
+Renamed ARG292 HD2 to 3HD
+Renamed ARG292 HD3 to 2HD
+Renamed ARG292 HH11 to 2HH1
+Renamed ARG292 HH12 to 3HH1
+Renamed ARG292 HH21 to 2HH2
+Renamed ARG292 HH22 to 3HH2
+Renamed ARG296 HB2 to 3HB
+Renamed ARG296 HB3 to 2HB
+Renamed ARG296 HG2 to 3HG
+Renamed ARG296 HG3 to 2HG
+Renamed ARG296 HD2 to 3HD
+Renamed ARG296 HD3 to 2HD
+Renamed ARG296 HH11 to 2HH1
+Renamed ARG296 HH12 to 3HH1
+Renamed ARG296 HH21 to 2HH2
+Renamed ARG296 HH22 to 3HH2
+Renamed ARG301 HB2 to 3HB
+Renamed ARG301 HB3 to 2HB
+Renamed ARG301 HG2 to 3HG
+Renamed ARG301 HG3 to 2HG
+Renamed ARG301 HD2 to 3HD
+Renamed ARG301 HD3 to 2HD
+Renamed ARG301 HH11 to 2HH1
+Renamed ARG301 HH12 to 3HH1
+Renamed ARG301 HH21 to 2HH2
+Renamed ARG301 HH22 to 3HH2
+Renamed ARG304 HB2 to 3HB
+Renamed ARG304 HB3 to 2HB
+Renamed ARG304 HG2 to 3HG
+Renamed ARG304 HG3 to 2HG
+Renamed ARG304 HD2 to 3HD
+Renamed ARG304 HD3 to 2HD
+Renamed ARG304 HH11 to 2HH1
+Renamed ARG304 HH12 to 3HH1
+Renamed ARG304 HH21 to 2HH2
+Renamed ARG304 HH22 to 3HH2
+Renamed ARG335 HB2 to 3HB
+Renamed ARG335 HB3 to 2HB
+Renamed ARG335 HG2 to 3HG
+Renamed ARG335 HG3 to 2HG
+Renamed ARG335 HD2 to 3HD
+Renamed ARG335 HD3 to 2HD
+Renamed ARG335 HH11 to 2HH1
+Renamed ARG335 HH12 to 3HH1
+Renamed ARG335 HH21 to 2HH2
+Renamed ARG335 HH22 to 3HH2
+Renamed ARG352 HB2 to 3HB
+Renamed ARG352 HB3 to 2HB
+Renamed ARG352 HG2 to 3HG
+Renamed ARG352 HG3 to 2HG
+Renamed ARG352 HD2 to 3HD
+Renamed ARG352 HD3 to 2HD
+Renamed ARG352 HH11 to 2HH1
+Renamed ARG352 HH12 to 3HH1
+Renamed ARG352 HH21 to 2HH2
+Renamed ARG352 HH22 to 3HH2
+Renamed ARG361 HB2 to 3HB
+Renamed ARG361 HB3 to 2HB
+Renamed ARG361 HG2 to 3HG
+Renamed ARG361 HG3 to 2HG
+Renamed ARG361 HD2 to 3HD
+Renamed ARG361 HD3 to 2HD
+Renamed ARG361 HH11 to 2HH1
+Renamed ARG361 HH12 to 3HH1
+Renamed ARG361 HH21 to 2HH2
+Renamed ARG361 HH22 to 3HH2
+Renamed ARG365 HB2 to 3HB
+Renamed ARG365 HB3 to 2HB
+Renamed ARG365 HG2 to 3HG
+Renamed ARG365 HG3 to 2HG
+Renamed ARG365 HD2 to 3HD
+Renamed ARG365 HD3 to 2HD
+Renamed ARG365 HH11 to 2HH1
+Renamed ARG365 HH12 to 3HH1
+Renamed ARG365 HH21 to 2HH2
+Renamed ARG365 HH22 to 3HH2
+Renamed ARG397 HB2 to 3HB
+Renamed ARG397 HB3 to 2HB
+Renamed ARG397 HG2 to 3HG
+Renamed ARG397 HG3 to 2HG
+Renamed ARG397 HD2 to 3HD
+Renamed ARG397 HD3 to 2HD
+Renamed ARG397 HH11 to 2HH1
+Renamed ARG397 HH12 to 3HH1
+Renamed ARG397 HH21 to 2HH2
+Renamed ARG397 HH22 to 3HH2
+Renamed ARG421 HB2 to 3HB
+Renamed ARG421 HB3 to 2HB
+Renamed ARG421 HG2 to 3HG
+Renamed ARG421 HG3 to 2HG
+Renamed ARG421 HD2 to 3HD
+Renamed ARG421 HD3 to 2HD
+Renamed ARG421 HH11 to 2HH1
+Renamed ARG421 HH12 to 3HH1
+Renamed ARG421 HH21 to 2HH2
+Renamed ARG421 HH22 to 3HH2
+Renamed ARG424 HB2 to 3HB
+Renamed ARG424 HB3 to 2HB
+Renamed ARG424 HG2 to 3HG
+Renamed ARG424 HG3 to 2HG
+Renamed ARG424 HD2 to 3HD
+Renamed ARG424 HD3 to 2HD
+Renamed ARG424 HH11 to 2HH1
+Renamed ARG424 HH12 to 3HH1
+Renamed ARG424 HH21 to 2HH2
+Renamed ARG424 HH22 to 3HH2
+Renamed ARG433 HB2 to 3HB
+Renamed ARG433 HB3 to 2HB
+Renamed ARG433 HG2 to 3HG
+Renamed ARG433 HG3 to 2HG
+Renamed ARG433 HD2 to 3HD
+Renamed ARG433 HD3 to 2HD
+Renamed ARG433 HH11 to 2HH1
+Renamed ARG433 HH12 to 3HH1
+Renamed ARG433 HH21 to 2HH2
+Renamed ARG433 HH22 to 3HH2
+Renamed ARG460 HB2 to 3HB
+Renamed ARG460 HB3 to 2HB
+Renamed ARG460 HG2 to 3HG
+Renamed ARG460 HG3 to 2HG
+Renamed ARG460 HD2 to 3HD
+Renamed ARG460 HD3 to 2HD
+Renamed ARG460 HH11 to 2HH1
+Renamed ARG460 HH12 to 3HH1
+Renamed ARG460 HH21 to 2HH2
+Renamed ARG460 HH22 to 3HH2
+Renamed ARG461 HB2 to 3HB
+Renamed ARG461 HB3 to 2HB
+Renamed ARG461 HG2 to 3HG
+Renamed ARG461 HG3 to 2HG
+Renamed ARG461 HD2 to 3HD
+Renamed ARG461 HD3 to 2HD
+Renamed ARG461 HH11 to 2HH1
+Renamed ARG461 HH12 to 3HH1
+Renamed ARG461 HH21 to 2HH2
+Renamed ARG461 HH22 to 3HH2
+Renamed ARG472 HB2 to 3HB
+Renamed ARG472 HB3 to 2HB
+Renamed ARG472 HG2 to 3HG
+Renamed ARG472 HG3 to 2HG
+Renamed ARG472 HD2 to 3HD
+Renamed ARG472 HD3 to 2HD
+Renamed ARG472 HH11 to 2HH1
+Renamed ARG472 HH12 to 3HH1
+Renamed ARG472 HH21 to 2HH2
+Renamed ARG472 HH22 to 3HH2
+Renamed ARG486 HB2 to 3HB
+Renamed ARG486 HB3 to 2HB
+Renamed ARG486 HG2 to 3HG
+Renamed ARG486 HG3 to 2HG
+Renamed ARG486 HD2 to 3HD
+Renamed ARG486 HD3 to 2HD
+Renamed ARG486 HH11 to 2HH1
+Renamed ARG486 HH12 to 3HH1
+Renamed ARG486 HH21 to 2HH2
+Renamed ARG486 HH22 to 3HH2
+Renamed ASN026 HB2 to 3HB
+Renamed ASN026 HB3 to 2HB
+Renamed ASN026 HD21 to 2HD2
+Renamed ASN026 HD22 to 3HD2
+Renamed ASN027 HB2 to 3HB
+Renamed ASN027 HB3 to 2HB
+Renamed ASN027 HD21 to 2HD2
+Renamed ASN027 HD22 to 3HD2
+Renamed ASN076 HB2 to 3HB
+Renamed ASN076 HB3 to 2HB
+Renamed ASN076 HD21 to 2HD2
+Renamed ASN076 HD22 to 3HD2
+Renamed ASN077 HB2 to 3HB
+Renamed ASN077 HB3 to 2HB
+Renamed ASN077 HD21 to 2HD2
+Renamed ASN077 HD22 to 3HD2
+Renamed ASN085 HB2 to 3HB
+Renamed ASN085 HB3 to 2HB
+Renamed ASN085 HD21 to 2HD2
+Renamed ASN085 HD22 to 3HD2
+Renamed ASN104 HB2 to 3HB
+Renamed ASN104 HB3 to 2HB
+Renamed ASN104 HD21 to 2HD2
+Renamed ASN104 HD22 to 3HD2
+Renamed ASN111 HB2 to 3HB
+Renamed ASN111 HB3 to 2HB
+Renamed ASN111 HD21 to 2HD2
+Renamed ASN111 HD22 to 3HD2
+Renamed ASN136 HB2 to 3HB
+Renamed ASN136 HB3 to 2HB
+Renamed ASN136 HD21 to 2HD2
+Renamed ASN136 HD22 to 3HD2
+Renamed ASN151 HB2 to 3HB
+Renamed ASN151 HB3 to 2HB
+Renamed ASN151 HD21 to 2HD2
+Renamed ASN151 HD22 to 3HD2
+Renamed ASN162 HB2 to 3HB
+Renamed ASN162 HB3 to 2HB
+Renamed ASN162 HD21 to 2HD2
+Renamed ASN162 HD22 to 3HD2
+Renamed ASN170 HB2 to 3HB
+Renamed ASN170 HB3 to 2HB
+Renamed ASN170 HD21 to 2HD2
+Renamed ASN170 HD22 to 3HD2
+Renamed ASN186 HB2 to 3HB
+Renamed ASN186 HB3 to 2HB
+Renamed ASN186 HD21 to 2HD2
+Renamed ASN186 HD22 to 3HD2
+Renamed ASN233 HB2 to 3HB
+Renamed ASN233 HB3 to 2HB
+Renamed ASN233 HD21 to 2HD2
+Renamed ASN233 HD22 to 3HD2
+Renamed ASN269 HB2 to 3HB
+Renamed ASN269 HB3 to 2HB
+Renamed ASN269 HD21 to 2HD2
+Renamed ASN269 HD22 to 3HD2
+Renamed ASN270 HB2 to 3HB
+Renamed ASN270 HB3 to 2HB
+Renamed ASN270 HD21 to 2HD2
+Renamed ASN270 HD22 to 3HD2
+Renamed ASN319 HB2 to 3HB
+Renamed ASN319 HB3 to 2HB
+Renamed ASN319 HD21 to 2HD2
+Renamed ASN319 HD22 to 3HD2
+Renamed ASN320 HB2 to 3HB
+Renamed ASN320 HB3 to 2HB
+Renamed ASN320 HD21 to 2HD2
+Renamed ASN320 HD22 to 3HD2
+Renamed ASN328 HB2 to 3HB
+Renamed ASN328 HB3 to 2HB
+Renamed ASN328 HD21 to 2HD2
+Renamed ASN328 HD22 to 3HD2
+Renamed ASN347 HB2 to 3HB
+Renamed ASN347 HB3 to 2HB
+Renamed ASN347 HD21 to 2HD2
+Renamed ASN347 HD22 to 3HD2
+Renamed ASN354 HB2 to 3HB
+Renamed ASN354 HB3 to 2HB
+Renamed ASN354 HD21 to 2HD2
+Renamed ASN354 HD22 to 3HD2
+Renamed ASN379 HB2 to 3HB
+Renamed ASN379 HB3 to 2HB
+Renamed ASN379 HD21 to 2HD2
+Renamed ASN379 HD22 to 3HD2
+Renamed ASN394 HB2 to 3HB
+Renamed ASN394 HB3 to 2HB
+Renamed ASN394 HD21 to 2HD2
+Renamed ASN394 HD22 to 3HD2
+Renamed ASN405 HB2 to 3HB
+Renamed ASN405 HB3 to 2HB
+Renamed ASN405 HD21 to 2HD2
+Renamed ASN405 HD22 to 3HD2
+Renamed ASN413 HB2 to 3HB
+Renamed ASN413 HB3 to 2HB
+Renamed ASN413 HD21 to 2HD2
+Renamed ASN413 HD22 to 3HD2
+Renamed ASN429 HB2 to 3HB
+Renamed ASN429 HB3 to 2HB
+Renamed ASN429 HD21 to 2HD2
+Renamed ASN429 HD22 to 3HD2
+Renamed ASN476 HB2 to 3HB
+Renamed ASN476 HB3 to 2HB
+Renamed ASN476 HD21 to 2HD2
+Renamed ASN476 HD22 to 3HD2
+Renamed ASP003 HB2 to 3HB
+Renamed ASP003 HB3 to 2HB
+Renamed ASP062 HB2 to 3HB
+Renamed ASP062 HB3 to 2HB
+Renamed ASP094 HB2 to 3HB
+Renamed ASP094 HB3 to 2HB
+Renamed ASP103 HB2 to 3HB
+Renamed ASP103 HB3 to 2HB
+Renamed ASP126 HB2 to 3HB
+Renamed ASP126 HB3 to 2HB
+Renamed ASP140 HB2 to 3HB
+Renamed ASP140 HB3 to 2HB
+Renamed ASP143 HB2 to 3HB
+Renamed ASP143 HB3 to 2HB
+Renamed ASP149 HB2 to 3HB
+Renamed ASP149 HB3 to 2HB
+Renamed ASP210 HB2 to 3HB
+Renamed ASP210 HB3 to 2HB
+Renamed ASP237 HB2 to 3HB
+Renamed ASP237 HB3 to 2HB
+Renamed ASP246 HB2 to 3HB
+Renamed ASP246 HB3 to 2HB
+Renamed ASP305 HB2 to 3HB
+Renamed ASP305 HB3 to 2HB
+Renamed ASP337 HB2 to 3HB
+Renamed ASP337 HB3 to 2HB
+Renamed ASP346 HB2 to 3HB
+Renamed ASP346 HB3 to 2HB
+Renamed ASP369 HB2 to 3HB
+Renamed ASP369 HB3 to 2HB
+Renamed ASP383 HB2 to 3HB
+Renamed ASP383 HB3 to 2HB
+Renamed ASP386 HB2 to 3HB
+Renamed ASP386 HB3 to 2HB
+Renamed ASP392 HB2 to 3HB
+Renamed ASP392 HB3 to 2HB
+Renamed ASP453 HB2 to 3HB
+Renamed ASP453 HB3 to 2HB
+Renamed ASP480 HB2 to 3HB
+Renamed ASP480 HB3 to 2HB
+Renamed CYS204 HB2 to 3HB
+Renamed CYS204 HB3 to 2HB
+Renamed CYS447 HB2 to 3HB
+Renamed CYS447 HB3 to 2HB
+Renamed GLN010 HB2 to 3HB
+Renamed GLN010 HB3 to 2HB
+Renamed GLN010 HG2 to 3HG
+Renamed GLN010 HG3 to 2HG
+Renamed GLN010 HE21 to 2HE2
+Renamed GLN010 HE22 to 3HE2
+Renamed GLN057 HB2 to 3HB
+Renamed GLN057 HB3 to 2HB
+Renamed GLN057 HG2 to 3HG
+Renamed GLN057 HG3 to 2HG
+Renamed GLN057 HE21 to 2HE2
+Renamed GLN057 HE22 to 3HE2
+Renamed GLN068 HB2 to 3HB
+Renamed GLN068 HB3 to 2HB
+Renamed GLN068 HG2 to 3HG
+Renamed GLN068 HG3 to 2HG
+Renamed GLN068 HE21 to 2HE2
+Renamed GLN068 HE22 to 3HE2
+Renamed GLN100 HB2 to 3HB
+Renamed GLN100 HB3 to 2HB
+Renamed GLN100 HG2 to 3HG
+Renamed GLN100 HG3 to 2HG
+Renamed GLN100 HE21 to 2HE2
+Renamed GLN100 HE22 to 3HE2
+Renamed GLN123 HB2 to 3HB
+Renamed GLN123 HB3 to 2HB
+Renamed GLN123 HG2 to 3HG
+Renamed GLN123 HG3 to 2HG
+Renamed GLN123 HE21 to 2HE2
+Renamed GLN123 HE22 to 3HE2
+Renamed GLN129 HB2 to 3HB
+Renamed GLN129 HB3 to 2HB
+Renamed GLN129 HG2 to 3HG
+Renamed GLN129 HG3 to 2HG
+Renamed GLN129 HE21 to 2HE2
+Renamed GLN129 HE22 to 3HE2
+Renamed GLN211 HB2 to 3HB
+Renamed GLN211 HB3 to 2HB
+Renamed GLN211 HG2 to 3HG
+Renamed GLN211 HG3 to 2HG
+Renamed GLN211 HE21 to 2HE2
+Renamed GLN211 HE22 to 3HE2
+Renamed GLN231 HB2 to 3HB
+Renamed GLN231 HB3 to 2HB
+Renamed GLN231 HG2 to 3HG
+Renamed GLN231 HG3 to 2HG
+Renamed GLN231 HE21 to 2HE2
+Renamed GLN231 HE22 to 3HE2
+Renamed GLN241 HB2 to 3HB
+Renamed GLN241 HB3 to 2HB
+Renamed GLN241 HG2 to 3HG
+Renamed GLN241 HG3 to 2HG
+Renamed GLN241 HE21 to 2HE2
+Renamed GLN241 HE22 to 3HE2
+Renamed GLN253 HB2 to 3HB
+Renamed GLN253 HB3 to 2HB
+Renamed GLN253 HG2 to 3HG
+Renamed GLN253 HG3 to 2HG
+Renamed GLN253 HE21 to 2HE2
+Renamed GLN253 HE22 to 3HE2
+Renamed GLN300 HB2 to 3HB
+Renamed GLN300 HB3 to 2HB
+Renamed GLN300 HG2 to 3HG
+Renamed GLN300 HG3 to 2HG
+Renamed GLN300 HE21 to 2HE2
+Renamed GLN300 HE22 to 3HE2
+Renamed GLN311 HB2 to 3HB
+Renamed GLN311 HB3 to 2HB
+Renamed GLN311 HG2 to 3HG
+Renamed GLN311 HG3 to 2HG
+Renamed GLN311 HE21 to 2HE2
+Renamed GLN311 HE22 to 3HE2
+Renamed GLN343 HB2 to 3HB
+Renamed GLN343 HB3 to 2HB
+Renamed GLN343 HG2 to 3HG
+Renamed GLN343 HG3 to 2HG
+Renamed GLN343 HE21 to 2HE2
+Renamed GLN343 HE22 to 3HE2
+Renamed GLN366 HB2 to 3HB
+Renamed GLN366 HB3 to 2HB
+Renamed GLN366 HG2 to 3HG
+Renamed GLN366 HG3 to 2HG
+Renamed GLN366 HE21 to 2HE2
+Renamed GLN366 HE22 to 3HE2
+Renamed GLN372 HB2 to 3HB
+Renamed GLN372 HB3 to 2HB
+Renamed GLN372 HG2 to 3HG
+Renamed GLN372 HG3 to 2HG
+Renamed GLN372 HE21 to 2HE2
+Renamed GLN372 HE22 to 3HE2
+Renamed GLN454 HB2 to 3HB
+Renamed GLN454 HB3 to 2HB
+Renamed GLN454 HG2 to 3HG
+Renamed GLN454 HG3 to 2HG
+Renamed GLN454 HE21 to 2HE2
+Renamed GLN454 HE22 to 3HE2
+Renamed GLN474 HB2 to 3HB
+Renamed GLN474 HB3 to 2HB
+Renamed GLN474 HG2 to 3HG
+Renamed GLN474 HG3 to 2HG
+Renamed GLN474 HE21 to 2HE2
+Renamed GLN474 HE22 to 3HE2
+Renamed GLN484 HB2 to 3HB
+Renamed GLN484 HB3 to 2HB
+Renamed GLN484 HG2 to 3HG
+Renamed GLN484 HG3 to 2HG
+Renamed GLN484 HE21 to 2HE2
+Renamed GLN484 HE22 to 3HE2
+Renamed GLU017 HB2 to 3HB
+Renamed GLU017 HB3 to 2HB
+Renamed GLU017 HG2 to 3HG
+Renamed GLU017 HG3 to 2HG
+Renamed GLU018 HB2 to 3HB
+Renamed GLU018 HB3 to 2HB
+Renamed GLU018 HG2 to 3HG
+Renamed GLU018 HG3 to 2HG
+Renamed GLU022 HB2 to 3HB
+Renamed GLU022 HB3 to 2HB
+Renamed GLU022 HG2 to 3HG
+Renamed GLU022 HG3 to 2HG
+Renamed GLU038 HB2 to 3HB
+Renamed GLU038 HB3 to 2HB
+Renamed GLU038 HG2 to 3HG
+Renamed GLU038 HG3 to 2HG
+Renamed GLU040 HB2 to 3HB
+Renamed GLU040 HB3 to 2HB
+Renamed GLU040 HG2 to 3HG
+Renamed GLU040 HG3 to 2HG
+Renamed GLU043 HB2 to 3HB
+Renamed GLU043 HB3 to 2HB
+Renamed GLU043 HG2 to 3HG
+Renamed GLU043 HG3 to 2HG
+Renamed GLU054 HB2 to 3HB
+Renamed GLU054 HB3 to 2HB
+Renamed GLU054 HG2 to 3HG
+Renamed GLU054 HG3 to 2HG
+Renamed GLU080 HB2 to 3HB
+Renamed GLU080 HB3 to 2HB
+Renamed GLU080 HG2 to 3HG
+Renamed GLU080 HG3 to 2HG
+Renamed GLU088 HB2 to 3HB
+Renamed GLU088 HB3 to 2HB
+Renamed GLU088 HG2 to 3HG
+Renamed GLU088 HG3 to 2HG
+Renamed GLU096 HB2 to 3HB
+Renamed GLU096 HB3 to 2HB
+Renamed GLU096 HG2 to 3HG
+Renamed GLU096 HG3 to 2HG
+Renamed GLU130 HB2 to 3HB
+Renamed GLU130 HB3 to 2HB
+Renamed GLU130 HG2 to 3HG
+Renamed GLU130 HG3 to 2HG
+Renamed GLU137 HB2 to 3HB
+Renamed GLU137 HB3 to 2HB
+Renamed GLU137 HG2 to 3HG
+Renamed GLU137 HG3 to 2HG
+Renamed GLU147 HB2 to 3HB
+Renamed GLU147 HB3 to 2HB
+Renamed GLU147 HG2 to 3HG
+Renamed GLU147 HG3 to 2HG
+Renamed GLU188 HB2 to 3HB
+Renamed GLU188 HB3 to 2HB
+Renamed GLU188 HG2 to 3HG
+Renamed GLU188 HG3 to 2HG
+Renamed GLU206 HB2 to 3HB
+Renamed GLU206 HB3 to 2HB
+Renamed GLU206 HG2 to 3HG
+Renamed GLU206 HG3 to 2HG
+Renamed GLU214 HB2 to 3HB
+Renamed GLU214 HB3 to 2HB
+Renamed GLU214 HG2 to 3HG
+Renamed GLU214 HG3 to 2HG
+Renamed GLU222 HB2 to 3HB
+Renamed GLU222 HB3 to 2HB
+Renamed GLU222 HG2 to 3HG
+Renamed GLU222 HG3 to 2HG
+Renamed GLU225 HB2 to 3HB
+Renamed GLU225 HB3 to 2HB
+Renamed GLU225 HG2 to 3HG
+Renamed GLU225 HG3 to 2HG
+Renamed GLU260 HB2 to 3HB
+Renamed GLU260 HB3 to 2HB
+Renamed GLU260 HG2 to 3HG
+Renamed GLU260 HG3 to 2HG
+Renamed GLU261 HB2 to 3HB
+Renamed GLU261 HB3 to 2HB
+Renamed GLU261 HG2 to 3HG
+Renamed GLU261 HG3 to 2HG
+Renamed GLU265 HB2 to 3HB
+Renamed GLU265 HB3 to 2HB
+Renamed GLU265 HG2 to 3HG
+Renamed GLU265 HG3 to 2HG
+Renamed GLU281 HB2 to 3HB
+Renamed GLU281 HB3 to 2HB
+Renamed GLU281 HG2 to 3HG
+Renamed GLU281 HG3 to 2HG
+Renamed GLU283 HB2 to 3HB
+Renamed GLU283 HB3 to 2HB
+Renamed GLU283 HG2 to 3HG
+Renamed GLU283 HG3 to 2HG
+Renamed GLU286 HB2 to 3HB
+Renamed GLU286 HB3 to 2HB
+Renamed GLU286 HG2 to 3HG
+Renamed GLU286 HG3 to 2HG
+Renamed GLU297 HB2 to 3HB
+Renamed GLU297 HB3 to 2HB
+Renamed GLU297 HG2 to 3HG
+Renamed GLU297 HG3 to 2HG
+Renamed GLU323 HB2 to 3HB
+Renamed GLU323 HB3 to 2HB
+Renamed GLU323 HG2 to 3HG
+Renamed GLU323 HG3 to 2HG
+Renamed GLU331 HB2 to 3HB
+Renamed GLU331 HB3 to 2HB
+Renamed GLU331 HG2 to 3HG
+Renamed GLU331 HG3 to 2HG
+Renamed GLU339 HB2 to 3HB
+Renamed GLU339 HB3 to 2HB
+Renamed GLU339 HG2 to 3HG
+Renamed GLU339 HG3 to 2HG
+Renamed GLU373 HB2 to 3HB
+Renamed GLU373 HB3 to 2HB
+Renamed GLU373 HG2 to 3HG
+Renamed GLU373 HG3 to 2HG
+Renamed GLU380 HB2 to 3HB
+Renamed GLU380 HB3 to 2HB
+Renamed GLU380 HG2 to 3HG
+Renamed GLU380 HG3 to 2HG
+Renamed GLU390 HB2 to 3HB
+Renamed GLU390 HB3 to 2HB
+Renamed GLU390 HG2 to 3HG
+Renamed GLU390 HG3 to 2HG
+Renamed GLU431 HB2 to 3HB
+Renamed GLU431 HB3 to 2HB
+Renamed GLU431 HG2 to 3HG
+Renamed GLU431 HG3 to 2HG
+Renamed GLU449 HB2 to 3HB
+Renamed GLU449 HB3 to 2HB
+Renamed GLU449 HG2 to 3HG
+Renamed GLU449 HG3 to 2HG
+Renamed GLU457 HB2 to 3HB
+Renamed GLU457 HB3 to 2HB
+Renamed GLU457 HG2 to 3HG
+Renamed GLU457 HG3 to 2HG
+Renamed GLU465 HB2 to 3HB
+Renamed GLU465 HB3 to 2HB
+Renamed GLU465 HG2 to 3HG
+Renamed GLU465 HG3 to 2HG
+Renamed GLU468 HB2 to 3HB
+Renamed GLU468 HB3 to 2HB
+Renamed GLU468 HG2 to 3HG
+Renamed GLU468 HG3 to 2HG
+Renamed GLY014 HA2 to 3HA
+Renamed GLY014 HA3 to 2HA
+Renamed GLY032 HA2 to 3HA
+Renamed GLY032 HA3 to 2HA
+Renamed GLY046 HA2 to 3HA
+Renamed GLY046 HA3 to 2HA
+Renamed GLY063 HA2 to 3HA
+Renamed GLY063 HA3 to 2HA
+Renamed GLY070 HA2 to 3HA
+Renamed GLY070 HA3 to 2HA
+Renamed GLY083 HA2 to 3HA
+Renamed GLY083 HA3 to 2HA
+Renamed GLY155 HA2 to 3HA
+Renamed GLY155 HA3 to 2HA
+Renamed GLY161 HA2 to 3HA
+Renamed GLY161 HA3 to 2HA
+Renamed GLY166 HA2 to 3HA
+Renamed GLY166 HA3 to 2HA
+Renamed GLY171 HA2 to 3HA
+Renamed GLY171 HA3 to 2HA
+Renamed GLY174 HA2 to 3HA
+Renamed GLY174 HA3 to 2HA
+Renamed GLY180 HA2 to 3HA
+Renamed GLY180 HA3 to 2HA
+Renamed GLY195 HA2 to 3HA
+Renamed GLY195 HA3 to 2HA
+Renamed GLY207 HA2 to 3HA
+Renamed GLY207 HA3 to 2HA
+Renamed GLY220 HA2 to 3HA
+Renamed GLY220 HA3 to 2HA
+Renamed GLY224 HA2 to 3HA
+Renamed GLY224 HA3 to 2HA
+Renamed GLY236 HA2 to 3HA
+Renamed GLY236 HA3 to 2HA
+Renamed GLY242 HA2 to 3HA
+Renamed GLY242 HA3 to 2HA
+Renamed GLY257 HA2 to 3HA
+Renamed GLY257 HA3 to 2HA
+Renamed GLY275 HA2 to 3HA
+Renamed GLY275 HA3 to 2HA
+Renamed GLY289 HA2 to 3HA
+Renamed GLY289 HA3 to 2HA
+Renamed GLY306 HA2 to 3HA
+Renamed GLY306 HA3 to 2HA
+Renamed GLY313 HA2 to 3HA
+Renamed GLY313 HA3 to 2HA
+Renamed GLY326 HA2 to 3HA
+Renamed GLY326 HA3 to 2HA
+Renamed GLY398 HA2 to 3HA
+Renamed GLY398 HA3 to 2HA
+Renamed GLY404 HA2 to 3HA
+Renamed GLY404 HA3 to 2HA
+Renamed GLY409 HA2 to 3HA
+Renamed GLY409 HA3 to 2HA
+Renamed GLY414 HA2 to 3HA
+Renamed GLY414 HA3 to 2HA
+Renamed GLY417 HA2 to 3HA
+Renamed GLY417 HA3 to 2HA
+Renamed GLY423 HA2 to 3HA
+Renamed GLY423 HA3 to 2HA
+Renamed GLY438 HA2 to 3HA
+Renamed GLY438 HA3 to 2HA
+Renamed GLY450 HA2 to 3HA
+Renamed GLY450 HA3 to 2HA
+Renamed GLY463 HA2 to 3HA
+Renamed GLY463 HA3 to 2HA
+Renamed GLY467 HA2 to 3HA
+Renamed GLY467 HA3 to 2HA
+Renamed GLY479 HA2 to 3HA
+Renamed GLY479 HA3 to 2HA
+Renamed GLY485 HA2 to 3HA
+Renamed GLY485 HA3 to 2HA
+Renamed HIS069 HB2 to 3HB
+Renamed HIS069 HB3 to 2HB
+Renamed HIS095 HB2 to 3HB
+Renamed HIS095 HB3 to 2HB
+Renamed HIS124 HB2 to 3HB
+Renamed HIS124 HB3 to 2HB
+Renamed HIS141 HB2 to 3HB
+Renamed HIS141 HB3 to 2HB
+Renamed HIS182 HB2 to 3HB
+Renamed HIS182 HB3 to 2HB
+Renamed HIS198 HB2 to 3HB
+Renamed HIS198 HB3 to 2HB
+Renamed HIS209 HB2 to 3HB
+Renamed HIS209 HB3 to 2HB
+Renamed HIS221 HB2 to 3HB
+Renamed HIS221 HB3 to 2HB
+Renamed HIS228 HB2 to 3HB
+Renamed HIS228 HB3 to 2HB
+Renamed HIS312 HB2 to 3HB
+Renamed HIS312 HB3 to 2HB
+Renamed HIS338 HB2 to 3HB
+Renamed HIS338 HB3 to 2HB
+Renamed HIS367 HB2 to 3HB
+Renamed HIS367 HB3 to 2HB
+Renamed HIS384 HB2 to 3HB
+Renamed HIS384 HB3 to 2HB
+Renamed HIS425 HB2 to 3HB
+Renamed HIS425 HB3 to 2HB
+Renamed HIS441 HB2 to 3HB
+Renamed HIS441 HB3 to 2HB
+Renamed HIS452 HB2 to 3HB
+Renamed HIS452 HB3 to 2HB
+Renamed HIS464 HB2 to 3HB
+Renamed HIS464 HB3 to 2HB
+Renamed HIS471 HB2 to 3HB
+Renamed HIS471 HB3 to 2HB
+Renamed ILE007 HG21 to 2HG2
+Renamed ILE007 HG22 to 3HG2
+Renamed ILE007 HG22 to 4HG2
+Renamed ILE007 HG12 to 3HG1
+Renamed ILE007 HG13 to 2HG1
+Renamed ILE007 CD1 to CD
+Renamed ILE007 HD11 to 2HD
+Renamed ILE007 HD12 to 3HD
+Renamed ILE007 HD13 to 4HD
+Renamed ILE020 HG21 to 2HG2
+Renamed ILE020 HG22 to 3HG2
+Renamed ILE020 HG22 to 4HG2
+Renamed ILE020 HG12 to 3HG1
+Renamed ILE020 HG13 to 2HG1
+Renamed ILE020 CD1 to CD
+Renamed ILE020 HD11 to 2HD
+Renamed ILE020 HD12 to 3HD
+Renamed ILE020 HD13 to 4HD
+Renamed ILE021 HG21 to 2HG2
+Renamed ILE021 HG22 to 3HG2
+Renamed ILE021 HG22 to 4HG2
+Renamed ILE021 HG12 to 3HG1
+Renamed ILE021 HG13 to 2HG1
+Renamed ILE021 CD1 to CD
+Renamed ILE021 HD11 to 2HD
+Renamed ILE021 HD12 to 3HD
+Renamed ILE021 HD13 to 4HD
+Renamed ILE024 HG21 to 2HG2
+Renamed ILE024 HG22 to 3HG2
+Renamed ILE024 HG22 to 4HG2
+Renamed ILE024 HG12 to 3HG1
+Renamed ILE024 HG13 to 2HG1
+Renamed ILE024 CD1 to CD
+Renamed ILE024 HD11 to 2HD
+Renamed ILE024 HD12 to 3HD
+Renamed ILE024 HD13 to 4HD
+Renamed ILE034 HG21 to 2HG2
+Renamed ILE034 HG22 to 3HG2
+Renamed ILE034 HG22 to 4HG2
+Renamed ILE034 HG12 to 3HG1
+Renamed ILE034 HG13 to 2HG1
+Renamed ILE034 CD1 to CD
+Renamed ILE034 HD11 to 2HD
+Renamed ILE034 HD12 to 3HD
+Renamed ILE034 HD13 to 4HD
+Renamed ILE045 HG21 to 2HG2
+Renamed ILE045 HG22 to 3HG2
+Renamed ILE045 HG22 to 4HG2
+Renamed ILE045 HG12 to 3HG1
+Renamed ILE045 HG13 to 2HG1
+Renamed ILE045 CD1 to CD
+Renamed ILE045 HD11 to 2HD
+Renamed ILE045 HD12 to 3HD
+Renamed ILE045 HD13 to 4HD
+Renamed ILE067 HG21 to 2HG2
+Renamed ILE067 HG22 to 3HG2
+Renamed ILE067 HG22 to 4HG2
+Renamed ILE067 HG12 to 3HG1
+Renamed ILE067 HG13 to 2HG1
+Renamed ILE067 CD1 to CD
+Renamed ILE067 HD11 to 2HD
+Renamed ILE067 HD12 to 3HD
+Renamed ILE067 HD13 to 4HD
+Renamed ILE086 HG21 to 2HG2
+Renamed ILE086 HG22 to 3HG2
+Renamed ILE086 HG22 to 4HG2
+Renamed ILE086 HG12 to 3HG1
+Renamed ILE086 HG13 to 2HG1
+Renamed ILE086 CD1 to CD
+Renamed ILE086 HD11 to 2HD
+Renamed ILE086 HD12 to 3HD
+Renamed ILE086 HD13 to 4HD
+Renamed ILE102 HG21 to 2HG2
+Renamed ILE102 HG22 to 3HG2
+Renamed ILE102 HG22 to 4HG2
+Renamed ILE102 HG12 to 3HG1
+Renamed ILE102 HG13 to 2HG1
+Renamed ILE102 CD1 to CD
+Renamed ILE102 HD11 to 2HD
+Renamed ILE102 HD12 to 3HD
+Renamed ILE102 HD13 to 4HD
+Renamed ILE112 HG21 to 2HG2
+Renamed ILE112 HG22 to 3HG2
+Renamed ILE112 HG22 to 4HG2
+Renamed ILE112 HG12 to 3HG1
+Renamed ILE112 HG13 to 2HG1
+Renamed ILE112 CD1 to CD
+Renamed ILE112 HD11 to 2HD
+Renamed ILE112 HD12 to 3HD
+Renamed ILE112 HD13 to 4HD
+Renamed ILE115 HG21 to 2HG2
+Renamed ILE115 HG22 to 3HG2
+Renamed ILE115 HG22 to 4HG2
+Renamed ILE115 HG12 to 3HG1
+Renamed ILE115 HG13 to 2HG1
+Renamed ILE115 CD1 to CD
+Renamed ILE115 HD11 to 2HD
+Renamed ILE115 HD12 to 3HD
+Renamed ILE115 HD13 to 4HD
+Renamed ILE117 HG21 to 2HG2
+Renamed ILE117 HG22 to 3HG2
+Renamed ILE117 HG22 to 4HG2
+Renamed ILE117 HG12 to 3HG1
+Renamed ILE117 HG13 to 2HG1
+Renamed ILE117 CD1 to CD
+Renamed ILE117 HD11 to 2HD
+Renamed ILE117 HD12 to 3HD
+Renamed ILE117 HD13 to 4HD
+Renamed ILE152 HG21 to 2HG2
+Renamed ILE152 HG22 to 3HG2
+Renamed ILE152 HG22 to 4HG2
+Renamed ILE152 HG12 to 3HG1
+Renamed ILE152 HG13 to 2HG1
+Renamed ILE152 CD1 to CD
+Renamed ILE152 HD11 to 2HD
+Renamed ILE152 HD12 to 3HD
+Renamed ILE152 HD13 to 4HD
+Renamed ILE164 HG21 to 2HG2
+Renamed ILE164 HG22 to 3HG2
+Renamed ILE164 HG22 to 4HG2
+Renamed ILE164 HG12 to 3HG1
+Renamed ILE164 HG13 to 2HG1
+Renamed ILE164 CD1 to CD
+Renamed ILE164 HD11 to 2HD
+Renamed ILE164 HD12 to 3HD
+Renamed ILE164 HD13 to 4HD
+Renamed ILE168 HG21 to 2HG2
+Renamed ILE168 HG22 to 3HG2
+Renamed ILE168 HG22 to 4HG2
+Renamed ILE168 HG12 to 3HG1
+Renamed ILE168 HG13 to 2HG1
+Renamed ILE168 CD1 to CD
+Renamed ILE168 HD11 to 2HD
+Renamed ILE168 HD12 to 3HD
+Renamed ILE168 HD13 to 4HD
+Renamed ILE179 HG21 to 2HG2
+Renamed ILE179 HG22 to 3HG2
+Renamed ILE179 HG22 to 4HG2
+Renamed ILE179 HG12 to 3HG1
+Renamed ILE179 HG13 to 2HG1
+Renamed ILE179 CD1 to CD
+Renamed ILE179 HD11 to 2HD
+Renamed ILE179 HD12 to 3HD
+Renamed ILE179 HD13 to 4HD
+Renamed ILE226 HG21 to 2HG2
+Renamed ILE226 HG22 to 3HG2
+Renamed ILE226 HG22 to 4HG2
+Renamed ILE226 HG12 to 3HG1
+Renamed ILE226 HG13 to 2HG1
+Renamed ILE226 CD1 to CD
+Renamed ILE226 HD11 to 2HD
+Renamed ILE226 HD12 to 3HD
+Renamed ILE226 HD13 to 4HD
+Renamed ILE240 HG21 to 2HG2
+Renamed ILE240 HG22 to 3HG2
+Renamed ILE240 HG22 to 4HG2
+Renamed ILE240 HG12 to 3HG1
+Renamed ILE240 HG13 to 2HG1
+Renamed ILE240 CD1 to CD
+Renamed ILE240 HD11 to 2HD
+Renamed ILE240 HD12 to 3HD
+Renamed ILE240 HD13 to 4HD
+Renamed ILE250 HG21 to 2HG2
+Renamed ILE250 HG22 to 3HG2
+Renamed ILE250 HG22 to 4HG2
+Renamed ILE250 HG12 to 3HG1
+Renamed ILE250 HG13 to 2HG1
+Renamed ILE250 CD1 to CD
+Renamed ILE250 HD11 to 2HD
+Renamed ILE250 HD12 to 3HD
+Renamed ILE250 HD13 to 4HD
+Renamed ILE263 HG21 to 2HG2
+Renamed ILE263 HG22 to 3HG2
+Renamed ILE263 HG22 to 4HG2
+Renamed ILE263 HG12 to 3HG1
+Renamed ILE263 HG13 to 2HG1
+Renamed ILE263 CD1 to CD
+Renamed ILE263 HD11 to 2HD
+Renamed ILE263 HD12 to 3HD
+Renamed ILE263 HD13 to 4HD
+Renamed ILE264 HG21 to 2HG2
+Renamed ILE264 HG22 to 3HG2
+Renamed ILE264 HG22 to 4HG2
+Renamed ILE264 HG12 to 3HG1
+Renamed ILE264 HG13 to 2HG1
+Renamed ILE264 CD1 to CD
+Renamed ILE264 HD11 to 2HD
+Renamed ILE264 HD12 to 3HD
+Renamed ILE264 HD13 to 4HD
+Renamed ILE267 HG21 to 2HG2
+Renamed ILE267 HG22 to 3HG2
+Renamed ILE267 HG22 to 4HG2
+Renamed ILE267 HG12 to 3HG1
+Renamed ILE267 HG13 to 2HG1
+Renamed ILE267 CD1 to CD
+Renamed ILE267 HD11 to 2HD
+Renamed ILE267 HD12 to 3HD
+Renamed ILE267 HD13 to 4HD
+Renamed ILE277 HG21 to 2HG2
+Renamed ILE277 HG22 to 3HG2
+Renamed ILE277 HG22 to 4HG2
+Renamed ILE277 HG12 to 3HG1
+Renamed ILE277 HG13 to 2HG1
+Renamed ILE277 CD1 to CD
+Renamed ILE277 HD11 to 2HD
+Renamed ILE277 HD12 to 3HD
+Renamed ILE277 HD13 to 4HD
+Renamed ILE288 HG21 to 2HG2
+Renamed ILE288 HG22 to 3HG2
+Renamed ILE288 HG22 to 4HG2
+Renamed ILE288 HG12 to 3HG1
+Renamed ILE288 HG13 to 2HG1
+Renamed ILE288 CD1 to CD
+Renamed ILE288 HD11 to 2HD
+Renamed ILE288 HD12 to 3HD
+Renamed ILE288 HD13 to 4HD
+Renamed ILE310 HG21 to 2HG2
+Renamed ILE310 HG22 to 3HG2
+Renamed ILE310 HG22 to 4HG2
+Renamed ILE310 HG12 to 3HG1
+Renamed ILE310 HG13 to 2HG1
+Renamed ILE310 CD1 to CD
+Renamed ILE310 HD11 to 2HD
+Renamed ILE310 HD12 to 3HD
+Renamed ILE310 HD13 to 4HD
+Renamed ILE329 HG21 to 2HG2
+Renamed ILE329 HG22 to 3HG2
+Renamed ILE329 HG22 to 4HG2
+Renamed ILE329 HG12 to 3HG1
+Renamed ILE329 HG13 to 2HG1
+Renamed ILE329 CD1 to CD
+Renamed ILE329 HD11 to 2HD
+Renamed ILE329 HD12 to 3HD
+Renamed ILE329 HD13 to 4HD
+Renamed ILE345 HG21 to 2HG2
+Renamed ILE345 HG22 to 3HG2
+Renamed ILE345 HG22 to 4HG2
+Renamed ILE345 HG12 to 3HG1
+Renamed ILE345 HG13 to 2HG1
+Renamed ILE345 CD1 to CD
+Renamed ILE345 HD11 to 2HD
+Renamed ILE345 HD12 to 3HD
+Renamed ILE345 HD13 to 4HD
+Renamed ILE355 HG21 to 2HG2
+Renamed ILE355 HG22 to 3HG2
+Renamed ILE355 HG22 to 4HG2
+Renamed ILE355 HG12 to 3HG1
+Renamed ILE355 HG13 to 2HG1
+Renamed ILE355 CD1 to CD
+Renamed ILE355 HD11 to 2HD
+Renamed ILE355 HD12 to 3HD
+Renamed ILE355 HD13 to 4HD
+Renamed ILE358 HG21 to 2HG2
+Renamed ILE358 HG22 to 3HG2
+Renamed ILE358 HG22 to 4HG2
+Renamed ILE358 HG12 to 3HG1
+Renamed ILE358 HG13 to 2HG1
+Renamed ILE358 CD1 to CD
+Renamed ILE358 HD11 to 2HD
+Renamed ILE358 HD12 to 3HD
+Renamed ILE358 HD13 to 4HD
+Renamed ILE360 HG21 to 2HG2
+Renamed ILE360 HG22 to 3HG2
+Renamed ILE360 HG22 to 4HG2
+Renamed ILE360 HG12 to 3HG1
+Renamed ILE360 HG13 to 2HG1
+Renamed ILE360 CD1 to CD
+Renamed ILE360 HD11 to 2HD
+Renamed ILE360 HD12 to 3HD
+Renamed ILE360 HD13 to 4HD
+Renamed ILE395 HG21 to 2HG2
+Renamed ILE395 HG22 to 3HG2
+Renamed ILE395 HG22 to 4HG2
+Renamed ILE395 HG12 to 3HG1
+Renamed ILE395 HG13 to 2HG1
+Renamed ILE395 CD1 to CD
+Renamed ILE395 HD11 to 2HD
+Renamed ILE395 HD12 to 3HD
+Renamed ILE395 HD13 to 4HD
+Renamed ILE407 HG21 to 2HG2
+Renamed ILE407 HG22 to 3HG2
+Renamed ILE407 HG22 to 4HG2
+Renamed ILE407 HG12 to 3HG1
+Renamed ILE407 HG13 to 2HG1
+Renamed ILE407 CD1 to CD
+Renamed ILE407 HD11 to 2HD
+Renamed ILE407 HD12 to 3HD
+Renamed ILE407 HD13 to 4HD
+Renamed ILE411 HG21 to 2HG2
+Renamed ILE411 HG22 to 3HG2
+Renamed ILE411 HG22 to 4HG2
+Renamed ILE411 HG12 to 3HG1
+Renamed ILE411 HG13 to 2HG1
+Renamed ILE411 CD1 to CD
+Renamed ILE411 HD11 to 2HD
+Renamed ILE411 HD12 to 3HD
+Renamed ILE411 HD13 to 4HD
+Renamed ILE422 HG21 to 2HG2
+Renamed ILE422 HG22 to 3HG2
+Renamed ILE422 HG22 to 4HG2
+Renamed ILE422 HG12 to 3HG1
+Renamed ILE422 HG13 to 2HG1
+Renamed ILE422 CD1 to CD
+Renamed ILE422 HD11 to 2HD
+Renamed ILE422 HD12 to 3HD
+Renamed ILE422 HD13 to 4HD
+Renamed ILE469 HG21 to 2HG2
+Renamed ILE469 HG22 to 3HG2
+Renamed ILE469 HG22 to 4HG2
+Renamed ILE469 HG12 to 3HG1
+Renamed ILE469 HG13 to 2HG1
+Renamed ILE469 CD1 to CD
+Renamed ILE469 HD11 to 2HD
+Renamed ILE469 HD12 to 3HD
+Renamed ILE469 HD13 to 4HD
+Renamed ILE483 HG21 to 2HG2
+Renamed ILE483 HG22 to 3HG2
+Renamed ILE483 HG22 to 4HG2
+Renamed ILE483 HG12 to 3HG1
+Renamed ILE483 HG13 to 2HG1
+Renamed ILE483 CD1 to CD
+Renamed ILE483 HD11 to 2HD
+Renamed ILE483 HD12 to 3HD
+Renamed ILE483 HD13 to 4HD
+Renamed LEU035 HB2 to 3HB
+Renamed LEU035 HB3 to 2HB
+Renamed LEU035 HD11 to 2HD1
+Renamed LEU035 HD12 to 3HD1
+Renamed LEU035 HD13 to 4HD1
+Renamed LEU035 HD21 to 2HD2
+Renamed LEU035 HD22 to 3HD2
+Renamed LEU035 HD23 to 4HD2
+Renamed LEU041 HB2 to 3HB
+Renamed LEU041 HB3 to 2HB
+Renamed LEU041 HD11 to 2HD1
+Renamed LEU041 HD12 to 3HD1
+Renamed LEU041 HD13 to 4HD1
+Renamed LEU041 HD21 to 2HD2
+Renamed LEU041 HD22 to 3HD2
+Renamed LEU041 HD23 to 4HD2
+Renamed LEU044 HB2 to 3HB
+Renamed LEU044 HB3 to 2HB
+Renamed LEU044 HD11 to 2HD1
+Renamed LEU044 HD12 to 3HD1
+Renamed LEU044 HD13 to 4HD1
+Renamed LEU044 HD21 to 2HD2
+Renamed LEU044 HD22 to 3HD2
+Renamed LEU044 HD23 to 4HD2
+Renamed LEU052 HB2 to 3HB
+Renamed LEU052 HB3 to 2HB
+Renamed LEU052 HD11 to 2HD1
+Renamed LEU052 HD12 to 3HD1
+Renamed LEU052 HD13 to 4HD1
+Renamed LEU052 HD21 to 2HD2
+Renamed LEU052 HD22 to 3HD2
+Renamed LEU052 HD23 to 4HD2
+Renamed LEU056 HB2 to 3HB
+Renamed LEU056 HB3 to 2HB
+Renamed LEU056 HD11 to 2HD1
+Renamed LEU056 HD12 to 3HD1
+Renamed LEU056 HD13 to 4HD1
+Renamed LEU056 HD21 to 2HD2
+Renamed LEU056 HD22 to 3HD2
+Renamed LEU056 HD23 to 4HD2
+Renamed LEU059 HB2 to 3HB
+Renamed LEU059 HB3 to 2HB
+Renamed LEU059 HD11 to 2HD1
+Renamed LEU059 HD12 to 3HD1
+Renamed LEU059 HD13 to 4HD1
+Renamed LEU059 HD21 to 2HD2
+Renamed LEU059 HD22 to 3HD2
+Renamed LEU059 HD23 to 4HD2
+Renamed LEU065 HB2 to 3HB
+Renamed LEU065 HB3 to 2HB
+Renamed LEU065 HD11 to 2HD1
+Renamed LEU065 HD12 to 3HD1
+Renamed LEU065 HD13 to 4HD1
+Renamed LEU065 HD21 to 2HD2
+Renamed LEU065 HD22 to 3HD2
+Renamed LEU065 HD23 to 4HD2
+Renamed LEU084 HB2 to 3HB
+Renamed LEU084 HB3 to 2HB
+Renamed LEU084 HD11 to 2HD1
+Renamed LEU084 HD12 to 3HD1
+Renamed LEU084 HD13 to 4HD1
+Renamed LEU084 HD21 to 2HD2
+Renamed LEU084 HD22 to 3HD2
+Renamed LEU084 HD23 to 4HD2
+Renamed LEU087 HB2 to 3HB
+Renamed LEU087 HB3 to 2HB
+Renamed LEU087 HD11 to 2HD1
+Renamed LEU087 HD12 to 3HD1
+Renamed LEU087 HD13 to 4HD1
+Renamed LEU087 HD21 to 2HD2
+Renamed LEU087 HD22 to 3HD2
+Renamed LEU087 HD23 to 4HD2
+Renamed LEU090 HB2 to 3HB
+Renamed LEU090 HB3 to 2HB
+Renamed LEU090 HD11 to 2HD1
+Renamed LEU090 HD12 to 3HD1
+Renamed LEU090 HD13 to 4HD1
+Renamed LEU090 HD21 to 2HD2
+Renamed LEU090 HD22 to 3HD2
+Renamed LEU090 HD23 to 4HD2
+Renamed LEU093 HB2 to 3HB
+Renamed LEU093 HB3 to 2HB
+Renamed LEU093 HD11 to 2HD1
+Renamed LEU093 HD12 to 3HD1
+Renamed LEU093 HD13 to 4HD1
+Renamed LEU093 HD21 to 2HD2
+Renamed LEU093 HD22 to 3HD2
+Renamed LEU093 HD23 to 4HD2
+Renamed LEU101 HB2 to 3HB
+Renamed LEU101 HB3 to 2HB
+Renamed LEU101 HD11 to 2HD1
+Renamed LEU101 HD12 to 3HD1
+Renamed LEU101 HD13 to 4HD1
+Renamed LEU101 HD21 to 2HD2
+Renamed LEU101 HD22 to 3HD2
+Renamed LEU101 HD23 to 4HD2
+Renamed LEU105 HB2 to 3HB
+Renamed LEU105 HB3 to 2HB
+Renamed LEU105 HD11 to 2HD1
+Renamed LEU105 HD12 to 3HD1
+Renamed LEU105 HD13 to 4HD1
+Renamed LEU105 HD21 to 2HD2
+Renamed LEU105 HD22 to 3HD2
+Renamed LEU105 HD23 to 4HD2
+Renamed LEU106 HB2 to 3HB
+Renamed LEU106 HB3 to 2HB
+Renamed LEU106 HD11 to 2HD1
+Renamed LEU106 HD12 to 3HD1
+Renamed LEU106 HD13 to 4HD1
+Renamed LEU106 HD21 to 2HD2
+Renamed LEU106 HD22 to 3HD2
+Renamed LEU106 HD23 to 4HD2
+Renamed LEU132 HB2 to 3HB
+Renamed LEU132 HB3 to 2HB
+Renamed LEU132 HD11 to 2HD1
+Renamed LEU132 HD12 to 3HD1
+Renamed LEU132 HD13 to 4HD1
+Renamed LEU132 HD21 to 2HD2
+Renamed LEU132 HD22 to 3HD2
+Renamed LEU132 HD23 to 4HD2
+Renamed LEU148 HB2 to 3HB
+Renamed LEU148 HB3 to 2HB
+Renamed LEU148 HD11 to 2HD1
+Renamed LEU148 HD12 to 3HD1
+Renamed LEU148 HD13 to 4HD1
+Renamed LEU148 HD21 to 2HD2
+Renamed LEU148 HD22 to 3HD2
+Renamed LEU148 HD23 to 4HD2
+Renamed LEU156 HB2 to 3HB
+Renamed LEU156 HB3 to 2HB
+Renamed LEU156 HD11 to 2HD1
+Renamed LEU156 HD12 to 3HD1
+Renamed LEU156 HD13 to 4HD1
+Renamed LEU156 HD21 to 2HD2
+Renamed LEU156 HD22 to 3HD2
+Renamed LEU156 HD23 to 4HD2
+Renamed LEU167 HB2 to 3HB
+Renamed LEU167 HB3 to 2HB
+Renamed LEU167 HD11 to 2HD1
+Renamed LEU167 HD12 to 3HD1
+Renamed LEU167 HD13 to 4HD1
+Renamed LEU167 HD21 to 2HD2
+Renamed LEU167 HD22 to 3HD2
+Renamed LEU167 HD23 to 4HD2
+Renamed LEU169 HB2 to 3HB
+Renamed LEU169 HB3 to 2HB
+Renamed LEU169 HD11 to 2HD1
+Renamed LEU169 HD12 to 3HD1
+Renamed LEU169 HD13 to 4HD1
+Renamed LEU169 HD21 to 2HD2
+Renamed LEU169 HD22 to 3HD2
+Renamed LEU169 HD23 to 4HD2
+Renamed LEU175 HB2 to 3HB
+Renamed LEU175 HB3 to 2HB
+Renamed LEU175 HD11 to 2HD1
+Renamed LEU175 HD12 to 3HD1
+Renamed LEU175 HD13 to 4HD1
+Renamed LEU175 HD21 to 2HD2
+Renamed LEU175 HD22 to 3HD2
+Renamed LEU175 HD23 to 4HD2
+Renamed LEU192 HB2 to 3HB
+Renamed LEU192 HB3 to 2HB
+Renamed LEU192 HD11 to 2HD1
+Renamed LEU192 HD12 to 3HD1
+Renamed LEU192 HD13 to 4HD1
+Renamed LEU192 HD21 to 2HD2
+Renamed LEU192 HD22 to 3HD2
+Renamed LEU192 HD23 to 4HD2
+Renamed LEU194 HB2 to 3HB
+Renamed LEU194 HB3 to 2HB
+Renamed LEU194 HD11 to 2HD1
+Renamed LEU194 HD12 to 3HD1
+Renamed LEU194 HD13 to 4HD1
+Renamed LEU194 HD21 to 2HD2
+Renamed LEU194 HD22 to 3HD2
+Renamed LEU194 HD23 to 4HD2
+Renamed LEU200 HB2 to 3HB
+Renamed LEU200 HB3 to 2HB
+Renamed LEU200 HD11 to 2HD1
+Renamed LEU200 HD12 to 3HD1
+Renamed LEU200 HD13 to 4HD1
+Renamed LEU200 HD21 to 2HD2
+Renamed LEU200 HD22 to 3HD2
+Renamed LEU200 HD23 to 4HD2
+Renamed LEU203 HB2 to 3HB
+Renamed LEU203 HB3 to 2HB
+Renamed LEU203 HD11 to 2HD1
+Renamed LEU203 HD12 to 3HD1
+Renamed LEU203 HD13 to 4HD1
+Renamed LEU203 HD21 to 2HD2
+Renamed LEU203 HD22 to 3HD2
+Renamed LEU203 HD23 to 4HD2
+Renamed LEU234 HB2 to 3HB
+Renamed LEU234 HB3 to 2HB
+Renamed LEU234 HD11 to 2HD1
+Renamed LEU234 HD12 to 3HD1
+Renamed LEU234 HD13 to 4HD1
+Renamed LEU234 HD21 to 2HD2
+Renamed LEU234 HD22 to 3HD2
+Renamed LEU234 HD23 to 4HD2
+Renamed LEU238 HB2 to 3HB
+Renamed LEU238 HB3 to 2HB
+Renamed LEU238 HD11 to 2HD1
+Renamed LEU238 HD12 to 3HD1
+Renamed LEU238 HD13 to 4HD1
+Renamed LEU238 HD21 to 2HD2
+Renamed LEU238 HD22 to 3HD2
+Renamed LEU238 HD23 to 4HD2
+Renamed LEU278 HB2 to 3HB
+Renamed LEU278 HB3 to 2HB
+Renamed LEU278 HD11 to 2HD1
+Renamed LEU278 HD12 to 3HD1
+Renamed LEU278 HD13 to 4HD1
+Renamed LEU278 HD21 to 2HD2
+Renamed LEU278 HD22 to 3HD2
+Renamed LEU278 HD23 to 4HD2
+Renamed LEU284 HB2 to 3HB
+Renamed LEU284 HB3 to 2HB
+Renamed LEU284 HD11 to 2HD1
+Renamed LEU284 HD12 to 3HD1
+Renamed LEU284 HD13 to 4HD1
+Renamed LEU284 HD21 to 2HD2
+Renamed LEU284 HD22 to 3HD2
+Renamed LEU284 HD23 to 4HD2
+Renamed LEU287 HB2 to 3HB
+Renamed LEU287 HB3 to 2HB
+Renamed LEU287 HD11 to 2HD1
+Renamed LEU287 HD12 to 3HD1
+Renamed LEU287 HD13 to 4HD1
+Renamed LEU287 HD21 to 2HD2
+Renamed LEU287 HD22 to 3HD2
+Renamed LEU287 HD23 to 4HD2
+Renamed LEU295 HB2 to 3HB
+Renamed LEU295 HB3 to 2HB
+Renamed LEU295 HD11 to 2HD1
+Renamed LEU295 HD12 to 3HD1
+Renamed LEU295 HD13 to 4HD1
+Renamed LEU295 HD21 to 2HD2
+Renamed LEU295 HD22 to 3HD2
+Renamed LEU295 HD23 to 4HD2
+Renamed LEU299 HB2 to 3HB
+Renamed LEU299 HB3 to 2HB
+Renamed LEU299 HD11 to 2HD1
+Renamed LEU299 HD12 to 3HD1
+Renamed LEU299 HD13 to 4HD1
+Renamed LEU299 HD21 to 2HD2
+Renamed LEU299 HD22 to 3HD2
+Renamed LEU299 HD23 to 4HD2
+Renamed LEU302 HB2 to 3HB
+Renamed LEU302 HB3 to 2HB
+Renamed LEU302 HD11 to 2HD1
+Renamed LEU302 HD12 to 3HD1
+Renamed LEU302 HD13 to 4HD1
+Renamed LEU302 HD21 to 2HD2
+Renamed LEU302 HD22 to 3HD2
+Renamed LEU302 HD23 to 4HD2
+Renamed LEU308 HB2 to 3HB
+Renamed LEU308 HB3 to 2HB
+Renamed LEU308 HD11 to 2HD1
+Renamed LEU308 HD12 to 3HD1
+Renamed LEU308 HD13 to 4HD1
+Renamed LEU308 HD21 to 2HD2
+Renamed LEU308 HD22 to 3HD2
+Renamed LEU308 HD23 to 4HD2
+Renamed LEU327 HB2 to 3HB
+Renamed LEU327 HB3 to 2HB
+Renamed LEU327 HD11 to 2HD1
+Renamed LEU327 HD12 to 3HD1
+Renamed LEU327 HD13 to 4HD1
+Renamed LEU327 HD21 to 2HD2
+Renamed LEU327 HD22 to 3HD2
+Renamed LEU327 HD23 to 4HD2
+Renamed LEU330 HB2 to 3HB
+Renamed LEU330 HB3 to 2HB
+Renamed LEU330 HD11 to 2HD1
+Renamed LEU330 HD12 to 3HD1
+Renamed LEU330 HD13 to 4HD1
+Renamed LEU330 HD21 to 2HD2
+Renamed LEU330 HD22 to 3HD2
+Renamed LEU330 HD23 to 4HD2
+Renamed LEU333 HB2 to 3HB
+Renamed LEU333 HB3 to 2HB
+Renamed LEU333 HD11 to 2HD1
+Renamed LEU333 HD12 to 3HD1
+Renamed LEU333 HD13 to 4HD1
+Renamed LEU333 HD21 to 2HD2
+Renamed LEU333 HD22 to 3HD2
+Renamed LEU333 HD23 to 4HD2
+Renamed LEU336 HB2 to 3HB
+Renamed LEU336 HB3 to 2HB
+Renamed LEU336 HD11 to 2HD1
+Renamed LEU336 HD12 to 3HD1
+Renamed LEU336 HD13 to 4HD1
+Renamed LEU336 HD21 to 2HD2
+Renamed LEU336 HD22 to 3HD2
+Renamed LEU336 HD23 to 4HD2
+Renamed LEU344 HB2 to 3HB
+Renamed LEU344 HB3 to 2HB
+Renamed LEU344 HD11 to 2HD1
+Renamed LEU344 HD12 to 3HD1
+Renamed LEU344 HD13 to 4HD1
+Renamed LEU344 HD21 to 2HD2
+Renamed LEU344 HD22 to 3HD2
+Renamed LEU344 HD23 to 4HD2
+Renamed LEU348 HB2 to 3HB
+Renamed LEU348 HB3 to 2HB
+Renamed LEU348 HD11 to 2HD1
+Renamed LEU348 HD12 to 3HD1
+Renamed LEU348 HD13 to 4HD1
+Renamed LEU348 HD21 to 2HD2
+Renamed LEU348 HD22 to 3HD2
+Renamed LEU348 HD23 to 4HD2
+Renamed LEU349 HB2 to 3HB
+Renamed LEU349 HB3 to 2HB
+Renamed LEU349 HD11 to 2HD1
+Renamed LEU349 HD12 to 3HD1
+Renamed LEU349 HD13 to 4HD1
+Renamed LEU349 HD21 to 2HD2
+Renamed LEU349 HD22 to 3HD2
+Renamed LEU349 HD23 to 4HD2
+Renamed LEU375 HB2 to 3HB
+Renamed LEU375 HB3 to 2HB
+Renamed LEU375 HD11 to 2HD1
+Renamed LEU375 HD12 to 3HD1
+Renamed LEU375 HD13 to 4HD1
+Renamed LEU375 HD21 to 2HD2
+Renamed LEU375 HD22 to 3HD2
+Renamed LEU375 HD23 to 4HD2
+Renamed LEU391 HB2 to 3HB
+Renamed LEU391 HB3 to 2HB
+Renamed LEU391 HD11 to 2HD1
+Renamed LEU391 HD12 to 3HD1
+Renamed LEU391 HD13 to 4HD1
+Renamed LEU391 HD21 to 2HD2
+Renamed LEU391 HD22 to 3HD2
+Renamed LEU391 HD23 to 4HD2
+Renamed LEU399 HB2 to 3HB
+Renamed LEU399 HB3 to 2HB
+Renamed LEU399 HD11 to 2HD1
+Renamed LEU399 HD12 to 3HD1
+Renamed LEU399 HD13 to 4HD1
+Renamed LEU399 HD21 to 2HD2
+Renamed LEU399 HD22 to 3HD2
+Renamed LEU399 HD23 to 4HD2
+Renamed LEU410 HB2 to 3HB
+Renamed LEU410 HB3 to 2HB
+Renamed LEU410 HD11 to 2HD1
+Renamed LEU410 HD12 to 3HD1
+Renamed LEU410 HD13 to 4HD1
+Renamed LEU410 HD21 to 2HD2
+Renamed LEU410 HD22 to 3HD2
+Renamed LEU410 HD23 to 4HD2
+Renamed LEU412 HB2 to 3HB
+Renamed LEU412 HB3 to 2HB
+Renamed LEU412 HD11 to 2HD1
+Renamed LEU412 HD12 to 3HD1
+Renamed LEU412 HD13 to 4HD1
+Renamed LEU412 HD21 to 2HD2
+Renamed LEU412 HD22 to 3HD2
+Renamed LEU412 HD23 to 4HD2
+Renamed LEU418 HB2 to 3HB
+Renamed LEU418 HB3 to 2HB
+Renamed LEU418 HD11 to 2HD1
+Renamed LEU418 HD12 to 3HD1
+Renamed LEU418 HD13 to 4HD1
+Renamed LEU418 HD21 to 2HD2
+Renamed LEU418 HD22 to 3HD2
+Renamed LEU418 HD23 to 4HD2
+Renamed LEU435 HB2 to 3HB
+Renamed LEU435 HB3 to 2HB
+Renamed LEU435 HD11 to 2HD1
+Renamed LEU435 HD12 to 3HD1
+Renamed LEU435 HD13 to 4HD1
+Renamed LEU435 HD21 to 2HD2
+Renamed LEU435 HD22 to 3HD2
+Renamed LEU435 HD23 to 4HD2
+Renamed LEU437 HB2 to 3HB
+Renamed LEU437 HB3 to 2HB
+Renamed LEU437 HD11 to 2HD1
+Renamed LEU437 HD12 to 3HD1
+Renamed LEU437 HD13 to 4HD1
+Renamed LEU437 HD21 to 2HD2
+Renamed LEU437 HD22 to 3HD2
+Renamed LEU437 HD23 to 4HD2
+Renamed LEU443 HB2 to 3HB
+Renamed LEU443 HB3 to 2HB
+Renamed LEU443 HD11 to 2HD1
+Renamed LEU443 HD12 to 3HD1
+Renamed LEU443 HD13 to 4HD1
+Renamed LEU443 HD21 to 2HD2
+Renamed LEU443 HD22 to 3HD2
+Renamed LEU443 HD23 to 4HD2
+Renamed LEU446 HB2 to 3HB
+Renamed LEU446 HB3 to 2HB
+Renamed LEU446 HD11 to 2HD1
+Renamed LEU446 HD12 to 3HD1
+Renamed LEU446 HD13 to 4HD1
+Renamed LEU446 HD21 to 2HD2
+Renamed LEU446 HD22 to 3HD2
+Renamed LEU446 HD23 to 4HD2
+Renamed LEU477 HB2 to 3HB
+Renamed LEU477 HB3 to 2HB
+Renamed LEU477 HD11 to 2HD1
+Renamed LEU477 HD12 to 3HD1
+Renamed LEU477 HD13 to 4HD1
+Renamed LEU477 HD21 to 2HD2
+Renamed LEU477 HD22 to 3HD2
+Renamed LEU477 HD23 to 4HD2
+Renamed LEU481 HB2 to 3HB
+Renamed LEU481 HB3 to 2HB
+Renamed LEU481 HD11 to 2HD1
+Renamed LEU481 HD12 to 3HD1
+Renamed LEU481 HD13 to 4HD1
+Renamed LEU481 HD21 to 2HD2
+Renamed LEU481 HD22 to 3HD2
+Renamed LEU481 HD23 to 4HD2
+Renamed LYS008 HB2 to 3HB
+Renamed LYS008 HB3 to 2HB
+Renamed LYS008 HG2 to 3HG
+Renamed LYS008 HG3 to 2HG
+Renamed LYS008 HD2 to 3HD
+Renamed LYS008 HD3 to 2HD
+Renamed LYS008 HE2 to 3HE
+Renamed LYS008 HE3 to 2HE
+Renamed LYS008 HZ1 to 2HZ
+Renamed LYS008 HZ2 to 3HZ
+Renamed LYS008 HZ3 to 4HZ
+Renamed LYS071 HB2 to 3HB
+Renamed LYS071 HB3 to 2HB
+Renamed LYS071 HG2 to 3HG
+Renamed LYS071 HG3 to 2HG
+Renamed LYS071 HD2 to 3HD
+Renamed LYS071 HD3 to 2HD
+Renamed LYS071 HE2 to 3HE
+Renamed LYS071 HE3 to 2HE
+Renamed LYS071 HZ1 to 2HZ
+Renamed LYS071 HZ2 to 3HZ
+Renamed LYS071 HZ3 to 4HZ
+Renamed LYS074 HB2 to 3HB
+Renamed LYS074 HB3 to 2HB
+Renamed LYS074 HG2 to 3HG
+Renamed LYS074 HG3 to 2HG
+Renamed LYS074 HD2 to 3HD
+Renamed LYS074 HD3 to 2HD
+Renamed LYS074 HE2 to 3HE
+Renamed LYS074 HE3 to 2HE
+Renamed LYS074 HZ1 to 2HZ
+Renamed LYS074 HZ2 to 3HZ
+Renamed LYS074 HZ3 to 4HZ
+Renamed LYS127 HB2 to 3HB
+Renamed LYS127 HB3 to 2HB
+Renamed LYS127 HG2 to 3HG
+Renamed LYS127 HG3 to 2HG
+Renamed LYS127 HD2 to 3HD
+Renamed LYS127 HD3 to 2HD
+Renamed LYS127 HE2 to 3HE
+Renamed LYS127 HE3 to 2HE
+Renamed LYS127 HZ1 to 2HZ
+Renamed LYS127 HZ2 to 3HZ
+Renamed LYS127 HZ3 to 4HZ
+Renamed LYS173 HB2 to 3HB
+Renamed LYS173 HB3 to 2HB
+Renamed LYS173 HG2 to 3HG
+Renamed LYS173 HG3 to 2HG
+Renamed LYS173 HD2 to 3HD
+Renamed LYS173 HD3 to 2HD
+Renamed LYS173 HE2 to 3HE
+Renamed LYS173 HE3 to 2HE
+Renamed LYS173 HZ1 to 2HZ
+Renamed LYS173 HZ2 to 3HZ
+Renamed LYS173 HZ3 to 4HZ
+Renamed LYS199 HB2 to 3HB
+Renamed LYS199 HB3 to 2HB
+Renamed LYS199 HG2 to 3HG
+Renamed LYS199 HG3 to 2HG
+Renamed LYS199 HD2 to 3HD
+Renamed LYS199 HD3 to 2HD
+Renamed LYS199 HE2 to 3HE
+Renamed LYS199 HE3 to 2HE
+Renamed LYS199 HZ1 to 2HZ
+Renamed LYS199 HZ2 to 3HZ
+Renamed LYS199 HZ3 to 4HZ
+Renamed LYS232 HB2 to 3HB
+Renamed LYS232 HB3 to 2HB
+Renamed LYS232 HG2 to 3HG
+Renamed LYS232 HG3 to 2HG
+Renamed LYS232 HD2 to 3HD
+Renamed LYS232 HD3 to 2HD
+Renamed LYS232 HE2 to 3HE
+Renamed LYS232 HE3 to 2HE
+Renamed LYS232 HZ1 to 2HZ
+Renamed LYS232 HZ2 to 3HZ
+Renamed LYS232 HZ3 to 4HZ
+Renamed LYS251 HB2 to 3HB
+Renamed LYS251 HB3 to 2HB
+Renamed LYS251 HG2 to 3HG
+Renamed LYS251 HG3 to 2HG
+Renamed LYS251 HD2 to 3HD
+Renamed LYS251 HD3 to 2HD
+Renamed LYS251 HE2 to 3HE
+Renamed LYS251 HE3 to 2HE
+Renamed LYS251 HZ1 to 2HZ
+Renamed LYS251 HZ2 to 3HZ
+Renamed LYS251 HZ3 to 4HZ
+Renamed LYS314 HB2 to 3HB
+Renamed LYS314 HB3 to 2HB
+Renamed LYS314 HG2 to 3HG
+Renamed LYS314 HG3 to 2HG
+Renamed LYS314 HD2 to 3HD
+Renamed LYS314 HD3 to 2HD
+Renamed LYS314 HE2 to 3HE
+Renamed LYS314 HE3 to 2HE
+Renamed LYS314 HZ1 to 2HZ
+Renamed LYS314 HZ2 to 3HZ
+Renamed LYS314 HZ3 to 4HZ
+Renamed LYS317 HB2 to 3HB
+Renamed LYS317 HB3 to 2HB
+Renamed LYS317 HG2 to 3HG
+Renamed LYS317 HG3 to 2HG
+Renamed LYS317 HD2 to 3HD
+Renamed LYS317 HD3 to 2HD
+Renamed LYS317 HE2 to 3HE
+Renamed LYS317 HE3 to 2HE
+Renamed LYS317 HZ1 to 2HZ
+Renamed LYS317 HZ2 to 3HZ
+Renamed LYS317 HZ3 to 4HZ
+Renamed LYS370 HB2 to 3HB
+Renamed LYS370 HB3 to 2HB
+Renamed LYS370 HG2 to 3HG
+Renamed LYS370 HG3 to 2HG
+Renamed LYS370 HD2 to 3HD
+Renamed LYS370 HD3 to 2HD
+Renamed LYS370 HE2 to 3HE
+Renamed LYS370 HE3 to 2HE
+Renamed LYS370 HZ1 to 2HZ
+Renamed LYS370 HZ2 to 3HZ
+Renamed LYS370 HZ3 to 4HZ
+Renamed LYS416 HB2 to 3HB
+Renamed LYS416 HB3 to 2HB
+Renamed LYS416 HG2 to 3HG
+Renamed LYS416 HG3 to 2HG
+Renamed LYS416 HD2 to 3HD
+Renamed LYS416 HD3 to 2HD
+Renamed LYS416 HE2 to 3HE
+Renamed LYS416 HE3 to 2HE
+Renamed LYS416 HZ1 to 2HZ
+Renamed LYS416 HZ2 to 3HZ
+Renamed LYS416 HZ3 to 4HZ
+Renamed LYS442 HB2 to 3HB
+Renamed LYS442 HB3 to 2HB
+Renamed LYS442 HG2 to 3HG
+Renamed LYS442 HG3 to 2HG
+Renamed LYS442 HD2 to 3HD
+Renamed LYS442 HD3 to 2HD
+Renamed LYS442 HE2 to 3HE
+Renamed LYS442 HE3 to 2HE
+Renamed LYS442 HZ1 to 2HZ
+Renamed LYS442 HZ2 to 3HZ
+Renamed LYS442 HZ3 to 4HZ
+Renamed LYS475 HB2 to 3HB
+Renamed LYS475 HB3 to 2HB
+Renamed LYS475 HG2 to 3HG
+Renamed LYS475 HG3 to 2HG
+Renamed LYS475 HD2 to 3HD
+Renamed LYS475 HD3 to 2HD
+Renamed LYS475 HE2 to 3HE
+Renamed LYS475 HE3 to 2HE
+Renamed LYS475 HZ1 to 2HZ
+Renamed LYS475 HZ2 to 3HZ
+Renamed LYS475 HZ3 to 4HZ
+Renamed MET005 HB2 to 3HB
+Renamed MET005 HB3 to 2HB
+Renamed MET005 HG2 to 3HG
+Renamed MET005 HG3 to 2HG
+Renamed MET005 HE1 to 2HE
+Renamed MET005 HE2 to 3HE
+Renamed MET005 HE3 to 4HE
+Renamed MET172 HB2 to 3HB
+Renamed MET172 HB3 to 2HB
+Renamed MET172 HG2 to 3HG
+Renamed MET172 HG3 to 2HG
+Renamed MET172 HE1 to 2HE
+Renamed MET172 HE2 to 3HE
+Renamed MET172 HE3 to 4HE
+Renamed MET230 HB2 to 3HB
+Renamed MET230 HB3 to 2HB
+Renamed MET230 HG2 to 3HG
+Renamed MET230 HG3 to 2HG
+Renamed MET230 HE1 to 2HE
+Renamed MET230 HE2 to 3HE
+Renamed MET230 HE3 to 4HE
+Renamed MET248 HB2 to 3HB
+Renamed MET248 HB3 to 2HB
+Renamed MET248 HG2 to 3HG
+Renamed MET248 HG3 to 2HG
+Renamed MET248 HE1 to 2HE
+Renamed MET248 HE2 to 3HE
+Renamed MET248 HE3 to 4HE
+Renamed MET415 HB2 to 3HB
+Renamed MET415 HB3 to 2HB
+Renamed MET415 HG2 to 3HG
+Renamed MET415 HG3 to 2HG
+Renamed MET415 HE1 to 2HE
+Renamed MET415 HE2 to 3HE
+Renamed MET415 HE3 to 4HE
+Renamed MET473 HB2 to 3HB
+Renamed MET473 HB3 to 2HB
+Renamed MET473 HG2 to 3HG
+Renamed MET473 HG3 to 2HG
+Renamed MET473 HE1 to 2HE
+Renamed MET473 HE2 to 3HE
+Renamed MET473 HE3 to 4HE
+Renamed PHE001 HN  to H
+Renamed PHE001 HN  to H
+Renamed PHE001 HN  to H
+Renamed PHE001 HB2 to 3HB
+Renamed PHE001 HB3 to 2HB
+Renamed PHE015 HB2 to 3HB
+Renamed PHE015 HB3 to 2HB
+Renamed PHE029 HB2 to 3HB
+Renamed PHE029 HB3 to 2HB
+Renamed PHE078 HB2 to 3HB
+Renamed PHE078 HB3 to 2HB
+Renamed PHE116 HB2 to 3HB
+Renamed PHE116 HB3 to 2HB
+Renamed PHE121 HB2 to 3HB
+Renamed PHE121 HB3 to 2HB
+Renamed PHE145 HB2 to 3HB
+Renamed PHE145 HB3 to 2HB
+Renamed PHE153 HB2 to 3HB
+Renamed PHE153 HB3 to 2HB
+Renamed PHE158 HB2 to 3HB
+Renamed PHE158 HB3 to 2HB
+Renamed PHE184 HB2 to 3HB
+Renamed PHE184 HB3 to 2HB
+Renamed PHE196 HB2 to 3HB
+Renamed PHE196 HB3 to 2HB
+Renamed PHE244 HN  to H
+Renamed PHE244 HN  to H
+Renamed PHE244 HN  to H
+Renamed PHE244 HB2 to 3HB
+Renamed PHE244 HB3 to 2HB
+Renamed PHE258 HB2 to 3HB
+Renamed PHE258 HB3 to 2HB
+Renamed PHE272 HB2 to 3HB
+Renamed PHE272 HB3 to 2HB
+Renamed PHE321 HB2 to 3HB
+Renamed PHE321 HB3 to 2HB
+Renamed PHE359 HB2 to 3HB
+Renamed PHE359 HB3 to 2HB
+Renamed PHE364 HB2 to 3HB
+Renamed PHE364 HB3 to 2HB
+Renamed PHE388 HB2 to 3HB
+Renamed PHE388 HB3 to 2HB
+Renamed PHE396 HB2 to 3HB
+Renamed PHE396 HB3 to 2HB
+Renamed PHE401 HB2 to 3HB
+Renamed PHE401 HB3 to 2HB
+Renamed PHE427 HB2 to 3HB
+Renamed PHE427 HB3 to 2HB
+Renamed PHE439 HB2 to 3HB
+Renamed PHE439 HB3 to 2HB
+Renamed PRO012 HD2 to 3HD
+Renamed PRO012 HD3 to 2HD
+Renamed PRO012 HG2 to 3HG
+Renamed PRO012 HG3 to 2HG
+Renamed PRO012 HB2 to 3HB
+Renamed PRO012 HB3 to 2HB
+Renamed PRO030 HD2 to 3HD
+Renamed PRO030 HD3 to 2HD
+Renamed PRO030 HG2 to 3HG
+Renamed PRO030 HG3 to 2HG
+Renamed PRO030 HB2 to 3HB
+Renamed PRO030 HB3 to 2HB
+Renamed PRO031 HD2 to 3HD
+Renamed PRO031 HD3 to 2HD
+Renamed PRO031 HG2 to 3HG
+Renamed PRO031 HG3 to 2HG
+Renamed PRO031 HB2 to 3HB
+Renamed PRO031 HB3 to 2HB
+Renamed PRO036 HD2 to 3HD
+Renamed PRO036 HD3 to 2HD
+Renamed PRO036 HG2 to 3HG
+Renamed PRO036 HG3 to 2HG
+Renamed PRO036 HB2 to 3HB
+Renamed PRO036 HB3 to 2HB
+Renamed PRO072 HD2 to 3HD
+Renamed PRO072 HD3 to 2HD
+Renamed PRO072 HG2 to 3HG
+Renamed PRO072 HG3 to 2HG
+Renamed PRO072 HB2 to 3HB
+Renamed PRO072 HB3 to 2HB
+Renamed PRO099 HD2 to 3HD
+Renamed PRO099 HD3 to 2HD
+Renamed PRO099 HG2 to 3HG
+Renamed PRO099 HG3 to 2HG
+Renamed PRO099 HB2 to 3HB
+Renamed PRO099 HB3 to 2HB
+Renamed PRO125 HD2 to 3HD
+Renamed PRO125 HD3 to 2HD
+Renamed PRO125 HG2 to 3HG
+Renamed PRO125 HG3 to 2HG
+Renamed PRO125 HB2 to 3HB
+Renamed PRO125 HB3 to 2HB
+Renamed PRO163 HD2 to 3HD
+Renamed PRO163 HD3 to 2HD
+Renamed PRO163 HG2 to 3HG
+Renamed PRO163 HG3 to 2HG
+Renamed PRO163 HB2 to 3HB
+Renamed PRO163 HB3 to 2HB
+Renamed PRO187 HD2 to 3HD
+Renamed PRO187 HD3 to 2HD
+Renamed PRO187 HG2 to 3HG
+Renamed PRO187 HG3 to 2HG
+Renamed PRO187 HB2 to 3HB
+Renamed PRO187 HB3 to 2HB
+Renamed PRO235 HD2 to 3HD
+Renamed PRO235 HD3 to 2HD
+Renamed PRO235 HG2 to 3HG
+Renamed PRO235 HG3 to 2HG
+Renamed PRO235 HB2 to 3HB
+Renamed PRO235 HB3 to 2HB
+Renamed PRO255 HD2 to 3HD
+Renamed PRO255 HD3 to 2HD
+Renamed PRO255 HG2 to 3HG
+Renamed PRO255 HG3 to 2HG
+Renamed PRO255 HB2 to 3HB
+Renamed PRO255 HB3 to 2HB
+Renamed PRO273 HD2 to 3HD
+Renamed PRO273 HD3 to 2HD
+Renamed PRO273 HG2 to 3HG
+Renamed PRO273 HG3 to 2HG
+Renamed PRO273 HB2 to 3HB
+Renamed PRO273 HB3 to 2HB
+Renamed PRO274 HD2 to 3HD
+Renamed PRO274 HD3 to 2HD
+Renamed PRO274 HG2 to 3HG
+Renamed PRO274 HG3 to 2HG
+Renamed PRO274 HB2 to 3HB
+Renamed PRO274 HB3 to 2HB
+Renamed PRO279 HD2 to 3HD
+Renamed PRO279 HD3 to 2HD
+Renamed PRO279 HG2 to 3HG
+Renamed PRO279 HG3 to 2HG
+Renamed PRO279 HB2 to 3HB
+Renamed PRO279 HB3 to 2HB
+Renamed PRO315 HD2 to 3HD
+Renamed PRO315 HD3 to 2HD
+Renamed PRO315 HG2 to 3HG
+Renamed PRO315 HG3 to 2HG
+Renamed PRO315 HB2 to 3HB
+Renamed PRO315 HB3 to 2HB
+Renamed PRO342 HD2 to 3HD
+Renamed PRO342 HD3 to 2HD
+Renamed PRO342 HG2 to 3HG
+Renamed PRO342 HG3 to 2HG
+Renamed PRO342 HB2 to 3HB
+Renamed PRO342 HB3 to 2HB
+Renamed PRO368 HD2 to 3HD
+Renamed PRO368 HD3 to 2HD
+Renamed PRO368 HG2 to 3HG
+Renamed PRO368 HG3 to 2HG
+Renamed PRO368 HB2 to 3HB
+Renamed PRO368 HB3 to 2HB
+Renamed PRO406 HD2 to 3HD
+Renamed PRO406 HD3 to 2HD
+Renamed PRO406 HG2 to 3HG
+Renamed PRO406 HG3 to 2HG
+Renamed PRO406 HB2 to 3HB
+Renamed PRO406 HB3 to 2HB
+Renamed PRO430 HD2 to 3HD
+Renamed PRO430 HD3 to 2HD
+Renamed PRO430 HG2 to 3HG
+Renamed PRO430 HG3 to 2HG
+Renamed PRO430 HB2 to 3HB
+Renamed PRO430 HB3 to 2HB
+Renamed PRO478 HD2 to 3HD
+Renamed PRO478 HD3 to 2HD
+Renamed PRO478 HG2 to 3HG
+Renamed PRO478 HG3 to 2HG
+Renamed PRO478 HB2 to 3HB
+Renamed PRO478 HB3 to 2HB
+Renamed SER011 HB2 to 3HB
+Renamed SER011 HB2 to 3HB
+Renamed SER023 HB2 to 3HB
+Renamed SER023 HB2 to 3HB
+Renamed SER042 HB2 to 3HB
+Renamed SER042 HB2 to 3HB
+Renamed SER082 HB2 to 3HB
+Renamed SER082 HB2 to 3HB
+Renamed SER097 HB2 to 3HB
+Renamed SER097 HB2 to 3HB
+Renamed SER107 HB2 to 3HB
+Renamed SER107 HB2 to 3HB
+Renamed SER113 HB2 to 3HB
+Renamed SER113 HB2 to 3HB
+Renamed SER160 HB2 to 3HB
+Renamed SER160 HB2 to 3HB
+Renamed SER191 HB2 to 3HB
+Renamed SER191 HB2 to 3HB
+Renamed SER201 HB2 to 3HB
+Renamed SER201 HB2 to 3HB
+Renamed SER205 HB2 to 3HB
+Renamed SER205 HB2 to 3HB
+Renamed SER223 HB2 to 3HB
+Renamed SER223 HB2 to 3HB
+Renamed SER254 HB2 to 3HB
+Renamed SER254 HB2 to 3HB
+Renamed SER266 HB2 to 3HB
+Renamed SER266 HB2 to 3HB
+Renamed SER285 HB2 to 3HB
+Renamed SER285 HB2 to 3HB
+Renamed SER325 HB2 to 3HB
+Renamed SER325 HB2 to 3HB
+Renamed SER340 HB2 to 3HB
+Renamed SER340 HB2 to 3HB
+Renamed SER350 HB2 to 3HB
+Renamed SER350 HB2 to 3HB
+Renamed SER356 HB2 to 3HB
+Renamed SER356 HB2 to 3HB
+Renamed SER403 HB2 to 3HB
+Renamed SER403 HB2 to 3HB
+Renamed SER434 HB2 to 3HB
+Renamed SER434 HB2 to 3HB
+Renamed SER444 HB2 to 3HB
+Renamed SER444 HB2 to 3HB
+Renamed SER448 HB2 to 3HB
+Renamed SER448 HB2 to 3HB
+Renamed SER466 HB2 to 3HB
+Renamed SER466 HB2 to 3HB
+Renamed THR033 HG21 to 2HG2
+Renamed THR033 HG22 to 3HG2
+Renamed THR033 HG22 to 4HG2
+Renamed THR048 HG21 to 2HG2
+Renamed THR048 HG22 to 3HG2
+Renamed THR048 HG22 to 4HG2
+Renamed THR050 HG21 to 2HG2
+Renamed THR050 HG22 to 3HG2
+Renamed THR050 HG22 to 4HG2
+Renamed THR051 HG21 to 2HG2
+Renamed THR051 HG22 to 3HG2
+Renamed THR051 HG22 to 4HG2
+Renamed THR066 HG21 to 2HG2
+Renamed THR066 HG22 to 3HG2
+Renamed THR066 HG22 to 4HG2
+Renamed THR073 HG21 to 2HG2
+Renamed THR073 HG22 to 3HG2
+Renamed THR073 HG22 to 4HG2
+Renamed THR081 HG21 to 2HG2
+Renamed THR081 HG22 to 3HG2
+Renamed THR081 HG22 to 4HG2
+Renamed THR089 HG21 to 2HG2
+Renamed THR089 HG22 to 3HG2
+Renamed THR089 HG22 to 4HG2
+Renamed THR110 HG21 to 2HG2
+Renamed THR110 HG22 to 3HG2
+Renamed THR110 HG22 to 4HG2
+Renamed THR114 HG21 to 2HG2
+Renamed THR114 HG22 to 3HG2
+Renamed THR114 HG22 to 4HG2
+Renamed THR119 HG21 to 2HG2
+Renamed THR119 HG22 to 3HG2
+Renamed THR119 HG22 to 4HG2
+Renamed THR134 HG21 to 2HG2
+Renamed THR134 HG22 to 3HG2
+Renamed THR134 HG22 to 4HG2
+Renamed THR177 HG21 to 2HG2
+Renamed THR177 HG22 to 3HG2
+Renamed THR177 HG22 to 4HG2
+Renamed THR215 HG21 to 2HG2
+Renamed THR215 HG22 to 3HG2
+Renamed THR215 HG22 to 4HG2
+Renamed THR276 HG21 to 2HG2
+Renamed THR276 HG22 to 3HG2
+Renamed THR276 HG22 to 4HG2
+Renamed THR291 HG21 to 2HG2
+Renamed THR291 HG22 to 3HG2
+Renamed THR291 HG22 to 4HG2
+Renamed THR293 HG21 to 2HG2
+Renamed THR293 HG22 to 3HG2
+Renamed THR293 HG22 to 4HG2
+Renamed THR294 HG21 to 2HG2
+Renamed THR294 HG22 to 3HG2
+Renamed THR294 HG22 to 4HG2
+Renamed THR309 HG21 to 2HG2
+Renamed THR309 HG22 to 3HG2
+Renamed THR309 HG22 to 4HG2
+Renamed THR316 HG21 to 2HG2
+Renamed THR316 HG22 to 3HG2
+Renamed THR316 HG22 to 4HG2
+Renamed THR324 HG21 to 2HG2
+Renamed THR324 HG22 to 3HG2
+Renamed THR324 HG22 to 4HG2
+Renamed THR332 HG21 to 2HG2
+Renamed THR332 HG22 to 3HG2
+Renamed THR332 HG22 to 4HG2
+Renamed THR353 HG21 to 2HG2
+Renamed THR353 HG22 to 3HG2
+Renamed THR353 HG22 to 4HG2
+Renamed THR357 HG21 to 2HG2
+Renamed THR357 HG22 to 3HG2
+Renamed THR357 HG22 to 4HG2
+Renamed THR362 HG21 to 2HG2
+Renamed THR362 HG22 to 3HG2
+Renamed THR362 HG22 to 4HG2
+Renamed THR377 HG21 to 2HG2
+Renamed THR377 HG22 to 3HG2
+Renamed THR377 HG22 to 4HG2
+Renamed THR420 HG21 to 2HG2
+Renamed THR420 HG22 to 3HG2
+Renamed THR420 HG22 to 4HG2
+Renamed THR458 HG21 to 2HG2
+Renamed THR458 HG22 to 3HG2
+Renamed THR458 HG22 to 4HG2
+Renamed TRP025 HB2 to 3HB
+Renamed TRP025 HB3 to 2HB
+Renamed TRP064 HB2 to 3HB
+Renamed TRP064 HB3 to 2HB
+Renamed TRP079 HB2 to 3HB
+Renamed TRP079 HB3 to 2HB
+Renamed TRP227 HB2 to 3HB
+Renamed TRP227 HB3 to 2HB
+Renamed TRP268 HB2 to 3HB
+Renamed TRP268 HB3 to 2HB
+Renamed TRP307 HB2 to 3HB
+Renamed TRP307 HB3 to 2HB
+Renamed TRP322 HB2 to 3HB
+Renamed TRP322 HB3 to 2HB
+Renamed TRP470 HB2 to 3HB
+Renamed TRP470 HB3 to 2HB
+Renamed TYR019 HB2 to 3HB
+Renamed TYR019 HB3 to 2HB
+Renamed TYR150 HB2 to 3HB
+Renamed TYR150 HB3 to 2HB
+Renamed TYR165 HB2 to 3HB
+Renamed TYR165 HB3 to 2HB
+Renamed TYR176 HB2 to 3HB
+Renamed TYR176 HB3 to 2HB
+Renamed TYR183 HB2 to 3HB
+Renamed TYR183 HB3 to 2HB
+Renamed TYR197 HB2 to 3HB
+Renamed TYR197 HB3 to 2HB
+Renamed TYR213 HB2 to 3HB
+Renamed TYR213 HB3 to 2HB
+Renamed TYR219 HB2 to 3HB
+Renamed TYR219 HB3 to 2HB
+Renamed TYR262 HB2 to 3HB
+Renamed TYR262 HB3 to 2HB
+Renamed TYR393 HB2 to 3HB
+Renamed TYR393 HB3 to 2HB
+Renamed TYR408 HB2 to 3HB
+Renamed TYR408 HB3 to 2HB
+Renamed TYR419 HB2 to 3HB
+Renamed TYR419 HB3 to 2HB
+Renamed TYR426 HB2 to 3HB
+Renamed TYR426 HB3 to 2HB
+Renamed TYR440 HB2 to 3HB
+Renamed TYR440 HB3 to 2HB
+Renamed TYR456 HB2 to 3HB
+Renamed TYR456 HB3 to 2HB
+Renamed TYR462 HB2 to 3HB
+Renamed TYR462 HB3 to 2HB
+Renamed VAL006 HG11 to 2HG1
+Renamed VAL006 HG12 to 3HG1
+Renamed VAL006 HG13 to 4HG1
+Renamed VAL006 HG21 to 2HG2
+Renamed VAL006 HG22 to 3HG2
+Renamed VAL006 HG22 to 4HG2
+Renamed VAL047 HG11 to 2HG1
+Renamed VAL047 HG12 to 3HG1
+Renamed VAL047 HG13 to 4HG1
+Renamed VAL047 HG21 to 2HG2
+Renamed VAL047 HG22 to 3HG2
+Renamed VAL047 HG22 to 4HG2
+Renamed VAL055 HG11 to 2HG1
+Renamed VAL055 HG12 to 3HG1
+Renamed VAL055 HG13 to 4HG1
+Renamed VAL055 HG21 to 2HG2
+Renamed VAL055 HG22 to 3HG2
+Renamed VAL055 HG22 to 4HG2
+Renamed VAL075 HG11 to 2HG1
+Renamed VAL075 HG12 to 3HG1
+Renamed VAL075 HG13 to 4HG1
+Renamed VAL075 HG21 to 2HG2
+Renamed VAL075 HG22 to 3HG2
+Renamed VAL075 HG22 to 4HG2
+Renamed VAL098 HG11 to 2HG1
+Renamed VAL098 HG12 to 3HG1
+Renamed VAL098 HG13 to 4HG1
+Renamed VAL098 HG21 to 2HG2
+Renamed VAL098 HG22 to 3HG2
+Renamed VAL098 HG22 to 4HG2
+Renamed VAL108 HG11 to 2HG1
+Renamed VAL108 HG12 to 3HG1
+Renamed VAL108 HG13 to 4HG1
+Renamed VAL108 HG21 to 2HG2
+Renamed VAL108 HG22 to 3HG2
+Renamed VAL108 HG22 to 4HG2
+Renamed VAL131 HG11 to 2HG1
+Renamed VAL131 HG12 to 3HG1
+Renamed VAL131 HG13 to 4HG1
+Renamed VAL131 HG21 to 2HG2
+Renamed VAL131 HG22 to 3HG2
+Renamed VAL131 HG22 to 4HG2
+Renamed VAL138 HG11 to 2HG1
+Renamed VAL138 HG12 to 3HG1
+Renamed VAL138 HG13 to 4HG1
+Renamed VAL138 HG21 to 2HG2
+Renamed VAL138 HG22 to 3HG2
+Renamed VAL138 HG22 to 4HG2
+Renamed VAL212 HG11 to 2HG1
+Renamed VAL212 HG12 to 3HG1
+Renamed VAL212 HG13 to 4HG1
+Renamed VAL212 HG21 to 2HG2
+Renamed VAL212 HG22 to 3HG2
+Renamed VAL212 HG22 to 4HG2
+Renamed VAL216 HG11 to 2HG1
+Renamed VAL216 HG12 to 3HG1
+Renamed VAL216 HG13 to 4HG1
+Renamed VAL216 HG21 to 2HG2
+Renamed VAL216 HG22 to 3HG2
+Renamed VAL216 HG22 to 4HG2
+Renamed VAL249 HG11 to 2HG1
+Renamed VAL249 HG12 to 3HG1
+Renamed VAL249 HG13 to 4HG1
+Renamed VAL249 HG21 to 2HG2
+Renamed VAL249 HG22 to 3HG2
+Renamed VAL249 HG22 to 4HG2
+Renamed VAL290 HG11 to 2HG1
+Renamed VAL290 HG12 to 3HG1
+Renamed VAL290 HG13 to 4HG1
+Renamed VAL290 HG21 to 2HG2
+Renamed VAL290 HG22 to 3HG2
+Renamed VAL290 HG22 to 4HG2
+Renamed VAL298 HG11 to 2HG1
+Renamed VAL298 HG12 to 3HG1
+Renamed VAL298 HG13 to 4HG1
+Renamed VAL298 HG21 to 2HG2
+Renamed VAL298 HG22 to 3HG2
+Renamed VAL298 HG22 to 4HG2
+Renamed VAL318 HG11 to 2HG1
+Renamed VAL318 HG12 to 3HG1
+Renamed VAL318 HG13 to 4HG1
+Renamed VAL318 HG21 to 2HG2
+Renamed VAL318 HG22 to 3HG2
+Renamed VAL318 HG22 to 4HG2
+Renamed VAL341 HG11 to 2HG1
+Renamed VAL341 HG12 to 3HG1
+Renamed VAL341 HG13 to 4HG1
+Renamed VAL341 HG21 to 2HG2
+Renamed VAL341 HG22 to 3HG2
+Renamed VAL341 HG22 to 4HG2
+Renamed VAL351 HG11 to 2HG1
+Renamed VAL351 HG12 to 3HG1
+Renamed VAL351 HG13 to 4HG1
+Renamed VAL351 HG21 to 2HG2
+Renamed VAL351 HG22 to 3HG2
+Renamed VAL351 HG22 to 4HG2
+Renamed VAL374 HG11 to 2HG1
+Renamed VAL374 HG12 to 3HG1
+Renamed VAL374 HG13 to 4HG1
+Renamed VAL374 HG21 to 2HG2
+Renamed VAL374 HG22 to 3HG2
+Renamed VAL374 HG22 to 4HG2
+Renamed VAL381 HG11 to 2HG1
+Renamed VAL381 HG12 to 3HG1
+Renamed VAL381 HG13 to 4HG1
+Renamed VAL381 HG21 to 2HG2
+Renamed VAL381 HG22 to 3HG2
+Renamed VAL381 HG22 to 4HG2
+Renamed VAL455 HG11 to 2HG1
+Renamed VAL455 HG12 to 3HG1
+Renamed VAL455 HG13 to 4HG1
+Renamed VAL455 HG21 to 2HG2
+Renamed VAL455 HG22 to 3HG2
+Renamed VAL455 HG22 to 4HG2
+Renamed VAL459 HG11 to 2HG1
+Renamed VAL459 HG12 to 3HG1
+Renamed VAL459 HG13 to 4HG1
+Renamed VAL459 HG21 to 2HG2
+Renamed VAL459 HG22 to 3HG2
+Renamed VAL459 HG22 to 4HG2
+Renamed DA 488 OP1 to O1P
+Renamed DA 488 OP2 to O2P
+Renamed DA 488 O5' to O5*
+Renamed DA 488 C5' to C5*
+Renamed DA 488 H5' to 2H5*
+Renamed DA 488 H5'' to 3H5*
+Renamed DA 488 C4' to C4*
+Renamed DA 488 H4' to H4*
+Renamed DA 488 O4' to O4*
+Renamed DA 488 C1' to C1*
+Renamed DA 488 H1' to H1*
+Renamed DA 488 H61 to 2H6
+Renamed DA 488 H61 to 2H6
+Renamed DA 488 C3' to C3*
+Renamed DA 488 H3' to H3*
+Renamed DA 488 C2' to C2*
+Renamed DA 488 H2' to 2H2*
+Renamed DA 488 H2'' to 3H2*
+Renamed DA 488 O3' to O3*
+Renamed DA 495 OP1 to O1P
+Renamed DA 495 OP2 to O2P
+Renamed DA 495 O5' to O5*
+Renamed DA 495 C5' to C5*
+Renamed DA 495 H5' to 2H5*
+Renamed DA 495 H5'' to 3H5*
+Renamed DA 495 C4' to C4*
+Renamed DA 495 H4' to H4*
+Renamed DA 495 O4' to O4*
+Renamed DA 495 C1' to C1*
+Renamed DA 495 H1' to H1*
+Renamed DA 495 H61 to 2H6
+Renamed DA 495 H61 to 2H6
+Renamed DA 495 C3' to C3*
+Renamed DA 495 H3' to H3*
+Renamed DA 495 C2' to C2*
+Renamed DA 495 H2' to 2H2*
+Renamed DA 495 H2'' to 3H2*
+Renamed DA 495 O3' to O3*
+Renamed DA 498 OP1 to O1P
+Renamed DA 498 OP2 to O2P
+Renamed DA 498 O5' to O5*
+Renamed DA 498 C5' to C5*
+Renamed DA 498 H5' to 2H5*
+Renamed DA 498 H5'' to 3H5*
+Renamed DA 498 C4' to C4*
+Renamed DA 498 H4' to H4*
+Renamed DA 498 O4' to O4*
+Renamed DA 498 C1' to C1*
+Renamed DA 498 H1' to H1*
+Renamed DA 498 H61 to 2H6
+Renamed DA 498 H61 to 2H6
+Renamed DA 498 C3' to C3*
+Renamed DA 498 H3' to H3*
+Renamed DA 498 C2' to C2*
+Renamed DA 498 H2' to 2H2*
+Renamed DA 498 H2'' to 3H2*
+Renamed DA 498 O3' to O3*
+Renamed DA 501 OP1 to O1P
+Renamed DA 501 OP2 to O2P
+Renamed DA 501 O5' to O5*
+Renamed DA 501 C5' to C5*
+Renamed DA 501 H5' to 2H5*
+Renamed DA 501 H5'' to 3H5*
+Renamed DA 501 C4' to C4*
+Renamed DA 501 H4' to H4*
+Renamed DA 501 O4' to O4*
+Renamed DA 501 C1' to C1*
+Renamed DA 501 H1' to H1*
+Renamed DA 501 H61 to 2H6
+Renamed DA 501 H61 to 2H6
+Renamed DA 501 C3' to C3*
+Renamed DA 501 H3' to H3*
+Renamed DA 501 C2' to C2*
+Renamed DA 501 H2' to 2H2*
+Renamed DA 501 H2'' to 3H2*
+Renamed DA 501 O3' to O3*
+Renamed DA 503 OP1 to O1P
+Renamed DA 503 OP2 to O2P
+Renamed DA 503 O5' to O5*
+Renamed DA 503 C5' to C5*
+Renamed DA 503 H5' to 2H5*
+Renamed DA 503 H5'' to 3H5*
+Renamed DA 503 C4' to C4*
+Renamed DA 503 H4' to H4*
+Renamed DA 503 O4' to O4*
+Renamed DA 503 C1' to C1*
+Renamed DA 503 H1' to H1*
+Renamed DA 503 H61 to 2H6
+Renamed DA 503 H61 to 2H6
+Renamed DA 503 C3' to C3*
+Renamed DA 503 H3' to H3*
+Renamed DA 503 C2' to C2*
+Renamed DA 503 H2' to 2H2*
+Renamed DA 503 H2'' to 3H2*
+Renamed DA 503 O3' to O3*
+Renamed DA 507 OP1 to O1P
+Renamed DA 507 OP2 to O2P
+Renamed DA 507 O5' to O5*
+Renamed DA 507 C5' to C5*
+Renamed DA 507 H5' to 2H5*
+Renamed DA 507 H5'' to 3H5*
+Renamed DA 507 C4' to C4*
+Renamed DA 507 H4' to H4*
+Renamed DA 507 O4' to O4*
+Renamed DA 507 C1' to C1*
+Renamed DA 507 H1' to H1*
+Renamed DA 507 H61 to 2H6
+Renamed DA 507 H61 to 2H6
+Renamed DA 507 C3' to C3*
+Renamed DA 507 H3' to H3*
+Renamed DA 507 C2' to C2*
+Renamed DA 507 H2' to 2H2*
+Renamed DA 507 H2'' to 3H2*
+Renamed DA 507 O3' to O3*
+Renamed DA 517 OP1 to O1P
+Renamed DA 517 OP2 to O2P
+Renamed DA 517 O5' to O5*
+Renamed DA 517 C5' to C5*
+Renamed DA 517 H5' to 2H5*
+Renamed DA 517 H5'' to 3H5*
+Renamed DA 517 C4' to C4*
+Renamed DA 517 H4' to H4*
+Renamed DA 517 O4' to O4*
+Renamed DA 517 C1' to C1*
+Renamed DA 517 H1' to H1*
+Renamed DA 517 H61 to 2H6
+Renamed DA 517 H61 to 2H6
+Renamed DA 517 C3' to C3*
+Renamed DA 517 H3' to H3*
+Renamed DA 517 C2' to C2*
+Renamed DA 517 H2' to 2H2*
+Renamed DA 517 H2'' to 3H2*
+Renamed DA 517 O3' to O3*
+Renamed DA 520 OP1 to O1P
+Renamed DA 520 OP2 to O2P
+Renamed DA 520 O5' to O5*
+Renamed DA 520 C5' to C5*
+Renamed DA 520 H5' to 2H5*
+Renamed DA 520 H5'' to 3H5*
+Renamed DA 520 C4' to C4*
+Renamed DA 520 H4' to H4*
+Renamed DA 520 O4' to O4*
+Renamed DA 520 C1' to C1*
+Renamed DA 520 H1' to H1*
+Renamed DA 520 H61 to 2H6
+Renamed DA 520 H61 to 2H6
+Renamed DA 520 C3' to C3*
+Renamed DA 520 H3' to H3*
+Renamed DA 520 C2' to C2*
+Renamed DA 520 H2' to 2H2*
+Renamed DA 520 H2'' to 3H2*
+Renamed DA 520 O3' to O3*
+Renamed DA 522 OP1 to O1P
+Renamed DA 522 OP2 to O2P
+Renamed DA 522 O5' to O5*
+Renamed DA 522 C5' to C5*
+Renamed DA 522 H5' to 2H5*
+Renamed DA 522 H5'' to 3H5*
+Renamed DA 522 C4' to C4*
+Renamed DA 522 H4' to H4*
+Renamed DA 522 O4' to O4*
+Renamed DA 522 C1' to C1*
+Renamed DA 522 H1' to H1*
+Renamed DA 522 H61 to 2H6
+Renamed DA 522 H61 to 2H6
+Renamed DA 522 C3' to C3*
+Renamed DA 522 H3' to H3*
+Renamed DA 522 C2' to C2*
+Renamed DA 522 H2' to 2H2*
+Renamed DA 522 H2'' to 3H2*
+Renamed DA 522 O3' to O3*
+Renamed DT 489 OP1 to O1P
+Renamed DT 489 OP2 to O2P
+Renamed DT 489 O5' to O5*
+Renamed DT 489 C5' to C5*
+Renamed DT 489 H5' to 2H5*
+Renamed DT 489 H5'' to 3H5*
+Renamed DT 489 C4' to C4*
+Renamed DT 489 H4' to H4*
+Renamed DT 489 O4' to O4*
+Renamed DT 489 C1' to C1*
+Renamed DT 489 H1' to H1*
+Renamed DT 489 C7  to C5M
+Renamed DT 489 H71 to 2C5M
+Renamed DT 489 H72 to 3C5M
+Renamed DT 489 H73 to 4C5M
+Renamed DT 489 C3' to C3*
+Renamed DT 489 H3' to H3*
+Renamed DT 489 C2' to C2*
+Renamed DT 489 H2' to 2H2*
+Renamed DT 489 H2'' to 3H2*
+Renamed DT 489 O3' to O3*
+Renamed DT 491 OP1 to O1P
+Renamed DT 491 OP2 to O2P
+Renamed DT 491 O5' to O5*
+Renamed DT 491 C5' to C5*
+Renamed DT 491 H5' to 2H5*
+Renamed DT 491 H5'' to 3H5*
+Renamed DT 491 C4' to C4*
+Renamed DT 491 H4' to H4*
+Renamed DT 491 O4' to O4*
+Renamed DT 491 C1' to C1*
+Renamed DT 491 H1' to H1*
+Renamed DT 491 C7  to C5M
+Renamed DT 491 H71 to 2C5M
+Renamed DT 491 H72 to 3C5M
+Renamed DT 491 H73 to 4C5M
+Renamed DT 491 C3' to C3*
+Renamed DT 491 H3' to H3*
+Renamed DT 491 C2' to C2*
+Renamed DT 491 H2' to 2H2*
+Renamed DT 491 H2'' to 3H2*
+Renamed DT 491 O3' to O3*
+Renamed DT 494 OP1 to O1P
+Renamed DT 494 OP2 to O2P
+Renamed DT 494 O5' to O5*
+Renamed DT 494 C5' to C5*
+Renamed DT 494 H5' to 2H5*
+Renamed DT 494 H5'' to 3H5*
+Renamed DT 494 C4' to C4*
+Renamed DT 494 H4' to H4*
+Renamed DT 494 O4' to O4*
+Renamed DT 494 C1' to C1*
+Renamed DT 494 H1' to H1*
+Renamed DT 494 C7  to C5M
+Renamed DT 494 H71 to 2C5M
+Renamed DT 494 H72 to 3C5M
+Renamed DT 494 H73 to 4C5M
+Renamed DT 494 C3' to C3*
+Renamed DT 494 H3' to H3*
+Renamed DT 494 C2' to C2*
+Renamed DT 494 H2' to 2H2*
+Renamed DT 494 H2'' to 3H2*
+Renamed DT 494 O3' to O3*
+Renamed DT 504 OP1 to O1P
+Renamed DT 504 OP2 to O2P
+Renamed DT 504 O5' to O5*
+Renamed DT 504 C5' to C5*
+Renamed DT 504 H5' to 2H5*
+Renamed DT 504 H5'' to 3H5*
+Renamed DT 504 C4' to C4*
+Renamed DT 504 H4' to H4*
+Renamed DT 504 O4' to O4*
+Renamed DT 504 C1' to C1*
+Renamed DT 504 H1' to H1*
+Renamed DT 504 C7  to C5M
+Renamed DT 504 H71 to 2C5M
+Renamed DT 504 H72 to 3C5M
+Renamed DT 504 H73 to 4C5M
+Renamed DT 504 C3' to C3*
+Renamed DT 504 H3' to H3*
+Renamed DT 504 C2' to C2*
+Renamed DT 504 H2' to 2H2*
+Renamed DT 504 H2'' to 3H2*
+Renamed DT 504 O3' to O3*
+Renamed DT 508 OP1 to O1P
+Renamed DT 508 OP2 to O2P
+Renamed DT 508 O5' to O5*
+Renamed DT 508 C5' to C5*
+Renamed DT 508 H5' to 2H5*
+Renamed DT 508 H5'' to 3H5*
+Renamed DT 508 C4' to C4*
+Renamed DT 508 H4' to H4*
+Renamed DT 508 O4' to O4*
+Renamed DT 508 C1' to C1*
+Renamed DT 508 H1' to H1*
+Renamed DT 508 C7  to C5M
+Renamed DT 508 H71 to 2C5M
+Renamed DT 508 H72 to 3C5M
+Renamed DT 508 H73 to 4C5M
+Renamed DT 508 C3' to C3*
+Renamed DT 508 H3' to H3*
+Renamed DT 508 C2' to C2*
+Renamed DT 508 H2' to 2H2*
+Renamed DT 508 H2'' to 3H2*
+Renamed DT 508 O3' to O3*
+Renamed DT 510 OP1 to O1P
+Renamed DT 510 OP2 to O2P
+Renamed DT 510 O5' to O5*
+Renamed DT 510 C5' to C5*
+Renamed DT 510 H5' to 2H5*
+Renamed DT 510 H5'' to 3H5*
+Renamed DT 510 C4' to C4*
+Renamed DT 510 H4' to H4*
+Renamed DT 510 O4' to O4*
+Renamed DT 510 C1' to C1*
+Renamed DT 510 H1' to H1*
+Renamed DT 510 C7  to C5M
+Renamed DT 510 H71 to 2C5M
+Renamed DT 510 H72 to 3C5M
+Renamed DT 510 H73 to 4C5M
+Renamed DT 510 C3' to C3*
+Renamed DT 510 H3' to H3*
+Renamed DT 510 C2' to C2*
+Renamed DT 510 H2' to 2H2*
+Renamed DT 510 H2'' to 3H2*
+Renamed DT 510 O3' to O3*
+Renamed DT 513 OP1 to O1P
+Renamed DT 513 OP2 to O2P
+Renamed DT 513 O5' to O5*
+Renamed DT 513 C5' to C5*
+Renamed DT 513 H5' to 2H5*
+Renamed DT 513 H5'' to 3H5*
+Renamed DT 513 C4' to C4*
+Renamed DT 513 H4' to H4*
+Renamed DT 513 O4' to O4*
+Renamed DT 513 C1' to C1*
+Renamed DT 513 H1' to H1*
+Renamed DT 513 C7  to C5M
+Renamed DT 513 H71 to 2C5M
+Renamed DT 513 H72 to 3C5M
+Renamed DT 513 H73 to 4C5M
+Renamed DT 513 C3' to C3*
+Renamed DT 513 H3' to H3*
+Renamed DT 513 C2' to C2*
+Renamed DT 513 H2' to 2H2*
+Renamed DT 513 H2'' to 3H2*
+Renamed DT 513 O3' to O3*
+Renamed DT 516 OP1 to O1P
+Renamed DT 516 OP2 to O2P
+Renamed DT 516 O5' to O5*
+Renamed DT 516 C5' to C5*
+Renamed DT 516 H5' to 2H5*
+Renamed DT 516 H5'' to 3H5*
+Renamed DT 516 C4' to C4*
+Renamed DT 516 H4' to H4*
+Renamed DT 516 O4' to O4*
+Renamed DT 516 C1' to C1*
+Renamed DT 516 H1' to H1*
+Renamed DT 516 C7  to C5M
+Renamed DT 516 H71 to 2C5M
+Renamed DT 516 H72 to 3C5M
+Renamed DT 516 H73 to 4C5M
+Renamed DT 516 C3' to C3*
+Renamed DT 516 H3' to H3*
+Renamed DT 516 C2' to C2*
+Renamed DT 516 H2' to 2H2*
+Renamed DT 516 H2'' to 3H2*
+Renamed DT 516 O3' to O3*
+Renamed DT 523 OP1 to O1P
+Renamed DT 523 OP2 to O2P
+Renamed DT 523 O5' to O5*
+Renamed DT 523 C5' to C5*
+Renamed DT 523 H5' to 2H5*
+Renamed DT 523 H5'' to 3H5*
+Renamed DT 523 C4' to C4*
+Renamed DT 523 H4' to H4*
+Renamed DT 523 O4' to O4*
+Renamed DT 523 C1' to C1*
+Renamed DT 523 H1' to H1*
+Renamed DT 523 C7  to C5M
+Renamed DT 523 H71 to 2C5M
+Renamed DT 523 H72 to 3C5M
+Renamed DT 523 H73 to 4C5M
+Renamed DT 523 C3' to C3*
+Renamed DT 523 H3' to H3*
+Renamed DT 523 C2' to C2*
+Renamed DT 523 H2' to 2H2*
+Renamed DT 523 H2'' to 3H2*
+Renamed DT 523 O3' to O3*
+Renamed DC 487 HO5' to  H5T
+Renamed DC 487 O5' to O5*
+Renamed DC 487 C5' to C5*
+Renamed DC 487 H5' to 2H5*
+Renamed DC 487 H5'' to 3H5*
+Renamed DC 487 C4' to C4*
+Renamed DC 487 H4' to H4*
+Renamed DC 487 O4' to O4*
+Renamed DC 487 C1' to C1*
+Renamed DC 487 H1' to H1*
+Renamed DC 487  H41 to 2H4 
+Renamed DC 487  H42 to 3H4 
+Renamed DC 487 C3' to C3*
+Renamed DC 487 H3' to H3*
+Renamed DC 487 C2' to C2*
+Renamed DC 487 H2' to 2H2*
+Renamed DC 487 H2'' to 3H2*
+Renamed DC 487 O3' to O3*
+Renamed DC 490  OP1 to  O1P
+Renamed DC 490  OP2 to  O2P
+Renamed DC 490 O5' to O5*
+Renamed DC 490 C5' to C5*
+Renamed DC 490 H5' to 2H5*
+Renamed DC 490 H5'' to 3H5*
+Renamed DC 490 C4' to C4*
+Renamed DC 490 H4' to H4*
+Renamed DC 490 O4' to O4*
+Renamed DC 490 C1' to C1*
+Renamed DC 490 H1' to H1*
+Renamed DC 490  H41 to 2H4 
+Renamed DC 490  H42 to 3H4 
+Renamed DC 490 C3' to C3*
+Renamed DC 490 H3' to H3*
+Renamed DC 490 C2' to C2*
+Renamed DC 490 H2' to 2H2*
+Renamed DC 490 H2'' to 3H2*
+Renamed DC 490 O3' to O3*
+Renamed DC 496  OP1 to  O1P
+Renamed DC 496  OP2 to  O2P
+Renamed DC 496 O5' to O5*
+Renamed DC 496 C5' to C5*
+Renamed DC 496 H5' to 2H5*
+Renamed DC 496 H5'' to 3H5*
+Renamed DC 496 C4' to C4*
+Renamed DC 496 H4' to H4*
+Renamed DC 496 O4' to O4*
+Renamed DC 496 C1' to C1*
+Renamed DC 496 H1' to H1*
+Renamed DC 496  H41 to 2H4 
+Renamed DC 496  H42 to 3H4 
+Renamed DC 496 C3' to C3*
+Renamed DC 496 H3' to H3*
+Renamed DC 496 C2' to C2*
+Renamed DC 496 H2' to 2H2*
+Renamed DC 496 H2'' to 3H2*
+Renamed DC 496 O3' to O3*
+Renamed DC 499  OP1 to  O1P
+Renamed DC 499  OP2 to  O2P
+Renamed DC 499 O5' to O5*
+Renamed DC 499 C5' to C5*
+Renamed DC 499 H5' to 2H5*
+Renamed DC 499 H5'' to 3H5*
+Renamed DC 499 C4' to C4*
+Renamed DC 499 H4' to H4*
+Renamed DC 499 O4' to O4*
+Renamed DC 499 C1' to C1*
+Renamed DC 499 H1' to H1*
+Renamed DC 499  H41 to 2H4 
+Renamed DC 499  H42 to 3H4 
+Renamed DC 499 C3' to C3*
+Renamed DC 499 H3' to H3*
+Renamed DC 499 C2' to C2*
+Renamed DC 499 H2' to 2H2*
+Renamed DC 499 H2'' to 3H2*
+Renamed DC 499 O3' to O3*
+Renamed DC 500  OP1 to  O1P
+Renamed DC 500  OP2 to  O2P
+Renamed DC 500 O5' to O5*
+Renamed DC 500 C5' to C5*
+Renamed DC 500 H5' to 2H5*
+Renamed DC 500 H5'' to 3H5*
+Renamed DC 500 C4' to C4*
+Renamed DC 500 H4' to H4*
+Renamed DC 500 O4' to O4*
+Renamed DC 500 C1' to C1*
+Renamed DC 500 H1' to H1*
+Renamed DC 500  H41 to 2H4 
+Renamed DC 500  H42 to 3H4 
+Renamed DC 500 C3' to C3*
+Renamed DC 500 H3' to H3*
+Renamed DC 500 C2' to C2*
+Renamed DC 500 H2' to 2H2*
+Renamed DC 500 H2'' to 3H2*
+Renamed DC 500 O3' to O3*
+Renamed DC 505  OP1 to  O1P
+Renamed DC 505  OP2 to  O2P
+Renamed DC 505 O5' to O5*
+Renamed DC 505 C5' to C5*
+Renamed DC 505 H5' to 2H5*
+Renamed DC 505 H5'' to 3H5*
+Renamed DC 505 C4' to C4*
+Renamed DC 505 H4' to H4*
+Renamed DC 505 O4' to O4*
+Renamed DC 505 C1' to C1*
+Renamed DC 505 H1' to H1*
+Renamed DC 505  H41 to 2H4 
+Renamed DC 505  H42 to 3H4 
+Renamed DC 505 C3' to C3*
+Renamed DC 505 H3' to H3*
+Renamed DC 505 C2' to C2*
+Renamed DC 505 H2' to 2H2*
+Renamed DC 505 H2'' to 3H2*
+Renamed DC 505 O3' to O3*
+Renamed DC 505 HO3' to  H3T
+Renamed DC 509  OP1 to  O1P
+Renamed DC 509  OP2 to  O2P
+Renamed DC 509 O5' to O5*
+Renamed DC 509 C5' to C5*
+Renamed DC 509 H5' to 2H5*
+Renamed DC 509 H5'' to 3H5*
+Renamed DC 509 C4' to C4*
+Renamed DC 509 H4' to H4*
+Renamed DC 509 O4' to O4*
+Renamed DC 509 C1' to C1*
+Renamed DC 509 H1' to H1*
+Renamed DC 509  H41 to 2H4 
+Renamed DC 509  H42 to 3H4 
+Renamed DC 509 C3' to C3*
+Renamed DC 509 H3' to H3*
+Renamed DC 509 C2' to C2*
+Renamed DC 509 H2' to 2H2*
+Renamed DC 509 H2'' to 3H2*
+Renamed DC 509 O3' to O3*
+Renamed DC 514  OP1 to  O1P
+Renamed DC 514  OP2 to  O2P
+Renamed DC 514 O5' to O5*
+Renamed DC 514 C5' to C5*
+Renamed DC 514 H5' to 2H5*
+Renamed DC 514 H5'' to 3H5*
+Renamed DC 514 C4' to C4*
+Renamed DC 514 H4' to H4*
+Renamed DC 514 O4' to O4*
+Renamed DC 514 C1' to C1*
+Renamed DC 514 H1' to H1*
+Renamed DC 514  H41 to 2H4 
+Renamed DC 514  H42 to 3H4 
+Renamed DC 514 C3' to C3*
+Renamed DC 514 H3' to H3*
+Renamed DC 514 C2' to C2*
+Renamed DC 514 H2' to 2H2*
+Renamed DC 514 H2'' to 3H2*
+Renamed DC 514 O3' to O3*
+Renamed DC 518  OP1 to  O1P
+Renamed DC 518  OP2 to  O2P
+Renamed DC 518 O5' to O5*
+Renamed DC 518 C5' to C5*
+Renamed DC 518 H5' to 2H5*
+Renamed DC 518 H5'' to 3H5*
+Renamed DC 518 C4' to C4*
+Renamed DC 518 H4' to H4*
+Renamed DC 518 O4' to O4*
+Renamed DC 518 C1' to C1*
+Renamed DC 518 H1' to H1*
+Renamed DC 518  H41 to 2H4 
+Renamed DC 518  H42 to 3H4 
+Renamed DC 518 C3' to C3*
+Renamed DC 518 H3' to H3*
+Renamed DC 518 C2' to C2*
+Renamed DC 518 H2' to 2H2*
+Renamed DC 518 H2'' to 3H2*
+Renamed DC 518 O3' to O3*
+Renamed DC 519  OP1 to  O1P
+Renamed DC 519  OP2 to  O2P
+Renamed DC 519 O5' to O5*
+Renamed DC 519 C5' to C5*
+Renamed DC 519 H5' to 2H5*
+Renamed DC 519 H5'' to 3H5*
+Renamed DC 519 C4' to C4*
+Renamed DC 519 H4' to H4*
+Renamed DC 519 O4' to O4*
+Renamed DC 519 C1' to C1*
+Renamed DC 519 H1' to H1*
+Renamed DC 519  H41 to 2H4 
+Renamed DC 519  H42 to 3H4 
+Renamed DC 519 C3' to C3*
+Renamed DC 519 H3' to H3*
+Renamed DC 519 C2' to C2*
+Renamed DC 519 H2' to 2H2*
+Renamed DC 519 H2'' to 3H2*
+Renamed DC 519 O3' to O3*
+Renamed DG 492  OP1 to  O1P
+Renamed DG 492  OP2 to  O2P
+Renamed DG 492 O5' to O5*
+Renamed DG 492 C5' to C5*
+Renamed DG 492 H5' to 2H5*
+Renamed DG 492 H5'' to 3H5*
+Renamed DG 492 C4' to C4*
+Renamed DG 492 H4' to H4*
+Renamed DG 492 O4' to O4*
+Renamed DG 492 C1' to C1*
+Renamed DG 492 H1' to H1*
+Renamed DG 492  H21 to 2H2
+Renamed DG 492  H22 to 3H2
+Renamed DG 492 C3' to C3*
+Renamed DG 492 H3' to H3*
+Renamed DG 492 C2' to C2*
+Renamed DG 492 H2' to 2H2*
+Renamed DG 492 H2'' to 3H2*
+Renamed DG 492 O3' to O3*
+Renamed DG 493  OP1 to  O1P
+Renamed DG 493  OP2 to  O2P
+Renamed DG 493 O5' to O5*
+Renamed DG 493 C5' to C5*
+Renamed DG 493 H5' to 2H5*
+Renamed DG 493 H5'' to 3H5*
+Renamed DG 493 C4' to C4*
+Renamed DG 493 H4' to H4*
+Renamed DG 493 O4' to O4*
+Renamed DG 493 C1' to C1*
+Renamed DG 493 H1' to H1*
+Renamed DG 493  H21 to 2H2
+Renamed DG 493  H22 to 3H2
+Renamed DG 493 C3' to C3*
+Renamed DG 493 H3' to H3*
+Renamed DG 493 C2' to C2*
+Renamed DG 493 H2' to 2H2*
+Renamed DG 493 H2'' to 3H2*
+Renamed DG 493 O3' to O3*
+Renamed DG 497  OP1 to  O1P
+Renamed DG 497  OP2 to  O2P
+Renamed DG 497 O5' to O5*
+Renamed DG 497 C5' to C5*
+Renamed DG 497 H5' to 2H5*
+Renamed DG 497 H5'' to 3H5*
+Renamed DG 497 C4' to C4*
+Renamed DG 497 H4' to H4*
+Renamed DG 497 O4' to O4*
+Renamed DG 497 C1' to C1*
+Renamed DG 497 H1' to H1*
+Renamed DG 497  H21 to 2H2
+Renamed DG 497  H22 to 3H2
+Renamed DG 497 C3' to C3*
+Renamed DG 497 H3' to H3*
+Renamed DG 497 C2' to C2*
+Renamed DG 497 H2' to 2H2*
+Renamed DG 497 H2'' to 3H2*
+Renamed DG 497 O3' to O3*
+Renamed DG 502  OP1 to  O1P
+Renamed DG 502  OP2 to  O2P
+Renamed DG 502 O5' to O5*
+Renamed DG 502 C5' to C5*
+Renamed DG 502 H5' to 2H5*
+Renamed DG 502 H5'' to 3H5*
+Renamed DG 502 C4' to C4*
+Renamed DG 502 H4' to H4*
+Renamed DG 502 O4' to O4*
+Renamed DG 502 C1' to C1*
+Renamed DG 502 H1' to H1*
+Renamed DG 502  H21 to 2H2
+Renamed DG 502  H22 to 3H2
+Renamed DG 502 C3' to C3*
+Renamed DG 502 H3' to H3*
+Renamed DG 502 C2' to C2*
+Renamed DG 502 H2' to 2H2*
+Renamed DG 502 H2'' to 3H2*
+Renamed DG 502 O3' to O3*
+Renamed DG 506 HO5' to  H5T
+Renamed DG 506 O5' to O5*
+Renamed DG 506 C5' to C5*
+Renamed DG 506 H5' to 2H5*
+Renamed DG 506 H5'' to 3H5*
+Renamed DG 506 C4' to C4*
+Renamed DG 506 H4' to H4*
+Renamed DG 506 O4' to O4*
+Renamed DG 506 C1' to C1*
+Renamed DG 506 H1' to H1*
+Renamed DG 506  H21 to 2H2
+Renamed DG 506  H22 to 3H2
+Renamed DG 506 C3' to C3*
+Renamed DG 506 H3' to H3*
+Renamed DG 506 C2' to C2*
+Renamed DG 506 H2' to 2H2*
+Renamed DG 506 H2'' to 3H2*
+Renamed DG 506 O3' to O3*
+Renamed DG 511  OP1 to  O1P
+Renamed DG 511  OP2 to  O2P
+Renamed DG 511 O5' to O5*
+Renamed DG 511 C5' to C5*
+Renamed DG 511 H5' to 2H5*
+Renamed DG 511 H5'' to 3H5*
+Renamed DG 511 C4' to C4*
+Renamed DG 511 H4' to H4*
+Renamed DG 511 O4' to O4*
+Renamed DG 511 C1' to C1*
+Renamed DG 511 H1' to H1*
+Renamed DG 511  H21 to 2H2
+Renamed DG 511  H22 to 3H2
+Renamed DG 511 C3' to C3*
+Renamed DG 511 H3' to H3*
+Renamed DG 511 C2' to C2*
+Renamed DG 511 H2' to 2H2*
+Renamed DG 511 H2'' to 3H2*
+Renamed DG 511 O3' to O3*
+Renamed DG 512  OP1 to  O1P
+Renamed DG 512  OP2 to  O2P
+Renamed DG 512 O5' to O5*
+Renamed DG 512 C5' to C5*
+Renamed DG 512 H5' to 2H5*
+Renamed DG 512 H5'' to 3H5*
+Renamed DG 512 C4' to C4*
+Renamed DG 512 H4' to H4*
+Renamed DG 512 O4' to O4*
+Renamed DG 512 C1' to C1*
+Renamed DG 512 H1' to H1*
+Renamed DG 512  H21 to 2H2
+Renamed DG 512  H22 to 3H2
+Renamed DG 512 C3' to C3*
+Renamed DG 512 H3' to H3*
+Renamed DG 512 C2' to C2*
+Renamed DG 512 H2' to 2H2*
+Renamed DG 512 H2'' to 3H2*
+Renamed DG 512 O3' to O3*
+Renamed DG 515  OP1 to  O1P
+Renamed DG 515  OP2 to  O2P
+Renamed DG 515 O5' to O5*
+Renamed DG 515 C5' to C5*
+Renamed DG 515 H5' to 2H5*
+Renamed DG 515 H5'' to 3H5*
+Renamed DG 515 C4' to C4*
+Renamed DG 515 H4' to H4*
+Renamed DG 515 O4' to O4*
+Renamed DG 515 C1' to C1*
+Renamed DG 515 H1' to H1*
+Renamed DG 515  H21 to 2H2
+Renamed DG 515  H22 to 3H2
+Renamed DG 515 C3' to C3*
+Renamed DG 515 H3' to H3*
+Renamed DG 515 C2' to C2*
+Renamed DG 515 H2' to 2H2*
+Renamed DG 515 H2'' to 3H2*
+Renamed DG 515 O3' to O3*
+Renamed DG 521  OP1 to  O1P
+Renamed DG 521  OP2 to  O2P
+Renamed DG 521 O5' to O5*
+Renamed DG 521 C5' to C5*
+Renamed DG 521 H5' to 2H5*
+Renamed DG 521 H5'' to 3H5*
+Renamed DG 521 C4' to C4*
+Renamed DG 521 H4' to H4*
+Renamed DG 521 O4' to O4*
+Renamed DG 521 C1' to C1*
+Renamed DG 521 H1' to H1*
+Renamed DG 521  H21 to 2H2
+Renamed DG 521  H22 to 3H2
+Renamed DG 521 C3' to C3*
+Renamed DG 521 H3' to H3*
+Renamed DG 521 C2' to C2*
+Renamed DG 521 H2' to 2H2*
+Renamed DG 521 H2'' to 3H2*
+Renamed DG 521 O3' to O3*
+Renamed DG 524  OP1 to  O1P
+Renamed DG 524  OP2 to  O2P
+Renamed DG 524 O5' to O5*
+Renamed DG 524 C5' to C5*
+Renamed DG 524 H5' to 2H5*
+Renamed DG 524 H5'' to 3H5*
+Renamed DG 524 C4' to C4*
+Renamed DG 524 H4' to H4*
+Renamed DG 524 O4' to O4*
+Renamed DG 524 C1' to C1*
+Renamed DG 524 H1' to H1*
+Renamed DG 524  H21 to 2H2
+Renamed DG 524  H22 to 3H2
+Renamed DG 524 C3' to C3*
+Renamed DG 524 H3' to H3*
+Renamed DG 524 C2' to C2*
+Renamed DG 524 H2' to 2H2*
+Renamed DG 524 H2'' to 3H2*
+Renamed DG 524 O3' to O3*
+Renamed DG 524 HO3' to  H3T
+ Chain link       1  487DC5  :   O3*       488DA   :   P        7742   7743    0.161595    2    1
+ Chain link       2  488DA   :   O3*       489DT   :   P        7774   7775    0.161090    2    1
+ Chain link       3  489DT   :   O3*       490DC   :   P        7806   7807    0.160320    2    1
+ Chain link       4  490DC   :   O3*       491DT   :   P        7836   7837    0.160491    2    1
+ Chain link       5  491DT   :   O3*       492DG   :   P        7868   7869    0.161655    2    1
+ Chain link       6  492DG   :   O3*       493DG   :   P        7901   7902    0.161079    2    1
+ Chain link       7  493DG   :   O3*       494DT   :   P        7934   7935    0.161508    2    1
+ Chain link       8  494DT   :   O3*       495DA   :   P        7966   7967    0.160451    2    1
+ Chain link       9  495DA   :   O3*       496DC   :   P        7998   7999    0.161850    2    1
+ Chain link      10  496DC   :   O3*       497DG   :   P        8028   8029    0.160881    2    1
+ Chain link      11  497DG   :   O3*       498DA   :   P        8061   8062    0.160707    2    1
+ Chain link      12  498DA   :   O3*       499DC   :   P        8093   8094    0.160861    2    1
+ Chain link      13  499DC   :   O3*       500DC   :   P        8123   8124    0.160990    2    1
+ Chain link      14  500DC   :   O3*       501DA   :   P        8153   8154    0.161083    2    1
+ Chain link      15  501DA   :   O3*       502DG   :   P        8185   8186    0.161076    2    1
+ Chain link      16  502DG   :   O3*       503DA   :   P        8218   8219    0.161010    2    1
+ Chain link      17  503DA   :   O3*       504DT   :   P        8250   8251    0.161217    2    1
+ Chain link      18  504DT   :   O3*       505DC3  :   P        8282   8283    0.161346    2    1
+ Chain link      19  506DG5  :   O3*       507DA   :   P        8344   8345    0.161408    2    1
+ Chain link      20  507DA   :   O3*       508DT   :   P        8376   8377    0.161199    2    1
+ Chain link      21  508DT   :   O3*       509DC   :   P        8408   8409    0.160389    2    1
+ Chain link      22  509DC   :   O3*       510DT   :   P        8438   8439    0.160561    2    1
+ Chain link      23  510DT   :   O3*       511DG   :   P        8470   8471    0.161712    2    1
+ Chain link      24  511DG   :   O3*       512DG   :   P        8503   8504    0.161153    2    1
+ Chain link      25  512DG   :   O3*       513DT   :   P        8536   8537    0.161428    2    1
+ Chain link      26  513DT   :   O3*       514DC   :   P        8568   8569    0.160685    2    1
+ Chain link      27  514DC   :   O3*       515DG   :   P        8598   8599    0.160932    2    1
+ Chain link      28  515DG   :   O3*       516DT   :   P        8631   8632    0.160331    2    1
+ Chain link      29  516DT   :   O3*       517DA   :   P        8663   8664    0.160781    2    1
+ Chain link      30  517DA   :   O3*       518DC   :   P        8695   8696    0.160992    2    1
+ Chain link      31  518DC   :   O3*       519DC   :   P        8725   8726    0.160959    2    1
+ Chain link      32  519DC   :   O3*       520DA   :   P        8755   8756    0.161137    2    1
+ Chain link      33  520DA   :   O3*       521DG   :   P        8787   8788    0.161046    2    1
+ Chain link      34  521DG   :   O3*       522DA   :   P        8820   8821    0.161095    2    1
+ Chain link      35  522DA   :   O3*       523DT   :   P        8852   8853    0.161477    2    1
+ Chain link      36  523DT   :   O3*       524DG3  :   P        8884   8885    0.160604    2    1
+ Link        2  488: O3*  489: P  
+ Link        3  489: O3*  490: P  
+ Link        4  490: O3*  491: P  
+ Link        5  491: O3*  492: P  
+ Link        6  492: O3*  493: P  
+ Link        7  493: O3*  494: P  
+ Link        8  494: O3*  495: P  
+ Link        9  495: O3*  496: P  
+ Link       10  496: O3*  497: P  
+ Link       11  497: O3*  498: P  
+ Link       12  498: O3*  499: P  
+ Link       13  499: O3*  500: P  
+ Link       14  500: O3*  501: P  
+ Link       15  501: O3*  502: P  
+ Link       16  502: O3*  503: P  
+ Link       17  503: O3*  504: P  
+ Link       18  504: O3*  505: P  
+ Link       19  506: O3*  507: P  
+ Link       20  507: O3*  508: P  
+ Link       21  508: O3*  509: P  
+ Link       22  509: O3*  510: P  
+ Link       23  510: O3*  511: P  
+ Link       24  511: O3*  512: P  
+ Link       25  512: O3*  513: P  
+ Link       26  513: O3*  514: P  
+ Link       27  514: O3*  515: P  
+ Link       28  515: O3*  516: P  
+ Link       29  516: O3*  517: P  
+ Link       30  517: O3*  518: P  
+ Link       31  518: O3*  519: P  
+ Link       32  519: O3*  520: P  
+ Link       33  520: O3*  521: P  
+ Link       34  521: O3*  522: P  
+ Link       35  522: O3*  523: P  
+ Link       36  523: O3*  524: P  
+ Segment renamed     1PHE_N
+ Segment renamed   243ARG_C
+ Segment renamed   244PHE_N
+ Segment renamed   486ARG_C
 
- Atom type definitions                 /home/hvandam/nwchem-1-codar/QA/../src/data/amber_s/amber.par
- Atom type definitions                 /home/hvandam/nwchem-1-codar/QA/../src/data/amber_x/amber.par
- Atom type definitions                 /home/hvandam/nwchem-1-codar/QA/../src/data/amber_q/amber.par
- Atom type definitions                 /home/hvandam/nwchem-1-codar/QA/../src/data/amber_t/amber.par
- Atom type definitions                 /home/hvandam/nwchem-1-codar/QA/../src/data/amber_u/amber.par
- Bond charge definitions               /home/hvandam/nwchem-1-codar/QA/../src/data/amber_s/amber.par
- Bond charge definitions               /home/hvandam/nwchem-1-codar/QA/../src/data/amber_x/amber.par
- Bond charge definitions               /home/hvandam/nwchem-1-codar/QA/../src/data/amber_q/amber.par
- Bond charge definitions               /home/hvandam/nwchem-1-codar/QA/../src/data/amber_t/amber.par
- Bond charge definitions               /home/hvandam/nwchem-1-codar/QA/../src/data/amber_u/amber.par
+ Unique segments  
 
- Fragment                              PRO_M
+    1  PHE_N
+    2  ALA  
+    3  ASP  
+    4  ARG  
+    5  MET  
+    6  VAL  
+    7  ILE  
+    8  LYS  
+    9  GLN  
+   10  SER  
+   11  PRO  
+   12  GLY  
+   13  PHE  
+   14  GLU  
+   15  TYR  
+   16  TRP  
+   17  ASN  
+   18  THR  
+   19  LEU  
+   20  HIE  
+   21  HID  
+   22  CYS  
+   23  ARG_C
+   24  DC5  
+   25  DA   
+   26  DT   
+   27  DC   
+   28  DG   
+   29  DC3  
+   30  DG5  
+   31  DG3  
+   32  K    
 
-  num name  type   link cntr  grp pgrp    charge     polarizab
+ Segment definition files 
 
-    1  N              0    0    0    1    1    0.000000    0.000000
-    2  CD   CT        0    0    0    1    1   -0.100000    0.000000
-    3 3HD   H1        0    0    0    1    1    0.050000    0.000000
-    4 2HD   H1        0    0    0    1    1    0.050000    0.000000
-    5  CG   CT        0    0    0    1    1   -0.100000    0.000000
-    6 3HG   HC        0    0    0    1    1    0.050000    0.000000
-    7 2HG   HC        0    0    0    1    1    0.050000    0.000000
-    8  CB   CT        0    0    0    1    1   -0.100000    0.000000
-    9 3HB   HC        0    0    0    1    1    0.050000    0.000000
-   10 2HB   HC        0    0    0    1    1    0.050000    0.000000
-   11  CA             0    0    0    1    1    0.000000    0.000000
-   12  HA             0    0    0    1    1    0.000000    0.000000
-   13  C              0    0    0    1    1    0.000000    0.000000
-   14  O              0    0    0    1    1    0.000000    0.000000
-                                           ------------
-                         total charge     0.000000
+    1  PHE_N    2      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/PHE_N.sgm 
+    2  ALA     46      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/ALA.sgm 
+    3  ASP     20      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/ASP.sgm 
+    4  ARG     36      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/ARG.sgm 
+    5  MET      6      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/MET.sgm 
+    6  VAL     20      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/VAL.sgm 
+    7  ILE     36      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/ILE.sgm 
+    8  LYS     14      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/LYS.sgm 
+    9  GLN     18      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/GLN.sgm 
+   10  SER     24      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/SER.sgm 
+   11  PRO     20      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/PRO.sgm 
+   12  GLY     36      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/GLY.sgm 
+   13  PHE     20      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/PHE.sgm 
+   14  GLU     36      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/GLU.sgm 
+   15  TYR     16      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/TYR.sgm 
+   16  TRP      8      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/TRP.sgm 
+   17  ASN     26      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/ASN.sgm 
+   18  THR     28      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/THR.sgm 
+   19  LEU     52      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/LEU.sgm 
+   20  HIE      2      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/HIE.sgm 
+   21  HID     16      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/HID.sgm 
+   22  CYS      2      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/CYS.sgm 
+   23  ARG_C    2      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/ARG_C.sgm 
+   24  DC5      1      6 ./DC5.sgm 
+   25  DA       9      6 ./DA.sgm 
+   26  DT       9      6 ./DT.sgm 
+   27  DC       8      6 ./DC.sgm 
+   28  DG       8      6 ./DG.sgm 
+   29  DC3      1      6 ./DC3.sgm 
+   30  DG5      1      6 ./DG5.sgm 
+   31  DG3      1      6 ./DG3.sgm 
+   32  K       40      1 /home/hvandam/nwchem-1/QA/../src/data/amber_s/K.sgm 
 
- Connectivity
+ Created sequence                      ./1h9t.seq
 
-       1-  2
-       2-  3
-       2-  4
-       2-  5
-       5-  6
-       5-  7
-       5-  8
-       8-  9
-       8- 10
-       8- 11
-      11- 12
-      13- 14
  
- Created fragment                      ./PRO_M.frg_TMP
+ Parameter file                        /home/hvandam/nwchem-1/QA/../src/data/amber_s/amber.par
+ Parameter file                        /home/hvandam/nwchem-1/QA/../src/data/amber_x/amber.par
+ Parameter file                        /home/hvandam/nwchem-1/QA/../src/data/amber_q/amber.par
+ Parameter file                        /home/hvandam/nwchem-1/QA/../src/data/amber_t/amber.par
+ Parameter file                        /home/hvandam/nwchem-1/QA/../src/data/amber_u/amber.par
+ 
+ Total charge                              0.000000
 
- Unresolved atom types in fragment PRO_M
+ Created topology                      1h9t.top
+
+ Topology                              1h9t.top
+
+ Restart generation using command file directives
+
+ There are       0 atoms with missing coordinates
+ PDB file                              start_md_neutral.pdb
+ Number of missing coordinates                0
+ Total number of atoms                     8958
+
+ Generating missing atom coordinates:     0    1
+
+ Crystal waters done
+
+ Coordinates generated for missing atoms
 
 
- **********
- *   0: pre_mkfrg failed 9999
- **********
+ Boxsize determined to                     8.297000   16.682600   41.517000
+
+
+ Periodic boundary conditions off
+
+ Created restart                       1h9t_md.rst
+
+
+ Task  times  cpu:        1.0s     wall:        1.1s
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Summary of allocated global arrays
+-----------------------------------
+  No active global arrays
+
+
+
+                         GA Statistics for process    0
+                         ------------------------------
+
+       create   destroy   get      put      acc     scatter   gather  read&inc
+calls:    0        0        0        0        0        0        0        0     
+number of processes/call 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+bytes total:             0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+bytes remote:            0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+Max memory consumed for GA by this process: 0 bytes
+
+MA_summarize_allocated_blocks: starting scan ...
+MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
+MA usage statistics:
+
+	allocation statistics:
+					      heap	     stack
+					      ----	     -----
+	current number of blocks	         0	         0
+	maximum number of blocks	         7	        33
+	current total bytes		         0	         0
+	maximum total bytes		      5008	  21663272
+	maximum total K-bytes		         6	     21664
+	maximum total M-bytes		         1	        22
+
+
+                                     CITATION
+                                     --------
+                Please cite the following reference when publishing
+                           results obtained with NWChem:
+
+                 M. Valiev, E.J. Bylaska, N. Govind, K. Kowalski,
+              T.P. Straatsma, H.J.J. van Dam, D. Wang, J. Nieplocha,
+                        E. Apra, T.L. Windus, W.A. de Jong
+                 "NWChem: a comprehensive and scalable open-source
+                  solution for large scale molecular simulations"
+                      Comput. Phys. Commun. 181, 1477 (2010)
+                           doi:10.1016/j.cpc.2010.04.018
+
+                                      AUTHORS
+                                      -------
+          E. Apra, E. J. Bylaska, W. A. de Jong, N. Govind, K. Kowalski,
+       T. P. Straatsma, M. Valiev, H. J. J. van Dam, D. Wang, T. L. Windus,
+        J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec, K. Lopata,
+    S. A. Fischer, S. Krishnamoorthy, M. Jacquelin, W. Ma, M. Klemm, O. Villa,
+      Y. Chen, V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler, V. Konjkov,
+            D. Mejia-Rodriguez, T. Risthaus, M. Malagoli, A. Marenich,
+   A. Otero-de-la-Roza, J. Mullin, P. Nichols, R. Peverati, J. Pittner, Y. Zhao,
+        P.-D. Fan, A. Fonari, M. J. Williamson, R. J. Harrison, J. R. Rehr,
+      M. Dupuis, D. Silverstein, D. M. A. Smith, J. Nieplocha, V. Tipparaju,
+    M. Krishnan, B. E. Van Kuiken, A. Vazquez-Mayagoitia, L. Jensen, M. Swart,
+      Q. Wu, T. Van Voorhis, A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown,
+      G. Cisneros, G. I. Fann, H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall,
+      J. A. Nichols, K. Tsemekhman, K. Wolinski, J. Anchell, D. E. Bernholdt,
+      P. Borowski, T. Clark, D. Clerc, H. Dachsel, M. J. O. Deegan, K. Dyall,
+    D. Elwood, E. Glendening, M. Gutowski, A. C. Hess, J. Jaffe, B. G. Johnson,
+     J. Ju, R. Kobayashi, R. Kutteh, Z. Lin, R. Littlefield, X. Long, B. Meng,
+      T. Nakajima, S. Niu, L. Pollack, M. Rosing, K. Glaesemann, G. Sandrone,
+      M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe, A. T. Wong, Z. Zhang.
+
+ Total times  cpu:        1.0s     wall:        1.1s

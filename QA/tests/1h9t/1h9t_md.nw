@@ -13,6 +13,8 @@ end
 
 #task prepare
 
+set sp:adios_mode BPFile
+
 md
   msa 10000
   system 1h9t_md

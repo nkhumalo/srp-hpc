@@ -7,7 +7,7 @@
         integer :: lwa, twa, owa 
         ! [local, total, offset][water][molecules]
         integer :: lwm, twm, owm 
-        ! [local, total, offset][solvent][atoms]
+        ! [local, total, offset][solute][atoms]
         integer :: lsa, tsa, osa 
 
         ! MPI 'world' for this app variables

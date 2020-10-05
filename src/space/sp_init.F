@@ -3718,7 +3718,7 @@ c
       
       lwa=localWatoms
       lwm=localWmolecules
-      lwa=localSatoms
+      lsa=localSatoms
 
       twa=totalWatoms
       twm=totalWmolecules

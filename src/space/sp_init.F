@@ -3699,7 +3699,7 @@ c  333 continue
 c      endif
 c      =============================================
 c
-      if(me.eq.1) print*,'========ADIOS from NWChem: timstep - ',mdstep
+      if(me.eq.0) print*,'========ADIOS from NWChem: timestep - ',mdstep
 c
       localWmolecules=nwmn
       localWatoms=localWmolecules*nwa

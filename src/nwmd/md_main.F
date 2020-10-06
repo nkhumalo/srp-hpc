@@ -622,8 +622,8 @@ c
       epsdsw=epotsw
       epsds=epots
 c
-      lxw=frequency(mdstep,nfcoor)
-      lxs=frequency(mdstep,nfscoo)
+      lxw=frequency(mdstep,nfcoor).or.lfirst.or.llast
+      lxs=frequency(mdstep,nfscoo).or.lfirst.or.llast
 c
       if(lxw.or.lxs) then
       if(lqmd) then
@@ -635,7 +635,7 @@ c
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),
      + dbl_mb(i_xwcr),int_mb(i_is),dbl_mb(i_xs),dbl_mb(i_vs),
-     + dbl_mb(i_fs),mdstep,mdacq)
+     + dbl_mb(i_fs),mdstep,mequi+1,mequi+mdacq)
       endif
       endif
 c
@@ -1189,7 +1189,7 @@ c
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),
      + dbl_mb(i_xwcr),int_mb(i_is),dbl_mb(i_xs),dbl_mb(i_vs),
-     + dbl_mb(i_fs),mdstep,mdacq)
+     + dbl_mb(i_fs),mdstep,mequi+1,mequi+mdacq)
       endif
       endif
 c
@@ -1239,6 +1239,7 @@ c
       logical ltmp
 c
       lfirst=.true.
+      llast=.false.
       lxw=.false.
       lvw=.false.
       lxs=.false.
@@ -1282,6 +1283,8 @@ c
       do 2 idacq=kdacq+1,mdacq
 c
       mdstep=mdstep+1
+      lfirst=mdstep.eq.(mequi+1)
+      llast=mdstep.eq.(mequi+mdacq)
       stime=stime+tstep
 c
       lxw=frequency(mdstep,nfcoor)
@@ -1868,7 +1871,7 @@ c
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),
      + dbl_mb(i_xwcr),int_mb(i_is),dbl_mb(i_xs),dbl_mb(i_vs),
-     + dbl_mb(i_fs),mdstep,mdacq)
+     + dbl_mb(i_fs),mdstep,mequi+1,mequi+mdacq)
       endif
 c
       call timer_stop(6)
@@ -1893,7 +1896,7 @@ c
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),
      + dbl_mb(i_xwcr),int_mb(i_is),dbl_mb(i_xs),dbl_mb(i_vs),
-     + dbl_mb(i_fs),mdstep,mdacq)
+     + dbl_mb(i_fs),mdstep,mequi+1,mequi+mdacq)
       endif
       endif
       if(me.eq.0) then

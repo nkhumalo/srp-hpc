@@ -3197,6 +3197,7 @@ c
       integer*4,allocatable :: nsanlist(:)
       integer,allocatable   :: templist(:)
       integer               :: amlen
+      integer               :: nsanp1
 c
       integer i,j,k,node,ncyc,icyc,numw,nums,number,nwmn,nsan
       integer ilp,ihp,jlp,jhp,ili,ihi,jli,jhi,ilw,ihw,jlw,jhw
@@ -3589,6 +3590,7 @@ c
       localipl(1:mbox,1:mip2)=>int_mb(localindex:localindex+mbox*mip2)
       nwmn=localipl(1,2)
       nsan=ipl(2,2)
+      nsanp1=max(nsan,1)
 c
       do i = 1, np
         templist(i)=0
@@ -3654,27 +3656,23 @@ c
       call ga_distribution(ga_is,me,ili,ihi,jli,jhi)
       call ga_get(ga_is,ili,ili+nsan-1,jli,jli+npack-1,islp,msa)
       call sp_unpack(nsan,isl,islp)
-      allocate(localisl(nsan))
-      do i = 1, nsan
-c      localisl(i)=isl(i,lsgan)-number
-      localisl(i)=isl(i,lsgan)
-      enddo
 c
       call ga_distribution(ga_s,me,ils,ihs,jls,jhs)
       call ga_access(ga_s,ils,ils+nsan-1,jls,jls+2,localindex,localld)
       localxs(1:msa,1:3)=>dbl_mb(localindex:localindex+3*msa)
-      allocate(localSx(nsan))
-      allocate(localSy(nsan))
-      allocate(localSz(nsan))
+      endif
+      allocate(localisl(nsanp1))
+      allocate(localSx(nsanp1))
+      allocate(localSy(nsanp1))
+      allocate(localSz(nsanp1))
       do i = 1, nsan
-        localSx(i) = localxs(i,1)
-        localSy(i) = localxs(i,2)
-        localSz(i) = localxs(i,3)
+        localisl(i) = isl(i,lsgan)
+        localSx(i)  = localxs(i,1)
+        localSy(i)  = localxs(i,2)
+        localSz(i)  = localxs(i,3)
       enddo
 c      print*,'-----me',me,localSx(1:nsan)
 c
-      endif
- 
 
  
 c      if(mdstep.eq.1) then
@@ -3754,7 +3752,7 @@ c
       deallocate(localWz)
       endif
 
-      if(nsan.gt.0) then
+      if(nsanp1.gt.0) then
       deallocate(localisl)
       deallocate(localSx)
       deallocate(localSy)

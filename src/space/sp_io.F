@@ -28,7 +28,7 @@
           call errquit('ADIOS2_DECLARE_IO failed: ',ierr,UERR)
         endif
 !DEBUG
-        write(*,*)'io_init: engine_type = ',engine_type
+!       write(*,*)'io_init: engine_type = ',engine_type
 !DEBUG
         call adios2_set_engine (io, engine_type, ierr)
         if (ierr.ne.adios2_error_none) then
@@ -72,7 +72,7 @@
         ! Define variables at the first time
         if (tstep.eq.1) then
 !DEBUG
-          write(*,*)'io_write: outputfile = ',outputfile
+!         write(*,*)'io_write: outputdirectory = ',outputfile
 !DEBUG
           call adios2_open(bp_writer, io, outputfile, 
      &       adios2_mode_write, ierr)

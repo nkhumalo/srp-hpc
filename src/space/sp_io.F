@@ -53,12 +53,14 @@
       end subroutine io_finalize
 
 
-      subroutine io_write(tstep, wlx, wly, wlz, wid, slx, sly, slz, sid)
+      subroutine io_write(tstep, mnstep, wlx, wly, wlz, wid, 
+     &                                   slx, sly, slz, sid)
         use sp_io_vars
         use adios2
         implicit none
 
         integer, intent(in)   :: tstep
+        integer, intent(in)   :: mnstep
         real*8, intent(in)    :: wlx(:), wly(:), wlz(:)
         real*8, intent(in)    :: slx(:), sly(:), slz(:)
         integer*4, intent(in) :: wid(:), sid(:)
@@ -70,7 +72,7 @@
         integer*4 :: ndims=1
 
         ! Define variables at the first time
-        if (tstep.eq.1) then
+        if (tstep.eq.mnstep) then
 !DEBUG
 !         write(*,*)'io_write: outputdirectory = ',outputfile
 !DEBUG
@@ -163,7 +165,7 @@
         ! barrier needed???
         call MPI_BARRIER(app_comm, ierr)
 
-        ! block untile step available (Timeout = -1.)
+        ! block until step available (Timeout = -1.)
         call adios2_begin_step(bp_writer, 
      &    adios2_step_mode_append, -1., istatus, ierr)
         if (ierr.ne.adios2_error_none) then

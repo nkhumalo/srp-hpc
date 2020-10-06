@@ -3079,7 +3079,7 @@ c
       end
       subroutine sp_wrttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
      + stime,pres,temp,tempw,temps,iwl,xw,vw,fw,xwcr,isl,xs,vs,fs,
-     + mdstep,maxstep)
+     + mdstep,minstep,maxstep)
 c
       implicit none
 c
@@ -3100,6 +3100,7 @@ c
 c
       integer lenscr
       integer mdstep
+      integer minstep
       integer maxstep
 c
       lenscr=ma_inquire_avail(mt_byte)/
@@ -3131,7 +3132,7 @@ c
      + iwl,int_mb(i_packw),xw,vw,fw,xwcr,isl,int_mb(i_pack),xs,vs,fs,
      + int_mb(i_ipl),lenscr,int_mb(i_bi),dbl_mb(i_bx),dbl_mb(i_bv),
      + dbl_mb(i_bf),dbl_mb(i_br),int_mb(i_si),dbl_mb(i_sx),dbl_mb(i_sv),
-     + dbl_mb(i_sf), mdstep, maxstep)
+     + dbl_mb(i_sf), mdstep, minstep, maxstep)
 c
       if(.not.ma_pop_stack(l_si))
      + call md_abort('Failed to deallocate si',0)
@@ -3159,7 +3160,7 @@ c
       subroutine sp_wttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
      + stime,pres,temp,tempw,temps,iwl,iwlp,xw,vw,fw,xwcr,
      + isl,islp,xs,vs,fs,ipl,nb,ibw,bxw,bvw,bfw,brw,ibs,bxs,bvs,bfs,
-     + mdstep,maxstep)
+     + mdstep,minstep,maxstep)
 c
       use sp_io
       use sp_io_vars
@@ -3211,6 +3212,7 @@ c
 c
       integer*4 adios_comm_world
       integer   mdstep
+      integer   minstep
       integer   maxstep
       integer   localWatoms, localWmolecules, localSatoms
       integer   totalWatoms, totalWmolecules, totalSatoms
@@ -3726,7 +3728,7 @@ c
       owm=offsetWmolecules
       osa=offsetSatoms
 
-      if (mdstep.eq.1) then
+      if (mdstep.eq.minstep) then
         amlen=inp_strlen(adios_mode)
         if (me.eq.0) then
           write(lfnout,*)"ADIOS mode: ",adios_mode(1:amlen)
@@ -3735,7 +3737,7 @@ c
         call io_init()
       endif
 
-      call io_write(mdstep,
+      call io_write(mdstep,minstep,
      +localWx,localWy,localWz,localiwl,
      +localSx,localSy,localSz,localisl)
 

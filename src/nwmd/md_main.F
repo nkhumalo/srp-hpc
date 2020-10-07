@@ -1287,10 +1287,12 @@ c
       llast=mdstep.eq.(mequi+mdacq)
       stime=stime+tstep
 c
-      lxw=frequency(mdstep,nfcoor)
+      lxw=frequency(mdstep,nfcoor).or.
+     +    (nfcoor.gt.0.and.(lfirst.or.llast))
       lvw=frequency(mdstep,nfvelo)
       lfw=frequency(mdstep,nfforc)
-      lxs=frequency(mdstep,nfscoo)
+      lxs=frequency(mdstep,nfscoo).or.
+     +    (nfscoo.gt.0.and.(lfirst.or.llast))
       lvs=frequency(mdstep,nfsvel)
       lfs=frequency(mdstep,nfsfor)
       lesp=frequency(mdstep,nfesp)
@@ -1582,10 +1584,14 @@ c
 c
       mdstep=mdstep+1
 c
-      lxw=frequency(mdstep,nfcoor)
+      lfirst=mdstep.eq.(mequi+1)
+      llast=mdstep.eq.(mequi+mdacq)
+      lxw=frequency(mdstep,nfcoor).or.
+     +    (nfcoor.gt.0.and.(lfirst.or.llast))
       lvw=frequency(mdstep,nfvelo)
       lfw=frequency(mdstep,nfforc)
-      lxs=frequency(mdstep,nfscoo)
+      lxs=frequency(mdstep,nfscoo).or.
+     +    (nfscoo.gt.0.and.(lfirst.or.llast))
       lvs=frequency(mdstep,nfsvel)
       lfs=frequency(mdstep,nfsfor)
 c
@@ -1891,7 +1897,7 @@ c
      + temps,
      + dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_xs),dbl_mb(i_vs))
       else
-      if(.not.lfw.and..not.lfs) then
+      if((.not.lfw.and..not.lfs).or.lfirst.or.llast) then
       call sp_wrttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),

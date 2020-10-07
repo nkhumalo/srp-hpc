@@ -61,12 +61,12 @@ task prepare
 
     hostname        = erato
     program         = ../../../bin/LINUX64/nwchem
-    date            = Sun Oct  4 19:19:58 2020
+    date            = Tue Oct  6 21:13:58 2020
 
-    compiled        = Sun_Oct_04_19:19:54_2020
+    compiled        = Tue_Oct_06_20:13:47_2020
     source          = /home/hvandam/nwchem-1
     nwchem branch   = Development
-    nwchem revision = nwchem_on_git-600-ga52652c
+    nwchem revision = nwchem_on_git-616-g1b0d15b
     ga revision     = 5.6.5
     use scalapack   = F
     input           = 1h9t_prep.nw
@@ -81,10 +81,10 @@ task prepare
            Memory information
            ------------------
 
-    heap     =   13107196 doubles =    100.0 Mbytes
-    stack    =   13107201 doubles =    100.0 Mbytes
+    heap     =   13107198 doubles =    100.0 Mbytes
+    stack    =   13107195 doubles =    100.0 Mbytes
     global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
-    total    =   52428797 doubles =    400.0 Mbytes
+    total    =   52428793 doubles =    400.0 Mbytes
     verify   = yes
     hardfail = no 
 
@@ -3491,7 +3491,7 @@ Renamed DG 524 HO3' to  H3T
  Created restart                       1h9t_md.rst
 
 
- Task  times  cpu:        1.0s     wall:        1.1s
+ Task  times  cpu:        1.2s     wall:        1.5s
 
 
                                 NWChem Input Module
@@ -3524,8 +3524,8 @@ MA usage statistics:
 	current number of blocks	         0	         0
 	maximum number of blocks	         7	        33
 	current total bytes		         0	         0
-	maximum total bytes		      5008	  21663272
-	maximum total K-bytes		         6	     21664
+	maximum total bytes		      4992	  21663288
+	maximum total K-bytes		         5	     21664
 	maximum total M-bytes		         1	        22
 
 
@@ -3563,4 +3563,4 @@ MA usage statistics:
       T. Nakajima, S. Niu, L. Pollack, M. Rosing, K. Glaesemann, G. Sandrone,
       M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe, A. T. Wong, Z. Zhang.
 
- Total times  cpu:        1.0s     wall:        1.1s
+ Total times  cpu:        1.3s     wall:        1.6s

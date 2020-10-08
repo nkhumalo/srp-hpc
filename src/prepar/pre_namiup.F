@@ -1111,6 +1111,9 @@ c
    17 continue
 c
 c     SER  HN  ->  H 
+c          H1  -> 2H
+c          H2  -> 3H
+c          H3  -> 4H
 c          HB1 -> 2HB
 c          HB2 -> 3HB
 c          HB3 -> 2HB
@@ -1127,6 +1130,24 @@ c
       catm(2,i)(1:4)=' H  '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HN  to H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H1 ') then
+      catm(2,i)(1:4)='2H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'H1  to 2H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H2 ') then
+      catm(2,i)(1:4)='3H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'H2  to 3H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H3 ') then
+      catm(2,i)(1:4)='4H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'H3  to 4H'
       endif
       endif
       if(catm(2,i)(1:4).eq.' HB1') then
@@ -1270,6 +1291,9 @@ c
    21 continue
 c
 c     VAL  HN  ->  H 
+c          H1  -> 2H
+c          H2  -> 3H
+c          H3  -> 4H
 c         HG11 -> 2HG1
 c         HG12 -> 3HG1
 c         HG13 -> 4HG1
@@ -1284,6 +1308,24 @@ c
       catm(2,i)(1:4)=' H  '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HN  to H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H1 ') then
+      catm(2,i)(1:4)='2H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'H1  to 2H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H2 ') then
+      catm(2,i)(1:4)='3H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'H2  to 3H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H3 ') then
+      catm(2,i)(1:4)='4H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'H3  to 4H'
       endif
       endif
       if(catm(2,i)(1:4).eq.'HG11') then

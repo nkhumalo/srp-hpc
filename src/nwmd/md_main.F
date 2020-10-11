@@ -6,7 +6,7 @@ c
 c
 #include "md_common.fh"
 c
-      call timer_name(-2,"")
+      call timer_name(-2," ")
       if(ntype.eq.0) then
 c
 c     single energy

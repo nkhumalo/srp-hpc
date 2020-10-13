@@ -6,6 +6,7 @@ c
 c
 #include "md_common.fh"
 c
+      call timer_name(-2," ")
       if(ntype.eq.0) then
 c
 c     single energy
@@ -621,8 +622,8 @@ c
       epsdsw=epotsw
       epsds=epots
 c
-      lxw=frequency(mdstep,nfcoor)
-      lxs=frequency(mdstep,nfscoo)
+      lxw=frequency(mdstep,nfcoor).or.lfirst.or.llast
+      lxs=frequency(mdstep,nfscoo).or.lfirst.or.llast
 c
       if(lxw.or.lxs) then
       if(lqmd) then
@@ -634,7 +635,7 @@ c
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),
      + dbl_mb(i_xwcr),int_mb(i_is),dbl_mb(i_xs),dbl_mb(i_vs),
-     + dbl_mb(i_fs))
+     + dbl_mb(i_fs),mdstep,mequi+1,mequi+mdacq)
       endif
       endif
 c
@@ -1188,7 +1189,7 @@ c
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),
      + dbl_mb(i_xwcr),int_mb(i_is),dbl_mb(i_xs),dbl_mb(i_vs),
-     + dbl_mb(i_fs))
+     + dbl_mb(i_fs),mdstep,mequi+1,mequi+mdacq)
       endif
       endif
 c
@@ -1238,6 +1239,7 @@ c
       logical ltmp
 c
       lfirst=.true.
+      llast=.false.
       lxw=.false.
       lvw=.false.
       lxs=.false.
@@ -1266,6 +1268,11 @@ c
     1 continue
       lpmfc=.true.
 c
+c     If requested, adjust velocities
+c
+      call md_veladj(nwmloc,nsaloc,dbl_mb(i_vw),dbl_mb(i_vs),
+     + int_mb(i_iw+(lwdyn-1)*mwm),int_mb(i_is))
+c
 c     data gathering
 c
       lhop=ltmp
@@ -1276,22 +1283,28 @@ c
       do 2 idacq=kdacq+1,mdacq
 c
       mdstep=mdstep+1
+      lfirst=mdstep.eq.(mequi+1)
+      llast=mdstep.eq.(mequi+mdacq)
       stime=stime+tstep
 c
-      lxw=frequency(mdstep,nfcoor)
+      lxw=frequency(mdstep,nfcoor).or.
+     +    (nfcoor.gt.0.and.(lfirst.or.llast))
       lvw=frequency(mdstep,nfvelo)
       lfw=frequency(mdstep,nfforc)
-      lxs=frequency(mdstep,nfscoo)
+      lxs=frequency(mdstep,nfscoo).or.
+     +    (nfscoo.gt.0.and.(lfirst.or.llast))
       lvs=frequency(mdstep,nfsvel)
       lfs=frequency(mdstep,nfsfor)
       lesp=frequency(mdstep,nfesp)
 c
       call md_timer_init()
 c
+      call timer_name(201,"MD step")
       call timer_start(201)
 c
       call md_newton()
 c
+      call timer_name(6,"GA coords")
       call timer_start(6)
 c
       if(lfw.or.lfs) then
@@ -1571,10 +1584,14 @@ c
 c
       mdstep=mdstep+1
 c
-      lxw=frequency(mdstep,nfcoor)
+      lfirst=mdstep.eq.(mequi+1)
+      llast=mdstep.eq.(mequi+mdacq)
+      lxw=frequency(mdstep,nfcoor).or.
+     +    (nfcoor.gt.0.and.(lfirst.or.llast))
       lvw=frequency(mdstep,nfvelo)
       lfw=frequency(mdstep,nfforc)
-      lxs=frequency(mdstep,nfscoo)
+      lxs=frequency(mdstep,nfscoo).or.
+     +    (nfscoo.gt.0.and.(lfirst.or.llast))
       lvs=frequency(mdstep,nfsvel)
       lfs=frequency(mdstep,nfsfor)
 c
@@ -1664,10 +1681,13 @@ c
       end
       subroutine md_newton()
 c
+!AD1  use adios_defs_mod
+!AD1  use adios_write_mod
       implicit none
 c
 #include "md_common.fh"
 #include "mafdecls.fh"
+cinclude "mpif.h"
 c
       logical frequency
       external frequency
@@ -1678,8 +1698,43 @@ c
       real*8 timer_wall_total
 c
       real*8 dxmax,wallt,syntim
+      integer*4 adios_comm_world
+      integer*4 adios_err
+      integer*8 m_adios_group
+      integer*8 varid
+      integer*8 adios_handle
+c      integer*4 numwtest
 c
 c     start timer
+c
+c      if(mdstep.eq.1) then
+c      call ga_mpi_comm_pgroup_default(adios_comm_world)
+c      adios_comm_world=mpi_comm_world
+c      call adios_init_noxml(adios_comm_world, adios_err)
+c      call adios_set_max_buffer_size(10)
+c      call adios_declare_group(m_adios_group, "coordinates", "",
+c     +adios_stat_default, adios_err)
+c      call adios_select_method(m_adios_group, "MPI", "", "",
+c     +adios_err)
+c      call adios_define_var(m_adios_group, "NATOMS", "", adios_integer,
+c     +"", "", "", varid);
+c      call adios_define_var(m_adios_group, "LX", "", adios_double,
+c     +"NATOMS", "", "", varid);
+c      call adios_define_var(m_adios_group, "LY", "", adios_double,
+c     +"NATOMS", "", "", varid);
+c      call adios_define_var(m_adios_group, "LZ", "", adios_double,
+c     +"NATOMS", "", "", varid);
+c      call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
+c     +"w", adios_comm_world, adios_err)
+c      call adios_close (adios_handle, adios_err)
+c      else
+c      call adios_open(adios_handle, "coordinates", "nwchem_xyz.bp",
+c     +"a", adios_comm_world, adios_err)
+c     adios_groupsize = 2*4 + 2*8*ndx*ndy
+c     call adios_group_size (adios_handle, adios_groupsize, adios_totalsize, adios_err)
+c      call adios_write (adios_handle, "NATOMS", numwtest, adios_err)
+c      call adios_close (adios_handle, adios_err)
+c      endif
 c
       call timer_start(1)
 c
@@ -1822,7 +1877,7 @@ c
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),
      + dbl_mb(i_xwcr),int_mb(i_is),dbl_mb(i_xs),dbl_mb(i_vs),
-     + dbl_mb(i_fs))
+     + dbl_mb(i_fs),mdstep,mequi+1,mequi+mdacq)
       endif
 c
       call timer_stop(6)
@@ -1832,28 +1887,29 @@ c
      + dbl_mb(i_xsm),dbl_mb(i_xsmp))
 c
       corrio=costio
-      if(me.eq.0.and..not.lequi.and.(lxw.or.lvw.or.lxs.or.lvs)) then
+      if(.not.lequi.and.(lxw.or.lvw.or.lxs.or.lvs)) then
 c
-      call timer_start(6)
+      if(me.eq.0) call timer_start(6)
 c
       if(lqmd) then
-      call qmd_wrttrj(lfntrj,mwm,nwmloc,mwa,nwa,msa,nsaloc,
+      if(me.eq.0) call qmd_wrttrj(lfntrj,mwm,nwmloc,mwa,nwa,msa,nsaloc,
      + .true.,.false.,.true.,.false.,box,stime-tstep,pres,temp,tempw,
      + temps,
      + dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_xs),dbl_mb(i_vs))
       else
-      if(.not.lfw.and..not.lfs) then
+      if((.not.lfw.and..not.lfs).or.lfirst.or.llast) then
       call sp_wrttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),
      + dbl_mb(i_xwcr),int_mb(i_is),dbl_mb(i_xs),dbl_mb(i_vs),
-     + dbl_mb(i_fs))
+     + dbl_mb(i_fs),mdstep,mequi+1,mequi+mdacq)
       endif
       endif
+      if(me.eq.0) then
       call timer_stop(6)
-c
       costio=max(costio,timer_wall(6))
       corrio=costio-timer_wall(6)
+      endif
 c
       endif
 c
@@ -2214,6 +2270,8 @@ c
 c
       call md_fclass(iwl,isl,xw,xwm,xs,fw,fs)
 c
+      call timer_name(202,"barrier")
+      call timer_name(204,"barrier")
       call timer_start(44)
       call timer_start(202)
       call timer_start(204)
@@ -2353,6 +2411,9 @@ c
       itcom1=33
       itforc=34
       itcom2=35
+      call timer_name(33,"prefetch")
+      call timer_name(34,"wait")
+      call timer_name(35,"accumulate")
 c
       if(nbget.eq.0) then
       call sp_nbbl(nbbl)
@@ -2388,6 +2449,9 @@ c
       itcom1=36
       itforc=37
       itcom2=38
+      call timer_name(36,"get")
+      call timer_name(37,"forces")
+      call timer_name(38,"accumulate")
       local=.false.
       if(nbget.ne.0) itforc=36
       endif
@@ -2406,6 +2470,7 @@ c
       endif
       call timer_stop(itcom1)
       else
+      call timer_name(34,"wait")
       call timer_start(34)
       call sp_nbwait(ibbl,lnew,lhandl,lself,lpbcs,
      + iwfr,iwto,jwfr,jwto,isfr,isto,jsfr,jsto,iwl,isl)

@@ -46,7 +46,7 @@ c      print*,'TOPOLOGY FILE ',filtop(1:index(filtop,' ')-1)
       read(lfntop,1001) naq
       read(lfntop,1001) nseq
       read(lfntop,1000) cdummy
- 1001 format(i5)
+ 1001 format(i7)
       do 2 i=1,nat*nparm
       read(lfntop,1000) cdummy
     2 continue
@@ -61,7 +61,7 @@ c      print*,'TOPOLOGY FILE ',filtop(1:index(filtop,' ')-1)
      + call md_abort('Failed to allocate tmp',0)
       do 6 i=1,naq
       read(lfntop,1002) dbl_mb(i_tmp-1+i)
- 1002 format(5x,f12.6)
+ 1002 format(7x,f12.6)
       do 7 j=1,nparm-1
       read(lfntop,1000) cdummy
     7 continue
@@ -110,7 +110,7 @@ c      print*,'TOPOLOGY FILE ',filtop(1:index(filtop,' ')-1)
      + call md_abort('Failed to allocate itmp',0)
       do 14 i=1,nas
       read(lfntop,1005) sname,aname,imol(i),num,j
- 1005 format(a5,5x,a5,4x,2i7,19x,i5)
+ 1005 format(a5,5x,a5,4x,2i7,21x,i7)
 c 1005 format(a5,5x,a5,6x,2i5,15x,i5)
 c      write(*,1005) sname,aname,imol(i),num,j
       write(44,2004) sname,aname,num
@@ -205,7 +205,7 @@ c
       read(lfntop,1001) nat
       read(lfntop,1001) naq
       read(lfntop,1001) nseq
- 1001 format(i5)
+ 1001 format(i7)
       read(lfntop,1000) cdummy
       do 1 i=1,nat*nparm
       read(lfntop,1000) cdummy
@@ -219,7 +219,7 @@ c
     2 continue
       do 5 i=1,naq*nparm
       read(lfntop,1002) rdummy
- 1002 format(5x,f12.6)
+ 1002 format(7x,f12.6)
     5 continue
       do 6 i=1,nseq
       read(lfntop,1000) cdummy
@@ -252,7 +252,7 @@ c
     9 continue
       do 10  i=1,nas
       read(lfntop,1005) sname,aname,num,j
- 1005 format(a5,5x,a5,11x,i7,14x,i5)
+ 1005 format(a5,5x,a5,15x,i7,14x,i7)
 c 1005 format(a5,5x,a5,11x,i5,15x,i5)
       nsgm=max(nsgm,num)
    10 continue

@@ -6,16 +6,25 @@ start ethanol_md
 prepare
  system ethanol_test
  free
+ center
  modify segment 1 final self
  new_top new_seq
 end
-
+ 
 task prepare
+
+# Store the ADIOS mode selection in the Run Time Data Base
+#set "sp:adios_mode" "NULL"
+#set "sp:adios_mode" "MPI"
+#set "sp:adios_mode" "FLEXPATH"
+#set "sp:adios_mode" "DATASPACES"
+set "sp:adios_mode" "SST"
+#set "sp:adios_mode" "BPFile"
 
 md
  print out6
  system ethanol_md
- step 0.001 equil 0 data 100
+ step 0.001 equil 0 data 1000
  cutoff 1.2 
  leapfrog
  isotherm 298.16 trelax 0.1 0.1 
@@ -24,7 +33,7 @@ md
  update pairs 1 center 1 long 1 rdf 0
  record rest 0
  record prop 0 sync 0
- record coord 0 scoor 0
+ record coord 1 scoor 1
  record veloc 0 svelo 0
  load pairs
  test 10        #This is for testing only, not for general users.

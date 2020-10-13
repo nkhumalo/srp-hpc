@@ -604,7 +604,7 @@ c
       miss=miss+1
       if(util_print('restart',print_none)) then
       write(lfnout,9998) isgm(i),csa(i)
- 9998 format(' Coordinates missing for atom ',i5,':',a)
+ 9998 format(' Coordinates missing for atom ',i7,':',a)
       endif
       endif
       endif

@@ -2,11 +2,13 @@
 # $Id$
 #
 #
-OBJ=sp_init.o sp_main.o
+OBJ=sp_io_vars.o sp_io.o sp_init.o sp_main.o
 
 LIBRARY=libspace.a
 
-HEADER=
+HEADERS=sp_adios_common.fh
+
+LIB_INCLUDES=`adios2-config -f`
 
 USES_BLAS=
 

@@ -36,11 +36,11 @@ c
       read(lfntop,1001) natl
       read(lfntop,1001) nqu
       read(lfntop,1001) nseq
- 1001 format(i5)
+ 1001 format(i7)
       read(lfntop,1000)
       do 2 i=1,natl
       read(lfntop,1002) (ival(j),rval(j),j=1,npar)
- 1002 format(5x,i5,7x,f12.6)
+ 1002 format(7x,i7,7x,f12.6)
       amass(i)=rval(1)
       num(i)=ival(1)
     2 continue
@@ -53,12 +53,12 @@ c
     3 continue
       do 6 i=1,nqu
       read(lfntop,1333) (rval(j),j=1,npar)
- 1333 format(5x,f12.6)
+ 1333 format(7x,f12.6)
       qu(i)=rval(1)
     6 continue
       do 77 i=1,nseq
       read(lfntop,1334) lseq(i)
- 1334 format(48x,i5)
+ 1334 format(48x,i7)
       if(lseq(i).eq.0) lseq(i)=1
    77 continue
       read(lfntop,1003) nwa,nwb,nwh,nwd,nwo,nwt,nwn
@@ -66,7 +66,7 @@ c
  1003 format(5i7,2i10)
       do 7 i=1,nwa
       read(lfntop,1336) cwa(i),iwat(i),idummy
- 1336 format(a16,25x,2i5)
+ 1336 format(a16,25x,2i7)
       qwa(i)=qu(idummy)
 c      read(lfntop,1004) cwa(i)
 c 1004 format(35x,a16)
@@ -105,7 +105,7 @@ c 1010 format(f12.6)
       do 12 i=1,nsa
       read(lfntop,1339) csa(i),mf,m,isgm(i),isat(i),idummy,
      + ihop(i),istat(i)
- 1339 format(a16,i3,2i7,14x,2i5,15x,i5,i3)
+ 1339 format(a16,i3,2i7,14x,2i7,15x,i7,i3)
 c 1339 format(a16,3i5,10x,2i5,15x,2i5)
       isml(i)=m
       isfr(i)=mf

@@ -80,7 +80,7 @@ c
       read(lfntop,1003,end=9997,err=9998) natyps
       read(lfntop,1003,end=9997,err=9998) nqtyps
       read(lfntop,1003,end=9997,err=9998) nseq
- 1003 format(i5)
+ 1003 format(i7)
       read(lfntop,1004,end=9997,err=9998) q14fac,releps
  1004 format(2f12.6)
       if(q14fac.lt.small) q14fac=one
@@ -90,7 +90,7 @@ c
       do 1 i=1,natyps
       read(lfntop,1005,end=9997,err=9998)
      + (idata(k),cdata(k),rdata(k),k=1,nparms)
- 1005 format(5x,i5,1x,a6,f12.6)
+ 1005 format(7x,i7,1x,a6,f12.6)
       call cf_para(i,cdata,rdata,idata)
   101 continue
     1 continue
@@ -101,7 +101,7 @@ c
       do 3 j=i,natyps
       read(lfntop,1006,end=9997,err=9998)
      + ((vdata(k,l),l=1,4),k=1,nparms)
- 1006 format(10x,4e12.5)
+ 1006 format(14x,4e12.5)
       call cf_parv(i,j,vdata)
     3 continue
     2 continue
@@ -111,7 +111,7 @@ c
       do 4 i=1,nqtyps
       read(lfntop,1007,end=9997,err=9998)
      + ((qdata(k,l),l=1,3),k=1,nparms)
- 1007 format(5x,f12.6,e12.5,f12.6)
+ 1007 format(7x,f12.6,e12.5,f12.6)
       call cf_parq(i,qdata)
     4 continue
       if(.not.ma_verify_allocator_stuff()) then
@@ -119,18 +119,18 @@ c
       endif
       do 4004 i=1,nseq
       read(lfntop,4008,end=9997,err=9998) string,maxpro
- 4008 format(a10,33x,i5)
+ 4008 format(a10,35x,i7)
       call cf_parseq(i,maxpro)
  4004 continue
       read(lfntop,1008,end=9997,err=9998) naw,nbw,nhw,ndw,now,ntw,nnw
  1008 format(5i7,2i10)
       call cf_initb(1,1,nbw,2,nhw,nhp,ndw,3,now,3,ntw,2,nnw,2,naw)
       read(lfntop,1009,end=9997,err=9998) nas,nbt,nhs,nds,nos,nts,nxs
- 1009 format(5i7,3i10,2i5)
+ 1009 format(5i7,3i10,2i7)
       call cf_initb(2,nas,nbt,2,nhs,nhp,nds,3,nos,3,nts,2,nxs,2,0)
       do 5 i=1,naw
       read(lfntop,1010,end=9997,err=9998) wnam(i),ia,iq
- 1010 format(a16,25x,2i5)
+ 1010 format(a16,25x,2i7)
       call cf_parwiq(i,ia,iq)
     5 continue
       idata(4)=0
@@ -202,7 +202,7 @@ c
       endif
       do 10 i=1,nas
       read(lfntop,1017,end=9997,err=9998) stemp,j,k,l,m,m2,m3,m4
- 1017 format(a16,i3,2i7,19x,3i5,5x,i5)
+ 1017 format(a16,i3,2i7,21x,3i7,7x,i7)
 c 1017 format(a16,3i5,15x,3i5,5x,i5)
       if(i.eq.1) then
       iqfr=min(m,m2,m3)

@@ -51,13 +51,13 @@ c
 c
       if(nwa.gt.mwa) then
       write(lfnout,3001) nwa,mwa
- 3001 format('Number of solvent atoms is ',i5,' while expecting ',i5)
+ 3001 format('Number of solvent atoms is ',i7,' while expecting ',i7)
       goto 9999
       endif
       if(nwm-nwmc.gt.mwm) then
       write(lfnout,3002) nwm-nwmc,mwm
- 3002 format('Number of solvent molecules is ',i5,
-     + ' while expecting ',i5)
+ 3002 format('Number of solvent molecules is ',i7,
+     + ' while expecting ',i7)
       goto 9999
       endif
       if(noe.gt.mnoe) then
@@ -73,7 +73,7 @@ c
       endif
       if(nsa.gt.msa) then
       write(lfnout,3005) nsa,msa
- 3005 format('Number of solute atoms is ',i5,' while expecting ',i5)
+ 3005 format('Number of solute atoms is ',i7,' while expecting ',i7)
       goto 9999
       endif
 c
@@ -231,13 +231,13 @@ c
 c
       if(nwa.gt.mwa) then
       write(lfnout,3001) nwa,mwa
- 3001 format('Number of solvent atoms is ',i5,' while expecting ',i5)
+ 3001 format('Number of solvent atoms is ',i7,' while expecting ',i7)
       goto 9999
       endif
       if(nwm-nwmc.gt.mwm) then
       write(lfnout,3002) nwm-nwmc,mwm
- 3002 format('Number of solvent molecules is ',i5,
-     + ' while expecting ',i5)
+ 3002 format('Number of solvent molecules is ',i7,
+     + ' while expecting ',i7)
       goto 9999
       endif
       if(noe.gt.mnoe) then
@@ -247,18 +247,18 @@ c
       endif
       if(nwmc.gt.mwmc) then
       write(lfnout,3004) nwmc,mwmc
- 3004 format('Number of crystal solvent molecules is ',i5,' 
-     + while expecting ',i5)
+ 3004 format('Number of crystal solvent molecules is ',i7,' 
+     + while expecting ',i7)
       goto 9999
       endif
       if(nsa.gt.msa) then
       write(lfnout,3005) nsa,msa
- 3005 format('Number of solute atoms is ',i5,' while expecting ',i5)
+ 3005 format('Number of solute atoms is ',i7,' while expecting ',i7)
       goto 9999
       endif
       if(nseqi.ne.nseq) then
       write(lfnout,3055) nseqi,nseq
- 3055 format('Number of segments is ',i5,' while expecting ',i5)
+ 3055 format('Number of segments is ',i7,' while expecting ',i7)
       goto 9999
       endif
 c

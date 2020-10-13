@@ -2971,6 +2971,11 @@ endif
 EXTRA_LIBS += $(CONFIG_LIBS)
 CORE_LIBS += $(EXTRA_LIBS)
 
+ifdef USE_SHARED
+	FOPTIONS  += -fPIC
+	COPTIONS  += -fPIC
+	LDOPTIONS += -fPIC
+endif
 
 ifdef OPTIMIZE
     FFLAGS = $(FOPTIONS) $(FOPTIMIZE)
@@ -2980,10 +2985,15 @@ else
     FFLAGS = $(FOPTIONS) $(FDEBUG) 
     CFLAGS = $(COPTIONS) $(CDEBUG) 
 endif
-  INCLUDES = -I. $(LIB_INCLUDES) -I$(INCDIR) $(INCPATH)
+# For ADIOS
+# INCLUDES = -I. $(MPI_INCLUDE) $(LIB_INCLUDES) -I$(INCDIR) $(INCPATH) $(shell adios_config -c -f)
+# For ADIOS2
+  INCLUDES = -I. $(MPI_INCLUDE) $(LIB_INCLUDES) -I$(INCDIR) $(INCPATH) $(shell adios2-config -c -f)
   CPPFLAGS = $(INCLUDES) $(DEFINES) $(LIB_DEFINES)
    LDFLAGS = $(LDOPTIONS) -L$(LIBDIR) $(LIBPATH)
-      LIBS = $(NW_MODULE_LIBS) $(CORE_LIBS) 
+      LIBS = $(NW_MODULE_LIBS) $(CORE_LIBS) -ldl
+  ADIOS2_FINC = $(shell adios2-config --fortran-flags)
+  ADIOS2_FLIB = $(shell adios2-config --fortran-libs)
 
 # I think this will work everywhere, but it might have to become
 # machine-dependent 
@@ -3051,7 +3061,7 @@ endif
 endif
 
 (%.o): %.f
-	$(NWFC) -c $(FFLAGS) $<
+	$(NWFC) -c $(FFLAGS) $(ADIOS2_FINC) $<
 
 (%.o): %.c
 	$(NWCC) -c $(CPPFLAGS) $(CFLAGS) -o $% $<

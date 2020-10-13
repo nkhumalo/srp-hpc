@@ -605,7 +605,7 @@ c
       if(.not.ga_destroy(ga_iw))
      + call md_abort('Error ga_destroy iw',ga_iw)
       if(.not.ga_destroy(ga_ip))
-     + call md_abort('Error ga_destroy iw',ga_ip)
+     + call md_abort('Error ga_destroy ip',ga_ip)
 c
       if(.not.ma_pop_stack(l_sndx))
      + call md_abort('Failed to deallocate sndx',0)
@@ -716,7 +716,7 @@ c
       read(lfntop,2002,end=9897,err=9898) nat
       read(lfntop,2002,end=9897,err=9898) nqt
       read(lfntop,2002,end=9897,err=9898) nseq
- 2002 format(i5)
+ 2002 format(i7)
       read(lfntop,2001,end=9897,err=9898) 
       do 1103 k=1,npars
       do 102 i=1,nat
@@ -946,14 +946,37 @@ c
       call ga_distribution(ga_ip,node,ilp,ihp,jlp,jhp)
       call ga_get(ga_ip,ilp,ilp,jlp,jhp,ipl,mbox)
       nold=ipl(1,2)
-      if(nold+new.gt.mwm) call md_abort('Dimension mwm too small',0)
+      if(nold+new.gt.mwm) then
+        write(lfnout,*)'Dimension mwm  is  ',mwm
+        write(lfnout,*)'Dimension nold is  ',nold
+        write(lfnout,*)'Dimension new  is  ',new
+        write(lfnout,*)'New total          ',nold+new
+        call util_flush(lfnout)
+        call md_abort('A. Dimension mwm too small',0)
+      endif
       ipl(1,2)=ipl(1,2)+new
       call ga_put(ga_ip,ilp,ilp,jlp,jhp,ipl,mbox)
       call ga_distribution(ga_iw,node,ili,ihi,jli,jhi)
+      if (nold+new.gt.ihi-ili+1) then
+        write(lfnout,*)'Dimension mwmg is  ',mwmg
+        write(lfnout,*)'Dimension nold is  ',nold
+        write(lfnout,*)'Dimension new  is  ',new
+        write(lfnout,*)'New total          ',nold+new
+        call util_flush(lfnout)
+        call md_abort('B. Dimension msa too small',0)
+      endif
       ili=ili+nold
       ihi=ili+new-1
       call ga_put(ga_iw,ili,ihi,jli,jhi,iwl,mwm)
       call ga_distribution(ga_w,node,ilw,ihw,jlw,jhw)
+      if (nold+new.gt.ihw-ilw+1) then
+        write(lfnout,*)'Dimension mwmg is  ',mwmg
+        write(lfnout,*)'Dimension nold is  ',nold
+        write(lfnout,*)'Dimension new  is  ',new
+        write(lfnout,*)'New total          ',nold+new
+        call util_flush(lfnout)
+        call md_abort('C. Dimension msa too small',0)
+      endif
       ilw=ilw+nold
       ihw=ilw+new-1
       call ga_put(ga_w,ilw,ihw,jlw,jlw+3*mwa-1,xw(1,1,1),mwm)
@@ -989,7 +1012,7 @@ c
       bfs(k,3)=zero
       endif
       read(lfntop,2009,end=9897,err=9898) (ibs(k,j),j=1,10)
- 2009 format(16x,i3,4i7,5i5)
+ 2009 format(16x,i3,4i7,5i7)
 c 2009 format(16x,10i5)
       if(ibs(k,3).ne.lasts) then
       icount=icount+1
@@ -1108,15 +1131,37 @@ c
       call ga_distribution(ga_ip,node,ilp,ihp,jlp,jhp)
       call ga_get(ga_ip,ilp,ilp+1,jlp,jhp,ipl,mbox)
       nold=ipl(2,2)
-      if(nold+new.gt.msa)
-     + call md_abort('Dimension msa too small (1)',nold+new)
+      if(nold+new.gt.msa) then
+        write(lfnout,*)'Dimension msa  is  ',msa
+        write(lfnout,*)'Dimension nold is  ',nold
+        write(lfnout,*)'Dimension new  is  ',new
+        write(lfnout,*)'New total          ',nold+new
+        call util_flush(lfnout)
+        call md_abort('A. Dimension msa too small',nold+new)
+      endif
       ipl(2,2)=ipl(2,2)+new
       call ga_put(ga_ip,ilp,ilp+1,jlp,jhp,ipl,mbox)
       call ga_distribution(ga_is,node,ili,ihi,jli,jhi)
+      if (nold+new.gt.ihi-ili+1) then
+        write(lfnout,*)'Dimension msa  is  ',msa
+        write(lfnout,*)'Dimension nold is  ',nold
+        write(lfnout,*)'Dimension new  is  ',new
+        write(lfnout,*)'New total          ',nold+new
+        call util_flush(lfnout)
+        call md_abort('B. Dimension msa too small',0)
+      endif
       ili=ili+nold
       ihi=ili+new-1
       call ga_put(ga_is,ili,ihi,jli,jhi,isl,msa)
       call ga_distribution(ga_s,node,ils,ihs,jls,jhs)
+      if (nold+new.gt.ihs-ils+1) then
+        write(lfnout,*)'Dimension msa  is  ',msa
+        write(lfnout,*)'Dimension nold is  ',nold
+        write(lfnout,*)'Dimension new  is  ',new
+        write(lfnout,*)'New total          ',nold+new
+        call util_flush(lfnout)
+        call md_abort('C. Dimension msa too small',0)
+      endif
       ils=ils+nold
       ihs=ils+new-1
       call ga_put(ga_s,ils,ihs,jls,jls+2,xs(1,1),msa)
@@ -1503,6 +1548,9 @@ c
 c
       if(numsa.gt.0) then
       call ga_distribution(ga_is,me,il,ih,jl,jh)
+      if(numsa.gt.ih-il+1) then
+        call md_abort("numsa too large",0)
+      endif
       if(npack.eq.0) then
       call ga_put(ga_is,il,il+numsa-1,jl,jh,isl,msa)
       else
@@ -1513,6 +1561,9 @@ c
 c
       if(numwm.gt.0) then
       call ga_distribution(ga_iw,me,il,ih,jl,jh)
+      if(numwm.gt.ih-il+1) then
+        call md_abort("numwm too large",0)
+      endif
       if(npackw.eq.0) then
       call ga_put(ga_iw,il,il+numwm-1,jl,jh,iwl,mwm)
       else
@@ -2393,6 +2444,9 @@ c
       nwmn=ipl(1,2)
       if(nwmn.gt.0) then
       call ga_distribution(ga_iw,node,ili,ihi,jli,jhi)
+      if(nwmn.gt.ihi-ili+1) then
+        call md_abort("nwmn too large",0)
+      endif
       if(npackw.eq.0) then
       call ga_get(ga_iw,ili,ili+nwmn-1,jli,jli+lwdyn-1,iwl,mwm)
       else
@@ -2400,6 +2454,9 @@ c
       call sp_unpackw(nwmn,iwl,iwlp)
       endif
       call ga_distribution(ga_w,node,ilw,ihw,jlw,jhw)
+      if(nwmn.gt.ihw-ilw+1) then
+        call md_abort("nwmn too large",0)
+      endif
       call ga_get(ga_w,ilw,ilw+nwmn-1,jlw,jlw+3*mwa-1,xw,mwm)
       if(lveloc)
      + call ga_get(ga_w,ilw,ilw+nwmn-1,jlw+3*mwa,jlw+6*mwa-1,vw,mwm)
@@ -2480,6 +2537,9 @@ c
       nsan=ipl(2,2)
       if(nsan.gt.0) then
       call ga_distribution(ga_is,node,ili,ihi,jli,jhi)
+      if(nsan.gt.ihi-ili+1) then
+        call md_abort("nsan too large",0)
+      endif
       if(npack.eq.0) then
       call ga_get(ga_is,ili,ili+nsan-1,jli,jli+lsdyn-1,isl,msa)
       else
@@ -2487,6 +2547,9 @@ c
       call sp_unpack(nsan,isl,islp)
       endif
       call ga_distribution(ga_s,node,ils,ihs,jls,jhs)
+      if(nsan.gt.ihs-ils+1) then
+        call md_abort("nsan too large",0)
+      endif
       call ga_get(ga_s,ils,ils+nsan-1,jls,jls+2,xs,msa)
       if(lveloc) call ga_get(ga_s,ils,ils+nsan-1,jls+3,jls+5,vs,msa)
       if(lforces) call ga_get(ga_s,ils,ils+nsan-1,jls+6,jls+8,fs,msa)
@@ -2760,7 +2823,7 @@ c
       read(lfntop,2002) nat
       read(lfntop,2002) nqt
       read(lfntop,2002) nseq
- 2002 format(i5)
+ 2002 format(i7)
       read(lfntop,2001) cdum
       do 1102 k=1,npars
       do 102 i=1,nat
@@ -2821,6 +2884,9 @@ c
       nsan=ipl(2,2)
       if(nsan.gt.0) then
       call ga_distribution(ga_is,node,ili,ihi,jli,jhi)
+      if(nsan.gt.ihi-ili+1) then
+        call md_abort("nsan too large",0)
+      endif
       if(npack.eq.0) then
       call ga_get(ga_is,ili,ili+nsan-1,jli,jli+lsdyn-1,isl,msa)
       else
@@ -2828,6 +2894,9 @@ c
       call sp_unpack(nsan,isl,islp)
       endif
       call ga_distribution(ga_s,node,ils,ihs,jls,jhs)
+      if(nsan.gt.ihs-ils+1) then
+        call md_abort("nsan too large",0)
+      endif
       call ga_get(ga_s,ils,ils+nsan-1,jls,jls+2,xs,msa)
       call ga_get(ga_s,ils,ils+nsan-1,jls+6,jls+8,fs,msa)
       do 8 i=1,nsan
@@ -3071,7 +3140,8 @@ c
       return
       end
       subroutine sp_wrttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
-     + stime,pres,temp,tempw,temps,iwl,xw,vw,fw,xwcr,isl,xs,vs,fs)
+     + stime,pres,temp,tempw,temps,iwl,xw,vw,fw,xwcr,isl,xs,vs,fs,
+     + mdstep,minstep,maxstep)
 c
       implicit none
 c
@@ -3082,15 +3152,22 @@ c
       integer lfntrj
       logical lxw,lvw,lfw,lxs,lvs,lfs
       integer iwl(mwm,miw2),isl(msa,mis2)
+      integer l_si, i_si
+      integer l_sx, i_sx
+      integer l_sv, i_sv
+      integer l_sf, i_sf
       real*8 stime,pres,temp,tempw,temps
       real*8 xw(mwm,3,mwa),vw(mwm,3,mwa),fw(mwm,3,mwa),xwcr(mwm,3)
       real*8 xs(msa,3),vs(msa,3),fs(msa,3)
 c
       integer lenscr
+      integer mdstep
+      integer minstep
+      integer maxstep
 c
       lenscr=ma_inquire_avail(mt_byte)/
-     + ((9*mwa+3)*ma_sizeof(mt_dbl,1,mt_byte)+
-     + (mis2+4)*ma_sizeof(mt_int,1,mt_byte))-1
+     + ((9*mwa+12)*ma_sizeof(mt_dbl,1,mt_byte)+
+     + (2*mis2+2*4)*ma_sizeof(mt_int,1,mt_byte))-1
       if(.not.ma_push_get(mt_dbl,lenscr*3*mwa,'bx',l_bx,i_bx))
      + call md_abort('Failed to allocate bx',0)
       if(.not.ma_push_get(mt_dbl,lenscr*3*mwa,'bv',l_bv,i_bv))
@@ -3103,14 +3180,30 @@ c
      + call md_abort('Failed to allocate bi',0)
       if(.not.ma_push_get(mt_int,lenscr,'n',l_n,i_n))
      + call md_abort('Failed to allocate n',0)
+      if(.not.ma_push_get(mt_dbl,lenscr*3,'sx',l_sx,i_sx))
+     + call md_abort('Failed to allocate sx',0)
+      if(.not.ma_push_get(mt_dbl,lenscr*3,'sv',l_sv,i_sv))
+     + call md_abort('Failed to allocate sv',0)
+      if(.not.ma_push_get(mt_dbl,lenscr*3,'sf',l_sf,i_sf))
+     + call md_abort('Failed to allocate sf',0)
+      if(.not.ma_push_get(mt_int,lenscr*max(mis2,2),'si',l_si,i_si))
+     + call md_abort('Failed to allocate si',0)
 c
       call sp_wttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
      + stime,pres,temp,tempw,temps,
      + iwl,int_mb(i_packw),xw,vw,fw,xwcr,isl,int_mb(i_pack),xs,vs,fs,
      + int_mb(i_ipl),lenscr,int_mb(i_bi),dbl_mb(i_bx),dbl_mb(i_bv),
-     + dbl_mb(i_bf),dbl_mb(i_br),int_mb(i_bi),dbl_mb(i_bx),dbl_mb(i_bv),
-     + dbl_mb(i_bf))
+     + dbl_mb(i_bf),dbl_mb(i_br),int_mb(i_si),dbl_mb(i_sx),dbl_mb(i_sv),
+     + dbl_mb(i_sf), mdstep, minstep, maxstep)
 c
+      if(.not.ma_pop_stack(l_si))
+     + call md_abort('Failed to deallocate si',0)
+      if(.not.ma_pop_stack(l_sf))
+     + call md_abort('Failed to deallocate sf',0)
+      if(.not.ma_pop_stack(l_sv))
+     + call md_abort('Failed to deallocate sv',0)
+      if(.not.ma_pop_stack(l_sx))
+     + call md_abort('Failed to deallocate sx',0)
       if(.not.ma_pop_stack(l_n))
      + call md_abort('Failed to deallocate n',0)
       if(.not.ma_pop_stack(l_bi))
@@ -3128,13 +3221,20 @@ c
       end
       subroutine sp_wttrj(lfntrj,lxw,lvw,lfw,lxs,lvs,lfs,
      + stime,pres,temp,tempw,temps,iwl,iwlp,xw,vw,fw,xwcr,
-     + isl,islp,xs,vs,fs,ipl,nb,ibw,bxw,bvw,bfw,brw,ibs,bxs,bvs,bfs)
+     + isl,islp,xs,vs,fs,ipl,nb,ibw,bxw,bvw,bfw,brw,ibs,bxs,bvs,bfs,
+     + mdstep,minstep,maxstep)
 c
+      use sp_io
+      use sp_io_vars
       implicit none
 c
 #include "sp_common.fh"
+#include "sp_adios_common.fh"
+#include "inp.fh"
 #include "mafdecls.fh"
 #include "global.fh"
+#include "mpif.h"
+
 c
       integer lfntrj,nb
       logical lxw,lvw,lfw,lxs,lvs,lfs
@@ -3147,6 +3247,21 @@ c
       real*8 bxw(nb,3,mwa),bvw(nb,3,mwa),bfw(nb,3,mwa),brw(nb,3)
       real*8 bxs(nb,3),bvs(nb,3),bfs(nb,3)
 c
+      real*8,   allocatable :: localWx(:)
+      real*8,   allocatable :: localWy(:)
+      real*8,   allocatable :: localWz(:)
+      real*8,   allocatable :: localSx(:)
+      real*8,   allocatable :: localSy(:)
+      real*8,   allocatable :: localSz(:)
+      integer*4,allocatable :: localiwl(:)
+      integer*4,allocatable :: localisl(:)
+c
+      integer*4,allocatable :: nwmnlist(:)
+      integer*4,allocatable :: nsanlist(:)
+      integer,allocatable   :: templist(:)
+      integer               :: amlen
+      integer               :: nsanp1
+c
       integer i,j,k,node,ncyc,icyc,numw,nums,number,nwmn,nsan
       integer ilp,ihp,jlp,jhp,ili,ihi,jli,jhi,ilw,ihw,jlw,jhw
       integer ils,ihs,jls,jhs
@@ -3156,6 +3271,22 @@ c
 c
       real*8 dumdst,dist
       integer nonh
+c
+      integer*4 adios_comm_world
+      integer   mdstep
+      integer   minstep
+      integer   maxstep
+      integer   localWatoms, localWmolecules, localSatoms
+      integer   totalWatoms, totalWmolecules, totalSatoms
+      integer   offsetWatoms, offsetWmolecules, offsetSatoms
+c
+      integer localindex
+      integer localld
+      target dbl_mb
+      target int_mb
+      integer, pointer ::  localipl(:,:)
+      real*8,  pointer ::  localxw(:,:,:)
+      real*8,  pointer ::  localxs(:,:)
 c
       dumdst=0.02d0
 c
@@ -3191,19 +3322,41 @@ c
 c
 c     end test code
 c
+c
+c     Loop over all processors
+c
       do 2 node=np-1,0,-1
+c
+c     Get information about the data held by a particular processor:
+c     - the number of water molecules
+c
       call ga_distribution(ga_ip,node,ilp,ihp,jlp,jhp)
       call ga_get(ga_ip,ilp,ihp,jlp,jhp,ipl,mbox)
+c
+c     Get the number of water molecules held by processor "node"
+c
       nwmn=ipl(1,2)
+c
+c     Get the rank of every water molecule in the global structure
+c
       if(nwmn.gt.0) then
       call ga_distribution(ga_iw,node,ili,ihi,jli,jhi)
+      if(nwmn.gt.ihi-ili+1) then
+        call md_abort("nwmn too large",0)
+      endif
       if(npackw.eq.0) then
       call ga_get(ga_iw,ili,ili+nwmn-1,jli,jli+lwdyn-1,iwl,mwm)
       else
       call ga_get(ga_iw,ili,ili+nwmn-1,jli,jli+npackw-1,iwlp,mwm)
       call sp_unpackw(nwmn,iwl,iwlp)
       endif
+c
+c     Get the atomic coordinates of the water molecules
+c
       call ga_distribution(ga_w,node,ilw,ihw,jlw,jhw)
+      if(nwmn.gt.ihw-ilw+1) then
+        call md_abort("nwmn too large",0)
+      endif
       call ga_get(ga_w,ilw,ilw+nwmn-1,jlw,jlw+3*mwa-1,xw,mwm)
       if(lvw)
      + call ga_get(ga_w,ilw,ilw+nwmn-1,jlw+3*mwa,jlw+6*mwa-1,vw,mwm)
@@ -3211,11 +3364,18 @@ c
      + call ga_get(ga_w,ilw,ilw+nwmn-1,jlw+6*mwa+3,jlw+9*mwa+2,fw,mwm)
       do 3 i=1,nwmn
       j=iwl(i,lwgmn)-number
+c
+c     Put the water molecules from the buffer into the global structure
+c
       if(j.gt.0.and.j.le.numw) then
       do 4 k=1,nwa
       bxw(j,1,k)=xw(i,1,k)
       bxw(j,2,k)=xw(i,2,k)
       bxw(j,3,k)=xw(i,3,k)
+c      if((mdstep.eq.1).and.(k.eq.nwa)) then
+c      print*,'RANK*iwl',node,j
+c      print*,'RANK*LZ',node,bxw(j,1,1:nwa)
+c      endif
     4 continue
       if(lvw) then
       do 5 k=1,nwa
@@ -3236,8 +3396,13 @@ c
     3 continue
       endif
     2 continue
-c     begin solvent output
-c     low precision 
+c
+c     Done fetching water molecules from all processors
+c
+c     Write water molecule coordinates
+c     
+c       - Low precision
+c     
       if(nprec.eq.0) then
       if(lfw) then
       if(lvw) then
@@ -3269,7 +3434,9 @@ c     low precision
     7 continue
       endif
       endif
-c     high precision 
+c      
+c     - High precision 
+c
       else
       if(lfw) then
       if(lvw) then
@@ -3302,7 +3469,9 @@ c     high precision
       endif
       endif
       endif
-c     end of solvent output
+c      
+c     Done writing water molecule coordinates
+c
       number=number+numw
     1 continue
       endif
@@ -3323,25 +3492,52 @@ c
 c
 c     end test code
 c
+c
+c     Loop over all processors to collect solute atoms
+c
       do 9 node=np-1,0,-1
+c
+c     Get information about the data held by a particular processor:
+c     - the number of solute atoms
+c
       call ga_distribution(ga_ip,node,ilp,ihp,jlp,jhp)
       call ga_get(ga_ip,ilp,ihp,jlp,jhp,ipl,mbox)
+c
+c     Get the number of solute atoms held by processor "node"
+c
       nsan=ipl(2,2)
+c
+c     Get the rank of every solute atom in the global structure
+c
       if(nsan.gt.0) then
       call ga_distribution(ga_is,node,ili,ihi,jli,jhi)
+      if(nsan.gt.ihi-ili+1) then
+        call md_abort("nsan too large",0)
+      endif
       if(npack.eq.0) then
       call ga_get(ga_is,ili,ili+nsan-1,jli,jli+lsdyn-1,isl,msa)
       else
       call ga_get(ga_is,ili,ili+nsan-1,jli,jli+npack-1,islp,msa)
       call sp_unpack(nsan,isl,islp)
+c      print*,'-----node',node,isl(1:nsan,lsgan)
       endif
+c
+c     Get the atomic coordinates fo the solute atoms
+c
       call ga_distribution(ga_s,node,ils,ihs,jls,jhs)
+      if(nsan.gt.ihs-ils+1) then
+        call md_abort("nsan too large",0)
+      endif
       call ga_get(ga_s,ils,ils+nsan-1,jls,jls+2,xs,msa)
+c      print*,'=====node',xs(1:nsan,1)
       if(lvs) call ga_get(ga_s,ils,ils+nsan-1,jls+3,jls+5,vs,msa)
       if(lfs) call ga_get(ga_s,ils,ils+nsan-1,jls+6,jls+8,fs,msa)
       nonh=0
       do 10 i=1,nsan
       j=isl(i,lsgan)-number
+c
+c     Put the solute atoms from the buffer into the global structure
+c
       if(j.gt.0.and.j.le.nums) then
       bxs(j,1)=xs(i,1)
       bxs(j,2)=xs(i,2)
@@ -3374,8 +3570,13 @@ c
    10 continue
       endif
     9 continue
-c     begin solute output
-c     low precision
+c
+c     Done collecting the solute atom data
+c
+c     Write solute atom coordinates
+c 
+c     - Low precision
+c     
       if(nprec.eq.0) then
       if(lfs) then
       if(lvs) then
@@ -3408,7 +3609,9 @@ c     low precision
       endif
       endif
       else
-c     high precision
+c      
+c     - High precision
+c
       if(lfs) then
       if(lvs) then
       do 2111 i=1,nums
@@ -3440,14 +3643,212 @@ c     high precision
       endif
       endif
       end if
-c     end solute output
+c      
+c     Done writing solute atoms
+c
       number=number+nums
     8 continue
       endif
 c
       endif
 c
+c
+      allocate(nwmnlist(np))
+      allocate(nsanlist(np))
+      allocate(templist(np))
+c
+      call ga_brdcst(10,numw,ma_sizeof(MT_INT,1,MT_BYTE),0)
+      call ga_brdcst(10,nums,ma_sizeof(MT_INT,1,MT_BYTE),0)
+c
+      call ga_sync
+      call ga_distribution(ga_ip,me,ilp,ihp,jlp,jhp)
+      call ga_access(ga_ip, ilp, ihp, jlp, jhp, localindex, localld)
+      localipl(1:mbox,1:mip2)=>int_mb(localindex:localindex+mbox*mip2)
+      nwmn=localipl(1,2)
+      nsan=ipl(2,2)
+      nsanp1=max(nsan,1)
+c
+      do i = 1, np
+        templist(i)=0
+      enddo
+      templist(me+1)=nwmn
+      call ga_sync
+      call ga_igop(10,templist,np,'+')
+      do i = 1, np
+        nwmnlist(i)=templist(i)
+      enddo
+c
+      do i = 1, np
+        templist(i)=0
+      enddo
+      templist(me+1)=nsan
+      call ga_sync
+      call ga_igop(10,templist,np,'+')
+      do i = 1, np
+        nsanlist(i)=templist(i)
+      enddo
+c
+      do i = 2, np
+        nwmnlist(i)=nwmnlist(i)+nwmnlist(i-1)
+        nsanlist(i)=nsanlist(i)+nsanlist(i-1)
+      enddo
+
+
+      if(nwmn.gt.0) then
+c
+      call ga_distribution(ga_iw,me,ili,ihi,jli,jhi)
+      if(nwmn.gt.ihi-ili+1) then
+        call md_abort("nwmn too large",0)
+      endif
+      call ga_get(ga_iw,ili,ili+nwmn-1,jli,jli+npackw-1,iwlp,mwm)
+      call sp_unpackw(nwmn,iwl,iwlp)
+      allocate(localiwl(nwmn))
+      do i = 1, nwmn
+c      localiwl(i)=iwl(i,lwgmn)-number
+      localiwl(i)=iwl(i,lwgmn)
+      enddo
+c
+      call ga_distribution(ga_w,me,ilw,ihw,jlw,jhw)
+      if(mwmg.gt.ihw-ilw+1) then
+        call md_abort("mwmg too large",0)
+      endif
+      call ga_access(ga_w,ilw,ilw+mwmg-1,jlw,jlw+3*mwa-1,localindex,
+     +localld)
+      localxw(1:mwmg,1:3,1:mwa)=>
+     +        dbl_mb(localindex:localindex+mwmg*3*mwa)
+      allocate(localWx(nwa*nwmn))
+      allocate(localWy(nwa*nwmn))
+      allocate(localWz(nwa*nwmn))
+      j = 1
+      do i = 1, nwmn
+        do k = 1, nwa
+          localWx(j) = localxw(i,1,k)
+          localWy(j) = localxw(i,2,k)
+          localWz(j) = localxw(i,3,k)
+          j = j + 1
+        enddo
+      enddo
+c
+      endif
+c
+      call ga_sync
+c
+      if(nsan.gt.0) then
+c 
+      call ga_distribution(ga_is,me,ili,ihi,jli,jhi)
+      if(nsan.gt.ihi-ili+1) then
+        call md_abort("nsan too large",0)
+      endif
+      call ga_get(ga_is,ili,ili+nsan-1,jli,jli+npack-1,islp,msa)
+      call sp_unpack(nsan,isl,islp)
+c
+      call ga_distribution(ga_s,me,ils,ihs,jls,jhs)
+      if(nsan.gt.ihs-ils+1) then
+        call md_abort("nsan too large",0)
+      endif
+      call ga_access(ga_s,ils,ils+nsan-1,jls,jls+2,localindex,localld)
+      localxs(1:msa,1:3)=>dbl_mb(localindex:localindex+3*msa)
+      endif
+      allocate(localisl(nsanp1))
+      allocate(localSx(nsanp1))
+      allocate(localSy(nsanp1))
+      allocate(localSz(nsanp1))
+      do i = 1, nsan
+        localisl(i) = isl(i,lsgan)
+        localSx(i)  = localxs(i,1)
+        localSy(i)  = localxs(i,2)
+        localSz(i)  = localxs(i,3)
+      enddo
+c      print*,'-----me',me,localSx(1:nsan)
+c
+
+ 
+c      if(mdstep.eq.1) then
+c      print*,'RANK-nwmn-iwl',me,nwmn,localiwl
+c      print*,'RANK-LX',me,localxyz(1,:)
+c      endif
+c
+c
+c      ===========NON-JOINED-ARRAY=================
+c      call ga_distribution(ga_ip,node,ilp,ihp,jlp,jhp)
+c      call ga_access(ga_ip, ilp, ihp, jlp, jhp, localindex, localld)
+c      localipl(1:mbox,1:mip2)=>int_mb(localindex:localindex+mbox*mip2)
+c      globalipl(me+1)=localipl(1,2)
+c      call ga_sync
+c      call ga_igop(10,globalipl,np,'+')
+c
+c      offset=0
+c      if(me.gt.0) then
+c      do 333 i=0,me-1,1
+c      offset=offset+globalipl(i)
+c  333 continue
+c      endif
+c      =============================================
+c
+      if(me.eq.0) print*,'========ADIOS from NWChem: timestep - ',mdstep
+c
+      localWmolecules=nwmn
+      localWatoms=localWmolecules*nwa
+      localSatoms=nsan
+c
+      totalWmolecules=numw
+      totalWatoms=totalWmolecules*nwa
+      totalSatoms=nums
+c
+      offsetWmolecules=nwmnlist(me)
+      offsetWatoms=nwmnlist(me)*nwa
+      offsetSatoms=nsanlist(me)
+  
+      call ga_mpi_comm_pgroup_default(adios_comm_world)
+      app_comm=adios_comm_world
+      
+      lwa=localWatoms
+      lwm=localWmolecules
+      lsa=localSatoms
+
+      twa=totalWatoms
+      twm=totalWmolecules
+      tsa=totalSatoms
+
+      owa=offsetWatoms
+      owm=offsetWmolecules
+      osa=offsetSatoms
+
+      if (mdstep.eq.minstep) then
+        amlen=inp_strlen(adios_mode)
+        if (me.eq.0) then
+          write(lfnout,*)"ADIOS mode: ",adios_mode(1:amlen)
+        endif
+        engine_type=adios_mode
+        call io_init()
+      endif
+
+      call io_write(mdstep,minstep,
+     +localWx,localWy,localWz,localiwl,
+     +localSx,localSy,localSz,localisl)
+
+      if (mdstep.eq.maxstep) then
+        call io_finalize()
+      endif
+
       call util_flush(lfntrj)
+
+      if(nwmn.gt.0) then
+      deallocate(localiwl)
+      deallocate(localWx)
+      deallocate(localWy)
+      deallocate(localWz)
+      endif
+
+      if(nsanp1.gt.0) then
+      deallocate(localisl)
+      deallocate(localSx)
+      deallocate(localSy)
+      deallocate(localSz)
+      endif
+c
+      deallocate(nwmnlist)
+      deallocate(nsanlist)
 c
       return
       end
@@ -3697,6 +4098,9 @@ c
       nwmn=ipl(1,2)
       if(nwmn.gt.0) then
       call ga_distribution(ga_iw,node,ili,ihi,jli,jhi)
+      if(nwmn.gt.ihi-ili+1) then
+        call md_abort("nwmn too large",0)
+      endif
       if(npackw.eq.0) then
       call ga_get(ga_iw,ili,ili+nwmn-1,jli,jli+lwdyn-1,iwl,mwm)
       else
@@ -3704,6 +4108,9 @@ c
       call sp_unpackw(nwmn,iwl,iwlp)
       endif
       call ga_distribution(ga_w,node,ilw,ihw,jlw,jhw)
+      if(nwmn.gt.ihw-ilw+1) then
+        call md_abort("nwmn too large",0)
+      endif
       call ga_get(ga_w,ilw,ilw+nwmn-1,jlw,jlw+3*mwa-1,xw,mwm)
       if(lvw)
      + call ga_get(ga_w,ilw,ilw+nwmn-1,jlw+3*mwa,jlw+6*mwa-1,vw,mwm)
@@ -3813,6 +4220,9 @@ c
       nsan=ipl(2,2)
       if(nsan.gt.0) then
       call ga_distribution(ga_is,node,ili,ihi,jli,jhi)
+      if(nsan.gt.ihi-ili+1) then
+        call md_abort("nsan too large",0)
+      endif
       if(npack.eq.0) then
       call ga_get(ga_is,ili,ili+nsan-1,jli,jli+lsdyn-1,isl,msa)
       else
@@ -3820,6 +4230,9 @@ c
       call sp_unpack(nsan,isl,islp)
       endif
       call ga_distribution(ga_s,node,ils,ihs,jls,jhs)
+      if(nsan.gt.ihs-ils+1) then
+        call md_abort("nsan too large",0)
+      endif
       call ga_get(ga_s,ils,ils+nsan-1,jls,jls+2,xs,msa)
       if(lvs) call ga_get(ga_s,ils,ils+nsan-1,jls+3,jls+5,vs,msa)
       if(lfs) call ga_get(ga_s,ils,ils+nsan-1,jls+6,jls+8,fs,msa)
@@ -3946,6 +4359,9 @@ c
       nsan=ipl(2,2)
       if(nwmn.gt.0) then
       call ga_distribution(ga_iw,node,ili,ihi,jli,jhi)
+      if(nwmn.gt.ihi-ili+1) then
+        call md_abort("nwmn too large",0)
+      endif
       if(npackw.eq.0) then
       call ga_get(ga_iw,ili,ili+nwmn-1,jli,jhi,iwl,mwm)
       else
@@ -3953,6 +4369,9 @@ c
       call sp_unpackw(nwmn,iwl,iwlp)
       endif
       call ga_distribution(ga_w,node,ilw,ihw,jlw,jhw)
+      if(nwmn.gt.ihw-ilw+1) then
+        call md_abort("nwmn too large",0)
+      endif
       call ga_get(ga_w,ilw,ilw+nwmn-1,jlw,jlw+3*mwa-1,xw,mwm) 
       call ga_get(ga_w,ilw,ilw+nwmn-1,jlw+3*mwa,jlw+6*mwa-1,vw,mwm)
       write(lfnmro) ((iwl(j,k),j=1,nwmn),k=1,miw2)
@@ -3961,6 +4380,9 @@ c
       endif
       if(nsan.gt.0) then
       call ga_distribution(ga_is,node,ili,ihi,jli,jhi)
+      if(nsan.gt.ihi-ili+1) then
+        call md_abort("nsan too large",0)
+      endif
       if(npack.eq.0) then
       call ga_get(ga_is,ili,ili+nsan-1,jli,jhi,isl,msa)
       else
@@ -3968,6 +4390,9 @@ c
       call sp_unpack(nsan,isl,islp)
       endif
       call ga_distribution(ga_s,node,ils,ihs,jls,jhs)
+      if(nsan.gt.ihs-ils+1) then
+        call md_abort("nsan too large",0)
+      endif
       call ga_get(ga_s,ils,ils+nsan-1,jls,jls+2,xs,msa)
       call ga_get(ga_s,ils,ils+nsan-1,jls+3,jls+5,vs,msa)
       write(lfnmro) ((isl(j,k),j=1,nsan),k=1,mis2)
@@ -4039,6 +4464,9 @@ c
       read(lfnmri,err=9) (((xw(j,k,l),j=1,nwmn),k=1,3),l=1,nwa)
       read(lfnmri,err=9) (((vw(j,k,l),j=1,nwmn),k=1,3),l=1,nwa)
       call ga_distribution(ga_iw,node,ili,ihi,jli,jhi)
+      if(nwmn.gt.ihi-ili+1) then
+        call md_abort("nwmn too large",0)
+      endif
       if(npackw.eq.0) then
       call ga_put(ga_iw,ili,ili+nwmn-1,jli,jhi,iwl,mwm)
       else
@@ -4046,6 +4474,9 @@ c
       call ga_put(ga_iw,ili,ili+nwmn-1,jli,jli+npackw-1,iwlp,mwm)
       endif
       call ga_distribution(ga_w,node,ilw,ihw,jlw,jhw)
+      if(nwmn.gt.ihw-ilw+1) then
+        call md_abort("nwmn too large",0)
+      endif
       call ga_put(ga_w,ilw,ilw+nwmn-1,jlw,jlw+3*mwa-1,xw,mwm) 
       call ga_put(ga_w,ilw,ilw+nwmn-1,jlw+3*mwa,jlw+6*mwa-1,vw,mwm)
       endif
@@ -4054,6 +4485,9 @@ c
       read(lfnmri,err=9) ((xs(j,k),j=1,nsan),k=1,3)
       read(lfnmri,err=9) ((vs(j,k),j=1,nsan),k=1,3)
       call ga_distribution(ga_is,node,ili,ihi,jli,jhi)
+      if(nsan.gt.ihi-ili+1) then
+        call md_abort("nsan too large",0)
+      endif
       if(npack.eq.0) then
       call ga_put(ga_is,ili,ili+nsan-1,jli,jhi,isl,msa)
       else
@@ -4061,6 +4495,9 @@ c
       call ga_put(ga_is,ili,ili+nsan-1,jli,jli+npack-1,islp,msa)
       endif
       call ga_distribution(ga_s,node,ils,ihs,jls,jhs)
+      if(nsan.gt.ihs-ils+1) then
+        call md_abort("nsan too large",0)
+      endif
       call ga_put(ga_s,ils,ils+nsan-1,jls,jls+2,xs,msa)
       call ga_put(ga_s,ils,ils+nsan-1,jls+3,jls+5,vs,msa)
       endif
@@ -4088,6 +4525,9 @@ c
       nsaloc=ipl(2,2)
       if(nwmloc.gt.0) then
       call ga_distribution(ga_iw,me,ili,ihi,jli,jhi)
+      if(nwmloc.gt.ihi-ili+1) then
+        call md_abort("nwmloc too large",0)
+      endif
       if(npackw.eq.0) then
       call ga_get(ga_iw,ili,ili+nwmloc-1,jli,jhi,iwl,mwm)
       else
@@ -4095,11 +4535,17 @@ c
       call sp_unpackw(nwmloc,iwl,iwlp)
       endif
       call ga_distribution(ga_w,me,ilw,ihw,jlw,jhw)
+      if(nwmloc.gt.ihw-ilw+1) then
+        call md_abort("nwmloc too large",0)
+      endif
       call ga_get(ga_w,ilw,ilw+nwmloc-1,jlw,jlw+3*mwa-1,xw,mwm) 
       call ga_get(ga_w,ilw,ilw+nwmloc-1,jlw+3*mwa,jlw+6*mwa-1,vw,mwm)
       endif
       if(nsaloc.gt.0) then
       call ga_distribution(ga_is,me,ili,ihi,jli,jhi)
+      if(nsaloc.gt.ihi-ili+1) then
+        call md_abort("nsaloc too large",0)
+      endif
       if(npack.eq.0) then
       call ga_get(ga_is,ili,ili+nsaloc-1,jli,jhi,isl,msa)
       else
@@ -4107,6 +4553,9 @@ c
       call sp_unpack(nsaloc,isl,islp)
       endif
       call ga_distribution(ga_s,me,ils,ihs,jls,jhs)
+      if(nsaloc.gt.ihs-ils+1) then
+        call md_abort("nsaloc too large",0)
+      endif
       call ga_get(ga_s,ils,ils+nsaloc-1,jls,jls+2,xs,msa)
       call ga_get(ga_s,ils,ils+nsaloc-1,jls+3,jls+5,vs,msa)
       endif

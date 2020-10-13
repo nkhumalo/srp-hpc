@@ -26,7 +26,7 @@ c
       read(lfntop,1001) nqu
       read(lfntop,1001) nseq
       read(lfntop,1000) cdummy
- 1001 format(i5)
+ 1001 format(i7)
       do 2 i=1,nat*npar
       read(lfntop,1000) cdummy
     2 continue

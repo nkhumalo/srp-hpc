@@ -473,7 +473,7 @@ c     ----------------------------------------------
      + stime,pres,temp,tempw,temps,
      + int_mb(i_iw),dbl_mb(i_xw),dbl_mb(i_vw),dbl_mb(i_fw),
      + dbl_mb(i_xwcr),int_mb(i_is),dbl_mb(i_xs),dbl_mb(i_vs),
-     + dbl_mb(i_fs))
+     + dbl_mb(i_fs),mdstep,mequi+1,mequi+mdacq)
 
       if(qmmm_print_debug()) write(*,*) "out "//pname
       return

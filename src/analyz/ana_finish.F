@@ -105,7 +105,7 @@ c
       if(np.gt.1) then
       call ga_dgop(mag_d12,xrms,nsa,'+')
       endif
-      if(me.eq.0) then
+      if(me.eq.0.and.ndata.gt.0) then
       write(lfnrms,1001) (sgmnam(i),i,isel(i),
      + sqrt(xrms(i)/dble(ndata)),bfact*xrms(i)/dble(ndata),i=1,nsa) 
  1001 format(a16,i10,i5,2f12.6)

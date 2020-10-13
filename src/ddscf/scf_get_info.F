@@ -164,10 +164,11 @@ c     $     nopen = 0
      $     nopen = 0
       if (nopen .gt. nelec) call errquit
      $     ('scf: nopen > nelec ', nopen, INPUT_ERR)
-      if (mod(nelec-nopen,2) .ne. 0) call errquit
-     $     ('scf: no. of closed-shell electrons is not even!',nopen,
-     &       INPUT_ERR)
+c     if (mod(nelec-nopen,2) .ne. 0) call errquit
+c    $     ('scf: no. of closed-shell electrons is not even!',nopen,
+c    &       INPUT_ERR)
       nclosed = (nelec-nopen) / 2
+      nopen   = nelec-(nclosed*2)
 c     
       if (.not. rtdb_cget(rtdb, 'scf:scftype', 1, scftype)) then
          if (nopen .eq. 0) then

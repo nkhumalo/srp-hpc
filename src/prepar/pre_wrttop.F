@@ -195,7 +195,7 @@ c
       write(lfntop,1104) nats
       write(lfntop,1104) nqu
       write(lfntop,1104) nseq
- 1104 format(i5)
+ 1104 format(i7)
 c
       nbsg(2,1)=0
       nbsg(2,2)=nats
@@ -203,49 +203,49 @@ c
       nbsg(19,2)=nats
 c
       write(lfntop,1004) q14fac,releps,0.0d0,0
- 1004 format(3f12.6,i5)
+ 1004 format(3f12.6,i7)
       if(ipnum.eq.1) then
       do 1 i=1,nats
       write(lfntop,1005) i,latt(1,lats(1,i)),catt(1,lats(1,i)),
      + ratt(lats(1,i))
- 1005 format(2i5,1x,a6,f12.6)
+ 1005 format(2i7,1x,a6,f12.6)
     1 continue
       do 2 i=1,nats
       do 3 j=i,nats
       write(lfntop,1006) i,j,
      +  (patt(1,k,lats(1,i),lats(1,j)),k=1,2),
      +  (patt(2,k,lats(1,i),lats(1,j)),k=1,2)
- 1006 format(2i5,4(1pe12.5))
+ 1006 format(2i7,4(1pe12.5))
     3 continue
     2 continue
       do 322 i=1,nqu
       write(lfntop,1304) i,qatm(1,1,i),qatm(1,2,i)
- 1304 format(i5,0pf12.6,1pe12.5)
+ 1304 format(i7,0pf12.6,1pe12.5)
   322 continue
       else
       do 51 i=1,nats
       write(lfntop,1055) i,(latt(1,lats(j,i)),catt(1,lats(j,i)),
      + ratt(lats(j,i)),j=ipfr,ipto)
- 1055 format(2i5,1x,a6,f12.6,/,(5x,i5,1x,a6,f12.6))
+ 1055 format(2i7,1x,a6,f12.6,/,(7x,i7,1x,a6,f12.6))
    51 continue
       do 52 i=1,nats
       do 53 j=i,nats
       write(lfntop,1056) i,j,
      + ((patt(1,k,lats(l,i),lats(l,j)),k=1,2),
      +  (patt(2,k,lats(l,i),lats(l,j)),k=1,2),l=ipfr,ipto)
- 1056 format(2i5,4(1pe12.5),/,(10x,4(1pe12.5)))
+ 1056 format(2i7,4(1pe12.5),/,(14x,4(1pe12.5)))
    53 continue
    52 continue
       do 5322 i=1,nqu
       write(lfntop,1354) i,(qatm(j,1,i),qatm(j,2,i),j=ipfr,ipto)
- 1354 format(i5,0pf12.6,1pe12.5,/,(5x,0pf12.6,1pe12.5))
+ 1354 format(i7,0pf12.6,1pe12.5,/,(7x,0pf12.6,1pe12.5))
  5322 continue
       endif
       nbsg(29,1)=natmt-natm
       nbsg(29,2)=lseq(3,1)
       do 5342 i=1,nseq
       write(lfntop,1355) i,cseq(i),(lseq(j,i),j=1,6)
- 1355 format(i7,a10,i7,i5,2i7,2i5)
+ 1355 format(i7,a10,i7,i7,2i7,2i7)
       if(i.gt.1) nbsg(29,2)=max(nbsg(29,2),lseq(3,i)-lseq(3,i-1))
  5342 continue
 c
@@ -282,7 +282,7 @@ c
       write(lfntop,1009) natm,nbnd,nang,nd+nimp,0,n3rd,nexc,0,0,0
       else
       write(lfntop,1009) natm,nbnd,nang,nd,nimp,n3rd,nexc,0,0,0
- 1009 format(5i7,3i10,2i5)
+ 1009 format(5i7,3i10,2i7)
       endif
       nbsg(11,2)=nexc
 c
@@ -290,7 +290,7 @@ c
       do 4 i=natm+1,natmt
       write(lfntop,1007) cseq(nseq+1),catm(1,i)(1:5),latm(3,i),
      + latm(7,i),latm(7,i),latm(7,i),i-natm
- 1007 format(a10,a5,1x,25x,4i5,i7)
+ 1007 format(a10,a5,1x,25x,4i7,i7)
     4 continue
 c
       if(nbndt.gt.nbnd) then
@@ -448,7 +448,7 @@ c
      + lseq(1,latm(5,i)),latm(1,i),latm(2,i),latm(3,i),iql,iq,
      + latm(10,i),latm(11,i),i
       endif
- 1024 format(a10,a5,1x,i3,4i7,6i5,i3,i7)
+ 1024 format(a10,a5,1x,i3,4i7,6i7,i3,i7)
 c 1024 format(a10,a5,1x,12i5,i7)
 c
       do 589 k=ipfr,ipto

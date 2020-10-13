@@ -24,6 +24,7 @@ c
       character*6 name1,name2
       character*80 card
       integer i,last,nprv,num,iw,length,mdl,nump,ioff,lrgpdb
+      integer numrd ! residue number read from the PDB file
       real*8 x,y,z
       character*3 namr
       character*4 nama
@@ -35,7 +36,8 @@ c
       iw=0
       iwater=0
       mdl=0
-      nump=0
+      nump=-1
+      num=0
       ioff=0
       pchain=' '
       lrgpdb=0
@@ -92,6 +94,7 @@ c
 c
   100 continue
 c
+      lsolut=.true.
       read(lfnpdb,1000,end=9,err=9992) card
  1000 format(a)
 c
@@ -140,12 +143,15 @@ c
       if(mdl.ne.model) goto 100
 c
       if(lrgpdb.eq.0) then
-      read(card,1002,end=9993,err=9993) hdr,nama,alocal,namr,achain,num,
-     + x,y,z
+      read(card,1002,end=9993,err=9993) hdr,nama,alocal,namr,achain,
+     + numrd,x,y,z
       else
-      read(card,2002,end=9994,err=9994) hdr,nama,alocal,namr,num,
+      read(card,2002,end=9994,err=9994) hdr,nama,alocal,namr,numrd,
      + x,y,z
       achain=' '
+      endif
+      if (nump.ne.numrd) then
+      num=num+1
       endif
  1002 format(a6,6x,a4,a1,a3,1x,a1,i4,4x,3f8.3)
  2002 format(a6,6x,a4,a1,a3,i6,4x,3f8.3)
@@ -162,12 +168,12 @@ c
       if(chain.eq.'*') then
       if(num.lt.nump) then
       if(achain.ne.pchain) ioff=(nump/100+1)*100-num
-      num=num+ioff
+c     num=num+ioff
       endif
       endif
       pchain=achain
       if(card(18:20).eq.namslv) lsolut=.false.
-      if(num.ne.nump) nump=num
+c     if(num.ne.nump) nump=num
 c
       if(.not.lsolut.or.num.gt.last.or.num.lt.nprv) then
       if(lnames) then
@@ -176,6 +182,7 @@ c
       endif
       lsolut=.false.
       endif
+      nump=numrd
 c
       if(lnames) then
       read(lfntmp,1003,end=9995,err=9995) name1,name2
@@ -211,7 +218,8 @@ c
       if(cwa(i)(11:14).eq.nama.or.
      + (namslv.eq.'HOH'.and.
      +  ((nama.eq.' O  '.and.cwa(i)(11:14).eq.' OW ').or.
-     +   (nama.eq.' H  '.and.cwa(i)(11:14).eq.' HW ')))) then
+     +   (nama.eq.' H1 '.and.cwa(i)(11:14).eq.'2HW ').or.
+     +   (nama.eq.' H2 '.and.cwa(i)(11:14).eq.'3HW ')))) then
       xw(1,i,nwm)=1.0d-01*x
       xw(2,i,nwm)=1.0d-01*y
       xw(3,i,nwm)=1.0d-01*z
@@ -235,8 +243,14 @@ c
 c
       nmis=0
       do 4 i=1,msa
-      if(isfnd(i).eq.0) nmis=nmis+1
+      if(isfnd(i).eq.0) then
+      write(lfnout,2004)i,csa(i)(11:14)
+ 2004 format(' Not found atom #',i7,' named ',a4)
+      nmis=nmis+1
+      endif
     4 continue
+      write(lfnout,2007)nmis
+ 2007 format(' There are ',i7,' atoms with missing coordinates')
       nsa=msa
 c
       pre_rdpdb=.true.

@@ -61,7 +61,8 @@ c
       if(iwsel(i).ne.0) then
       do 4 j=1,nwa
       ia=ia+1
-      write(lfnpdb,1003) ia,wnam(j)(6:9),string,isoff+i,
+      write(lfnpdb,1003) mod(ia,100000),wnam(j)(6:9),string,
+     + mod(isoff+i,100000),
      + (1.0d1*xw(i,j,k),k=1,3)
  1003 format('ATOM',i7,1x,a4,1x,a3,i6,4x,3f8.3)
     4 continue

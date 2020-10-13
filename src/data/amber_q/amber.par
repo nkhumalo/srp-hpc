@@ -107,6 +107,8 @@ OS   -CT   -C       1.91114 4.18400E+02 tps990729 copy OS-CT-CT
 OG   -CT   -OS      1.91114 4.18400E+02 tps990729 copy N*-CT-OS
 AC   -C    -O2      2.04204 5.85760E+02 tps990729 copy CT-C-O2
 OS   -C    -O2      2.19911 6.69440E+02 tps990729 copy O2-C-O2
+N    -CT   -OS      1.91114 4.18400E+02 hvd201008 copy of N*-CT-OS
+H2   -CT   -N       1.91114 4.18400E+02 hvd201008 copy of H1-CT-N
 Proper dihedrals
      -NB   -FE   -        0.00000 0.00000E+02    2
      -NO   -FE   -        3.14159 0.00000E+02    2

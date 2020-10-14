@@ -163,52 +163,55 @@
         endif
 
         ! barrier needed???
-        call MPI_BARRIER(app_comm, ierr)
+        !call MPI_BARRIER(app_comm, ierr)
 
-        ! block until step available (Timeout = -1.)
-        call adios2_begin_step(bp_writer, 
-     &    adios2_step_mode_append, -1., istatus, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_BEGIN_STEP failed: ',ierr,UERR)
-        endif
+        if (tstep.ge.mnstep) then
 
-        call adios2_put(bp_writer, varWLX, wlx, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_PUT failed for varWLX: ',ierr,UERR)
-        endif
-        call adios2_put(bp_writer, varWLY, wly, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_PUT failed for varWLY: ',ierr,UERR)
-        endif
-        call adios2_put(bp_writer, varWLZ, wlz, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_PUT failed for varWLZ: ',ierr,UERR)
-        endif
-        call adios2_put(bp_writer, varWID, wid, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_PUT failed for varWID: ',ierr,UERR)
-        endif
-        call adios2_put(bp_writer, varSLX, slx, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_PUT failed for varSLX: ',ierr,UERR)
-        endif
-        call adios2_put(bp_writer, varSLY, sly, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_PUT failed for varSLY: ',ierr,UERR)
-        endif
-        call adios2_put(bp_writer, varSLZ, slz, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_PUT failed for varSLZ: ',ierr,UERR)
-        endif
-        call adios2_put(bp_writer, varSID, sid, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_PUT failed for varSID: ',ierr,UERR)
-        endif
+          ! block until step available (Timeout = -1.)
+          call adios2_begin_step(bp_writer, 
+     &      adios2_step_mode_append, -1., istatus, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_BEGIN_STEP failed: ',ierr,UERR)
+          endif
 
-        call adios2_end_step(bp_writer, ierr)
-        if (ierr.ne.adios2_error_none) then
-          call errquit('ADIOS2_END_STEP failed: ',ierr,UERR)
-        endif
+          call adios2_put(bp_writer, varWLX, wlx, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_PUT failed for varWLX: ',ierr,UERR)
+          endif
+          call adios2_put(bp_writer, varWLY, wly, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_PUT failed for varWLY: ',ierr,UERR)
+          endif
+          call adios2_put(bp_writer, varWLZ, wlz, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_PUT failed for varWLZ: ',ierr,UERR)
+          endif
+          call adios2_put(bp_writer, varWID, wid, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_PUT failed for varWID: ',ierr,UERR)
+          endif
+          call adios2_put(bp_writer, varSLX, slx, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_PUT failed for varSLX: ',ierr,UERR)
+          endif
+          call adios2_put(bp_writer, varSLY, sly, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_PUT failed for varSLY: ',ierr,UERR)
+          endif
+          call adios2_put(bp_writer, varSLZ, slz, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_PUT failed for varSLZ: ',ierr,UERR)
+          endif
+          call adios2_put(bp_writer, varSID, sid, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_PUT failed for varSID: ',ierr,UERR)
+          endif
+
+          call adios2_end_step(bp_writer, ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_END_STEP failed: ',ierr,UERR)
+          endif
+        endif ! tstep.ge.mnstep
       end subroutine io_write
 
       end module sp_io

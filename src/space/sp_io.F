@@ -90,7 +90,7 @@
           call adios2_define_variable (varWLX, io, "WLX", 
      &      adios2_type_dp, ndims, 
      &      shape_dims, start_dims, count_dims, 
-     &      adios2_constant_dims, ierr)
+     &      adios2_variable_dims, ierr)
           if (ierr.ne.adios2_error_none) then
             call errquit('ADIOS2_DEFINE_VARIABLE failed for varWLX: ',
      &                   ierr,UERR)
@@ -98,7 +98,7 @@
           call adios2_define_variable (varWLY, io, "WLY", 
      &      adios2_type_dp, ndims, 
      &      shape_dims, start_dims, count_dims, 
-     &      adios2_constant_dims, ierr)
+     &      adios2_variable_dims, ierr)
           if (ierr.ne.adios2_error_none) then
             call errquit('ADIOS2_DEFINE_VARIABLE failed for varWLY: ',
      &                   ierr,UERR)
@@ -106,7 +106,7 @@
           call adios2_define_variable (varWLZ, io, "WLZ", 
      &      adios2_type_dp, ndims, 
      &      shape_dims, start_dims, count_dims, 
-     &      adios2_constant_dims, ierr)
+     &      adios2_variable_dims, ierr)
           if (ierr.ne.adios2_error_none) then
             call errquit('ADIOS2_DEFINE_VARIABLE failed for varWLZ: ',
      &                   ierr,UERR)
@@ -118,7 +118,7 @@
           call adios2_define_variable (varWID, io, "WID", 
      &      adios2_type_integer4, ndims, 
      &      shape_dims, start_dims, count_dims, 
-     &      adios2_constant_dims, ierr)
+     &      adios2_variable_dims, ierr)
           if (ierr.ne.adios2_error_none) then
             call errquit('ADIOS2_DEFINE_VARIABLE failed for varWID: ',
      &                   ierr,UERR)
@@ -131,7 +131,7 @@
           call adios2_define_variable (varSLX, io, "SLX", 
      &      adios2_type_dp, ndims, 
      &      shape_dims, start_dims, count_dims, 
-     &      adios2_constant_dims, ierr)
+     &      adios2_variable_dims, ierr)
           if (ierr.ne.adios2_error_none) then
             call errquit('ADIOS2_DEFINE_VARIABLE failed for varSLX: ',
      &                   ierr,UERR)
@@ -139,7 +139,7 @@
           call adios2_define_variable (varSLY, io, "SLY", 
      &      adios2_type_dp, ndims, 
      &      shape_dims, start_dims, count_dims, 
-     &      adios2_constant_dims, ierr)
+     &      adios2_variable_dims, ierr)
           if (ierr.ne.adios2_error_none) then
             call errquit('ADIOS2_DEFINE_VARIABLE failed for varSLY: ',
      &                   ierr,UERR)
@@ -147,7 +147,7 @@
           call adios2_define_variable (varSLZ, io, "SLZ", 
      &      adios2_type_dp, ndims, 
      &      shape_dims, start_dims, count_dims, 
-     &      adios2_constant_dims, ierr)
+     &      adios2_variable_dims, ierr)
           if (ierr.ne.adios2_error_none) then
             call errquit('ADIOS2_DEFINE_VARIABLE failed for varSLZ: ',
      &                   ierr,UERR)
@@ -155,7 +155,7 @@
           call adios2_define_variable (varSID, io, "SID", 
      &      adios2_type_integer4, ndims, 
      &      shape_dims, start_dims, count_dims, 
-     &      adios2_constant_dims, ierr)
+     &      adios2_variable_dims, ierr)
           if (ierr.ne.adios2_error_none) then
             call errquit('ADIOS2_DEFINE_VARIABLE failed for varSID: ',
      &                   ierr,UERR)
@@ -172,6 +172,65 @@
      &      adios2_step_mode_append, -1., istatus, ierr)
           if (ierr.ne.adios2_error_none) then
             call errquit('ADIOS2_BEGIN_STEP failed: ',ierr,UERR)
+          endif
+
+          !shape_dims(1) = twa
+          start_dims(1) = owa
+          count_dims(1) = lwa
+          call adios2_set_selection(varWLX,ndims,start_dims,count_dims,
+     &                              ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_SET_SELECTION failed for varWLX: ',
+     &                   ierr,UERR)
+          endif
+          call adios2_set_selection(varWLY,ndims,start_dims,count_dims,
+     &                              ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_SET_SELECTION failed for varWLY: ',
+     &                   ierr,UERR)
+          endif
+          call adios2_set_selection(varWLZ,ndims,start_dims,count_dims,
+     &                              ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_SET_SELECTION failed for varWLZ: ',
+     &                   ierr,UERR)
+          endif
+          !shape_dims(1) = twm
+          start_dims(1) = owm
+          count_dims(1) = lwm
+          call adios2_set_selection(varWID,ndims,start_dims,count_dims,
+     &                              ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_SET_SELECTION failed for varWID: ',
+     &                   ierr,UERR)
+          endif
+
+          !shape_dims(1) = tsa
+          start_dims(1) = osa
+          count_dims(1) = lsa
+          call adios2_set_selection(varSLX,ndims,start_dims,count_dims,
+     &                              ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_SET_SELECTION failed for varSLX: ',
+     &                   ierr,UERR)
+          endif
+          call adios2_set_selection(varSLY,ndims,start_dims,count_dims,
+     &                              ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_SET_SELECTION failed for varSLY: ',
+     &                   ierr,UERR)
+          endif
+          call adios2_set_selection(varSLZ,ndims,start_dims,count_dims,
+     &                              ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_SET_SELECTION failed for varSLZ: ',
+     &                   ierr,UERR)
+          endif
+          call adios2_set_selection(varSID,ndims,start_dims,count_dims,
+     &                              ierr)
+          if (ierr.ne.adios2_error_none) then
+            call errquit('ADIOS2_SET_SELECTION failed for varSID: ',
+     &                   ierr,UERR)
           endif
 
           call adios2_put(bp_writer, varWLX, wlx, ierr)

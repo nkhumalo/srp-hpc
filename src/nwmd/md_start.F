@@ -7,6 +7,7 @@ c
 #include "md_common.fh"
 #include "mafdecls.fh"
 #include "rtdb.fh"
+#include "sp_adios_common.fh"
 c
       character*5 gid
       integer iun,ibl
@@ -312,8 +313,12 @@ c     write file headers
 c     ------------------
 c
       if(me.eq.0.and.ntype.ne.3) then
-      if(nfcoor.gt.0.or.nfscoo.gt.0.or.nfvelo.gt.0.or.nfsvel.gt.0)
-     + call cf_trjhdr(lfntrj)
+      if(nfcoor.gt.0.or.nfscoo.gt.0.or.nfvelo.gt.0.or.nfsvel.gt.0)then
+      if(adios_mode.eq."NULL".or.adios_mode.eq."Null".or.
+     +   adios_mode.eq."null") then
+      call cf_trjhdr(lfntrj)
+      endif
+      endif
       endif
 c
       if(npg.gt.1.and.me.eq.0) then
@@ -1800,6 +1805,7 @@ c
       implicit none
 c
 #include "md_common.fh"
+#include "sp_adios_common.fh"
 c
       logical lclose
 c
@@ -1823,9 +1829,12 @@ c
       if(ntype.ne.3) then
       if(nfcoor.gt.0.or.nfscoo.gt.0.or.nfvelo.gt.0.or.nfsvel.gt.0) then
       if(lclose) close(lfntrj)
+      if(adios_mode.eq."NULL".or.adios_mode.eq."Null".or.
+     +   adios_mode.eq."null") then
       open(unit=lfntrj,file=filtrj(1:index(filtrj,' ')-1),
      + form='formatted',status='unknown')
       call cf_trjhdr(lfntrj)
+      endif
       endif
       if(nfhop.gt.0) then
       if(lclose) close(lfnhop)

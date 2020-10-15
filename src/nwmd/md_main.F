@@ -1361,6 +1361,7 @@ c
 #include "mafdecls.fh"
 #include "global.fh"
 #include "msgids.fh"
+#include "sp_adios_common.fh"
 c
       logical frequency,prp_mcti_step,prp_rdmri,sp_rdmri
       integer prp_dfr
@@ -1463,11 +1464,14 @@ c
 c
       if(me.eq.0) then
       if(nfcoor.gt.0.or.nfscoo.gt.0.or.nfvelo.gt.0.or.nfsvel.gt.0) then
+      if(adios_mode.eq."NULL".or.adios_mode.eq."Null".or.
+     +   adios_mode.eq."null") then
       write(filrun,'(a,a,i5.5,a)') filtrj(1:index(filtrj,'.trj')-1),'-',
      + irun,'.trj '
       open(unit=lfntrj,file=filrun(1:index(filrun,' ')-1),
      + form='formatted',status='unknown')
       call cf_trjhdr(lfntrj)
+      endif
       endif
       if(nfprop.gt.0) then
       write(filrun,'(a,a,i5.5,a)') filprp(1:index(filprp,'.prp')-1),'-',

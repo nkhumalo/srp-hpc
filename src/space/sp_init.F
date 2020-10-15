@@ -3293,6 +3293,10 @@ c
       lpw=.false.
       lps=.false.
 c
+      if (adios_mode(1:inp_strlen(adios_mode)).eq."NULL".or.
+     +    adios_mode(1:inp_strlen(adios_mode)).eq."Null".or.
+     +    adios_mode(1:inp_strlen(adios_mode)).eq."null") then
+c
       if(me.eq.0) then
 c
       call swatch(rdate,rtime)
@@ -3652,13 +3656,16 @@ c
 c
       endif
 c
+      endif ! adios_mode.eq.NULL
 c
       allocate(nwmnlist(np))
       allocate(nsanlist(np))
       allocate(templist(np))
 c
-      call ga_brdcst(10,numw,ma_sizeof(MT_INT,1,MT_BYTE),0)
-      call ga_brdcst(10,nums,ma_sizeof(MT_INT,1,MT_BYTE),0)
+      numw = nwm
+      nums = nsa
+c     call ga_brdcst(10,numw,ma_sizeof(MT_INT,1,MT_BYTE),0)
+c     call ga_brdcst(10,nums,ma_sizeof(MT_INT,1,MT_BYTE),0)
 c
       call ga_sync
       call ga_distribution(ga_ip,me,ilp,ihp,jlp,jhp)
@@ -3672,7 +3679,7 @@ c
         templist(i)=0
       enddo
       templist(me+1)=nwmn
-      call ga_sync
+c     call ga_sync
       call ga_igop(10,templist,np,'+')
       do i = 1, np
         nwmnlist(i)=templist(i)
@@ -3682,7 +3689,7 @@ c
         templist(i)=0
       enddo
       templist(me+1)=nsan
-      call ga_sync
+c     call ga_sync
       call ga_igop(10,templist,np,'+')
       do i = 1, np
         nsanlist(i)=templist(i)
@@ -3731,7 +3738,7 @@ c
 c
       endif
 c
-      call ga_sync
+c     call ga_sync
 c
       if(nsan.gt.0) then
 c 
@@ -3813,6 +3820,11 @@ c
       owa=offsetWatoms
       owm=offsetWmolecules
       osa=offsetSatoms
+cDEBUG
+c     write(*,*)me,"HVD",twm,owm,lwm,tsa,osa,lsa
+c     flush(6)
+c     call ga_sync()
+cDEBUG
 
       if (mdstep.eq.minstep) then
         amlen=inp_strlen(adios_mode)

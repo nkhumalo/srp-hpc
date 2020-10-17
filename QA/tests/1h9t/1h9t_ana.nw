@@ -16,7 +16,7 @@ end
 md
   system 1h9t_md
   leapfrog
-  step 0.002 equil 0 data 1000
+  step 0.002 equil 0 data 2000
   #isotherm 298.15 trelax 0.1
   isobar
   print step 1
@@ -30,8 +30,9 @@ analysis
   system 1h9t_md
   reference 1h9t_md.rst
   file 1h9t_md.trj
-  frames 1 2000 10
-  copy 1h9t_md.pdb
+  write 1 solute 1h9t_md.pdb
+  frames 1 2000 1
+  copy solute 1h9t_md.crd
 end
 
 task analysis

@@ -13,26 +13,13 @@ end
 
 #task prepare
 
-md
-  system 1h9t_md
-  leapfrog
-  step 0.002 equil 0 data 2000
-  #isotherm 298.15 trelax 0.1
-  isobar
-  print step 1
-  record coord 1 ascii
-  veladj 7715 8958 0.0 0.0 1000.0
-end
-
-#task md dynamics
-
 analysis
   system 1h9t_md
   reference 1h9t_md.rst
   file 1h9t_md.trj
   write 1 solute 1h9t_md.pdb
-  frames 1 2000 1
-  copy solute 1h9t_md.crd
+  frames 1 1000 1
+  copy solute 1h9t_eq.crd
 end
 
 task analysis

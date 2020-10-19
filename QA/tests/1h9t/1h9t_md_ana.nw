@@ -18,7 +18,7 @@ analysis
   reference 1h9t_md.rst
   file 1h9t_md.trj
   write 1 solute 1h9t_md.pdb
-  frames 1 10000 1
+  frames 1 15000 1
   copy solute 1h9t_md.crd
 end
 

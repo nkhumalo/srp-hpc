@@ -46,4 +46,4 @@ pwd
 echo "LS"
 ls -l /home/hvandam/nwchem-1/QA/tests/1h9t/1h9t_eq.nw
 echo "NWCHEM"
-mpiexec -n 16 -x LD_LIBRARY_PATH /home/hvandam/nwchem-1/bin/LINUX64/nwchem /home/hvandam/nwchem-1/QA/tests/1h9t/1h9t_eq.nw
+mpiexec -n 16 -x LD_LIBRARY_PATH /home/hvandam/nwchem-1/bin/LINUX64/nwchem /home/hvandam/nwchem-1/QA/tests/1h9t/1h9t_eq.nw 2>&1 > 1h9t_eq.out

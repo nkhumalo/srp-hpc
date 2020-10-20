@@ -70,9 +70,9 @@ task analysis
 
     hostname        = erato
     program         = ../../../bin/LINUX64/nwchem
-    date            = Mon Oct 19 17:18:17 2020
+    date            = Tue Oct 20 13:15:52 2020
 
-    compiled        = Fri_Oct_16_23:01:02_2020
+    compiled        = Tue_Oct_20_10:55:14_2020
     source          = /home/hvandam/nwchem-1
     nwchem branch   = Development
     nwchem revision = nwchem_on_git-629-g59d5e6d
@@ -90,8 +90,8 @@ task analysis
            Memory information
            ------------------
 
-    heap     =   13107194 doubles =    100.0 Mbytes
-    stack    =   13107199 doubles =    100.0 Mbytes
+    heap     =   13107198 doubles =    100.0 Mbytes
+    stack    =   13107195 doubles =    100.0 Mbytes
     global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
     total    =   52428793 doubles =    400.0 Mbytes
     verify   = yes
@@ -144,7 +144,7 @@ task analysis
 
  Copied       1000 frames to 1h9t_eq.crd
 
- Task  times  cpu:       24.9s     wall:       31.8s
+ Task  times  cpu:       24.1s     wall:       24.4s
 
 
                                 NWChem Input Module
@@ -177,7 +177,7 @@ MA usage statistics:
 	current number of blocks	         0	         0
 	maximum number of blocks	         0	        27
 	current total bytes		         0	         0
-	maximum total bytes		         0	   6619736
+	maximum total bytes		         0	   6619704
 	maximum total K-bytes		         0	      6620
 	maximum total M-bytes		         0	         7
 
@@ -216,4 +216,4 @@ MA usage statistics:
       T. Nakajima, S. Niu, L. Pollack, M. Rosing, K. Glaesemann, G. Sandrone,
       M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe, A. T. Wong, Z. Zhang.
 
- Total times  cpu:       24.9s     wall:       31.8s
+ Total times  cpu:       24.1s     wall:       24.4s

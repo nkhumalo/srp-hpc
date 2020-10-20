@@ -1,18 +1,6 @@
 echo
 start md_dat
 
-prepare
-  system 1h9t_md
-  new_rst
-  new_top new_seq
-  source start_md_neutral.pdb
-  #solvent name HOH model spce
-  #solvate
-  vacuo
-end
-
-#task prepare
-
 set sp:adios_mode Null
 
 md
@@ -23,7 +11,8 @@ md
   isotherm 298.15 trelax 0.1
   isobar
   noshake
-  print step 10 extra out6
+  #print step 10 extra out6
+  print step 10 out6
   record rest 100 coord 1
   #veladj 7715 8958 0.0  0.125 0.0
 end

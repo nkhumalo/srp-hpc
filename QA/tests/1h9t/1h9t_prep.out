@@ -61,9 +61,9 @@ task prepare
 
     hostname        = erato
     program         = ../../../bin/LINUX64/nwchem
-    date            = Mon Oct 19 17:01:54 2020
+    date            = Tue Oct 20 12:59:28 2020
 
-    compiled        = Fri_Oct_16_23:01:02_2020
+    compiled        = Tue_Oct_20_10:55:14_2020
     source          = /home/hvandam/nwchem-1
     nwchem branch   = Development
     nwchem revision = nwchem_on_git-629-g59d5e6d

@@ -1,4 +1,4 @@
- argument  1 = 1h9t_prep.nw
+ argument  1 = 1h9t_eq_ana.nw
 
 
 
@@ -7,8 +7,6 @@ echo
 start md_dat
 
 prepare
-  #print sequence atomtypes where
-  #print sequence
   system 1h9t_md
   new_rst
   new_top new_seq
@@ -18,7 +16,18 @@ prepare
   vacuo
 end
 
-task prepare
+#task prepare
+
+analysis
+  system 1h9t_md
+  reference 1h9t_md.rst
+  file 1h9t_md.trj
+  write 1 solute 1h9t_md.pdb
+  frames 1 1000 1
+  copy solute 1h9t_eq.crd
+end
+
+task analysis
 ================================================================================
 
 
@@ -61,7 +70,7 @@ task prepare
 
     hostname        = erato
     program         = ../../../bin/LINUX64/nwchem
-    date            = Mon Oct 19 17:01:54 2020
+    date            = Mon Oct 19 17:18:17 2020
 
     compiled        = Fri_Oct_16_23:01:02_2020
     source          = /home/hvandam/nwchem-1
@@ -69,7 +78,7 @@ task prepare
     nwchem revision = nwchem_on_git-629-g59d5e6d
     ga revision     = 5.6.5
     use scalapack   = F
-    input           = 1h9t_prep.nw
+    input           = 1h9t_eq_ana.nw
     prefix          = md_dat.
     data base       = ./md_dat.db
     status          = startup
@@ -102,66 +111,40 @@ task prepare
                                 -------------------
 
 
-                                  Prepare Module
-                                  --------------
-
- Force field                           amber
+                               Analysis Input Module
+                               ---------------------
 
 
- Directories used for fragment and segment files
-
-                                       /home/hvandam/nwchem-1/QA/../src/data/amber_s/
-                                       /home/hvandam/nwchem-1/QA/../src/data/amber_x/
-                                       ""/
-                                       ""/
-                                       ""/
-                                       ./
-
- Parameter files used to resolve force field parameters
-
-                                       /home/hvandam/nwchem-1/QA/../src/data/amber_s/amber.par
-                                       /home/hvandam/nwchem-1/QA/../src/data/amber_x/amber.par
-                                       ""/amber.par
-                                       ""/amber.par
-                                       ""/amber.par
-                                       ./amber.par
-
- Deleted existing topology             1h9t.top
-
- Deleted existing sequence             ./1h9t.seq
-
- PDB geometry                          start_md_neutral.pdb
+                                  Analysis Module
+                                  ---------------
 
 
- Created sequence                      ./1h9t.seq
+ Reference coordinates read from 1h9t_md.rst
 
- 
- Parameter file                        /home/hvandam/nwchem-1/QA/../src/data/amber_s/amber.par
- Parameter file                        /home/hvandam/nwchem-1/QA/../src/data/amber_x/amber.par
- 
- Total charge                              0.000000
+ Number of atoms is    8958
+ Topology read from 1h9t.top
 
- Created topology                      1h9t.top
+ Opening trj file 1h9t_md.trj
+ Closing trj file 
 
- Topology                              1h9t.top
+ Trajectory file header from 1h9t_md.trj
 
- Restart generation using command file directives
+ Opening trj file 1h9t_md.trj
+ Closing trj file 
 
- There are       0 atoms with missing coordinates
- PDB file                              start_md_neutral.pdb
- Number of missing coordinates                0
- Total number of atoms                     8958
+ Written frame          1 to 1h9t_md.pdb
 
+ Selected frames          1 to       1000 by         1
 
- Boxsize determined to                     8.297000   16.682600   41.517000
+ Opening trj file 1h9t_md.trj
 
+ Opening copy file 1h9t_eq.crd
 
- Periodic boundary conditions off
+ Closing trj file 
 
- Created restart                       1h9t_md.rst
+ Copied       1000 frames to 1h9t_eq.crd
 
-
- Task  times  cpu:        0.9s     wall:        1.0s
+ Task  times  cpu:       24.9s     wall:       31.8s
 
 
                                 NWChem Input Module
@@ -192,11 +175,11 @@ MA usage statistics:
 					      heap	     stack
 					      ----	     -----
 	current number of blocks	         0	         0
-	maximum number of blocks	         7	        33
+	maximum number of blocks	         0	        27
 	current total bytes		         0	         0
-	maximum total bytes		      1184	  21663320
-	maximum total K-bytes		         2	     21664
-	maximum total M-bytes		         1	        22
+	maximum total bytes		         0	   6619736
+	maximum total K-bytes		         0	      6620
+	maximum total M-bytes		         0	         7
 
 
                                      CITATION
@@ -233,4 +216,4 @@ MA usage statistics:
       T. Nakajima, S. Niu, L. Pollack, M. Rosing, K. Glaesemann, G. Sandrone,
       M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe, A. T. Wong, Z. Zhang.
 
- Total times  cpu:        0.9s     wall:        1.0s
+ Total times  cpu:       24.9s     wall:       31.8s

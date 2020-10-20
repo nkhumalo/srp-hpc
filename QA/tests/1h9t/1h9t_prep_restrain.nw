@@ -1,0 +1,31 @@
+echo
+start md_dat
+
+prepare
+  #print sequence atomtypes where
+  #print sequence 
+  system 1h9t_md
+  new_rst
+  new_top new_seq
+  source start_md_neutral.pdb
+  #solvent name HOH model spce
+  #solvate 
+  vacuo
+  # Equilibrium bond distances from https://pubs.acs.org/doi/pdf/10.1021/ja993262d.
+  #
+  noe 487:3H4  524:_O6   0.0 0.167 5.0   0.0 50.0  # DC5 - DG3
+  noe 487:_N3  524:_H1   0.0 0.184 5.0   0.0 50.0
+  noe 487:_O2  524:2H2   0.0 0.184 5.0   0.0 50.0
+  #
+  noe 488:2H6  523:_O4   0.0 0.184 5.0   0.0 50.0  # DA  - DT
+  noe 488:_N1  523:_H3   0.0 0.174 5.0   0.0 50.0
+  #
+  noe 489:_O4  522:2H6   0.0 0.184 5.0   0.0 50.0  # DT  - DA
+  noe 489:_H3  522:_N1   0.0 0.174 5.0   0.0 50.0
+  #
+  noe 505:3H4  506:_O6   0.0 0.167 5.0   0.0 50.0  # DC3 - DG5
+  noe 505:_N3  506:_H1   0.0 0.184 5.0   0.0 50.0
+  noe 505:_O2  506:2H2   0.0 0.184 5.0   0.0 50.0
+end
+
+task prepare

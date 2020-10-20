@@ -22,6 +22,7 @@ c
       if(string.ne.'noe') goto 9
       goto 11
    10 continue
+      backspace(lfntop)
       write(lfntop,101)
   101 format('noe')
    11 continue

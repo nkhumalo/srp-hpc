@@ -10,14 +10,14 @@ md
   leapfrog
   #pmf
   distar
-  step 0.002 equil 0 data 15000
+  step 0.002 equil 0 data 7500
   #isotherm 298.15 trelax 0.1
   isobar
   noshake
   #print step 10 pmf 10 out6
   print step 10 out6
   record coord 1 ascii
-  veladj 7715 8958 0.0  0.03125 0.0
+  veladj 7715 8958 0.0  0.06250 0.0
 end
 
 task md dynamics

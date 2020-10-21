@@ -7,13 +7,15 @@ md
   msa 10000
   system 1h9t-restrain_md
   leapfrog
-  pmf
+  #pmf
+  distar
   step 0.002 equil 0 data 1000
   isotherm 298.15 trelax 0.1
   isobar
   noshake
   #print step 10 extra out6
-  print step 10 pmf 10 out6
+  #print step 10 pmf 10 out6
+  print step 10 out6
   record rest 100 coord 1
   #veladj 7715 8958 0.0  0.125 0.0
 end

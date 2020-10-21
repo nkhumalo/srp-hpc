@@ -70,7 +70,7 @@ task analysis
 
     hostname        = erato
     program         = ../../../bin/LINUX64/nwchem
-    date            = Tue Oct 20 13:15:52 2020
+    date            = Tue Oct 20 17:59:54 2020
 
     compiled        = Tue_Oct_20_10:55:14_2020
     source          = /home/hvandam/nwchem-1
@@ -144,7 +144,7 @@ task analysis
 
  Copied       1000 frames to 1h9t_eq.crd
 
- Task  times  cpu:       24.1s     wall:       24.4s
+ Task  times  cpu:       24.1s     wall:       31.6s
 
 
                                 NWChem Input Module
@@ -216,4 +216,4 @@ MA usage statistics:
       T. Nakajima, S. Niu, L. Pollack, M. Rosing, K. Glaesemann, G. Sandrone,
       M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe, A. T. Wong, Z. Zhang.
 
- Total times  cpu:       24.1s     wall:       24.4s
+ Total times  cpu:       24.1s     wall:       31.6s

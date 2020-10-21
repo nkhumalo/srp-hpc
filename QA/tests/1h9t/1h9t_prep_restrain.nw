@@ -1,10 +1,10 @@
 echo
-start md_dat
+start md-restrain_dat
 
 prepare
   #print sequence atomtypes where
   #print sequence 
-  system 1h9t_md
+  system 1h9t-restrain_md
   new_rst
   new_top new_seq
   source start_md_neutral.pdb
@@ -26,25 +26,26 @@ prepare
   #noe 505:3H4  506:_O6   0.0 0.167 5.0   0.5 50.0  # DC3 - DG5
   #noe 505:_N3  506:_H1   0.0 0.184 5.0   0.5 50.0
   #noe 505:_O2  506:2H2   0.0 0.184 5.0   0.5 50.0
-  pmf bias basepair 487 524  0.167 0.184  0.5 50.0
-  pmf bias basepair 488 523  0.167 0.184  0.5 50.0
-  pmf bias basepair 489 522  0.167 0.184  0.5 50.0
-  pmf bias basepair 490 521  0.167 0.184  0.5 50.0
-  pmf bias basepair 491 520  0.167 0.184  0.5 50.0
-  pmf bias basepair 492 519  0.167 0.184  0.5 50.0
-  pmf bias basepair 493 518  0.167 0.184  0.5 50.0
-  pmf bias basepair 494 517  0.167 0.184  0.5 50.0
-  pmf bias basepair 495 516  0.167 0.184  0.5 50.0
-  pmf bias basepair 496 515  0.167 0.184  0.5 50.0
-  pmf bias basepair 497 514  0.167 0.184  0.5 50.0
-  pmf bias basepair 498 513  0.167 0.184  0.5 50.0
-  pmf bias basepair 499 512  0.167 0.184  0.5 50.0
-  pmf bias basepair 500 511  0.167 0.184  0.5 50.0
-  pmf bias basepair 501 510  0.167 0.184  0.5 50.0
-  pmf bias basepair 502 509  0.167 0.184  0.5 50.0
-  pmf bias basepair 503 508  0.167 0.184  0.5 50.0
-  pmf bias basepair 504 507  0.167 0.184  0.5 50.0
-  pmf bias basepair 505 506  0.167 0.184  0.5 50.0
+  #
+  pmf basepair 487 524  0.167 0.184  500.0 500.0
+  pmf basepair 488 523  0.167 0.184  500.0 500.0
+  pmf basepair 489 522  0.167 0.184  500.0 500.0
+  pmf basepair 490 521  0.167 0.184  500.0 500.0
+  pmf basepair 491 520  0.167 0.184  500.0 500.0
+  pmf basepair 492 519  0.167 0.184  500.0 500.0
+  pmf basepair 493 518  0.167 0.184  500.0 500.0
+  pmf basepair 494 517  0.167 0.184  500.0 500.0
+  pmf basepair 495 516  0.167 0.184  500.0 500.0
+  pmf basepair 496 515  0.167 0.184  500.0 500.0
+  pmf basepair 497 514  0.167 0.184  500.0 500.0
+  pmf basepair 498 513  0.167 0.184  500.0 500.0
+  pmf basepair 499 512  0.167 0.184  500.0 500.0
+  pmf basepair 500 511  0.167 0.184  500.0 500.0
+  pmf basepair 501 510  0.167 0.184  500.0 500.0
+  pmf basepair 502 509  0.167 0.184  500.0 500.0
+  pmf basepair 503 508  0.167 0.184  500.0 500.0
+  pmf basepair 504 507  0.167 0.184  500.0 500.0
+  pmf basepair 505 506  0.167 0.184  500.0 500.0
 end
 
 task prepare

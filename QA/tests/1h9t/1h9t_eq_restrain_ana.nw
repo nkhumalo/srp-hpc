@@ -1,11 +1,11 @@
 echo
-start md_dat
+start md-restrain_dat
 
 analysis
-  system 1h9t_md
-  reference 1h9t_md.rst
-  file 1h9t_md.trj
-  write 1 solute 1h9t_md.pdb
+  system 1h9t-restrain_md
+  reference 1h9t-restrain_md.rst
+  file 1h9t-restrain_md.trj
+  write 1 solute 1h9t-restrain_md.pdb
   frames 1 1000 1
   copy solute 1h9t_eq_restrain.crd
 end

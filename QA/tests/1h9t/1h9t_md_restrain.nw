@@ -17,7 +17,7 @@ md
   #print step 10 pmf 10 out6
   print step 10 out6
   record coord 1 ascii
-  veladj 7715 8958 0.0  0.12500 0.0
+  veladj 7715 8958 0.0  0.250  0.0
 end
 
 task md dynamics

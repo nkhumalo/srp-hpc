@@ -1653,16 +1653,20 @@ c
       implicit none
 #include "global.fh"
 #include "stdio.fh"
+#include "inp.fh"
+      integer, parameter :: maxlen = 512
+      integer :: lenstr
       character*(*) string
-      character*255 card
+      character(len=maxlen) :: card
       integer icode
       if(ga_nodeid().eq.0) then
       write(luout,1000) 0,string,icode
- 1000 format(/,1x,10('*'),/,' * ',i3,': ',a,i10,/,1x,10('*'))
+ 1000 format(/,1x,10('*'),/,' * ',i5,': ',a,i10,/,1x,10('*'))
       card=' '
       else
-      write(card,1001) ga_nodeid(),string,icode
- 1001 format(' * ',i3,': ',a,i10,' * ')
+      lenstr = min(maxlen-23,inp_strlen(string))
+      write(card,1001) ga_nodeid(),string(1:lenstr),icode
+ 1001 format(' * ',i5,': ',a,i10,' * ')
       endif
       call ga_error(card,icode)
       return

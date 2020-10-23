@@ -1654,7 +1654,7 @@ c
 #include "global.fh"
 #include "stdio.fh"
 #include "inp.fh"
-      integer, parameter :: maxlen = 512
+      integer, parameter :: maxlen = 511
       integer :: lenstr
       character*(*) string
       character(len=maxlen) :: card

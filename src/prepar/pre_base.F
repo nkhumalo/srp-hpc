@@ -31,18 +31,28 @@ c
       if(csa(i)(1:3).eq.'DA ') ibase=1
       if(csa(i)(1:3).eq.'DA_') ibase=1
       if(csa(i)(1:3).eq.'DAT') ibase=1
+      if(csa(i)(1:3).eq.'DA3') ibase=1
+      if(csa(i)(1:3).eq.'DA5') ibase=1
       if(csa(i)(1:3).eq.'DG ') ibase=2
       if(csa(i)(1:3).eq.'DG_') ibase=2
       if(csa(i)(1:3).eq.'DGT') ibase=2
+      if(csa(i)(1:3).eq.'DG3') ibase=2
+      if(csa(i)(1:3).eq.'DG5') ibase=2
       if(csa(i)(1:3).eq.'DC ') ibase=3
       if(csa(i)(1:3).eq.'DC_') ibase=3
       if(csa(i)(1:3).eq.'DCT') ibase=3
+      if(csa(i)(1:3).eq.'DC3') ibase=3
+      if(csa(i)(1:3).eq.'DC5') ibase=3
       if(csa(i)(1:3).eq.'RU ') ibase=4
       if(csa(i)(1:3).eq.'RU_') ibase=4
       if(csa(i)(1:3).eq.'RUT') ibase=4
+      if(csa(i)(1:3).eq.'RU3') ibase=4
+      if(csa(i)(1:3).eq.'RU5') ibase=4
       if(csa(i)(1:3).eq.'DT ') ibase=5
       if(csa(i)(1:3).eq.'DT_') ibase=5
       if(csa(i)(1:3).eq.'DTT') ibase=5
+      if(csa(i)(1:3).eq.'DT3') ibase=5
+      if(csa(i)(1:3).eq.'DT5') ibase=5
       goto 2
       endif
     1 continue

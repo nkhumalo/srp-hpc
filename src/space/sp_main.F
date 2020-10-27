@@ -1142,7 +1142,7 @@ c
       real*8 factor,xscx,xscy,xscz,boxi(3)
       integer itemps,nfold
       logical lend
-      character*255 string
+      character*511 string
 c
       boxi(1)=one/box(1)
       boxi(2)=one/box(2)
@@ -1255,7 +1255,7 @@ c
       do 222 k=1,27
       if(iwl(iwm,lwnod).eq.neighb(k,1)) goto 223
   222 continue
-      write(string,'(a,i4,a,i4,a,i4,9f6.2)')
+      write(string,'(a,i8,a,i8,a,i8,9f6.2)')
      +  'sp_travel: solvent molecule ',
      + iwl(iwm,lwgmn),' moving to non-neighbor ',iwl(iwm,lwnod),
      + ' from ',me,((xw(iwm,i,j),i=1,3),j=1,3)

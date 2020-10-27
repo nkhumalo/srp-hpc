@@ -3962,7 +3962,7 @@ c
          enddo
       enddo
       do i = 1, 3
-         center(i) = center(i)/amass
+         center(i) = center(i)/max(1.0d0,amass)
       enddo    
 c
       geom_center_of_mass=.true.

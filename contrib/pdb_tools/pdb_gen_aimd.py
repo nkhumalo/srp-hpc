@@ -82,6 +82,125 @@ def complement_arguments(args):
             args.nwchem_exe = f"{nwchem_top}/bin/{nwchem_target}/nwchem"
     return args
 
+def get_element(name):
+    """
+    Given an atom label determine the chemical element. The atom label
+    is expected to correspond to an atom name that occurs in a PDB file.
+    An atom label consists of 4 characters. The element information
+    is contained in the first 2 characters. If the first character is a
+    number this can be replace with a space. After that the first 2
+    characters correspond to the chemical element.
+    
+    For example:
+    
+    Atom name     Chemical element
+    " CA "        "C"
+    "3HB "        "H"
+    "Ca  "        "Ca"
+    """
+    el1=name[0:2]
+    char0=el1[0:1]
+    try:
+        int(char0)
+        el2=" "+el1[1:2]
+    except ValueError:
+        el2=el1
+    if el2[0:1]==" ":
+        el3=el2[1:2]
+    else:
+        el3=el2
+    return el3
+    
+
+class base_atom:
+    """
+    A class for general properties of atoms.
+    """
+    def __init__(self,name,number,resname,resnumber):
+        self.name=None
+        self.number=None
+        self.element=None
+        self.residue_name=None
+        self.residue_number=None
+        if name:
+            self.name=name
+            self.element=get_element(name)
+        if number:
+            self.number=int(number)
+        if resname:
+            self.residue_name=resname
+        if resnumber:
+            self.residue_number=int(resnumber)
+
+    def set_name(self,name):
+        """
+        Sets the name and chemical element of the atom.
+        """
+        self.name = name
+        self.element = get_element(name)
+
+    def set_residue_name(self,name):
+        """
+        Sets the residue name of the atom.
+        """
+        self.residue_name=name
+
+    def set_number(self,number):
+        """
+        Sets the atom number.
+        """
+        self.number=int(number)
+
+    def set_residue_number(self,number):
+        """
+        Sets the residue number.
+        """
+        self.residue_number=int(number)
+
+class pdb_atom(base_atom):
+    """
+    A class for atoms from a PDB file.
+    In addition to a base atom this atom also has spatial
+    coordinates. Also it might an MM or QM atom.
+    """
+    def __init__(self,line,flag_large):
+        """
+        Instantiate a pdb_atom instance from a line of a
+        PDB file. NWChem supports regular PDB files and
+        large PDB files. The flag_large argument is True
+        when we have a large PDB file format and False
+        otherwise.
+        The PDB file format is detailed at:
+        https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html [accessed 11/04/2020]
+        """
+        record=line[0:6]
+        if record != "ATOM  " and record != "HETATM":
+            raise ValueError("Not an atom record")
+        atmnum=line[6:11]
+        atmnam=line[12:16]
+        resnam=line[17:20]
+        if flag_large:
+            resnum=line[20:26]
+        else:
+            resnum=line[22:26]
+        coords=line[30:54]
+        base_atom.__init__(atmnam,atmnum,resnam,resnum)
+        self.coordinates=coords
+        self.qm=False
+
+    def set_qm(self):
+        """
+        Make this atom a QM atom.
+        """
+        self.qm=True
+
+    def set_mm(self):
+        """
+        Make this atom an MM atom.
+        """
+        self.qm=False
+        
+
 def write_prepare_input(pdb_filename,prepare_input_filename):
     """
     Write the input for the NWChem prepare module to generate the

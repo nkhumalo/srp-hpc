@@ -79,7 +79,7 @@ def complement_arguments(args):
         nwchem_top = os.environ.get("NWCHEM_TOP")
         nwchem_target = os.environ.get("NWCHEM_TARGET")
         if nwchem_top and nwchem_target:
-            args.nwchem_exe = f"{nwchem_top}/bin/{nwchem_target}/nwchem"
+            args.nwchem_exe = str(nwchem_top)+"/bin/"+str(nwchem_target)+"/nwchem"
     return args
 
 def get_element(name):
@@ -207,7 +207,7 @@ class pdb_atom(base_atom):
         else:
             resnum=line[22:26]
         coords=line[30:54]
-        base_atom.__init__(atmnam,atmnum,resnam,resnum)
+        base_atom.__init__(self,atmnam,atmnum,resnam,resnum)
         self.coordinates=coords
         self.qm=False
 
@@ -236,7 +236,7 @@ class top_atom(base_atom):
         once. In fact we initially just have the number of the
         atom in the structure.
         """
-        base_atom.__init__(None,atmnum,None,None)
+        base_atom.__init__(self,None,atmnum,None,None)
         self.atom_type = None
         self.bound_atoms = []
         self.lj_c6 = None
@@ -249,6 +249,7 @@ class top_atom(base_atom):
         Set the atom type (string).
         """
         self.atom_type = atom_type
+        self.set_name(atom_type)
 
     def add_bound_atom(self,bound_atom):
         """
@@ -288,12 +289,13 @@ def write_prepare_input(pdb_filename,prepare_input_filename):
     Write the input for the NWChem prepare module to generate the
     topology file. 
     """
+    newline = "\n"
     fp = open(prepare_input_filename,"w")
     fp.write("echo\n")
     fp.write("start pdb-gen-aimd-prepare-dat\n")
     fp.write("prepare\n")
     fp.write("  system pdb-gen-aimd-prepare-sys\n")
-    fp.write(f"  source {pdb_filename}\n")
+    fp.write(f"  source {pdb_filename}{newline}")
     fp.write("  new_top new_seq\n")
     fp.write("  new_rst\n")
     fp.write("end\n")
@@ -346,20 +348,22 @@ def read_top_file(top_filename):
     nqu   = int(fp.readline()) # Number of solute atoms
     nseq  = int(fp.readline()) # Number of residues
     next(fp)
-    fp.close()
     #
     # Read atom types
     #
     for kk in range(nats):
         line = fp.readline()
         atmnum = int(line[5:10])
-        atmtyp = line[11:17]
+        atmtyp = line[10:14]
         atmmss = float(line[17:30])
-        atom_types.append((atmnum,atmtyp,atmmss))
+        atom = top_atom(atmnum)
+        atom.set_atom_type(atmtyp)
+        atom.set_mass(atmmss)
+        atom_types.append(atom)
     #
     # Read Lennard-Jones coefficients
     #
-    numlines = nats*(nats+1)/2
+    numlines = int(nats*(nats+1)/2)
     for kk in range(numlines):
         line = fp.readline()
         ii = int(line[0:5])
@@ -369,8 +373,7 @@ def read_top_file(top_filename):
         c12 = float(line[34:46])
         c12_2 = float(line[46:58])
         if ii == jj:
-            atom_type = atom_types[ii-1]
-            atom_types[ii-1] = atom_type.set_lennard_jones(c6,c12)
+            atom_types[ii-1].set_lennard_jones(c6,c12)
     #
     # Read partial charges
     # - These are partial charges for a kind of atom
@@ -428,6 +431,11 @@ def read_top_file(top_filename):
         fc   = float(line[12:24])
         solvent_bond_parameters.append((iatm,jatm,r_eq,fc))
     #
+    # Skip next 2 line
+    #
+    next(fp)
+    next(fp)
+    #
     # Read solute data
     #
     # - Read solute atom names
@@ -437,7 +445,7 @@ def read_top_file(top_filename):
     for kk in range(solute_num_atom):
         line = fp.readline()
         solute_atom_names.append(line[10:15])
-        charge_num = int(line[46:51])-1
+        charge_num = int(line[47:52])-1
         solute_atom_charge.append(charge_list[charge_num])
     #
     # - Read bond parameters (bond length and force constant)
@@ -461,8 +469,8 @@ def read_top_file(top_filename):
         jatm = int(line[7:14])
         katm = int(line[14:21])
         line = fp.readline()
-        a_eq = float(line[0:12])
-        fc   = float(line[12:24])
+        a_eq = float(line[0:10])
+        fc   = float(line[10:22])
         solute_angle_parameters.append((iatm,jatm,katm,a_eq,fc))
     #
     # - Read dihedral angle parameters (angle and force constant)
@@ -479,6 +487,14 @@ def read_top_file(top_filename):
         d_eq = float(line[3:13])
         fc   = float(line[13:25])
         solute_torsion_parameters.append((iatm,jatm,katm,latm,kdih,d_eq,fc))
+    #
+    fp.close()
+    #
+    return (atom_types,
+            solvent_atom_names,solvent_atom_charge,
+            solvent_bond_parameters,
+            solute_atom_names,solute_atom_charge,solute_bond_parameters,
+            solute_angle_parameters,solute_torsion_parameters)
     
 
 def write_structure(fileptr,pdb_atoms):
@@ -487,16 +503,22 @@ def write_structure(fileptr,pdb_atoms):
     (which is the NWChem PSPW QMMM input file).
     """
     newline = "\n"
-    while atom in pdb_atoms:
+    for atom in pdb_atoms:
         qm_flag = " "
-        if atom.qm:
+        if not atom.qm:
             qm_flag = "^"
         label = atom.element+qm_flag
         coords = atom.coordinates
-        line = f"  {label:a3} {coords}{newline}"
+        line = f"  {label:.3s} {coords}{newline}"
         fileptr.write(line)
 
-def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice):
+def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice,
+                     atom_types,
+                     solvent_atom_names,solvent_atom_charge,
+                     solvent_bond_parameters,
+                     solute_atom_names,solute_atom_charge,
+                     solute_bond_parameters,solute_angle_parameters,
+                     solute_torsion_parameters):
     """
     Write the QMMM input file. This input file can be thought
     of as consisting of multiple sections:
@@ -507,6 +529,7 @@ def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice):
     - Task
     """
     (aa,bb,cc) = lattice
+    nwl = "\n"
     fp = open(qmmm_input_filename,"w")
     fp.write("echo\n")
     fp.write(f"title {qmmm_input_filename}\n")
@@ -516,14 +539,24 @@ def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice):
     fp.write("end\n")
     fp.write("pswp\n")
     fp.write("  qmmm\n")
+    for atom in atom_types:
+        element = atom.element
+        c6 = atom.lj_c6
+        c12 = atom.lj_c12
+        fp.write(f"    lj_mm_parameters {element:.2s} {c6:.6e} {c12:.6e}{nwl}")
+    for atom in atom_types:
+        element = atom.element
+        c6 = atom.lj_c6
+        c12 = atom.lj_c12
+        fp.write(f"    mm_psp {element:.2s} {charge} 4 {c12:.6e}{nwl}")
     fp.write("  end\n")
     fp.write("  simulation_cell units angstrom\n")
     fp.write("    boundry_conditions: aperiodic\n")
     fp.write("    cell_name: cell\n")
     fp.write("    lattice\n")
-    fp.write("      lat_a {aa}\n")
-    fp.write("      lat_b {bb}\n")
-    fp.write("      lat_c {cc}\n")
+    fp.write(f"      lat_a {aa}{nwl}")
+    fp.write(f"      lat_b {bb}{nwl}")
+    fp.write(f"      lat_c {cc}{nwl}")
     fp.write("    end\n")
     fp.write("    ngrid 16 16 16\n")
     fp.write("  end\n")
@@ -574,9 +607,22 @@ def execute_with_arguments(args):
     """
     print(args)
     prepare_input = "pdb-gen-aimd-prepare.nw"
+    topology_file = "pdb-gen-aimd-prepare-sys.top"
+    qmmm_input    = args.output
     write_prepare_input(args.input,prepare_input)
     run_nwchem(args.nwchem_exe,prepare_input)
     (atoms_of_pdb,lattice) = read_pdb_file(args.input)
+    (atom_types,
+     solvent_atom_names,solvent_atom_charge,
+     solvent_bond_parameters,
+     solute_atom_names,solute_atom_charge,solute_bond_parameters,
+     solute_angle_parameters,solute_torsion_parameters) = read_top_file(
+        topology_file)
+    write_qmmm_input(qmmm_input,atoms_of_pdb,lattice,atom_types,
+        solvent_atom_names,solvent_atom_charge,
+        solvent_bond_parameters,
+        solute_atom_names,solute_atom_charge,solute_bond_parameters,
+        solute_angle_parameters,solute_torsion_parameters)
 
 
 if __name__ == "__main__":

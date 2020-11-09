@@ -110,7 +110,30 @@ def get_element(name):
     else:
         el3=el2
     return el3
-    
+
+
+def get_lattice(line):
+    """
+    Extract the lattice size a, b, and c. We expect all lattice
+    angle to be 90.0 degrees. Return the lattice as a tuple.
+    """
+    a = line[6:15]
+    b = line[15:24]
+    c = line[24:33]
+    alpha = line[33:40]
+    beta  = line[40:47]
+    gamma = line[47:54]
+    a = float(a)
+    b = float(b)
+    c = float(c)
+    if (abs(float(alpha)-90.0)>1.0e-2):
+        raise ValueError("Alpha not equal 90")
+    if (abs(float(beta)-90.0)>1.0e-2):
+        raise ValueError("Beta not equal 90")
+    if (abs(float(gamma)-90.0)>1.0e-2):
+        raise ValueError("Gamma not equal 90")
+    return (a,b,c)
+
 
 class base_atom:
     """
@@ -200,6 +223,65 @@ class pdb_atom(base_atom):
         """
         self.qm=False
         
+class top_atom(base_atom):
+    """
+    A class for atoms from a topology file.
+    In addition to a base atom this atom also has an atom type, 
+    bonds, Lennard-Jones potentials, mass, and partial charges.
+    """
+    def __init__(self,atmnum):
+        """
+        Initialize a topology atom. Because of the structure
+        of the topology file we cannot set all properties at
+        once. In fact we initially just have the number of the
+        atom in the structure.
+        """
+        base_atom.__init__(None,atmnum,None,None)
+        self.atom_type = None
+        self.bound_atoms = []
+        self.lj_c6 = None
+        self.lj_c12 = None
+        self.mass = None
+        self.charge = None
+
+    def set_atom_type(self,atom_type):
+        """
+        Set the atom type (string).
+        """
+        self.atom_type = atom_type
+
+    def add_bound_atom(self,bound_atom):
+        """
+        Add the number of a bound atom (integer).
+        """
+        ii = int(bound_atom)
+        if self.number:
+            if self.number == ii:
+                raise ValueError("Atom cannot be bound to itself")
+        if ii in self.bound_atom:
+            raise ValueError("Atom cannot bind to the same atom twice")
+        self.bound_atoms.append(ii)
+
+    def set_lennard_jones(self,c6,c12):
+        """
+        Set the C_6 and C_12 coefficients of the Lennard Jones
+        potential.
+        """
+        self.lj_c6 = float(c6)
+        self.lj_c12 = float(c12)
+
+    def set_mass(self,mass):
+        """
+        Set the atom mass.
+        """
+        self.mass = float(mass)
+
+    def set_charge(self,charge):
+        """
+        Set the atom charge.
+        """
+        self.charge = float(charge)
+
 
 def write_prepare_input(pdb_filename,prepare_input_filename):
     """
@@ -216,6 +298,261 @@ def write_prepare_input(pdb_filename,prepare_input_filename):
     fp.write("  new_rst\n")
     fp.write("end\n")
     fp.write("task prepare")
+    fp.close()
+
+def read_pdb_file(pdb_filename):
+    """
+    Read the PDB file and return a list of pdb_atoms,
+    and the lattice dimensions.
+    Note we need to check whether this PDB file is
+    written in NWChem's large PDB format.
+    """
+    atom_list = []
+    lattice   = (0.0,0.0,0.0)
+    large_pdb = False
+    fp = open(pdb_filename,"r")
+    line = fp.readline()
+    while line:
+        if   line[0:4] == "ATOM":
+            atom_list.append(pdb_atom(line,large_pdb))
+        elif line[0:6] == "HETATM":
+            atom_list.append(pdb_atom(line,large_pdb))
+        elif line[0:6] == "LRGPDB":
+            large_pdb = True
+        elif line[0:6] == "CRYST1":
+            lattice = get_lattice(line)
+        elif line[0:3] == "END":
+            break
+        line = fp.readline()
+    fp.close()
+    return (atom_list,lattice)
+
+def read_top_file(top_filename):
+    """
+    Read the topology file and return:
+    - a list of top_atoms
+    - a list of bond distance parameters
+    - a list of bond angle parameters
+    - a list of torsion angle parameters
+    All this data will be returned as a tuple.
+    """
+    charge_list = []
+    atom_types = []
+    fp = open(top_filename,"r")
+    for ii in range(4):
+        next(fp)
+    ipnum = int(fp.readline())
+    nats  = int(fp.readline()) # Number of atom types
+    nqu   = int(fp.readline()) # Number of solute atoms
+    nseq  = int(fp.readline()) # Number of residues
+    next(fp)
+    fp.close()
+    #
+    # Read atom types
+    #
+    for kk in range(nats):
+        line = fp.readline()
+        atmnum = int(line[5:10])
+        atmtyp = line[11:17]
+        atmmss = float(line[17:30])
+        atom_types.append((atmnum,atmtyp,atmmss))
+    #
+    # Read Lennard-Jones coefficients
+    #
+    numlines = nats*(nats+1)/2
+    for kk in range(numlines):
+        line = fp.readline()
+        ii = int(line[0:5])
+        jj = int(line[5:10])
+        c6 = float(line[10:22])
+        c6_2 = float(line[22:34])
+        c12 = float(line[34:46])
+        c12_2 = float(line[46:58])
+        if ii == jj:
+            atom_type = atom_types[ii-1]
+            atom_types[ii-1] = atom_type.set_lennard_jones(c6,c12)
+    #
+    # Read partial charges
+    # - These are partial charges for a kind of atom
+    #
+    for kk in range(nqu):
+        line = fp.readline()
+        qq = float(line[5:17])
+        charge_list.append(qq)
+    #
+    # Skip residue info
+    #
+    for kk in range(nseq):
+        line = fp.readline()
+    #
+    # Solvent number of parameters?
+    # - Solvent is water and the structure seems to be modeled
+    #   with three bond lengths
+    #
+    line = fp.readline()
+    solvent_num_atom = int(line[0:7])
+    solvent_num_bond = int(line[7:14])
+    solvent_num_angl = int(line[14:21])
+    if solvent_num_angl > 0:
+        raise ValueError(f"Unexpected number of solvent angles: {solvent_num_angl}")
+    #
+    # Solute number of parameters?
+    #
+    line = fp.readline()
+    solute_num_atom = int(line[0:7])
+    solute_num_bond = int(line[7:14])
+    solute_num_angl = int(line[14:21])
+    solute_num_tors = int(line[21:28])
+    #
+    # Read solvent data
+    #
+    # - Read solvent atom names
+    #
+    solvent_atom_names = []
+    solvent_atom_charge = []
+    for kk in range(solvent_num_atom):
+        line = fp.readline()
+        solvent_atom_names.append(line[10:15])
+        charge_num = int(line[46:51])-1
+        solvent_atom_charge.append(charge_list[charge_num])
+    #
+    # - Read bond parameters (bond length and force constant)
+    #
+    solvent_bond_parameters = []
+    for kk in range(solvent_num_bond):
+        line = fp.readline()
+        iatm = int(line[0:7])
+        jatm = int(line[7:14])
+        line = fp.readline()
+        r_eq = float(line[0:12])
+        fc   = float(line[12:24])
+        solvent_bond_parameters.append((iatm,jatm,r_eq,fc))
+    #
+    # Read solute data
+    #
+    # - Read solute atom names
+    #
+    solute_atom_names = []
+    solute_atom_charge = []
+    for kk in range(solute_num_atom):
+        line = fp.readline()
+        solute_atom_names.append(line[10:15])
+        charge_num = int(line[46:51])-1
+        solute_atom_charge.append(charge_list[charge_num])
+    #
+    # - Read bond parameters (bond length and force constant)
+    #
+    solute_bond_parameters = []
+    for kk in range(solute_num_bond):
+        line = fp.readline()
+        iatm = int(line[0:7])
+        jatm = int(line[7:14])
+        line = fp.readline()
+        r_eq = float(line[0:12])
+        fc   = float(line[12:24])
+        solute_bond_parameters.append((iatm,jatm,r_eq,fc))
+    #
+    # - Read bond angle parameters (bond angle and force constant)
+    #
+    solute_angle_parameters = []
+    for kk in range(solute_num_angl):
+        line = fp.readline()
+        iatm = int(line[0:7])
+        jatm = int(line[7:14])
+        katm = int(line[14:21])
+        line = fp.readline()
+        a_eq = float(line[0:12])
+        fc   = float(line[12:24])
+        solute_angle_parameters.append((iatm,jatm,katm,a_eq,fc))
+    #
+    # - Read dihedral angle parameters (angle and force constant)
+    #
+    solute_torsion_parameters = []
+    for kk in range(solute_num_tors):
+        line = fp.readline()
+        iatm = int(line[0:7])
+        jatm = int(line[7:14])
+        katm = int(line[14:21])
+        latm = int(line[21:28])
+        line = fp.readline()
+        kdih = int(line[0:3])
+        d_eq = float(line[3:13])
+        fc   = float(line[13:25])
+        solute_torsion_parameters.append((iatm,jatm,katm,latm,kdih,d_eq,fc))
+    
+
+def write_structure(fileptr,pdb_atoms):
+    """
+    Write the PDB atoms to the file given by the file pointer
+    (which is the NWChem PSPW QMMM input file).
+    """
+    newline = "\n"
+    while atom in pdb_atoms:
+        qm_flag = " "
+        if atom.qm:
+            qm_flag = "^"
+        label = atom.element+qm_flag
+        coords = atom.coordinates
+        line = f"  {label:a3} {coords}{newline}"
+        fileptr.write(line)
+
+def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice):
+    """
+    Write the QMMM input file. This input file can be thought
+    of as consisting of multiple sections:
+    - Preamble
+    - Geometry
+    - PSPW input
+    - PSPW QMMM block
+    - Task
+    """
+    (aa,bb,cc) = lattice
+    fp = open(qmmm_input_filename,"w")
+    fp.write("echo\n")
+    fp.write(f"title {qmmm_input_filename}\n")
+    fp.write(f"start {qmmm_input_filename}-dat\n") 
+    fp.write("geometry units angstroms center autosym autoz print xyz\n")
+    write_structure(fp,atoms_pdb)
+    fp.write("end\n")
+    fp.write("pswp\n")
+    fp.write("  qmmm\n")
+    fp.write("  end\n")
+    fp.write("  simulation_cell units angstrom\n")
+    fp.write("    boundry_conditions: aperiodic\n")
+    fp.write("    cell_name: cell\n")
+    fp.write("    lattice\n")
+    fp.write("      lat_a {aa}\n")
+    fp.write("      lat_b {bb}\n")
+    fp.write("      lat_c {cc}\n")
+    fp.write("    end\n")
+    fp.write("    ngrid 16 16 16\n")
+    fp.write("  end\n")
+    fp.write("  wavefunction_initializer\n")
+    fp.write("    restricted\n")
+    fp.write("    restricted_electrons: nn\n")
+    fp.write("    cell_name: cell\n")
+    fp.write("  end\n")
+    fp.write("  steepest_descent\n")
+    fp.write("    cell_name: cell\n")
+    fp.write("    time_step: 5\n")
+    fp.write("    loop: 10 10\n")
+    fp.write("    tolerances: 1.0d-9 1.0d-9 1.0d-4\n")
+    fp.write("    energy_cutoff:       15.0d0\n")
+    fp.write("    wavefunction_cutoff: 15.0d0\n")
+    fp.write("    exchange_correlation: pbe96\n")
+    fp.write("  end\n")
+    fp.write("  conjugate_gradient\n")
+    fp.write("    cell_name: cell\n")
+    fp.write("    loop: 1 10\n")
+    fp.write("    tolerances: 1.0d-9 1.0d-9 1.0d-4\n")
+    fp.write("    energy_cutoff:       15.0d0\n")
+    fp.write("    wavefunction_cutoff: 15.0d0\n")
+    fp.write("    exchange_correlation: pbe96\n")
+    fp.write("  end\n")
+    fp.write("end\n")
+    fp.write("task pspw wavefunction_initializer\n")
+    fp.write("task pspw steepest_descent\n")
+    fp.write("task cg_pspw energy\n")
     fp.close()
 
 def delete_prepare_input(prepare_input_filename):
@@ -239,6 +576,7 @@ def execute_with_arguments(args):
     prepare_input = "pdb-gen-aimd-prepare.nw"
     write_prepare_input(args.input,prepare_input)
     run_nwchem(args.nwchem_exe,prepare_input)
+    (atoms_of_pdb,lattice) = read_pdb_file(args.input)
 
 
 if __name__ == "__main__":

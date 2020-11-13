@@ -143,6 +143,7 @@ class base_atom:
         self.name=None
         self.number=None
         self.element=None
+        self.atom_label = None # Name to be used in QM code
         self.residue_name=None
         self.residue_number=None
         if name:
@@ -179,6 +180,15 @@ class base_atom:
         Sets the residue number.
         """
         self.residue_number=int(number)
+
+    def set_atom_label(self,atom_label):
+        """
+        The atom label is a unique identifier corresponding to
+        an atom_type that can also be used as an atom name in
+        the input of a QM code. Typically such a name would be
+        <element><number>.
+        """
+        self.atom_label = atom_label
 
 class pdb_atom(base_atom):
     """
@@ -237,7 +247,8 @@ class top_atom(base_atom):
         atom in the structure.
         """
         base_atom.__init__(self,None,atmnum,None,None)
-        self.atom_type = None
+        self.atom_type = None  # MD atom type
+        self.atom_type_num = None  # MD atom type number
         self.bound_atoms = []
         self.lj_c6 = None
         self.lj_c12 = None
@@ -249,7 +260,16 @@ class top_atom(base_atom):
         Set the atom type (string).
         """
         self.atom_type = atom_type
-        self.set_name(atom_type)
+        #self.set_name(atom_type)
+
+    def set_atom_type_num(self,atom_type):
+        """
+        Set the atom type number (non-negative integer).
+        """
+        num = int(atom_type)
+        if num < 0:
+            raise ValueError(f"invalid atom_type_number {num}")
+        self.atom_type_num = num
 
     def add_bound_atom(self,bound_atom):
         """
@@ -338,8 +358,12 @@ def read_top_file(top_filename):
     - a list of torsion angle parameters
     All this data will be returned as a tuple.
     """
+    nwl = "\n"
     charge_list = []
     atom_types = []
+    final_atom_types = []
+    element_count = {}
+    atom_labels = {}
     fp = open(top_filename,"r")
     for ii in range(4):
         next(fp)
@@ -411,13 +435,17 @@ def read_top_file(top_filename):
     #
     # - Read solvent atom names
     #
-    solvent_atom_names = []
-    solvent_atom_charge = []
+    solvent_atom_list = []
     for kk in range(solvent_num_atom):
         line = fp.readline()
-        solvent_atom_names.append(line[10:15])
+        atom = top_atom(kk+1)
+        atom.set_name(line[10:14])
         charge_num = int(line[46:51])-1
-        solvent_atom_charge.append(charge_list[charge_num])
+        type_num = int(line[41:46])-1
+        atom.set_charge(charge_list[charge_num])
+        atom.set_atom_type(atom_types[type_num].atom_type)
+        atom.set_atom_type_num(type_num)
+        solvent_atom_list.append(atom)
     #
     # - Read bond parameters (bond length and force constant)
     #
@@ -440,13 +468,17 @@ def read_top_file(top_filename):
     #
     # - Read solute atom names
     #
-    solute_atom_names = []
-    solute_atom_charge = []
+    solute_atom_list = []
     for kk in range(solute_num_atom):
         line = fp.readline()
-        solute_atom_names.append(line[10:15])
-        charge_num = int(line[47:52])-1
-        solute_atom_charge.append(charge_list[charge_num])
+        atom = top_atom(kk+1)
+        atom.set_name(line[10:14])
+        charge_num = int(line[53:58])-1
+        type_num = int(line[47:52])-1
+        atom.set_charge(charge_list[charge_num])
+        atom.set_atom_type(atom_types[type_num].atom_type)
+        atom.set_atom_type_num(type_num)
+        solute_atom_list.append(atom)
     #
     # - Read bond parameters (bond length and force constant)
     #
@@ -490,12 +522,111 @@ def read_top_file(top_filename):
     #
     fp.close()
     #
-    return (atom_types,
-            solvent_atom_names,solvent_atom_charge,
+    # Patchwork: We have a list of atom names as they appear in the PDB
+    # file. We have a list of charges. We have a list of atom types.
+    # In a QM code we need a unique name for every center that has a
+    # unique combination of atom type and charge. (Associating Lennard-
+    # Jones parameters and charges goes by atom label). In the MD code
+    # atom types and charges are separately managed properties.
+    # Hence at this point we need to create a unique atom label for
+    # every unique atom type - charge combination. Down stream these
+    # labels need to replace the atom names in the data from the PDB
+    # file.
+    #
+    for atom in solute_atom_list:
+        element = atom.element
+        charge = atom.charge
+        type = atom.atom_type
+        type_num = atom.atom_type_num
+        number = atom.number
+        name = atom.name
+        c6 = atom_types[type_num].lj_c6
+        c12 = atom_types[type_num].lj_c12
+        atom_type = (type,charge)
+        if atom_type in atom_labels:
+            atom_label = atom_labels[atom_type]
+        else:
+            if element in element_count:
+                count = element_count[element]
+                count += 1
+            else: 
+                count = 1
+            element_count[element] = count
+            atom_label = f"{element}{count}"
+            atom_labels[atom_type] = atom_label
+            new_atom = top_atom(number)
+            new_atom.set_atom_type(type)
+            new_atom.set_charge(charge)
+            new_atom.set_lennard_jones(c6,c12)
+            new_atom.set_atom_label(atom_label)
+            new_atom.set_name(name)
+            final_atom_types.append(new_atom)
+        atom.set_atom_label(atom_label)
+    for atom in solvent_atom_list:
+        element = atom.element
+        charge = atom.charge
+        type = atom.atom_type
+        type_num = atom.atom_type_num
+        number = atom.number
+        name = atom.name
+        c6 = atom_types[type_num].lj_c6
+        c12 = atom_types[type_num].lj_c12
+        atom_type = (type,charge)
+        if atom_type in atom_labels:
+            atom_label = atom_labels[atom_type]
+        else:
+            if element in element_count:
+                count = element_count[element]
+                count += 1
+            else: 
+                count = 1
+            element_count[element] = count
+            atom_label = f"{element}{count}"
+            atom_labels[atom_type] = atom_label
+            new_atom = top_atom(number)
+            new_atom.set_atom_type(type)
+            new_atom.set_charge(charge)
+            new_atom.set_lennard_jones(c6,c12)
+            new_atom.set_atom_label(atom_label)
+            new_atom.set_name(name)
+            final_atom_types.append(new_atom)
+        atom.set_atom_label(atom_label)
+    #
+    return (final_atom_types,
+            solvent_atom_list,
             solvent_bond_parameters,
-            solute_atom_names,solute_atom_charge,solute_bond_parameters,
+            solute_atom_list,solute_bond_parameters,
             solute_angle_parameters,solute_torsion_parameters)
     
+def label_pdb_atom(solvent_atom_list,solute_atom_list,atoms_of_pdb):
+    """
+    For the input file we need atom labels that can be used to
+    associate the right charges and Lennard-Jones parameters with
+    the right atoms. The names in the PDB file do not allow for that
+    mapping. Hence we use the labels that were added to the
+    the solvent_atom_list and solute_atom_list as obtained from the
+    topology file.
+    Return the update atoms_of_pdb list.
+    """
+    num_solute = len(solute_atom_list)
+    num_pdb = len(atoms_of_pdb)
+    num_solvent = num_pdb - num_solute
+    num_water = int(num_solvent/3)
+    if num_water*3 != num_solvent:
+        raise ValueError(f"Number of atoms mismatch: {num_pdb} != {num_solute}+{num_water}*3")
+    for ii in range(num_solute):
+        solute_name = solute_atom_list[ii].name
+        pdb_name = atoms_of_pdb[ii].name
+        if pdb_name != solute_name:
+            raise ValueError(f"PDB - solute atoms: name mismatch: *{pdb_name}-{solute_name}*")
+        atoms_of_pdb[ii].set_atom_label(solute_atom_list[ii].atom_label)
+    for ii in range(num_solute,num_pdb):
+        solvent_name = solvent_atom_list[ii%3].name
+        pdb_name = atoms_of_pdb[ii].name
+        if pdb_name != solvent_name:
+            raise ValueError(f"PDB - solvent atoms: name mismatch: *{pdb_name}-{solvent_name}*")
+        atoms_of_pdb[ii].set_label(solvent_atom_list[ii%3].atom_label)
+    return atoms_of_pdb
 
 def write_structure(fileptr,pdb_atoms):
     """
@@ -507,16 +638,16 @@ def write_structure(fileptr,pdb_atoms):
         qm_flag = " "
         if not atom.qm:
             qm_flag = "^"
-        label = atom.element+qm_flag
+        label = atom.atom_label+qm_flag
         coords = atom.coordinates
-        line = f"  {label:.3s} {coords}{newline}"
+        line = f"  {label:<10s} {coords}{newline}"
         fileptr.write(line)
 
 def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice,
                      atom_types,
-                     solvent_atom_names,solvent_atom_charge,
+                     solvent_atom_list,
                      solvent_bond_parameters,
-                     solute_atom_names,solute_atom_charge,
+                     solute_atom_list,
                      solute_bond_parameters,solute_angle_parameters,
                      solute_torsion_parameters):
     """
@@ -540,15 +671,14 @@ def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice,
     fp.write("pswp\n")
     fp.write("  qmmm\n")
     for atom in atom_types:
-        element = atom.element
+        label = atom.atom_label
         c6 = atom.lj_c6
         c12 = atom.lj_c12
-        fp.write(f"    lj_mm_parameters {element:.2s} {c6:.6e} {c12:.6e}{nwl}")
+        fp.write(f"    lj_mm_parameters {label:<10s} {c6:12.6e} {c12:12.6e}{nwl}")
     for atom in atom_types:
-        element = atom.element
-        c6 = atom.lj_c6
-        c12 = atom.lj_c12
-        fp.write(f"    mm_psp {element:.2s} {charge} 4 {c12:.6e}{nwl}")
+        label = atom.atom_label
+        charge = atom.charge
+        fp.write(f"    mm_psp {label:<10s} {charge:10.5f} 4 0.55{nwl}")
     fp.write("  end\n")
     fp.write("  simulation_cell units angstrom\n")
     fp.write("    boundry_conditions: aperiodic\n")
@@ -613,15 +743,17 @@ def execute_with_arguments(args):
     run_nwchem(args.nwchem_exe,prepare_input)
     (atoms_of_pdb,lattice) = read_pdb_file(args.input)
     (atom_types,
-     solvent_atom_names,solvent_atom_charge,
+     solvent_atom_list,
      solvent_bond_parameters,
-     solute_atom_names,solute_atom_charge,solute_bond_parameters,
+     solute_atom_list,solute_bond_parameters,
      solute_angle_parameters,solute_torsion_parameters) = read_top_file(
         topology_file)
+    atoms_of_pdb = label_pdb_atom(solvent_atom_list,solute_atom_list,
+        atoms_of_pdb)
     write_qmmm_input(qmmm_input,atoms_of_pdb,lattice,atom_types,
-        solvent_atom_names,solvent_atom_charge,
+        solvent_atom_list,
         solvent_bond_parameters,
-        solute_atom_names,solute_atom_charge,solute_bond_parameters,
+        solute_atom_list,solute_bond_parameters,
         solute_angle_parameters,solute_torsion_parameters)
 
 

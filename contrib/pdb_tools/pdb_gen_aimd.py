@@ -613,7 +613,8 @@ def read_top_file(top_filename):
             solute_atom_list,solute_bond_parameters,
             solute_angle_parameters,solute_torsion_parameters)
     
-def label_pdb_atom(solvent_atom_list,solute_atom_list,atoms_of_pdb):
+def label_pdb_atom(qm_atoms,solvent_atom_list,solute_atom_list,
+                   atoms_of_pdb):
     """
     For the input file we need atom labels that can be used to
     associate the right charges and Lennard-Jones parameters with
@@ -621,6 +622,7 @@ def label_pdb_atom(solvent_atom_list,solute_atom_list,atoms_of_pdb):
     mapping. Hence we use the labels that were added to the
     the solvent_atom_list and solute_atom_list as obtained from the
     topology file.
+    In addition we mark the QM atoms as such in the PDB file. 
     Return the update atoms_of_pdb list.
     """
     num_solute = len(solute_atom_list)
@@ -641,6 +643,8 @@ def label_pdb_atom(solvent_atom_list,solute_atom_list,atoms_of_pdb):
         if pdb_name != solvent_name:
             raise ValueError(f"PDB - solvent atoms: name mismatch: *{pdb_name}-{solvent_name}*")
         atoms_of_pdb[ii].set_label(solvent_atom_list[ii%3].atom_label)
+    for ii in qm_atoms:
+        atoms_of_pdb[ii-1].set_qm()
     return atoms_of_pdb
 
 def write_structure(fileptr,pdb_atoms):
@@ -718,7 +722,7 @@ def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice,
     fp.write("  end\n")
     fp.write("  wavefunction_initializer\n")
     fp.write("    restricted\n")
-    fp.write("    restricted_electrons: nn\n")
+    #fp.write("    restricted_electrons: nn\n")
     fp.write("    cell_name: cell\n")
     fp.write("  end\n")
     fp.write("  steepest_descent\n")
@@ -757,6 +761,36 @@ def run_nwchem(nwchem_exe,input_filename):
     """
     os.system(f"{nwchem_exe} {input_filename} > {input_filename}.out")
 
+def qm_atom_list(qm_string):
+    """
+    Convert the string with the QM atoms specification to a list
+    of atom ranks. 
+    Return the list of atom ranks of QM atoms.
+    """
+    qm_list = []
+    if not qm_string:
+        return qm_list
+    qm_string = str(qm_string)
+    list_of_ranges = qm_string.split(",")
+    for irange in list_of_ranges:
+        list_of_delimiters = irange.split(":")
+        if len(list_of_delimiters) == 1:
+            qm_list.append(int(list_of_delimiters[0]))
+        elif len(list_of_delimiters) == 2:
+            ibegin = int(list_of_delimiters[0])
+            iend = int(list_of_delimiters[1])+1
+            for ii in range(ibegin,iend):
+                qm_list.append(ii)
+        elif len(list_of_delimiters) == 3:
+            ibegin = int(list_of_delimiters[0])
+            iend = int(list_of_delimiters[1])+1
+            istep = int(list_of_delimiters[2])
+            for ii in range(ibegin,iend,istep):
+                qm_list.append(ii)
+        else:
+            raise ValueError(f"Invalid range {irange}")
+    return qm_list
+
 def execute_with_arguments(args):
     """
     Execute the whole pipeline with the command line arguments given.
@@ -774,8 +808,9 @@ def execute_with_arguments(args):
      solute_atom_list,solute_bond_parameters,
      solute_angle_parameters,solute_torsion_parameters) = read_top_file(
         topology_file)
-    atoms_of_pdb = label_pdb_atom(solvent_atom_list,solute_atom_list,
-        atoms_of_pdb)
+    qm_atoms = qm_atom_list(args.qm_atoms)
+    atoms_of_pdb = label_pdb_atom(qm_atoms,solvent_atom_list,
+        solute_atom_list,atoms_of_pdb)
     write_qmmm_input(qmmm_input,atoms_of_pdb,lattice,atom_types,
         solvent_atom_list,
         solvent_bond_parameters,

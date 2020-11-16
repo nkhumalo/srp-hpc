@@ -47,6 +47,21 @@ and end number separated by a colon. Examples:
 
 import os
 
+nm_to_bohr = 18.897259886
+kj_to_hartree = 1.0/2625.5
+#
+# kJ/mol/nm^2 --> Hartree/mol/Bohr^2:
+kjnm2_to_hartreebohr2 = kj_to_hartree/(nm_to_bohr**2)
+#
+# kJ/mol/rad^2 --> Hartree/mol/Bohr^2:
+kjrad2_to_hartreerad2 = kj_to_hartree
+#
+# nm^6*kJ/mol --> Bohr^6*Hartree/mol
+kjnm6_to_hartreebohr6 = (nm_to_bohr**6)*kj_to_hartree
+#
+# nm^12*kJ/mol --> Bohr^12*Hartree/mol
+kjnm12_to_hartreebohr12 = (nm_to_bohr**12)*kj_to_hartree
+
 def parse_arguments():
     """
     Parse the command line arguments and return them as
@@ -392,10 +407,10 @@ def read_top_file(top_filename):
         line = fp.readline()
         ii = int(line[0:5])
         jj = int(line[5:10])
-        c6 = float(line[10:22])
-        c6_2 = float(line[22:34])
-        c12 = float(line[34:46])
-        c12_2 = float(line[46:58])
+        c6 = float(line[10:22])*kjnm6_to_hartreebohr6
+        c6_2 = float(line[22:34])*kjnm6_to_hartreebohr6
+        c12 = float(line[34:46])*kjnm12_to_hartreebohr12
+        c12_2 = float(line[46:58])*kjnm12_to_hartreebohr12
         if ii == jj:
             atom_types[ii-1].set_lennard_jones(c6,c12)
     #
@@ -455,8 +470,8 @@ def read_top_file(top_filename):
         iatm = int(line[0:7])
         jatm = int(line[7:14])
         line = fp.readline()
-        r_eq = float(line[0:12])
-        fc   = float(line[12:24])
+        r_eq = float(line[0:12])*nm_to_bohr
+        fc   = float(line[12:24])*kjnm2_to_hartreebohr2
         solvent_bond_parameters.append((iatm,jatm,r_eq,fc))
     #
     # Skip next 2 line
@@ -488,8 +503,8 @@ def read_top_file(top_filename):
         iatm = int(line[0:7])
         jatm = int(line[7:14])
         line = fp.readline()
-        r_eq = float(line[0:12])
-        fc   = float(line[12:24])
+        r_eq = float(line[0:12])*nm_to_bohr
+        fc   = float(line[12:24])*kjnm2_to_hartreebohr2
         solute_bond_parameters.append((iatm,jatm,r_eq,fc))
     #
     # - Read bond angle parameters (bond angle and force constant)
@@ -502,7 +517,7 @@ def read_top_file(top_filename):
         katm = int(line[14:21])
         line = fp.readline()
         a_eq = float(line[0:10])
-        fc   = float(line[10:22])
+        fc   = float(line[10:22])*kjrad2_to_hartreerad2
         solute_angle_parameters.append((iatm,jatm,katm,a_eq,fc))
     #
     # - Read dihedral angle parameters (angle and force constant)
@@ -517,7 +532,7 @@ def read_top_file(top_filename):
         line = fp.readline()
         kdih = int(line[0:3])
         d_eq = float(line[3:13])
-        fc   = float(line[13:25])
+        fc   = float(line[13:25])*kjrad2_to_hartreerad2
         solute_torsion_parameters.append((iatm,jatm,katm,latm,kdih,d_eq,fc))
     #
     fp.close()
@@ -668,19 +683,30 @@ def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice,
     fp.write("geometry units angstroms center autosym autoz print xyz\n")
     write_structure(fp,atoms_pdb)
     fp.write("end\n")
-    fp.write("pswp\n")
+    fp.write("pspw\n")
     fp.write("  qmmm\n")
     for atom in atom_types:
         label = atom.atom_label
         c6 = atom.lj_c6
         c12 = atom.lj_c12
-        fp.write(f"    lj_mm_parameters {label:<10s} {c6:12.6e} {c12:12.6e}{nwl}")
+        fp.write(f"    lj_ion_parameters {label:<10s} {c6:12.6e} {c12:12.6e}{nwl}")
     for atom in atom_types:
         label = atom.atom_label
         charge = atom.charge
         fp.write(f"    mm_psp {label:<10s} {charge:10.5f} 4 0.55{nwl}")
+    fp.write("    fragment all\n")
+    for param in solute_bond_parameters:
+        (iatm,jatm,r_eq,fc) = param
+        fp.write(f"      bond_spring {iatm:6d} {jatm:6d}  {fc:14.10e} {r_eq:14.10f}{nwl}")
+    for param in solute_angle_parameters:
+        (iatm,jatm,katm,r_eq,fc) = param
+        fp.write(f"      angle_spring {iatm:6d} {jatm:6d} {katm:6d}  {fc:14.10e} {r_eq:14.10f}{nwl}")
+    for param in solute_torsion_parameters:
+        (iatm,jatm,katm,latm,kdih,r_eq,fc) = param
+        fp.write(f"      dihedral_spring {iatm:6d} {jatm:6d} {katm:6d} {latm:6d}  {fc:14.10e} {r_eq:14.10f}{nwl}")
+    fp.write("    end\n")
     fp.write("  end\n")
-    fp.write("  simulation_cell units angstrom\n")
+    fp.write("  simulation_cell angstrom\n")
     fp.write("    boundry_conditions: aperiodic\n")
     fp.write("    cell_name: cell\n")
     fp.write("    lattice\n")

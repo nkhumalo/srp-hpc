@@ -746,7 +746,10 @@ def write_qmmm_input(qmmm_input_filename,atoms_pdb,lattice,
     fp.write("task pspw wavefunction_initializer\n")
     fp.write("task pspw steepest_descent\n")
     fp.write("task pspw conjugate_gradient\n")
-    fp.write("task pspw qmmm dynamics\n")
+    fp.write("nwpw\n")
+    fp.write("  bo_algorithm verlet\n")
+    fp.write("end\n")
+    fp.write("task pspw Born-Oppenheimer\n")
     fp.close()
 
 def delete_prepare_input(prepare_input_filename):

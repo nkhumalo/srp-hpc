@@ -205,11 +205,21 @@ c
       write(lfntop,1004) q14fac,releps,0.0d0,0
  1004 format(3f12.6,i7)
       if(ipnum.eq.1) then
+c
+c     Write atom_types
+c
       do 1 i=1,nats
       write(lfntop,1005) i,latt(1,lats(1,i)),catt(1,lats(1,i)),
      + ratt(lats(1,i))
  1005 format(2i7,1x,a6,f12.6)
     1 continue
+c
+c     Write c6, c12 coefficients
+c     - patt(1,1,*,*): C_6    coefficient
+c     - patt(1,2,*,*): C_6/2  coefficient
+c     - patt(2,1,*,*): C_12   coefficient
+c     - patt(2,2,*,*): C_12/2 coefficient
+c
       do 2 i=1,nats
       do 3 j=i,nats
       write(lfntop,1006) i,j,
@@ -218,16 +228,29 @@ c
  1006 format(2i7,4(1pe12.5))
     3 continue
     2 continue
+c
+c     Write the atomic partial charges
+c
       do 322 i=1,nqu
       write(lfntop,1304) i,qatm(1,1,i),qatm(1,2,i)
  1304 format(i7,0pf12.6,1pe12.5)
   322 continue
       else
+c
+c     Write atom_types
+c
       do 51 i=1,nats
       write(lfntop,1055) i,(latt(1,lats(j,i)),catt(1,lats(j,i)),
      + ratt(lats(j,i)),j=ipfr,ipto)
  1055 format(2i7,1x,a6,f12.6,/,(7x,i7,1x,a6,f12.6))
    51 continue
+c
+c     Write c6, c12 coefficients
+c     - patt(1,1,*,*): C_6    coefficient
+c     - patt(1,2,*,*): C_6/2  coefficient
+c     - patt(2,1,*,*): C_12   coefficient
+c     - patt(2,2,*,*): C_12/2 coefficient
+c
       do 52 i=1,nats
       do 53 j=i,nats
       write(lfntop,1056) i,j,
@@ -236,11 +259,17 @@ c
  1056 format(2i7,4(1pe12.5),/,(14x,4(1pe12.5)))
    53 continue
    52 continue
+c
+c     Write atom_types
+c
       do 5322 i=1,nqu
       write(lfntop,1354) i,(qatm(j,1,i),qatm(j,2,i),j=ipfr,ipto)
  1354 format(i7,0pf12.6,1pe12.5,/,(7x,0pf12.6,1pe12.5))
  5322 continue
       endif
+c
+c     Write info about each residue
+c
       nbsg(29,1)=natmt-natm
       nbsg(29,2)=lseq(3,1)
       do 5342 i=1,nseq
@@ -257,6 +286,9 @@ c
   529 continue
       nd=nd+j
    29 continue
+c
+c     Numbers of parameters for solvent
+c
       if(ffield(1:5).eq.'amber') then
       write(lfntop,1008) natmt-natm,nbndt-nbnd,nangt-nang,
      + nd+nimpt-nimp,0,n3rdt-n3rd,nnon
@@ -278,6 +310,9 @@ c
   530 continue
       nd=nd+j
    30 continue
+c
+c     Numbers of parameters for solute
+c
       if(ffield(1:5).eq.'amber') then
       write(lfntop,1009) natm,nbnd,nang,nd+nimp,0,n3rd,nexc,0,0,0
       else
@@ -286,12 +321,20 @@ c
       endif
       nbsg(11,2)=nexc
 c
+c     Write solvent atom names
+c
       if(natmt.gt.natm) then
       do 4 i=natm+1,natmt
       write(lfntop,1007) cseq(nseq+1),catm(1,i)(1:5),latm(3,i),
      + latm(7,i),latm(7,i),latm(7,i),i-natm
  1007 format(a10,a5,1x,25x,4i7,i7)
     4 continue
+c
+c     Write solvent bond parameters
+c     - atom i
+c     - atom j
+c     - bond length
+c     - force constant
 c
       if(nbndt.gt.nbnd) then
       do 20 i=nbnd+1,nbndt
@@ -317,6 +360,8 @@ c
       nbsg(16,1)=nbndt-nbnd
       endif
 c
+c     Write solvent bond angle parameters
+c
       if(nangt.gt.nang) then
       do 21 i=nang+1,nangt
       write(lfntop,1114) lang(1,i)-natm,lang(2,i)-natm,lang(3,i)-natm,
@@ -339,6 +384,8 @@ c
    21 continue
       nbsg(17,1)=nangt-nang
       endif
+c
+c     Write solvent dihedral angle parameters
 c
       if(ndiht.gt.ndih) then
       do 22 i=ndih+1,ndiht
@@ -389,6 +436,8 @@ c
       write(lfntop,1121) (lnon(2,i)-natm,i=1,nnon)
  1121 format(11i7)
       endif
+c
+c     Write solvent name (and wcorr?)
 c
       write(lfntop,1122) cseq(nseq+1),slvnam
  1122 format(a10,a3)

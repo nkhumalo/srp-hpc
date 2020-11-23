@@ -14,6 +14,10 @@ The structure was processed according to following steps:
 * 3aiy-fixed.pdb - removed the phenol groups present in the structure
   (simply deleting all "HETATM" lines, and the corresponding "CONNCT" lines)
 
+* 3aiy-fixed-nw.pdb - translated the PDB to the NWChem dialect using
+
+  * pdb_amber2nwchem -i 3aiy-fixed.pdb -o 3aiy-fixed-nw.pdb
+
 * 3aiy-fixed-scaled.pdb - scaled the atom coordinates by a factor of 2
   to separate the insulin proteins (use the pdb_scale program from 
   nwchem/contrib/pdb_tools).

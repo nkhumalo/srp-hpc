@@ -67,6 +67,7 @@ c
       lnames=.false.
       open(unit=lfntmp,file=filtmp(1:index(filtmp,' ')-1),
      + form='formatted',status='old',err=99)
+      rewind(unit=lfntmp)
       lnames=.true.
    99 continue
       endif

@@ -1,0 +1,21 @@
+echo
+start md_dat
+
+set sp:adios_mode BPFile
+set sp:adios_mode Null
+
+md
+  msa 10000
+  system 1ai0_md
+  leapfrog
+  step 0.0001 equil 0 data 100000
+  isotherm 298.15 trelax 0.1
+  isobar
+  noshake
+  #print step 1 extra out6
+  print out6
+  record coord 100 ascii
+  vreass 1 298.15 fraction 0.05
+end
+
+task md dynamics

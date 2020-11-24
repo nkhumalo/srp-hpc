@@ -622,14 +622,6 @@ SSBOND  15 CYS I   20    CYS J   19                          1555   1555  2.02
 SSBOND  16 CYS K    6    CYS K   11                          1555   1555  2.02
 SSBOND  17 CYS K    7    CYS L    7                          1555   1555  2.02
 SSBOND  18 CYS K   20    CYS L   19                          1555   1555  2.02
-LINK        ZN    ZN B  31                 NE2 HIS B  10     1555   1555  2.45
-LINK        ZN    ZN B  31                 NE2 HIS F  10     1555   1555  2.42
-LINK        ZN    ZN B  31                 NE2 HIS J  10     1555   1555  2.36
-LINK        ZN    ZN H  31                 NE2 HIS H  10     1555   1555  2.12
-LINK        ZN    ZN H  31                 NE2 HIS L  10     1555   1555  2.27
-LINK        ZN    ZN H  31                 NE2 HIS D  10     1555   1555  2.45
-LINK        ZN    ZN H  31                 O   HOH H  32     1555   1555  2.22
-LINK        ZN    ZN B  31                 O   HOH J  31     1555   1555  2.14
 SITE     1 AC1  4 LEU B   6  HIS B  10  LEU F   6  HIS F  10
 SITE     1 AC2  7 GLN A   5  CYS A   6  ILE A  10  CYS A  11
 SITE     2 AC2  7 SER A  12  HIS B  10  HIS F   5

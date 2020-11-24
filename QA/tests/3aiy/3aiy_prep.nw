@@ -1,0 +1,34 @@
+echo
+start md_dat
+
+prepare
+  #print sequence atomtypes where
+  #print sequence 
+  system 3aiy_md
+  counter 6 ZN
+  new_rst
+  new_top new_seq
+  source 3aiy-fixed-nw.pdb
+  #solvent name HOH model spce
+  #solvate 
+  vacuo
+  write pdb 3aiy-prep.pdb
+  write rst 3aiy_md.rst
+end
+
+task prepare
+
+prepare
+  system 3aiy_md
+  counter 6 ZN
+  new_rst
+  #new_top new_seq
+  source 3aiy-fixed-scaled-nw.pdb
+  #solvent name HOH model spce
+  #solvate 
+  vacuo
+  write pdb 3aiy-prep-scaled.pdb
+  write rst 3aiy_md.rst
+end
+
+task prepare

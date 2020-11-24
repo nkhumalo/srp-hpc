@@ -1,0 +1,17 @@
+echo
+start md_dat
+
+set sp:adios_mode Null
+
+md
+  msa 10000
+  system 1ai0_md
+  leapfrog
+  sd 500
+  #cg 200
+  print step 10 out6
+  record rest 10 coord 10
+end
+
+task md optimize
+

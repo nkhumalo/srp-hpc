@@ -1,0 +1,13 @@
+echo
+start md_dat
+
+analysis
+  system 1ai0_md
+  reference 1ai0_md.rst
+  file 1ai0_md.trj
+  write 1 solute 1ai0-min.pdb
+  frames 1 100 1
+  copy solute 1ai0-min.crd
+end
+
+task analysis

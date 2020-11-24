@@ -5,10 +5,10 @@ prepare
   system 1ai0_md
   center
   orient
-  #counter 8 Na
+  counter 8 Na
   new_rst
   new_top new_seq
-  source 1ai0-fixed-nw-prep.pdb
+  source 1ai0-fixed-nw.pdb
   solvent name HOH model spce
   solvate cube 7.00
   #vacuo

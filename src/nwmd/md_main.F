@@ -1701,6 +1701,7 @@ c
       external timer_wall_total
       real*8 timer_wall_total
 c
+      logical omax
       real*8 dxmax,wallt,syntim
       integer*4 adios_comm_world
       integer*4 adios_err
@@ -1971,10 +1972,12 @@ c
 c     velocity scaling to preset temperature
 c
       if(frequency(mdstep,nfgaus)) then
+      omax=iand(ivopt,8).eq.8
       call cf_vscale(tgauss,nwmloc,nsaloc,
      + dbl_mb(i_vw),dbl_mb(i_vwt),dbl_mb(i_vs),dbl_mb(i_vst),
      + int_mb(i_iw+(lwdyn-1)*mwm),
-     + int_mb(i_is+(lsdyn-1)*msa),int_mb(i_is+(lsatt-1)*msa))
+     + int_mb(i_is+(lsdyn-1)*msa),int_mb(i_is+(lsatt-1)*msa),
+     + omax)
       if(iand(ivopt,1).eq.1) nfgaus=0
       endif
 c

@@ -2202,7 +2202,7 @@ c
       return
       end
       subroutine cf_vscale(tgauss,numw,nums,vw,vwt,vs,vst,iwdt,
-     + isdt,isat)
+     + isdt,isat,omax)
 c
       implicit none
 c
@@ -2213,15 +2213,16 @@ c
       integer numw,nums
       real*8 vw(mwm,3,mwa),vwt(mwm,3,mwa),vs(msa,3),vst(msa,3)
       integer iwdt(mwm),isdt(msa),isat(msa)
+      logical omax ! if .true. cap the temperature
 c
       call cf_vscal(tgauss,
      + numw,nums,vw,vwt,vs,vst,iwdt,isdt,int_mb(i_iwa),
-     + isat,dbl_mb(i_mas))
+     + isat,dbl_mb(i_mas),omax)
 c
       return
       end
       subroutine cf_vscal(tgauss,
-     + numw,nums,vw,vwt,vs,vst,iwdt,isdt,iwat,isat,wgt)
+     + numw,nums,vw,vwt,vs,vst,iwdt,isdt,iwat,isat,wgt,omax)
 c
       implicit none
 c
@@ -2229,6 +2230,7 @@ c
 #include "util.fh"
 #include "msgids.fh"
 c
+      logical omax ! if .true. cap the temperature
       real*8 tgauss
       integer numw,nums
       real*8 vw(mwm,3,mwa),vwt(mwm,3,mwa),vs(msa,3),vst(msa,3)
@@ -2291,6 +2293,9 @@ c      endif
 c
       if(numw.gt.0.and.tempgw.gt.tiny) then
       gaufcw=sqrt(tgauss/tempgw)
+      if(omax) then
+        gaufcw=min(1.10d0,gaufcw)
+      endif
       do 7 iwa=1,nwa
       do 8 ix=1,3
       do 9 iwm=1,numw
@@ -2303,6 +2308,9 @@ c
 c
       if(nums.gt.0.and.tempgs.gt.tiny) then
       gaufcs=sqrt(tgauss/tempgs)
+      if(omax) then
+        gaufcs=min(1.10d0,gaufcs)
+      endif
       do 10 ix=1,3
       do 11 isa=1,nums
       vs(isa,ix)=gaufcs*vs(isa,ix)

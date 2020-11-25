@@ -378,12 +378,12 @@ c - blocking if this is inefficient
 c - note integrals computed 4 times minimal list
 c ------------------------------------------------------------
 c
-      call ga_sync()
+c      call ga_sync()
       tx(1)=tcgtime()
       if (iam.eq.0.and.iprt.gt.5)
      &    print *,' begin parallel integral generation'
       call ga_zero(g_c)
-      call ga_sync()
+c      call ga_sync()
       faddr=0.d0
       kaddr=0.d0
       logsize=ma_sizeof(MT_LOG,2,MT_BYTE)
@@ -538,9 +538,9 @@ c Determine if we can still store the integrals to disk
 c If not, calculate and set integral recalculation point icnt
 c
             if (use_storage) then
-              store_need=dfloat(ma_sizeof(MT_DBL,2*nfj*nfl*nbf*(nbf+1),
+              store_need=dble(ma_sizeof(MT_DBL,2*nfj*nfl*nbf*(nbf+1),
      $                                    MT_BYTE))
-              store_need=store_need+dfloat(ma_sizeof(MT_INT,nsh*nsh+2,
+              store_need=store_need+dble(ma_sizeof(MT_INT,nsh*nsh+2,
      $                                               MT_BYTE))
               if ((store_need+store_used).gt.store_avail) then
                 use_storage=.false.

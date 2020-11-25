@@ -1126,6 +1126,11 @@ c
       goto 900
       endif
 c
+      if(inp_compare(.false.,'max',item)) then
+      ivopt=ior(ivopt,8)
+      goto 900
+      endif
+c
       goto 2
       endif
 c

@@ -50,6 +50,8 @@ c      complex*16 G1(nfft3d,nemax)
       real*8 exc_atom,pxc_atom,ehartree_atom,ecmp_cmp,ecmp_pw
       real*8 Enew0,tmin0,deltae0,deltac0
 
+      logical cosmo_on,cosmo1_on,V_APC_on
+      real*8  eapc,papc
       
 
 *     **** external functions ****
@@ -121,11 +123,19 @@ c      complex*16 G1(nfft3d,nemax)
       external psi_1meta_gga_pxc,ion_disp_energy
       real*8   psi_1energy
       external psi_1energy
-       
+
+      logical  nwpw_cosmo_on,nwpw_cosmo1_on,pspw_V_APC_on
+      external nwpw_cosmo_on,nwpw_cosmo1_on,pspw_V_APC_on
+      real*8   psi_1vl_cosmo,nwpw_cosmo_EQionq,nwpw_cosmo_Eqq
+      external psi_1vl_cosmo,nwpw_cosmo_EQionq,nwpw_cosmo_Eqq
+
   
       call Pack_npack(1,npack1)
       neall = psi_neq(1)+psi_neq(2)
       pawexist = psp_pawexist()
+      cosmo_on  = nwpw_cosmo_on()
+      cosmo1_on = nwpw_cosmo1_on()
+      V_APC_on  = pspw_V_APC_on()
 
       Estart = Enew
       if (current_iteration.eq.1) then
@@ -470,6 +480,35 @@ c     call psi_check()
 
          E(45) = psp_ion_core()            !*** ion core energy - independent of psi ***
 
+      end if
+
+*     **** COSMO terms ****
+      if (cosmo_on) then
+
+         !*** cosmo1 ****
+         if (cosmo1_on) then
+            E(46) = psi_1vl_cosmo()
+            E(47) = nwpw_cosmo_EQionq()
+            E(48) = nwpw_cosmo_Eqq()
+
+         !*** cosmo2 ****
+         else
+            call electron_apc_energies(eapc,papc)
+            E(22) = eapc
+            E(23) = papc
+            E(46) = eapc
+            E(47) = nwpw_cosmo_EQionq() !** E(Qion|q)
+            E(48) = nwpw_cosmo_Eqq()    !** E(q|q)
+
+            !E(1)  = E(1) + E(22) - E(23) + E(47) + E(48)
+            E(1)  = E(1) + E(22) - E(23)
+         end if
+
+      else if (V_APC_on) then
+         call electron_apc_energies(eapc,papc)
+         E(22) = eapc
+         E(23) = papc
+         E(1)  = E(1) + eapc - papc
       end if
 
 *     **** get pspw_charge  energies ****

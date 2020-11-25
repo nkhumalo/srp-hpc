@@ -476,7 +476,7 @@ c      call frac_occ_init(rtdb,ispin,ne)
       call psp_U_init()
 
 *     **** initialize META GGA ****
-      call nwpw_meta_gga_init()
+      call nwpw_meta_gga_init(control_gga())
 
 *     **** initialize vdw ****
       call vdw_DF_init()
@@ -974,7 +974,7 @@ c      call xyz_write()
       if (icount.lt.it_out) go to 101
       if (taskid.eq.MASTER) 
      > write(luout,*)
-     > '*** arived at the Maximum iteration.   terminated.'
+     > '*** arrived at the Maximum iteration.   terminated.'
  
 *::::::::::::::::::::  end of iteration loop  :::::::::::::::::::::::::
 
@@ -1378,6 +1378,7 @@ c         end if
 c      call frac_occ_end()
       if (control_Nose()) call Nose_end()
       if (psp_pawexist()) call nwpw_gintegrals_end()
+      !if (psp_pawexist()) call nwpw_cgintegrals_end()
 
       value = BA_free_heap(psir(2))
       value = BA_free_heap(Hpsi(2))
@@ -1489,7 +1490,7 @@ c     >        ' set nwpw:makehmass2 .false.')
  1181 FORMAT(/' initial velocity of ions:')
  1190 FORMAT(5X, I4, A5  ,' (',3F11.5,' ) - atomic mass= ',F7.3,' ')
  1191 FORMAT(5X, I4, A5  ,' (',3F11.5,
-     >       ' ) - atomic mass= ',F6.3,' - fixed')
+     >       ' ) - atomic mass= ',F7.3,' - fixed')
  1192 FORMAT(5X, I4, A5  ,' (',3F11.5,' )')
  1193 FORMAT(5X, I4, A5, ' (',3F11.5,
      >       ' ) - atomic mass= ',F7.3,' - z fixed')
@@ -1539,7 +1540,7 @@ c     >        ' set nwpw:makehmass2 .false.')
      &       '( ',I8,' waves ',I8,' per task)')
   
  1260 FORMAT(5X,' Ewald summation: cut radius=',F8.2,'  and',I3)
- 1261 FORMAT(5X,'                   madelung=',f11.8)
+ 1261 FORMAT(5X,'                   madelung=',f14.8)
  1270 FORMAT(/' technical parameters:')
  1271 FORMAT(5x, ' translation constrained')
  1272 FORMAT(5x, ' rotation constrained')

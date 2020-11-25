@@ -18,25 +18,27 @@ c
 c
       integer ind               ! Index of matched directive
       integer num_dirs          ! No. of known directives
-      parameter (num_dirs = 6)
+      parameter (num_dirs = 7)
       character*22 dirs(num_dirs)
       character*255 test
 
       character*50 rtdb_name
       character*50 zone_name
-      integer          num_kvectors,k,l
+      integer          num_kvectors,k,l,num_kvectors_print
       double precision kvector(4)
       integer kvs(2),kvs_new(2)
 
       data dirs / 'zone_name:','zone_name',
      >            'kvector:','kvector',
      >            'path',
+     >            'max_kpoints_print',
      >            'end'/
 
 c     
 c     **** intialize stuff ****
-      num_kvectors = 0
-      zone_name    = 'zone_default'
+      num_kvectors       = 0
+      num_kvectors_print = 0
+      zone_name          = 'zone_default'
 c
 c
  10   if (.not. inp_read()) 
@@ -52,7 +54,7 @@ c
      &       INPUT_ERR)
 
 
-      goto ( 100,100,200,200,300,
+      goto ( 100,100,200,200,300,400,
      >      9999) ind
       call errquit(
      >      'brillouine_zone_input: unimplemented directive', ind,
@@ -121,6 +123,15 @@ c
 
       goto 10
 
+
+c
+c max_kpoints_print
+c
+ 400  if (.not.inp_i(num_kvectors_print)) num_kvectors_print = 0
+
+      goto 10
+
+
 *     ***** add brillouin_zone to rtdb ****
  9999 continue
 
@@ -131,6 +142,14 @@ c
      >  call errquit(
      >  'brillouin_zone_input: rtdb_put(number_kvectors) failed', 0,
      &       RTDB_ERR)
+
+      if (num_kvectors_print.gt.0) then
+         rtdb_name = zone_name(1:l)//':number_kvectors_print'
+         if (.not. rtdb_put(rtdb,rtdb_name,mt_int,1,num_kvectors_print))
+     >     call errquit(
+     >     'brillouin_zone_input: rtdb_put(number_kvectors) failed', 0,
+     >       RTDB_ERR)
+      end if
 
       rtdb_name = zone_name(1:l)//':kvectors'
       if (.not. rtdb_put(rtdb,rtdb_name,mt_dbl,
@@ -200,9 +219,9 @@ c
       do i3=0,(nz-1)
       do i2=0,(ny-1)
       do i1=0,(nx-1)
-         xx = 1.0 + 2*i1 - nx
-         yy = 1.0 + 2*i2 - ny
-         zz = 1.0 + 2*i3 - nz
+         xx = 1.0d0 + 2*i1 - nx
+         yy = 1.0d0 + 2*i2 - ny
+         zz = 1.0d0 + 2*i3 - nz
  
          kx = xx*xxx
          ky = yy*yyy
@@ -335,7 +354,7 @@ c
 
       !**** local variables ****
       character*50 rtdb_name
-      integer i1,i2,i3,k,l,num_kvectors
+      integer i1,i2,i3,k,l,num_kvectors,nn(3)
       integer kvs(2)
       real*8  kx,ky,kz,xx,yy,zz,xxx,yyy,zzz
 
@@ -380,7 +399,7 @@ c
       if (.not. rtdb_put(rtdb,rtdb_name,mt_int,1,num_kvectors))
      >  call errquit(
      >  'dos_states_set: rtdb_put(number_kvectors) failed', 0,
-     &       RTDB_ERR)
+     >       RTDB_ERR)
 
       rtdb_name = zone_name(1:l)//':kvectors'
       if (.not. rtdb_put(rtdb,rtdb_name,mt_dbl,
@@ -388,6 +407,15 @@ c
      >                    dbl_mb(kvs(1))))
      >  call errquit(
      >  'dos_states_set: rtdb_put(number_kvectors) failed', 0,
+     >       RTDB_ERR)
+
+      nn(1) = nx
+      nn(2) = ny
+      nn(3) = nz
+      rtdb_name = zone_name(1:l)//':dos-grid'
+      if (.not. rtdb_put(rtdb,rtdb_name,mt_int,3,nn))
+     >  call errquit(
+     >  'dos_states_set: rtdb_put(monkhorst-pack) failed', 0,
      &       RTDB_ERR)
 
 

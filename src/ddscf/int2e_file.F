@@ -33,7 +33,6 @@ c
       character*(nw_max_path_len) scratchdir
       external util_scratch_dir_avail_for_me
 c
-#include "cint2esave.fh"
 c
 c     Open file returning CHEMIO filehandle (not yet)
 c     Return true on success, false on failure
@@ -236,7 +235,6 @@ c
 #include "inp.fh"
 #include "mafdecls.fh"
 #include "msgids.fh"
-#include "cint2esave.fh"
 #include "eaf.fh"
 #include "util.fh"
 #include "global.fh"
@@ -295,7 +293,6 @@ c
       implicit none
 #include "cint2efile.fh"
 #include "inp.fh"
-#include "cint2esave.fh"
 c
 c     rewind the file ready to read integrals ... hide any header.
 c
@@ -332,7 +329,6 @@ c
       logical int2e_buf_write
       external int2e_buf_write
 #include "bitops_decls.fh"
-#include "cint2esave.fh"
 #include "bitops_funcs.fh"
 c
       int2e_set_bf_range = .true.
@@ -374,14 +370,14 @@ c
 c
 c     Store ranges so that can survive packing to 1 byte
 c
-      labels(1, next_value  ) = iand(rshift(ilo,8),255)
-      labels(2, next_value  ) = iand(rshift(jlo,8),255)
-      labels(3, next_value  ) = iand(rshift(klo,8),255)
-      labels(4, next_value  ) = iand(rshift(llo,8),255)
-      labels(1, next_value+1) = iand(rshift(ihi,8),255)
-      labels(2, next_value+1) = iand(rshift(jhi,8),255)
-      labels(3, next_value+1) = iand(rshift(khi,8),255)
-      labels(4, next_value+1) = iand(rshift(lhi,8),255)
+      labels(1, next_value  ) = iand(ishft(ilo,-8),255)
+      labels(2, next_value  ) = iand(ishft(jlo,-8),255)
+      labels(3, next_value  ) = iand(ishft(klo,-8),255)
+      labels(4, next_value  ) = iand(ishft(llo,-8),255)
+      labels(1, next_value+1) = iand(ishft(ihi,-8),255)
+      labels(2, next_value+1) = iand(ishft(jhi,-8),255)
+      labels(3, next_value+1) = iand(ishft(khi,-8),255)
+      labels(4, next_value+1) = iand(ishft(lhi,-8),255)
       labels(1, next_value+2) = iand(ilo,255)
       labels(2, next_value+2) = iand(jlo,255)
       labels(3, next_value+2) = iand(klo,255)
@@ -432,7 +428,6 @@ c     Hard fail for any other errors.
 c
       logical int2e_buf_read
       external int2e_buf_read
-#include "cint2esave.fh"
 c
       int2e_get_bf_range = .true.
 c
@@ -505,7 +500,6 @@ c
       external int2e_buf_write, int2e_file_write_big
 c
       integer ind
-#include "cint2esave.fh"
 #include "itri.fh"
 c
       int2e_file_write = .true.
@@ -563,7 +557,6 @@ c
       double precision part, absg, g
       logical int2e_buf_write
       external int2e_buf_write
-#include "cint2esave.fh"
 c
       g = gg                    ! Do not modify arguments
       int2e_file_write_big = .true.
@@ -621,7 +614,6 @@ c
       integer ibase, jbase, kbase, lbase
       logical int2e_buf_read
       external int2e_buf_read
-#include "cint2esave.fh"
 c
       int2e_file_read = .true.
       nints = 0
@@ -689,7 +681,6 @@ c
       integer neri
       logical int2e_buf_read
       external int2e_buf_read
-#include "cint2esave.fh"
 c
 c     While (integrals available) read buffers
 c
@@ -737,7 +728,6 @@ c
       integer neri
       logical int2e_buf_read
       external int2e_buf_read
-#include "cint2esave.fh"
 c
 c     While (integrals available) read buffers
 c
@@ -785,7 +775,6 @@ c
 #include "cint2efile.fh"
 #include "mafdecls.fh"
 #include "inp.fh"
-#include "cint2esave.fh"
 #include "eaf.fh"
       logical oend           ! [input]
 c
@@ -944,7 +933,6 @@ c
 #include "errquit.fh"
 #include "cint2efile.fh"
 #include "mafdecls.fh"
-#include "cint2esave.fh"
 #include "eaf.fh"
 #include "global.fh"
 c
@@ -1029,7 +1017,6 @@ c
       subroutine int2e_buf_clear()
       implicit none
 #include "cint2efile.fh"
-#include "cint2esave.fh"
 c
 c     empty the integral buffer ... only the count of integrals
 c     in the current range in the buffer is present and it is zero
@@ -1152,7 +1139,6 @@ c
 c
       integer i, ind, v1, v2, mask, two31
 #include "bitops_decls.fh"
-#include "cint2esave.fh"
 #include "bitops_funcs.fh"
 c
 c
@@ -1170,11 +1156,11 @@ c
          end do
       else if (nint_per_dbl .eq. 1) then
          ind = 1
-         mask  = lshift(1,32)-1  ! 2^32 - 1
-         two31 = lshift(1,31)
+         mask  = ishft(1,32)-1  ! 2^32 - 1
+         two31 = ishft(1,31)
          two31 = two31-1
          do i = 1, n_per_rec/2
-            v1 = iand(rshift(ibuf(i),32),mask) - two31
+            v1 = iand(ishft(ibuf(i),-32),mask) - two31
             v2 = iand(ibuf(i),mask) - two31
             values(ind  ) = precision*dble(v1)
             values(ind+1) = precision*dble(v2)
@@ -1203,7 +1189,6 @@ c
 c
       integer i, ind, v1, v2, two31
 #include "bitops_decls.fh"
-#include "cint2esave.fh"
 #include "bitops_funcs.fh"
 c
 c     Copy count
@@ -1220,12 +1205,12 @@ c
          end do
       else if (nint_per_dbl .eq. 1) then
          ind = 1
-         two31 = lshift(1,31)
+         two31 = ishft(1,31)
          two31 = two31-1
          do i = 1, n_per_rec/2
             v1 = nint(values(ind  )*scale) + two31
             v2 = nint(values(ind+1)*scale) + two31
-            ibuf(i) = ior(lshift(v1,32),v2)
+            ibuf(i) = ior(ishft(v1,32),v2)
             ind = ind + 2
          end do
       else
@@ -1252,12 +1237,11 @@ c
       integer n
 c
 #include "bitops_decls.fh"
-#include "cint2esave.fh"
 #include "bitops_funcs.fh"
 c
       n = labels(1,cntr_ptr)
-      labels(1,cntr_ptr) = iand(rshift(n,16),255)
-      labels(2,cntr_ptr) = iand(rshift(n,8),255)
+      labels(1,cntr_ptr) = iand(ishft(n,-16),255)
+      labels(2,cntr_ptr) = iand(ishft(n,-8),255)
       labels(3,cntr_ptr) = iand(n,255)
       labels(4,cntr_ptr) = 0
       values(cntr_ptr)   = 0.0d0
@@ -1270,7 +1254,6 @@ c
 c     
       integer i, j, k, l
 #include "bitops_decls.fh"
-#include "cint2esave.fh"
 #include "bitops_funcs.fh"
 c
       i = labels(1,cntr_ptr)
@@ -1278,7 +1261,7 @@ c
       k = labels(3,cntr_ptr)
       l = labels(4,cntr_ptr)
 c
-      nleft_in_range = ior(lshift(ior(lshift(i,8),j),8),k)
+      nleft_in_range = ior(ishft(ior(ishft(i,8),j),8),k)
       if (i.gt.255 .or. j.gt.255 .or. k.gt.255 .or. l.ne.0 .or.
      $     nleft_in_range.gt.n_in_rec .or.
      $     values(cntr_ptr).ne.0.0d0) then
@@ -1320,7 +1303,6 @@ c
       double precision nq
       logical ofirst
       data ofirst /.true./      ! If first call to this routine
-#include "cint2esave.fh"
 c     
       int2e_test_mem = .false.
 c

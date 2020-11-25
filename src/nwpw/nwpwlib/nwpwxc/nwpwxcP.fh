@@ -635,6 +635,18 @@ c
       integer NWXCP_PBE_D1       !< The PBE-D1 functional 
                                  !< (exchange and correlation)
       parameter (NWXCP_PBE_D1 = NWXCP_VS98 + 1)
+
+      integer NWXCP_SCAN         !< The SCAN functional 
+                                 !< (exchange and correlation)
+      parameter (NWXCP_SCAN = NWXCP_PBE_D1 + 1)
+
+      integer NWXCP_X_SCAN       !< The SCAN functional 
+                                 !< (exchange)
+      parameter (NWXCP_X_SCAN = NWXCP_SCAN + 1)
+
+      integer NWXCP_C_SCAN       !< The SCAN functional 
+                                 !< (correlation)
+      parameter (NWXCP_C_SCAN = NWXCP_X_SCAN + 1)
 C  
 C  Internally the functional specification will be stored using 
 C  a collection of datastructures. For specific terms that the library
@@ -662,7 +674,7 @@ C
                                     !< kinetic energy density?
       logical nwpwxc_oroot            !< Is this the root process?
       integer NWXC_MAX_F !< The maximum number of terms in a functional
-      parameter (NWXC_MAX_F = 50)
+      parameter (NWXC_MAX_F = 53)
       integer          nwpwxc_num_f             !< The actual number of
                                               !< functional terms
       integer          nwpwxc_ids(NWXC_MAX_F)   !< The functional

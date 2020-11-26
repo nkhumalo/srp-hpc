@@ -8,9 +8,15 @@ prepare
   counter 8 Na
   new_rst
   new_top new_seq
-  source 1ai0-fixed-nw.pdb
+  source 1ai0-fixed-renum-nw.pdb
   solvent name HOH model spce
   solvate cube 7.00
+  link 307:ZN  31:_NE2
+  link 307:ZN 133:_NE2
+  link 307:ZN 235:_NE2
+  link 308:ZN 184:_NE2
+  link 308:ZN 286:_NE2
+  link 308:ZN  82:_NE2
   #vacuo
   write pdb 1ai0-prep.pdb
   write rst 1ai0_md.rst

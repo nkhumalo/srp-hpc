@@ -503,6 +503,9 @@ c     GLY  HN  ->  H
 c          HA1 -> 2HA
 c          HA2 -> 3HA
 c          HA3 -> 2HA
+c          H1  -> 2H
+c          H2  -> 3H
+c          H3  -> 4H
 c
 c     Some PDB files list HA1, HA2, some list HA2, HA3, ultimately both
 c     cases need to map to 2HA, 3HA. Hence the funky mapping of HA1,
@@ -515,6 +518,24 @@ c
       catm(2,i)(1:4)=' H  '
       if(util_print('sequence',print_high)) then
       write(lfnout,2002) cres,latm(1,i),'HN  to H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H1 ') then
+      catm(2,i)(1:4)='2H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'H1 to 2H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H2 ') then
+      catm(2,i)(1:4)='3H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'H2 to 3H'
+      endif
+      endif
+      if(catm(2,i)(1:4).eq.' H3 ') then
+      catm(2,i)(1:4)='4H  '
+      if(util_print('sequence',print_high)) then
+      write(lfnout,2002) cres,latm(1,i),'H3 to 4H'
       endif
       endif
       if(catm(2,i)(1:4).eq.' HA1') then

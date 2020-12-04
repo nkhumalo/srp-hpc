@@ -1463,7 +1463,7 @@ c
       integer il,ih,jl,jh
 c
       do 1 j=1,mip2
-      do 2 i=1,30
+      do 2 i=1,mbox
       ipl(i,j)=0
     2 continue
     1 continue
@@ -1509,8 +1509,7 @@ c
       call ga_put(ga_ip,il,ih,jl,jh,ipl,mbox)
 c
       if(iand(idebug,2).eq.2) then
-      write(lfndbg,8000) (i,ipl(30+i,1),i=1,ipl(1,1))
- 8000 format('ipl',/,(2i5))
+      call sp_pripl("sp_initip",lfndbg)
       call util_flush(lfndbg)
       endif
 c

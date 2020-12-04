@@ -2,7 +2,7 @@
 # $Id$
 #
 #
-OBJ=sp_io_vars.o sp_io.o sp_init.o sp_main.o
+OBJ=sp_io_vars.o sp_io.o sp_init.o sp_main.o sp_util.o
 
 LIBRARY=libspace.a
 

@@ -24,6 +24,7 @@ c
       integer nas,nbt,nhs,nds,nos,nts,nxs
       integer numbl,numbi,numbd,iqfr,iqto,nsad,maxpro
       character*10 string
+      integer ierr
 c
       real*8 cf_charge
       external cf_charge
@@ -32,6 +33,7 @@ c
       call md_abort('ERROR IN MEMORY USE AT START RDTOP',0)
       endif
 c
+      ierr = 1
       natyps = 0
       nqtyps = 0
       nbw = 0
@@ -69,19 +71,26 @@ c
 c
  1000 format(a)
       read(lfntop,1001,end=9997,err=9998) title
+      ierr = ierr + 1
  1001 format(a80)
       read(lfntop,1002,end=9997,err=9998) topdat,toptim,ffield
+      ierr = ierr + 1
  1002 format(12x,3a10)
       nhp=2
       if(ffield(1:6).eq.'charmm') nhp=4
       read(lfntop,1003,end=9997,err=9998) nparms
+      ierr = ierr + 1
       mset=nparms
       if(lfree) mset=6
       read(lfntop,1003,end=9997,err=9998) natyps
+      ierr = ierr + 1
       read(lfntop,1003,end=9997,err=9998) nqtyps
+      ierr = ierr + 1
       read(lfntop,1003,end=9997,err=9998) nseq
+      ierr = ierr + 1
  1003 format(i7)
       read(lfntop,1004,end=9997,err=9998) q14fac,releps
+      ierr = ierr + 1
  1004 format(2f12.6)
       if(q14fac.lt.small) q14fac=one
       if(releps.lt.small) releps=one
@@ -90,6 +99,7 @@ c
       do 1 i=1,natyps
       read(lfntop,1005,end=9997,err=9998)
      + (idata(k),cdata(k),rdata(k),k=1,nparms)
+      ierr = ierr + 1
  1005 format(7x,i7,1x,a6,f12.6)
       call cf_para(i,cdata,rdata,idata)
   101 continue
@@ -101,6 +111,7 @@ c
       do 3 j=i,natyps
       read(lfntop,1006,end=9997,err=9998)
      + ((vdata(k,l),l=1,4),k=1,nparms)
+      ierr = ierr + 1
  1006 format(14x,4e12.5)
       call cf_parv(i,j,vdata)
     3 continue
@@ -111,6 +122,7 @@ c
       do 4 i=1,nqtyps
       read(lfntop,1007,end=9997,err=9998)
      + ((qdata(k,l),l=1,3),k=1,nparms)
+      ierr = ierr + 1
  1007 format(7x,f12.6,e12.5,f12.6)
       call cf_parq(i,qdata)
     4 continue
@@ -119,26 +131,32 @@ c
       endif
       do 4004 i=1,nseq
       read(lfntop,4008,end=9997,err=9998) string,maxpro
+      ierr = ierr + 1
  4008 format(a10,35x,i7)
       call cf_parseq(i,maxpro)
  4004 continue
       read(lfntop,1008,end=9997,err=9998) naw,nbw,nhw,ndw,now,ntw,nnw
+      ierr = ierr + 1
  1008 format(5i7,2i10)
       call cf_initb(1,1,nbw,2,nhw,nhp,ndw,3,now,3,ntw,2,nnw,2,naw)
       read(lfntop,1009,end=9997,err=9998) nas,nbt,nhs,nds,nos,nts,nxs
+      ierr = ierr + 1
  1009 format(5i7,3i10,2i7)
       call cf_initb(2,nas,nbt,2,nhs,nhp,nds,3,nos,3,nts,2,nxs,2,0)
       do 5 i=1,naw
       read(lfntop,1010,end=9997,err=9998) wnam(i),ia,iq
+      ierr = ierr + 1
  1010 format(a16,25x,2i7)
       call cf_parwiq(i,ia,iq)
     5 continue
       idata(4)=0
       do 6 i=1,nbw
       read(lfntop,1011,end=9997,err=9998) (idata(j),j=1,3)
+      ierr = ierr + 1
  1011 format(3i7)
       read(lfntop,2011,end=9997,err=9998)
      + ((pdata(k,j),k=1,2),j=1,nparms)
+      ierr = ierr + 1
  2011 format(f12.6,e12.5)
       if(noshak.eq.1.or.noshak.eq.3) idata(3)=0
       call cf_parbnd(1,i,idata,pdata)
@@ -147,9 +165,11 @@ c
       idata(5)=0
       do 7 i=1,nhw
       read(lfntop,1012,end=9997,err=9998) (idata(j),j=1,3)
+      ierr = ierr + 1
  1012 format(3i7)
       do 70 j=1,nparms
       read(lfntop,2012,end=9997,err=9998) (pdata(k,j),k=1,nhp)
+      ierr = ierr + 1
  2012 format(2(f10.6,e12.5))
    70 continue
       call cf_parang(1,i,idata,pdata)
@@ -157,9 +177,11 @@ c
       idata(6)=0
       do 8 i=1,ndw
       read(lfntop,1013,end=9997,err=9998) (idata(j),j=1,4)
+      ierr = ierr + 1
  1013 format(4i7)
       read(lfntop,2013,end=9997,err=9998)
      + (itemp(j),(pdata(k,j),k=2,3),j=1,nparms)
+      ierr = ierr + 1
  2013 format(i3,f10.6,e12.5)
       do 2008 j=1,nparms
       pdata(1,j)=dble(itemp(j))
@@ -168,9 +190,11 @@ c
     8 continue
       do 9 i=1,now
       read(lfntop,1014,end=9997,err=9998) (idata(j),j=1,4)
+      ierr = ierr + 1
  1014 format(4i7)
       read(lfntop,2014,end=9997,err=9998)
      + ((pdata(k,j),k=2,3),j=1,nparms)
+      ierr = ierr + 1
  2014 format(3x,f10.6,e12.5)
       do 2009 j=1,nparms
       pdata(1,j)=0.0d0
@@ -183,25 +207,31 @@ c
      + call md_abort('Failed to allocate temp array',0)
       if(ntw.gt.0) then
       read(lfntop,1015,end=9997,err=9998) (int_mb(i_i+i-1),i=1,ntw)
+      ierr = ierr + 1
  1015 format(11i7)
       read(lfntop,1015,end=9997,err=9998) (int_mb(i_j+i-1),i=1,ntw)
+      ierr = ierr + 1
       call cf_ndxtrd(1,int_mb(i_i),int_mb(i_j),ntw)
       endif
       if(nnw.gt.0) then
       read(lfntop,1016,end=9997,err=9998) (int_mb(i_i+i-1),i=1,nnw)
+      ierr = ierr + 1
  1016 format(11i7)
       read(lfntop,1016,end=9997,err=9998) (int_mb(i_j+i-1),i=1,nnw)
+      ierr = ierr + 1
       call cf_ndxxcl(1,int_mb(i_i),int_mb(i_j),nnw)
       endif
       read(lfntop,8888) string
  8888 format(a)
       read(lfntop,1024,end=9997,err=9998) (ewc(i),i=1,nparms)
+      ierr = ierr + 1
  1024 format(f12.6)
       if(.not.ma_verify_allocator_stuff()) then
       call md_abort('ERROR IN MEMORY IN RDTOP SOLVENT',0)
       endif
       do 10 i=1,nas
       read(lfntop,1017,end=9997,err=9998) stemp,j,k,l,m,m2,m3,m4
+      ierr = ierr + 1
  1017 format(a16,i3,2i7,21x,3i7,7x,i7)
 c 1017 format(a16,3i5,15x,3i5,5x,i5)
       if(i.eq.1) then
@@ -224,9 +254,11 @@ c      if(j.gt.nsm) nsm=j
       idata(4)=0
       do 11 i=1,nbt
       read(lfntop,1018,end=9997,err=9998) (idata(j),j=1,3)
+      ierr = ierr + 1
  1018 format(3i7)
       read(lfntop,2018,end=9997,err=9998)
      + ((pdata(k,j),k=1,2),j=1,nparms)
+      ierr = ierr + 1
  2018 format(f12.6,e12.5)
       if(noshak.eq.2.or.noshak.eq.3) idata(3)=0
       call cf_parbnd(2,i,idata,pdata)
@@ -235,9 +267,11 @@ c      if(j.gt.nsm) nsm=j
       idata(5)=0
       do 12 i=1,nhs
       read(lfntop,1019,end=9997,err=9998) (idata(j),j=1,3)
+      ierr = ierr + 1
  1019 format(3i7)
       do 120 j=1,nparms
       read(lfntop,2019,end=9997,err=9998) (pdata(k,j),k=1,nhp)
+      ierr = ierr + 1
  2019 format(2(f10.6,e12.5))
   120 continue
       call cf_parang(2,i,idata,pdata)
@@ -245,9 +279,11 @@ c      if(j.gt.nsm) nsm=j
       idata(6)=0
       do 13 i=1,nds
       read(lfntop,1020,end=9997,err=9998) (idata(j),j=1,4)
+      ierr = ierr + 1
  1020 format(4i7)
       read(lfntop,2020,end=9997,err=9998)
      + (itemp(j),(pdata(k,j),k=2,3),j=1,nparms)
+      ierr = ierr + 1
  2020 format(i3,f10.6,e12.5)
       do 3013 j=1,nparms
       pdata(1,j)=dble(abs(itemp(j)))
@@ -257,9 +293,11 @@ c      if(j.gt.nsm) nsm=j
    13 continue
       do 14 i=1,nos
       read(lfntop,1021,end=9997,err=9998) (idata(j),j=1,4)
+      ierr = ierr + 1
  1021 format(4i7)
       read(lfntop,2021,end=9997,err=9998)
      + ((pdata(k,j),k=2,3),j=1,nparms)
+      ierr = ierr + 1
  2021 format(3x,f10.6,e12.5)
       do 3014 j=1,nparms
       pdata(1,j)=dble(abs(itemp(j)))
@@ -269,14 +307,18 @@ c      if(j.gt.nsm) nsm=j
    14 continue
       if(nts.gt.0) then
       read(lfntop,1022,end=9997,err=9998) (int_mb(i_i+i-1),i=1,nts)
+      ierr = ierr + 1
  1022 format(11i7)
       read(lfntop,1022,end=9997,err=9998) (int_mb(i_j+i-1),i=1,nts)
+      ierr = ierr + 1
       endif
       call cf_ndxtrd(2,int_mb(i_i),int_mb(i_j),nts)
       if(nxs.gt.0) then
       read(lfntop,1023,end=9997,err=9998) (int_mb(i_i+i-1),i=1,nxs)
+      ierr = ierr + 1
  1023 format(11i7)
       read(lfntop,1023,end=9997,err=9998) (int_mb(i_j+i-1),i=1,nxs)
+      ierr = ierr + 1
       endif
       call cf_ndxxcl(2,int_mb(i_i),int_mb(i_j),nxs)
       if(.not.ma_pop_stack(l_j)) call md_abort('Dealloc failed',0)
@@ -445,9 +487,9 @@ c
       return
 c
  9997 continue
-      call md_abort('EOF reading topology file',0)
+      call md_abort('EOF reading topology file',ierr)
  9998 continue
-      call md_abort('Error reading topology file',0)
+      call md_abort('Error reading topology file',ierr)
  9999 continue
       call md_abort('Failed to open topology file',0)
       return

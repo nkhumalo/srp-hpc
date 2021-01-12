@@ -1,0 +1,19 @@
+echo
+start nt-6-6-5-dat
+
+geometry geometry units angstrom noautoz
+  load nt-6-6-5-ice-1x1x1-oh-h.xyz
+end
+
+basis 
+  c  library sto-3g
+  h1 library sto-3g
+  o  library 6-31g*
+  h  library 6-31g*
+end
+
+scf
+  direct
+end
+
+task scf optimize

@@ -7,7 +7,7 @@ md
   msa 10000
   system 1h9t_md
   leapfrog
-  step 0.002 equil 0 data 1000
+  step 0.001 equil 0 data 1000
   isotherm 298.15 trelax 0.1
   isobar
   noshake

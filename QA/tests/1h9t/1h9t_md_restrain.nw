@@ -16,7 +16,7 @@ md
   noshake
   #print step 10 pmf 10 out6
   print step 10 out6
-  record coord 1 ascii
+  record coord 1 veloc 1 force 1 ascii
   #
   # At a velocity of 0.5 the protein is significantly compressed
   # up on collision. So this speed is too high.

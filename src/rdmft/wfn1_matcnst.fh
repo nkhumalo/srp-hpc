@@ -9,4 +9,5 @@ C>
           integer :: g_s12 ! GA handle for the S^{-1/2} matrix
           integer :: g_tv  ! GA handle for the 1-electron Hamiltonian
           integer :: g_cs  ! GA handle for the Cauchy-Schwarz integrals
+          integer :: g_2el ! GA handle for 2-electron integrals
       end type wfn1_matcnst

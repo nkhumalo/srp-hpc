@@ -1,7 +1,8 @@
 #$Id: GNUmakefile 25209 2014-02-02 18:41:05Z niri $
 # makefile,v 1.8 1994/12/05 20:37:08 og845 Exp
 
-   OBJ = wfn1.o \
+   OBJ = wfn1_module.o \
+         wfn1.o \
          wfn1_2el_hf.o \
          wfn1_2el_wfn1.o \
          wfn1_allocate_drv.o \
@@ -22,7 +23,7 @@
          wfn1_element.o \
          wfn1_entropy.o \
          wfn1_e_g.o \
-         wfn1_e_g_2el_corr_fix.o \
+         wfn1_e_g_2el_corr.o \
          wfn1_e_g_2el_mx.o \
          wfn1_e_g_2el_vx.o \
          wfn1_e_g_2el_hf.o \

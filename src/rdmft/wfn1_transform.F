@@ -40,7 +40,7 @@ C>    Damping factor
       double precision :: t
 c
       t=0.5d0*atan(d)
-      wfn1_func_dd=(d*d+1.0d0)/(cos(t)*sin(t))
+      wfn1_func_dd=-(d*d+1.0d0)/(cos(t)*sin(t))
 c
       return
       end

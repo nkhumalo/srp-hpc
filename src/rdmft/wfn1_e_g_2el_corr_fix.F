@@ -453,11 +453,11 @@ cDEBUG
      &                         occ_b(jj)*(1.0d0-occ_b(jj)))
         enddo
       enddo
-      write(*,'(" HVD: c_ii        = ",e22.8)')c_ii
-      write(*,'(" HVD: c2_ij       = ",e22.8)')c2_ij
-      write(*,'(" HVD: c2_IJ       = ",e22.8)')c2_ij+c2_ii
-      write(*,'(" HVD: c_ii/c2_ij  = ",e22.8)')c_ii/c2_ij
-      write(*,'(" HVD: c_ii/c2_IJ  = ",e22.8)')2.0d0*c_ii/(c2_ij+c2_ii)
+c     write(*,'(" HVD: c_ii        = ",e22.8)')c_ii
+c     write(*,'(" HVD: c2_ij       = ",e22.8)')c2_ij
+c     write(*,'(" HVD: c2_IJ       = ",e22.8)')c2_ij+c2_ii
+c     write(*,'(" HVD: c_ii/c2_ij  = ",e22.8)')c_ii/c2_ij
+c     write(*,'(" HVD: c_ii/c2_IJ  = ",e22.8)')2.0d0*c_ii/(c2_ij+c2_ii)
 cDEBUG
 c
       do ld = 1, nshell
@@ -1018,9 +1018,9 @@ c
 c
       E_corr    = 0.5d0*E_corr
 cDEBUG
-      write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
-      write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
-      write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
+c     write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
+c     write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
+c     write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
 cDEBUG
 c
       call ga_dgop(1300,E_corr,1,"+")

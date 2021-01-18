@@ -209,6 +209,7 @@ c
       double precision :: p_a_12,    p_b_12
       double precision :: p1p_a_12,  p1p_b_12
       double precision :: p1p_a_14,  p1p_b_14
+      double precision :: p1p_a_34,  p1p_b_34
       double precision :: dp_a_12,   dp_b_12
       double precision :: dp1p_a_12, dp1p_b_12
       double precision :: dp1p_a_14, dp1p_b_14
@@ -291,8 +292,21 @@ c
       double precision, allocatable, target :: buf_N_ai_b(:)
       double precision, pointer             :: N_ai_b(:,:)
 c
-      double precision :: c_ii
-      double precision :: c2_ij
+      double precision :: f_a
+      double precision :: b_ii
+      double precision :: b_ij
+      double precision :: dbii_ab
+      double precision :: dbii_ba
+      double precision :: dbij_ab
+      double precision :: dbij_ba
+      double precision :: k1
+      double precision :: k2
+      double precision :: dk1_ab
+      double precision :: dk1_ba
+      double precision :: dk2_ab
+      double precision :: dk2_ba
+      double precision :: dT_ab
+      double precision :: dT_ba
 c
       double precision :: c_a_j
       double precision :: c_b_j
@@ -302,7 +316,9 @@ cDEBUG
       double precision E_ii_cor
       double precision E2_ij_cor
       double precision E4_ij_cor
+      double precision c_ii
       double precision c2_ii
+      double precision c2_ij
 cDEBUG
 c
 c     Functions:
@@ -320,15 +336,16 @@ cDEBUG
       E_ii_cor  = 0.0d0
       E2_ij_cor = 0.0d0
       E4_ij_cor = 0.0d0
-      c_ii      = 0.0d0
+      b_ii      = 0.0d0
       c2_ii     = 0.0d0
-      c2_ij     = 0.0d0
+      b_ij      = 0.0d0
 cDEBUG
 c
       nbf  = wfn1_param%nbf
       nmo  = wfn1_param%nmo
       ne_a = wfn1_param%nea
       ne_b = wfn1_param%neb
+      f_a  = wfn1_param%fac_a
 c
       if (.not. bas_numcont(wfn1_inst%basis, nshell)) call errquit
      &     ('wfn1_e_g_2el_corr: bas_numcont failed for basis',
@@ -396,8 +413,41 @@ c
 c
 c     Calculate renormalization quantities
 c
+c     do ii = 1, nmo
+c       b_ii  = b_ii  + sqrt(occ_a(ii)*occ_b(ii))-occ_a(ii)*occ_b(ii)
+c       do jj = 1, ii-1
+c         b_ij = b_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
+c    &                       occ_b(jj)*(1.0d0-occ_b(jj)))
+c       enddo
+c       do jj = ii+1, nmo
+c         b_ij = b_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
+c    &                       occ_b(jj)*(1.0d0-occ_b(jj)))
+c       enddo
+c     enddo
+      oTrenorm = .true.
+      if (nmo.le.1) then
+c       If there is no correlation then b_ii and b_ij are both 0
+c       In that case the renormalization factor is 1 and its derivatives
+c       are 0.
+        oTrenorm = .false. 
+        k1       = 1.0d0
+        k2       = 1.0d0
+        Trenorm  = (1.0d0-f_a)*k1+f_a*k2
+        dT_ab    = 0.0d0
+        dT_ba    = 0.0d0
+      else
+        oTrenorm = .true.
+        k1       = 1.0d0/(dble(nmo)-1.0d0)
+        k2       = 2.0d0/dble(nmo)
+        Trenorm  = (1.0d0-f_a)*k1+f_a*k2
+        dT_ab    = 0.0d0
+        dT_ba    = 0.0d0
+      endif
+cDEBUG
       do ii = 1, nmo
         c_ii  = c_ii  + sqrt(occ_a(ii)*occ_b(ii))-occ_a(ii)*occ_b(ii)
+        c2_ii = c2_ii + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
+     &                       occ_b(ii)*(1.0d0-occ_b(ii)))
         do jj = 1, ii-1
           c2_ij = c2_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
      &                         occ_b(jj)*(1.0d0-occ_b(jj)))
@@ -407,30 +457,11 @@ c
      &                         occ_b(jj)*(1.0d0-occ_b(jj)))
         enddo
       enddo
-      oTrenorm = .true.
-      if (c2_ij.le.c_ii) then
-c       If there is no correlation then c_ii and c2_ij are both 0
-c       In that case the renormalization factor is 1 and its derivatives
-c       are 0.
-        oTrenorm = .false. 
-        Trenorm  = 1.0d0
-      else
-        oTrenorm = .true.
-        Trenorm  = c_ii/c2_ij
-      endif
-cDEBUG
-      do ii = 1, nmo
-        c2_ii = c2_ii + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
-     &                       occ_b(ii)*(1.0d0-occ_b(ii)))
-      enddo
-      write(*,'(" HVD: c_ii        = ",e22.8)')c_ii
-      write(*,'(" HVD: c2_ii       = ",e22.8)')c2_ii
-      write(*,'(" HVD: c2_ij       = ",e22.8)')c2_ij
-      write(*,'(" HVD: c2_IJ       = ",e22.8)')c2_ij+c2_ii
-      write(*,'(" HVD: c2_ij/c_ii  = ",e22.8)')c2_ij/c_ii
-      write(*,'(" HVD: c2_IJ/c_ii  = ",e22.8)')(c2_ij+c2_ii)/c_ii
-      write(*,'(" HVD: c2_ij/c2_ii = ",e22.8)')c2_ij/c2_ii
-      write(*,'(" HVD: c2_IJ/c2_ii = ",e22.8)')(c2_ij+c2_ii)/c2_ii
+c     write(*,'(" HVD: c_ii        = ",e22.8)')c_ii
+c     write(*,'(" HVD: c2_ij       = ",e22.8)')c2_ij
+c     write(*,'(" HVD: c2_IJ       = ",e22.8)')c2_ij+c2_ii
+c     write(*,'(" HVD: c_ii/c2_ij  = ",e22.8)')c_ii/c2_ij
+c     write(*,'(" HVD: c_ii/c2_IJ  = ",e22.8)')2.0d0*c_ii/(c2_ij+c2_ii)
 cDEBUG
 c
       do ld = 1, nshell
@@ -825,28 +856,34 @@ c
      &          + e_iijj_ab*dp1p_a_12*Trenorm
                 v_dc_b(ii) = v_dc_b(ii)
      &          + e_iijj_ba*dp1p_b_12*Trenorm
-                if (oTrenorm) then
-                  c_b_j = 0.0d0
-                  c_a_j = 0.0d0
-                  do jj = 1, ii-1
-                    c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
-                    c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
-                  enddo
-                  do jj = ii+1, nmo
-                    c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
-                    c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
-                  enddo
-                  v_dc_a(ii) = v_dc_a(ii)
-     &            + e_iijj_ab*p1p_a_12*(dp_a_12*p_b_12-p_b)/
-     &              max(wfn1_param%denom_min,c2_ij)
-     &            - e_iijj_ab*p1p_a_12*Trenorm/
-     &              max(wfn1_param%denom_min,c2_ij)*c_b_j*dp1p_a_12
-                  v_dc_b(ii) = v_dc_b(ii)
-     &            + e_iijj_ba*p1p_b_12*(p_a_12*dp_b_12-p_a)/
-     &              max(wfn1_param%denom_min,c2_ij)
-     &            - e_iijj_ba*p1p_b_12*Trenorm/
-     &              max(wfn1_param%denom_min,c2_ij)*c_a_j*dp1p_b_12
-                endif
+c               if (oTrenorm) then
+c                 c_b_j = 0.0d0
+c                 c_a_j = 0.0d0
+c                 do jj = 1, ii-1
+c                   c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
+c                   c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
+c                 enddo
+c                 do jj = ii+1, nmo
+c                   c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
+c                   c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
+c                 enddo
+c                 dbii_ab = p_b_12*dp_a_12-p_b
+c                 dbii_ba = p_a_12*dp_b_12-p_a
+c                 dbij_ab = dp1p_a_12*c_b_j
+c                 dbij_ba = dp1p_b_12*c_a_j
+c                 dk1_ab = dbii_ab/b_ij - b_ii/(b_ij**2)*dbij_ab
+c                 dk1_ba = dbii_ba/b_ij - b_ii/(b_ij**2)*dbij_ba
+c                 dk2_ab = 2.0d0*dbii_ab/(b_ii+b_ij)
+c    &                   - 2.0d0*b_ii/(b_ii+b_ij)**2*(dbii_ab+dbij_ab)
+c                 dk2_ba = 2.0d0*dbii_ba/(b_ii+b_ij)
+c    &                   - 2.0d0*b_ii/(b_ii+b_ij)**2*(dbii_ba+dbij_ba)
+c                 dT_ab = (1.0d0-f_a)*dk1_ab+f_a*dk2_ab
+c                 dT_ba = (1.0d0-f_a)*dk1_ba+f_a*dk2_ba
+c                 v_dc_a(ii) = v_dc_a(ii)
+c    &            + e_iijj_ab*p1p_a_12*dT_ab
+c                 v_dc_b(ii) = v_dc_b(ii)
+c    &            + e_iijj_ba*p1p_b_12*dT_ba
+c               endif
               enddo ! ii
 c
 c             - Third do the T4_ij terms
@@ -870,40 +907,50 @@ c
                     p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
                     p1p_a_14 = sqrt(sqrt(p_a*(1.0d0-p_a)))
                     p1p_b_14 = sqrt(sqrt(p_b*(1.0d0-p_b)))
+                    p1p_a_34 = p1p_a_14**3
+                    p1p_b_34 = p1p_b_14**3
                     dp1p_a_12 = (1.0d0-2.0d0*p_a)/
      &                     max(wfn1_param%denom_min,2.0d0*p1p_a_12)
                     dp1p_b_12 = (1.0d0-2.0d0*p_b)/
      &                     max(wfn1_param%denom_min,2.0d0*p1p_b_12)
                     dp1p_a_14 = (1.0d0-2.0d0*p_a)/
-     &                     max(wfn1_param%denom_min,4.0d0*p1p_a_14**3)
+     &                     max(wfn1_param%denom_min,4.0d0*p1p_a_34)
                     dp1p_b_14 = (1.0d0-2.0d0*p_b)/
-     &                     max(wfn1_param%denom_min,4.0d0*p1p_b_14**3)
+     &                     max(wfn1_param%denom_min,4.0d0*p1p_b_34)
                     v_dc_a(ii) = v_dc_a(ii)
      &              + e_iijj_ab*dp1p_a_14*Trenorm
                     v_dc_b(ii) = v_dc_b(ii)
      &              + e_iijj_ba*dp1p_b_14*Trenorm
-                    if (oTrenorm) then
-                      c_b_j = 0.0d0
-                      c_a_j = 0.0d0
-                      do kk = 1, ii-1
-                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
-                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
-                      enddo
-                      do kk = ii+1, nmo
-                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
-                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
-                      enddo
-                      v_dc_a(ii) = v_dc_a(ii)
-     &                + e_iijj_ab*p1p_a_14*(dp_a_12*p_b_12-p_b)/
-     &                  max(wfn1_param%denom_min,c2_ij)
-     &                - e_iijj_ab*p1p_a_14*Trenorm/
-     &                  max(wfn1_param%denom_min,c2_ij)*c_b_j*dp1p_a_12
-                      v_dc_b(ii) = v_dc_b(ii)
-     &                + e_iijj_ba*p1p_b_14*(p_a_12*dp_b_12-p_a)/
-     &                  max(wfn1_param%denom_min,c2_ij)
-     &                - e_iijj_ba*p1p_b_14*Trenorm/
-     &                  max(wfn1_param%denom_min,c2_ij)*c_a_j*dp1p_b_12
-                    endif
+c                   if (oTrenorm) then
+c                     c_b_j = 0.0d0
+c                     c_a_j = 0.0d0
+c                     do kk = 1, ii-1
+c                       c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+c                       c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+c                     enddo
+c                     do kk = ii+1, nmo
+c                       c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+c                       c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+c                     enddo
+c                     dbii_ab = p_b_12*dp_a_12-p_b
+c                     dbii_ba = p_a_12*dp_b_12-p_a
+c                     dbij_ab = dp1p_a_12*c_b_j
+c                     dbij_ba = dp1p_b_12*c_a_j
+c                     dk1_ab = dbii_ab/b_ij - b_ii/(b_ij**2)*dbij_ab
+c                     dk1_ba = dbii_ba/b_ij - b_ii/(b_ij**2)*dbij_ba
+c                     dk2_ab = 2.0d0*dbii_ab/(b_ii+b_ij)
+c    &                       - 2.0d0*b_ii/(b_ii+b_ij)**2
+c    &                              *(dbii_ab+dbij_ab)
+c                     dk2_ba = 2.0d0*dbii_ba/(b_ii+b_ij)
+c    &                       - 2.0d0*b_ii/(b_ii+b_ij)**2
+c    &                              *(dbii_ba+dbij_ba)
+c                     dT_ab = (1.0d0-f_a)*dk1_ab+f_a*dk2_ab
+c                     dT_ba = (1.0d0-f_a)*dk1_ba+f_a*dk2_ba
+c                     v_dc_a(ii) = v_dc_a(ii)
+c    &                + e_iijj_ab*p1p_a_14*dT_ab
+c                     v_dc_b(ii) = v_dc_b(ii)
+c    &                + e_iijj_ba*p1p_b_14*dT_ba
+c                   endif
                   enddo ! ii
                   do ii = jjj+1, nmo
                     e_iijj_ab = 0.0d0
@@ -934,28 +981,36 @@ c
      &              + e_iijj_ab*dp1p_a_14*Trenorm
                     v_dc_b(ii) = v_dc_b(ii)
      &              + e_iijj_ba*dp1p_b_14*Trenorm
-                    if (oTrenorm) then
-                      c_b_j = 0.0d0
-                      c_a_j = 0.0d0
-                      do kk = 1, ii-1
-                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
-                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
-                      enddo
-                      do kk = ii+1, nmo
-                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
-                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
-                      enddo
-                      v_dc_a(ii) = v_dc_a(ii)
-     &                + e_iijj_ab*p1p_a_14*(dp_a_12*p_b_12-p_b)/
-     &                  max(wfn1_param%denom_min,c2_ij)
-     &                - e_iijj_ab*p1p_a_14*Trenorm/
-     &                  max(wfn1_param%denom_min,c2_ij)*c_b_j*dp1p_a_12
-                      v_dc_b(ii) = v_dc_b(ii)
-     &                + e_iijj_ba*p1p_b_14*(p_a_12*dp_b_12-p_a)/
-     &                  max(wfn1_param%denom_min,c2_ij)
-     &                - e_iijj_ba*p1p_b_14*Trenorm/
-     &                  max(wfn1_param%denom_min,c2_ij)*c_a_j*dp1p_b_12
-                    endif
+c                   if (oTrenorm) then
+c                     c_b_j = 0.0d0
+c                     c_a_j = 0.0d0
+c                     do kk = 1, ii-1
+c                       c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+c                       c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+c                     enddo
+c                     do kk = ii+1, nmo
+c                       c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+c                       c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+c                     enddo
+c                     dbii_ab = p_b_12*dp_a_12-p_b
+c                     dbii_ba = p_a_12*dp_b_12-p_a
+c                     dbij_ab = dp1p_a_12*c_b_j
+c                     dbij_ba = dp1p_b_12*c_a_j
+c                     dk1_ab = dbii_ab/b_ij - b_ii/(b_ij**2)*dbij_ab
+c                     dk1_ba = dbii_ba/b_ij - b_ii/(b_ij**2)*dbij_ba
+c                     dk2_ab = 2.0d0*dbii_ab/(b_ii+b_ij)
+c    &                       - 2.0d0*b_ii/(b_ii+b_ij)**2
+c    &                              *(dbii_ab+dbij_ab)
+c                     dk2_ba = 2.0d0*dbii_ba/(b_ii+b_ij)
+c    &                       - 2.0d0*b_ii/(b_ii+b_ij)**2
+c    &                              *(dbii_ba+dbij_ba)
+c                     dT_ab = (1.0d0-f_a)*dk1_ab+f_a*dk2_ab
+c                     dT_ba = (1.0d0-f_a)*dk1_ba+f_a*dk2_ba
+c                     v_dc_a(ii) = v_dc_a(ii)
+c    &                + e_iijj_ab*p1p_a_14*dT_ab
+c                     v_dc_b(ii) = v_dc_b(ii)
+c    &                + e_iijj_ba*p1p_b_14*dT_ba
+c                   endif
                   enddo ! ii
                 enddo ! jjj
               enddo ! jj
@@ -967,9 +1022,9 @@ c
 c
       E_corr    = 0.5d0*E_corr
 cDEBUG
-      write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
-      write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
-      write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
+c     write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
+c     write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
+c     write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
 cDEBUG
 c
       call ga_dgop(1300,E_corr,1,"+")

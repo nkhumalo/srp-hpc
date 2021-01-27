@@ -1,8 +1,8 @@
 echo
 start nt-6-6-5-dat
 
-geometry geometry units angstrom noautoz
-  load nt-6-6-5-ice-1x1x1-oh-h.xyz
+geometry noautoz units angstrom
+  load /home/hvandam/nwchem-1/QA/tests/nt-6-6-5/nt-6-6-5-ice-1x1x1-oh-h.xyz
 end
 
 basis 
@@ -14,6 +14,11 @@ end
 
 scf
   direct
+end
+
+set geometry:actlist 1:12 133:144
+driver
+  clear
 end
 
 task scf optimize

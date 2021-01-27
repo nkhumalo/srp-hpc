@@ -8,12 +8,13 @@ md
   msa 10000
   system 1ai0_md
   leapfrog
-  step 0.0005 equil 0 data 1000000
+  step 0.001 equil 0 data 1000000
   isotherm 298.15 trelax 0.1
   isobar
   noshake
-  print step 1000 out6
-  record rest 1000 coord 1000 ascii
+  print step 100 out6
+  #record rest 1000 coord 1 veloc 1 force 1 ascii
+  record rest 10000 coord 1000 veloc 1000 force 1000 ascii
 end
 
 task md dynamics

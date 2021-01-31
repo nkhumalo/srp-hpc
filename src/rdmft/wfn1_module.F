@@ -28,6 +28,37 @@ c-----------------------------------------------------------------------
           implicit none
           type(wfn1_matcnst), intent(inout) :: wfn1_mat
         end subroutine
+        module subroutine wfn1_gen_mat(wfn1_inst,wfn1_mat)
+          implicit none
+          type(wfn1_prminst), intent(in)    :: wfn1_inst
+          type(wfn1_matcnst), intent(inout) :: wfn1_mat
+        end subroutine
+        module subroutine wfn1_gen_ten2(wfn1_inst,wfn1_mat)
+          implicit none
+          type(wfn1_prminst), intent(in)    :: wfn1_inst
+          type(wfn1_matcnst), intent(inout) :: wfn1_mat
+        end subroutine
+        module subroutine wfn1_4index_aa(wfn1_param,g_na,g_4ao,g_4mo,
+     &                                   g_4t1,g_bfbf)
+          implicit none
+          type(wfn1_prm), intent(in) :: wfn1_param
+          integer,        intent(in) :: g_na
+          integer,        intent(in) :: g_4ao
+          integer,        intent(in) :: g_4mo
+          integer,        intent(in) :: g_4t1
+          integer,        intent(in) :: g_bfbf
+        end subroutine
+        module subroutine wfn1_4index_ab(wfn1_param,g_na,g_nb,g_4ao,
+     &                                   g_4mo,g_4t1,g_bfbf)
+          implicit none
+          type(wfn1_prm), intent(in) :: wfn1_param
+          integer,        intent(in) :: g_na
+          integer,        intent(in) :: g_nb
+          integer,        intent(in) :: g_4ao
+          integer,        intent(in) :: g_4mo
+          integer,        intent(in) :: g_4t1
+          integer,        intent(in) :: g_bfbf
+        end subroutine
       end interface
       end module wfn1
 c-----------------------------------------------------------------------

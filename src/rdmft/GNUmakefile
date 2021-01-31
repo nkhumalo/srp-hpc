@@ -5,6 +5,7 @@
          wfn1.o \
          wfn1_2el_hf.o \
          wfn1_2el_wfn1.o \
+         wfn1_4index.o \
          wfn1_allocate_drv.o \
          wfn1_allocate_mat.o \
          wfn1_allocate_wfn.o \

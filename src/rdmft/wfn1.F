@@ -1,9 +1,12 @@
-      subroutine wfn1_input(rtdb)
+      submodule (wfn1) wfn1_for_nw
+      implicit none
+      contains
+      module subroutine wfn1_input(rtdb)
       implicit none
 !>
 !> \brief Read the input for the RDMFT calculations
 !>
-      integer rtdb !> [Input] The runtime database
+      integer, intent(inout) :: rtdb !> [Input] The runtime database
       end subroutine wfn1_input
 !>
 !>----------------------------------------------------------------------
@@ -32,15 +35,15 @@
 !>     arXiv: <a href="http://arxiv.org/abs/1512.06120">
 !>     http://arxiv.org/abs/1512.06120</a>
 !>
-      logical function wfn1_task_energy(rtdb)
+      module function wfn1_task_energy(rtdb) result(wfn1_success)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
-#include "wfn1_matcnst.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
+!include "wfn1_matcnst.fh"
 #include "wfn1_size.fh"
 #include "wfn1_trace.fh"
-#include "wfn1_en.fh"
+!include "wfn1_en.fh"
 #include "bas.fh"
 #include "errquit.fh"
 #include "geom.fh"
@@ -51,7 +54,8 @@
 #include "util.fh"
 ! For filesize and memsize
 #include "cfock.fh"
-      integer rtdb !> [Input] The runtime database
+      integer, intent(inout) :: rtdb !> [Input] The runtime database
+      logical :: wfn1_success
 c
 c     Local variables
 c
@@ -162,7 +166,7 @@ c
 c
       wfn1_inst%rtdb = rtdb
       pname = "wfn1_energy:"
-      wfn1_task_energy = .false.
+      wfn1_success = .false.
       lstatus = rtdb_parallel(.true.)
       call util_print_push
       call util_print_rtdb_load(wfn1_inst%rtdb, 'wfn1') 
@@ -587,7 +591,7 @@ c
 c
 c     == Deal with 1-electron integrals ==
 c
-      call wfn1_allocate_mat(wfn1_inst,wfn1_mat)
+      call wfn1_allocate_mat(wfn1_param,wfn1_inst,wfn1_mat)
 c
 c     == Initialize the integral code ==
 c
@@ -864,7 +868,7 @@ c
           endif
         endif
       enddo
-      wfn1_task_energy = oconverged
+      wfn1_success = oconverged
 #endif
       if (wfn1_param%solver.eq."linesearch") then
         oconverged = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
@@ -903,7 +907,7 @@ c
         endif
         call errquit(pname//" invalid solver",0)
       endif
-      wfn1_task_energy = oconverged
+      wfn1_success = oconverged
       if (iproc.eq.0) then
         if (curit.eq.0) then
 c
@@ -957,7 +961,7 @@ c
 c     == Clean up ==
 c
 cDEBUG
-c     wfn1_task_energy = .true.
+c     wfn1_success = .true.
 cDEBUG
       call grid_cleanup(.false.)
       call wfn1_deallocate_drv(wfn1_part_drv)
@@ -1014,3 +1018,4 @@ c
      &  call errquit(pname//' Failed to destroy geometry',0,GEOM_ERR)
 c
       end function wfn1_task_energy
+      end submodule wfn1_for_nw

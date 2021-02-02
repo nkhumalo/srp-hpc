@@ -1,4 +1,4 @@
-      submodule (wfn1) wfn1_for_mem
+      submodule (wfn1) wfn1_mem_mat
       implicit none
       contains
 c
@@ -79,4 +79,4 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_for_mem
+      end submodule wfn1_mem_mat

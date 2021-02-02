@@ -1,19 +1,23 @@
-c-----------------------------------------------------------------------
-c
-      subroutine wfn1_allocate_wfn(wfn1_param,wfn1_inst,wfn1_wave)
+      submodule (wfn1) wfn1_mem_wfn
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_wfn.fh"
-#include "errquit.fh"
-#include "mafdecls.fh"
-#include "global.fh"
+      contains
+c
+c-----------------------------------------------------------------------
 !>
 !> \brief Allocate the wavefunction components
 !>
 !> Allocate global arrays for the natural orbitals, the correlation
 !> functions, as well as arrays to store the electron configuration.
 !>
+      module subroutine wfn1_allocate_wfn(wfn1_param,wfn1_inst,
+     &                                    wfn1_wave)
+      implicit none
+!include "wfn1_param.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_wfn.fh"
+#include "errquit.fh"
+#include "mafdecls.fh"
+#include "global.fh"
       type(wfn1_prm),     intent(in)    :: wfn1_param
       type(wfn1_prminst), intent(in)    :: wfn1_inst
       type(wfn1_wfn),     intent(inout) :: wfn1_wave
@@ -62,11 +66,11 @@ c
         map(ii,1) = 1+(ii-1)*nfnc
       enddo
 c
-      if (.not.ga_create_irreg(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create_irreg(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
      &                         'Ca',map(:,2),nblock(2),
      &                         map(:,1),nblock(1),wfn1_wave%g_ca))
      &  call errquit(pname//" could not allocate g_na",0,MA_ERR)
-      if (.not.ga_create_irreg(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create_irreg(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
      &                         'Cb',map(:,2),nblock(2),
      &                         map(:,1),nblock(1),wfn1_wave%g_cb))
      &  call errquit(pname//" could not allocate g_nb",0,MA_ERR)
@@ -78,18 +82,17 @@ c
       allocate(wfn1_wave%icnfa(1:wfn1_param%nea))
       allocate(wfn1_wave%icnfb(1:wfn1_param%neb))
 c
-      end
+      end subroutine wfn1_allocate_wfn
 c
 c-----------------------------------------------------------------------
-c
-      subroutine wfn1_deallocate_wfn(wfn1_wave)
-      implicit none
-#include "wfn1_wfn.fh"
-#include "global.fh"
-#include "errquit.fh"
 !>
 !> \brief Deallocate wavefunction components
 !>
+      module subroutine wfn1_deallocate_wfn(wfn1_wave)
+      implicit none
+!include "wfn1_wfn.fh"
+#include "global.fh"
+#include "errquit.fh"
       type(wfn1_wfn), intent(inout) :: wfn1_wave
       character*20 pname
       pname = "wfn1_deallocate_wfn:"
@@ -111,6 +114,8 @@ c
         call errquit(pname//" failed to dealloc g_cb",0,GA_ERR)
       endif
 !>
-      end
+      end subroutine wfn1_deallocate_wfn
 c
 c-----------------------------------------------------------------------
+c
+      end submodule wfn1_mem_wfn

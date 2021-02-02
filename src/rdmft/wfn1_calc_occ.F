@@ -1,10 +1,17 @@
-c-----------------------------------------------------------------------
+      submodule (wfn1) wfn1_clc_occ
+      implicit none
+      contains
 c
+c-----------------------------------------------------------------------
 C>
 C> \brief Calculate occupation numbers from a set of correlation
 C> functions
 C>
-      subroutine wfn1_calc_occ(g_c,nmo,ne,icnf,dcnt,occ)
+C> Note that now the correlation functions are complex valued
+C> but the occupation numbers are still real because we are
+C> taking the norm.
+C>
+      module subroutine wfn1_calc_occ(g_c,nmo,ne,icnf,dcnt,occ)
       implicit none
 #include "global.fh"
 #include "mafdecls.fh"
@@ -24,7 +31,7 @@ c
       integer ilo, ihi, jlo, jhi ! patch limits
       integer ii, ir             ! counters
 c
-      double precision, allocatable :: buf(:,:)
+      complex(kind=8), allocatable :: buf(:,:)
 c
       iproc = ga_nodeid()
       nproc = ga_nnodes()
@@ -41,8 +48,9 @@ c       This process does not hold any part of g_c
         if(icnf(ir).ge.jlo.and.icnf(ir).le.jhi)
      &  then
           do ii = ilo, ihi
-            occ(ii) = occ(ii) + buf(ii,icnf(ir)) * buf(ii,icnf(ir)) *
-     &                          dcnt(ir)
+            occ(ii) = occ(ii)
+     &              + buf(ii,icnf(ir)) * conjg(buf(ii,icnf(ir))) *
+     &                dcnt(ir)
           enddo
         endif
       enddo
@@ -52,33 +60,35 @@ c
       end subroutine wfn1_calc_occ
 c
 c-----------------------------------------------------------------------
-c
-      subroutine wfn1_calc_occ2(g_c,nmo,ne,icnf,dcnt,g_occ)
-      implicit none
 C>
 C> \brief Calculate the 2-electron occupation numbers from a set of
 C> correlation functions
 C>
+C> Note the correlation functions are complex valued now. The occupation
+C> numbers remain real because we are taking norms.
+C>
+      module subroutine wfn1_calc_occ2(g_c,nmo,ne,icnf,dcnt,g_occ)
+      implicit none
 #include "global.fh"
 #include "mafdecls.fh"
 c
       integer, intent(in) :: g_c       ! the correlation functions
       integer, intent(in) :: nmo       ! the number of molecular orbitals
       integer, intent(in) :: ne        ! the number of electrons
-      integer, intent(in) :: icnf(1:ne)! the electron configuration
-      integer, intent(inout) :: g_occ  ! the 2-electron occupation 
+      integer, intent(in) :: icnf(nmo) ! the electron configuration
+      integer, intent(in) :: g_occ     ! the 2-electron occupation 
                                        ! numbers
 c
-      double precision, intent(in) :: dcnt(1:ne)! the electron fraction
+      double precision, intent(in) :: dcnt(nmo)! the electron fraction
 c
       integer :: iolo, iohi, jolo, johi ! block limits of occupation GA
 c
-      double precision, allocatable :: bocc(:,:)  ! buffer for 
-                                                  ! occupation numbers
-      double precision, allocatable :: bcori(:,:) ! buffer for 
-                                                  ! correlation function
-      double precision, allocatable :: bcorj(:,:) ! buffer for 
-                                                  ! correlation function
+      real(kind=8),    allocatable :: bocc(:,:)  ! buffer for 
+                                                 ! occupation numbers
+      complex(kind=8), allocatable :: bcori(:,:) ! buffer for 
+                                                 ! correlation function
+      complex(kind=8), allocatable :: bcorj(:,:) ! buffer for 
+                                                 ! correlation function
 c
       integer iproc ! the current processor rank
       integer nproc ! the number of processor ranks
@@ -101,11 +111,11 @@ c
           do it = 1, ne
             do is = 1, ne
               bocc(ii,ij) = bocc(ii,ij) 
-     +                    + bcori(ii,icnf(is))*bcori(ii,icnf(is))
-     +                    * bcorj(ij,icnf(it))*bcorj(ij,icnf(it))
+     +                    + bcori(ii,icnf(is))*conjg(bcori(ii,icnf(is)))
+     +                    * bcorj(ij,icnf(it))*conjg(bcorj(ij,icnf(it)))
      +                    * dcnt(is)*dcnt(it)
-     +                    - bcori(ii,icnf(is))*bcori(ii,icnf(it))
-     +                    * bcorj(ij,icnf(it))*bcorj(ij,icnf(is))
+     +                    - bcori(ii,icnf(is))*conjg(bcori(ii,icnf(it)))
+     +                    * bcorj(ij,icnf(it))*conjg(bcorj(ij,icnf(is)))
      +                    * dcnt(is)*dcnt(it)
             enddo
           enddo
@@ -133,7 +143,7 @@ C> exchange terms are separated. The reason is that the correlation
 C> function Fock matrices for the Coulomb and exchange terms have to be
 C> handled differently because of their nature.
 C>
-      subroutine wfn1_calc_ocx(g_c,nmo,ne,icnf,dcnt,g_ocx)
+      module subroutine wfn1_calc_ocx(g_c,nmo,ne,icnf,dcnt,g_ocx)
       implicit none
 #include "global.fh"
 #include "mafdecls.fh"
@@ -141,21 +151,21 @@ c
       integer, intent(in) :: g_c       ! the correlation functions
       integer, intent(in) :: nmo       ! the number of molecular orbitals
       integer, intent(in) :: ne        ! the number of electrons
-      integer, intent(in) :: icnf(1:ne)! the electron configuration
+      integer, intent(in) :: icnf(nmo) ! the electron configuration
 c
-      double precision, intent(in) :: dcnt(1:ne)! the electron fraction
+      double precision, intent(in) :: dcnt(nmo) ! the electron fraction
 c
-      integer, intent(inout) :: g_ocx  ! the 2-electron exchange 
-                                       ! occupation numbers
+      integer, intent(in) :: g_ocx  ! the 2-electron exchange 
+                                    ! occupation numbers
 c
       integer :: iolo, iohi, jolo, johi ! block limits of occupation GA
 c
-      double precision, allocatable :: bocc(:,:)  ! buffer for 
-                                                  ! occupation numbers
-      double precision, allocatable :: bcori(:,:) ! buffer for 
-                                                  ! correlation function
-      double precision, allocatable :: bcorj(:,:) ! buffer for 
-                                                  ! correlation function
+      real(kind=8),    allocatable :: bocc(:,:)  ! buffer for 
+                                                 ! occupation numbers
+      complex(kind=8), allocatable :: bcori(:,:) ! buffer for 
+                                                 ! correlation function
+      complex(kind=8), allocatable :: bcorj(:,:) ! buffer for 
+                                                 ! correlation function
 c
       integer iproc ! the current processor rank
       integer nproc ! the number of processor ranks
@@ -178,9 +188,9 @@ c
           do is = 1, ne
             do it = 1, ne
               bocc(ii,ij) = bocc(ii,ij) 
-     +                    - bcori(ii,icnf(is)) * bcori(ii,icnf(it))
-     +                    * bcorj(ij,icnf(it)) * bcorj(ij,icnf(is))
-     +                    * dcnt(is) * dcnt(it)
+     +                    - bcori(ii,icnf(is))*conjg(bcori(ii,icnf(it)))
+     +                    * bcorj(ij,icnf(it))*conjg(bcorj(ij,icnf(is)))
+     +                    * dcnt(is)*dcnt(it)
             enddo
           enddo
         enddo
@@ -192,8 +202,8 @@ c
       deallocate(bocc)
 c
       end subroutine wfn1_calc_ocx
-c-----------------------------------------------------------------------
 c
+c-----------------------------------------------------------------------
 C>
 C> \brief Add the 2-electron direct occupation numbers
 C>
@@ -206,7 +216,7 @@ C> exchange terms are separated. The reason is that the correlation
 C> function Fock matrices for the Coulomb and exchange terms have to be
 C> handled differently because of their nature.
 C>
-      subroutine wfn1_add_occd(nmo,occ,g_occ)
+      module subroutine wfn1_add_occd(nmo,occ,g_occ)
       implicit none
 #include "global.fh"
 #include "mafdecls.fh"
@@ -216,7 +226,7 @@ c
 !>    The 1-electron occupation numbers
       double precision, intent(in) :: occ(nmo)
 !>    The 2-electron occupation numbers
-      integer, intent(inout) :: g_occ
+      integer, intent(in) :: g_occ
 c
       integer :: iolo, iohi, jolo, johi ! block limits of occupation GA
 c
@@ -253,7 +263,7 @@ C>
 C> These quantities are the \f$-sum_s C_{js}C_{ks} terms in the
 C> derivative of the 2-electron density matrix.
 C>
-      subroutine wfn1_calc_docx(g_c,nmo,ne,icnf,dcnt,g_docx)
+      module subroutine wfn1_calc_docx(g_c,nmo,ne,icnf,dcnt,g_docx)
       implicit none
 #include "global.fh"
 #include "mafdecls.fh"
@@ -265,17 +275,17 @@ c
 c
       double precision, intent(in) :: dcnt(1:ne)! the electron fraction
 c
-      integer, intent(inout) :: g_docx  ! the 2-electron occupation 
-                                        ! numbers derivative
+      integer, intent(in) :: g_docx  ! the 2-electron occupation 
+                                     ! numbers derivative
 c
       integer :: iolo, iohi, jolo, johi ! block limits of occupation GA
 c
-      double precision, allocatable :: bocc(:,:)  ! buffer for 
-                                                  ! occupation numbers
-      double precision, allocatable :: bcori(:,:) ! buffer for 
-                                                  ! correlation function
-      double precision, allocatable :: bcorj(:,:) ! buffer for 
-                                                  ! correlation function
+      complex(kind=8), allocatable :: bocc(:,:)  ! buffer for 
+                                                 ! occupation numbers
+      complex(kind=8), allocatable :: bcori(:,:) ! buffer for 
+                                                 ! correlation function
+      complex(kind=8), allocatable :: bcorj(:,:) ! buffer for 
+                                                 ! correlation function
 c
       integer iproc ! the current processor rank
       integer nproc ! the number of processor ranks
@@ -297,7 +307,7 @@ c
         do ii = iolo, iohi
           do is = 1, ne
             bocc(ii,ij) = bocc(ii,ij) 
-     +                  - bcori(ii,icnf(is))*bcorj(ij,icnf(is))
+     +                  - bcori(ii,icnf(is))*conjg(bcorj(ij,icnf(is)))
      +                  * dcnt(is)
           enddo
         enddo
@@ -311,3 +321,5 @@ c
       end subroutine wfn1_calc_docx
 c
 c-----------------------------------------------------------------------
+c
+      end submodule wfn1_clc_occ

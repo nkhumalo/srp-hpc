@@ -124,6 +124,84 @@ c-----------------------------------------------------------------------
           complex(kind=8),  intent(in) :: rndm(:)
           double precision, intent(in) :: Tt
         end subroutine
+        module subroutine wfn1_guess_movecs(wfn1_param,wfn1_wave)
+          implicit none
+          type(wfn1_prm), intent(in)    :: wfn1_param
+          type(wfn1_wfn), intent(inout) :: wfn1_wave
+        end subroutine
+        module function wfn1_movecs_converged(rtdb, basis, scftype,
+     &         filename) result(wfn1_converged)
+          implicit none
+          integer, intent(in) :: rtdb
+          integer, intent(in) :: basis
+          character(len=*), intent(in) :: scftype
+          character(len=*), intent(in) :: filename
+          logical :: wfn1_converged
+        end function
+        module function wfn1_movecs_gather(filename, iset, nwant, want,
+     &                  occ, evals, g_vecs) result(wfn1_return)
+          implicit none
+          character(len=*), intent(in) :: filename
+          integer, intent(in) :: iset
+          integer, intent(in) :: nwant
+          integer, intent(in) :: want(nwant)
+          real(kind=8), intent(out) :: occ(nwant)
+          real(kind=8), intent(out) :: evals(nwant)
+          integer, intent(in) :: g_vecs
+          logical :: wfn1_return
+        end function
+        module function wfn1_movecs_read(filename, iset, occ, evals,
+     &                  g_vecs)
+     &      result(wfn1_return)
+          implicit none
+          character(len=*), intent(in) :: filename
+          integer, intent(in) :: iset
+          real(kind=8), intent(out) :: occ(*)
+          real(kind=8), intent(out) :: evals(*)
+          integer, intent(in) :: g_vecs
+          logical :: wfn1_return
+        end function
+        module function wfn1_movecs_read_header(filename, title,
+     &                  basis_name, scftype, nbf, nsets, nmo, ldnmo)
+     &      result(wfn1_return)
+          implicit none
+          character(len=*), intent(in)  :: filename
+          character(len=*), intent(out) :: title
+          character(len=*), intent(out) :: basis_name
+          character(len=*), intent(out) :: scftype
+          integer, intent(out) :: nbf
+          integer, intent(out) :: nsets
+          integer, intent(in)  :: ldnmo
+          integer, intent(out) :: nmo(ldnmo)
+          logical :: wfn1_return
+        end function
+        module subroutine wfn1_movecs_swap(rtdb, module, scftype,g_vecs,
+     &         occ,eval)
+          implicit none
+          character(len=*), intent(in) :: scftype
+          integer, intent(in) :: rtdb, g_vecs(*)
+          real(kind=8), intent(inout) :: occ(*), eval(*)
+          character(len=*), intent(in) :: module
+        end subroutine
+        module function wfn1_movecs_write(rtdb, basis, filename,
+     &         scftype, title, nbf, nsets, nmo, occ, ldocc, evals,
+     &         ldevals, g_vecs) result(wfn1_return)
+          implicit none
+          integer, intent(in) :: rtdb
+          integer, intent(in) :: basis
+          character(len=*), intent(in) :: filename
+          character(len=*), intent(in) :: scftype
+          character(len=*), intent(in) :: title
+          integer, intent(in) :: nbf
+          integer, intent(in) :: nsets
+          integer, intent(in) :: nmo(nsets)
+          integer, intent(in) :: ldocc
+          integer, intent(in) :: ldevals
+          real(kind=8), intent(in) :: occ(ldocc, nsets)
+          real(kind=8), intent(in) :: evals(ldevals, nsets)
+          integer, intent(in) :: g_vecs(nsets)
+          logical wfn1_return
+        end function
         module subroutine wfn1_ortho(wfn1_mat,wfn1_wave)
           implicit none
           type(wfn1_matcnst), intent(in) :: wfn1_mat

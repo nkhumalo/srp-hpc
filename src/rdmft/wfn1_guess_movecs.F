@@ -1,3 +1,6 @@
+      submodule (wfn1) wfn1_gss_mvc
+      implicit none
+      contains
 c-----------------------------------------------------------------------
 c
 !>
@@ -11,10 +14,10 @@ c
 !> If no ".covecs" file is available we will use the default guess
 !> for the correlation functions.
 !>
-      subroutine wfn1_guess_movecs(wfn1_param,wfn1_wave)
+      module subroutine wfn1_guess_movecs(wfn1_param,wfn1_wave)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
 #include "errquit.fh"
 #include "stdio.fh"
 c
@@ -131,3 +134,5 @@ c
       end
 c
 c-----------------------------------------------------------------------
+c
+      end submodule wfn1_gss_mvc

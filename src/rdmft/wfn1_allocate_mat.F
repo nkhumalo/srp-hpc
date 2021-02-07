@@ -1,10 +1,10 @@
-      submodule (wfn1) wfn1_mem_mat
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_mem_mat
+!     implicit none
+!     contains
 c
 c-----------------------------------------------------------------------
 c
-      module subroutine wfn1_allocate_mat(wfn1_param,wfn1_inst,wfn1_mat)
+      subroutine wfn1_allocate_mat(wfn1_param,wfn1_inst,wfn1_mat)
       implicit none
 !include "wfn1_param.fh"
 !include "wfn1_matcnst.fh"
@@ -43,7 +43,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module subroutine wfn1_deallocate_mat(wfn1_mat)
+      subroutine wfn1_deallocate_mat(wfn1_mat)
       implicit none
 !include "wfn1_param.fh"
 !include "wfn1_matcnst.fh"
@@ -79,4 +79,4 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_mem_mat
+!     end submodule wfn1_mem_mat

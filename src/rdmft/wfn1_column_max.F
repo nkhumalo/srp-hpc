@@ -11,9 +11,11 @@ C> in every column.
 C>
       subroutine wfn1_column_max(wfn1_param,g_a,icol)
       implicit none
-#include "wfn1_param.fh"
+!include "wfn1_param.fh"
+#include "mafdecls.fh"
 #include "global.fh"
 #include "stdio.fh"
+#include "errquit.fh"
 !     Calculation parameters
       type(wfn1_prm), intent(in)     :: wfn1_param
 !     Global array
@@ -30,11 +32,13 @@ c
       integer :: ncollo ! the lowest column for this rank
       integer :: ncolhi ! the highest column for this rank
       integer :: ii, jj ! counters
+      integer :: itype  ! type of the global array g_a
 c
       logical, allocatable :: otaken(:)
       logical, allocatable :: oprior(:)
 c
       double precision, allocatable :: val(:)
+      complex(kind=8),  allocatable :: zval(:)
 c
       character*(16) :: pname
 c
@@ -48,16 +52,33 @@ c
       ncolhi = (iproc+1)*ncols
       ncollo = min(ncollo,nmo+1)
       ncolhi = min(ncolhi,nmo)
-      allocate(val(1:nmo))
+      call ga_inquire(g_a,itype,ii,jj)
+      if (itype.eq.MT_DBL) then
+        allocate(val(1:nmo))
+      else if (itype.eq.MT_DCPL) then
+        allocate(zval(1:nmo))
+      else
+        call errquit(pname//" invalid type",itype,UERR)
+      endif
 c
 c     Find the position of the maximum coefficient in every column
 c
       do ii = ncollo, ncolhi
-        call ga_get(g_a,1,nmo,ii,ii,val,nmo)
+        if (itype.eq.MT_DBL) then
+          call ga_get(g_a,1,nmo,ii,ii,val,nmo)
+        else if (itype.eq.MT_DCPL) then
+          call ga_get(g_a,1,nmo,ii,ii,zval,nmo)
+        endif
         icol(ii) = 1
         do jj = 2, nmo
-          if (abs(val(jj)).gt.abs(val(icol(ii)))) then
-            icol(ii) = jj
+          if (itype.eq.MT_DBL) then
+            if (abs(val(jj)).gt.abs(val(icol(ii)))) then
+              icol(ii) = jj
+            endif
+          else if (itype.eq.MT_DCPL) then
+            if (abs(zval(jj)).gt.abs(zval(icol(ii)))) then
+              icol(ii) = jj
+            endif
           endif
         enddo
       enddo
@@ -82,7 +103,11 @@ c
 c           Some other column already has this as the maximum
 c           coefficient. This needs to be resolved.
 c
-            call ga_get(g_a,1,nmo,ii,ii,val,nmo)
+            if (itype.eq.MT_DBL) then
+              call ga_get(g_a,1,nmo,ii,ii,val,nmo)
+            else if (itype.eq.MT_DCPL) then
+              call ga_get(g_a,1,nmo,ii,ii,zval,nmo)
+            endif
             do jj = 1, nmo
               if (.not.otaken(jj)) then
                 icol(ii) = jj
@@ -90,9 +115,16 @@ c
               endif
             enddo
             do jj = 1, nmo
-              if (.not.otaken(jj).and.
-     &            abs(val(jj)).gt.abs(val(icol(ii)))) then
-                icol(ii) = jj
+              if (itype.eq.MT_DBL) then
+                if (.not.otaken(jj).and.
+     &              abs(val(jj)).gt.abs(val(icol(ii)))) then
+                  icol(ii) = jj
+                endif
+              else if (itype.eq.MT_DCPL) then
+                if (.not.otaken(jj).and.
+     &              abs(zval(jj)).gt.abs(zval(icol(ii)))) then
+                  icol(ii) = jj
+                endif
               endif
             enddo
             otaken(icol(ii)) = .true.
@@ -111,7 +143,11 @@ c
       else
         icol = 0
       endif
-      deallocate(val)
+      if (itype.eq.MT_DBL) then
+        deallocate(val)
+      else if (itype.eq.MT_DCPL) then
+        deallocate(zval)
+      endif
       call ga_igop(10,icol,nmo,"+")
       end subroutine wfn1_column_max
 c

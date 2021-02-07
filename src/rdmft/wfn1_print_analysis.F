@@ -9,8 +9,8 @@ C>
 #include "mafdecls.fh"
 #include "stdio.fh"
 #include "global.fh"
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
 c
       type(wfn1_prm),     intent(in) :: wfn1_param
       type(wfn1_prminst), intent(in) :: wfn1_inst
@@ -30,7 +30,7 @@ c
 !>    The natural orbital occupation numbers
       double precision, allocatable   :: ocna(:), ocnb(:)
       double precision, allocatable   :: occa(:), occb(:)
-      double precision, allocatable   :: ci(:), cj(:)
+      complex(kind=8),  allocatable   :: ci(:), cj(:)
 c
       double precision :: tanalyze
       double precision :: valmin

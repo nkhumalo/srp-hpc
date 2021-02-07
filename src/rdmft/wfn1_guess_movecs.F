@@ -1,6 +1,6 @@
-      submodule (wfn1) wfn1_gss_mvc
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_gss_mvc
+!     implicit none
+!     contains
 c-----------------------------------------------------------------------
 c
 !>
@@ -14,7 +14,7 @@ c
 !> If no ".covecs" file is available we will use the default guess
 !> for the correlation functions.
 !>
-      module subroutine wfn1_guess_movecs(wfn1_param,wfn1_wave)
+      subroutine wfn1_guess_movecs(wfn1_param,wfn1_wave)
       implicit none
 !include "wfn1_param.fh"
 !include "wfn1_wfn.fh"
@@ -42,8 +42,8 @@ c
 c
       integer :: ii, nn ! counters
 c
-      logical, external :: movecs_read_header
-      logical, external :: movecs_read
+!     logical, external :: movecs_read_header
+!     logical, external :: movecs_read
 c
       allocate(occ(1:wfn1_param%nbf))
       allocate(eval(1:wfn1_param%nbf))
@@ -59,19 +59,19 @@ c
 c
 c     == retrieve the natural orbitals ==
 c
-      status = movecs_read_header(movecs_in, title_vecs, bas_vecs,
+      status = wfn1_movecs_read_header(movecs_in, title_vecs, bas_vecs,
      &         file_scftype, nbf_vecs, nsets, nmo_vecs, 2)
       if (status) then
         if (wfn1_param%nbf.eq.nbf_vecs.and.
      &      wfn1_param%nmo.eq.nmo_vecs(1)) then
-          if (.not.movecs_read(movecs_in, 1, occ, eval,
+          if (.not.wfn1_movecs_read(movecs_in, 1, occ, eval,
      &        wfn1_wave%g_na)) then
             call errquit('wfn1_guess_movecs: movecs_read Na failed',
      &                   0,DISK_ERR)
           endif
           if (file_scftype.eq."UHF".or.
      &        file_scftype.eq."WFN1") then
-            if (.not.movecs_read(movecs_in, 2, occ, eval,
+            if (.not.wfn1_movecs_read(movecs_in, 2, occ, eval,
      &          wfn1_wave%g_nb)) then
               call errquit('wfn1_guess_movecs: movecs_read Nb failed',
      &                     0,DISK_ERR)
@@ -84,12 +84,12 @@ c
 c
 c     == retrieve or generate the correlation functions ==
 c
-      status = movecs_read_header(covecs_in, title_vecs, bas_vecs,
+      status = wfn1_movecs_read_header(covecs_in, title_vecs, bas_vecs,
      &         file_scftype, nbf_vecs, nsets, nmo_vecs, 2)
       if (status) then
         if (wfn1_param%nbf.eq.nbf_vecs.and.
      &      wfn1_param%nmo.eq.nmo_vecs(1)) then
-          if (.not.movecs_read(covecs_in, 1, occ, eval,
+          if (.not.wfn1_movecs_read(covecs_in, 1, occ, eval,
      &        wfn1_wave%g_ca)) then
             call errquit('wfn1_guess_movecs: movecs_read Ca failed',
      &                   0,DISK_ERR)
@@ -107,7 +107,7 @@ c
               endif
             enddo
           endif
-          if (.not.movecs_read(covecs_in, 2, occ, eval,
+          if (.not.wfn1_movecs_read(covecs_in, 2, occ, eval,
      &        wfn1_wave%g_cb)) then
             call errquit('wfn1_guess_movecs: movecs_read Cb failed',
      &                   0,DISK_ERR)
@@ -135,4 +135,4 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_gss_mvc
+!     end submodule wfn1_gss_mvc

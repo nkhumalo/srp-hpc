@@ -1,7 +1,7 @@
-      submodule (wfn1) wfn1_for_nw
-      implicit none
-      contains
-      module subroutine wfn1_input(rtdb)
+!     submodule (wfn1) wfn1_for_nw
+!     implicit none
+!     contains
+      subroutine wfn1_input(rtdb)
       implicit none
 !>
 !> \brief Read the input for the RDMFT calculations
@@ -35,7 +35,7 @@
 !>     arXiv: <a href="http://arxiv.org/abs/1512.06120">
 !>     http://arxiv.org/abs/1512.06120</a>
 !>
-      module function wfn1_task_energy(rtdb) result(wfn1_success)
+      function wfn1_task_energy(rtdb) result(wfn1_success)
       implicit none
 !include "wfn1_param.fh"
 !include "wfn1_wfn.fh"
@@ -1018,4 +1018,4 @@ c
      &  call errquit(pname//' Failed to destroy geometry',0,GEOM_ERR)
 c
       end function wfn1_task_energy
-      end submodule wfn1_for_nw
+!     end submodule wfn1_for_nw

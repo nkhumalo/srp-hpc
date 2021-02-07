@@ -1,10 +1,10 @@
-      submodule (wfn1) wfn1_mem_drv
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_mem_drv
+!     implicit none
+!     contains
 c
 c-----------------------------------------------------------------------
 c
-      module subroutine wfn1_allocate_drv(wfn1_param,wfn1_deriv)
+      subroutine wfn1_allocate_drv(wfn1_param,wfn1_deriv)
       implicit none
 !include "wfn1_param.fh"
 !include "wfn1_drv.fh"
@@ -51,7 +51,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module subroutine wfn1_deallocate_drv(wfn1_deriv)
+      subroutine wfn1_deallocate_drv(wfn1_deriv)
       implicit none
 !include "wfn1_drv.fh"
 #include "global.fh"
@@ -80,4 +80,4 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_mem_drv 
+!     end submodule wfn1_mem_drv 

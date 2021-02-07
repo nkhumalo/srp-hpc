@@ -1,12 +1,12 @@
-      submodule (wfn1) wfn1_conf
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_conf
+!     implicit none
+!     contains
 c
 c-----------------------------------------------------------------------
 C>
 C> \brief Set the electron configuration up
 C>
-      module subroutine wfn1_configuration(wfn1_param,wfn1_wave)
+      subroutine wfn1_configuration(wfn1_param,wfn1_wave)
       implicit none
 !include "wfn1_param.fh"
 !include "wfn1_wfn.fh"
@@ -35,4 +35,4 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_conf
+!     end submodule wfn1_conf

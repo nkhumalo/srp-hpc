@@ -17,13 +17,13 @@ C>
      &                         v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                         oprerr,curit)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_size.fh"
-#include "wfn1_trace.fh"
-#include "wfn1_en.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_size.fh"
+!include "wfn1_trace.fh"
+!include "wfn1_en.fh"
 #include "global.fh"
 #include "errquit.fh"
 #include "stdio.fh"
@@ -183,7 +183,7 @@ c       Different convergence scheme where the correlation functions are
 c       converged first, and only then the natural orbitals
 c       are converged.
 c
-        if (error%errca+error%errcb > 0.5d0*conv_tol) then
+        if (abs(error%errca)+abs(error%errcb) > 0.5d0*conv_tol) then
           diag_NorC = DIAG_C
         else
           diag_NorC = DIAG_N
@@ -199,37 +199,27 @@ c           call ga_get(wfn1_deriv%g_dcb,ii,ii,ii,ii,eb,1)
 c           write(*,'(" HVD: eorb:",i4,2e18.6)')ii,ea,eb
 c         enddo
 cDEBUG
-          call wfn1_scale_offdiag(wfn1_deriv%g_dca,wfn1_param%damp_c)
-          call wfn1_scale_offdiag(wfn1_deriv%g_dcb,wfn1_param%damp_c)
-          call ga_diag_std(wfn1_deriv%g_dca,g_momo1,v_dca)
-          call ga_diag_std(wfn1_deriv%g_dcb,g_momo2,v_dcb)
-          call wfn1_column_max(wfn1_param,g_momo1,icola)
-          call wfn1_column_max(wfn1_param,g_momo2,icolb)
-          call wfn1_backorder(wfn1_param,g_momo1,icola,g_momo3)
-          call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
-c         call ga_copy(g_momo1,g_momo3)
-c         call ga_copy(g_momo2,g_momo4)
-          call ga_dgemm('N','N',nmo,nmo,nmo,
-     &                  1.0d0,wfn1_wave%g_ca,g_momo3,0.0d0,g_momo1)
-          call ga_dgemm('N','N',nmo,nmo,nmo,
-     &                  1.0d0,wfn1_wave%g_cb,g_momo4,0.0d0,g_momo2)
+          call wfn1_diag(wfn1_param,wfn1_param%damp_c,wfn1_deriv%g_dca,
+     &                   g_momo1,g_momo2,v_dca)
+          call wfn1_gemm('N','N',nmo,nmo,nmo,
+     &                   1.0d0,wfn1_wave%g_ca,g_momo2,0.0d0,g_momo1)
           call ga_copy(g_momo1,wfn1_wave%g_ca)
-          call ga_copy(g_momo2,wfn1_wave%g_cb)
+          call wfn1_diag(wfn1_param,wfn1_param%damp_c,wfn1_deriv%g_dcb,
+     &                   g_momo1,g_momo2,v_dcb)
+          call wfn1_gemm('N','N',nmo,nmo,nmo,
+     &                   1.0d0,wfn1_wave%g_cb,g_momo2,0.0d0,g_momo1)
+          call ga_copy(g_momo1,wfn1_wave%g_cb)
         else if (diag_NorC.eq.DIAG_N) then
-          call wfn1_scale_offdiag(wfn1_deriv%g_dna,wfn1_param%damp_n)
-          call wfn1_scale_offdiag(wfn1_deriv%g_dnb,wfn1_param%damp_n)
-          call ga_diag_std(wfn1_deriv%g_dna,g_momo1,v_dna)
-          call ga_diag_std(wfn1_deriv%g_dnb,g_momo2,v_dnb)
-          call wfn1_column_max(wfn1_param,g_momo1,icola)
-          call wfn1_column_max(wfn1_param,g_momo2,icolb)
-          call wfn1_backorder(wfn1_param,g_momo1,icola,g_momo3)
-          call wfn1_backorder(wfn1_param,g_momo2,icolb,g_momo4)
-          call ga_dgemm('N','N',nmo,nmo,nmo,
-     &                  1.0d0,wfn1_wave%g_na,g_momo3,0.0d0,g_momo1)
-          call ga_dgemm('N','N',nmo,nmo,nmo,
-     &                  1.0d0,wfn1_wave%g_nb,g_momo4,0.0d0,g_momo2)
+          call wfn1_diag(wfn1_param,wfn1_param%damp_c,wfn1_deriv%g_dna,
+     &                   g_momo1,g_momo2,v_dna)
+          call wfn1_gemm('N','N',nmo,nmo,nmo,
+     &                   1.0d0,wfn1_wave%g_na,g_momo2,0.0d0,g_momo1)
           call ga_copy(g_momo1,wfn1_wave%g_na)
-          call ga_copy(g_momo2,wfn1_wave%g_nb)
+          call wfn1_diag(wfn1_param,wfn1_param%damp_c,wfn1_deriv%g_dnb,
+     &                   g_momo1,g_momo2,v_dnb)
+          call wfn1_gemm('N','N',nmo,nmo,nmo,
+     &                   1.0d0,wfn1_wave%g_nb,g_momo2,0.0d0,g_momo1)
+          call ga_copy(g_momo1,wfn1_wave%g_nb)
         else
           call errquit("wfn1_solve_diag: invalid diagonalization",
      &                 diag_NorC,UERR)

@@ -1,24 +1,17 @@
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_diag(wfn1_param,alpha,g_x,g_t,g_exp)
+      subroutine wfn1_diag(wfn1_param,alpha,g_x,g_t,g_exp,eig)
       implicit none
 C>
-C> \brief Calculate diag(X_ii+alpha*X_ij) where X is a symmetric matrix
+C> \brief Calculate diag(X_ii+alpha*X_ij) where X is a hermitian matrix
 C>
-C> NOTE: This routine is serial and does not synchronize. The rational
-C>       for the latter is that in the application it is always followed
-C>       by a ga_dgemm (which does synchronize). In addition where we
-C>       invoke this is invoked 4 times where we use it, so where a
-C>       single synchronization is sufficient to guarantee completion of
-C>       all 4 matrices.
-C>
-C> Diagonalize a symmetric matrix where the off-diagonal elements have
+C> Diagonalize a hermitian matrix where the off-diagonal elements have
 C> been scaled with a factor alpha. The resulting eigenvector provide
 C> a unitary transformation of the basis the matrix was expressed in.
 C> Eigenvectors are sorted so the maximum coefficients appear on the 
 C> diagonal to implement a maximum overlap ordering of the states.
 C> 
-#include "wfn1_param.fh"
+!include "wfn1_param.fh"
 #include "errquit.fh"
 #include "global.fh"
 !     Calculation parameters
@@ -26,9 +19,14 @@ C>
 c
       double precision, intent(in) :: alpha
 c
-      integer, intent(in)    :: g_x
-      integer, intent(inout) :: g_t
-      integer, intent(inout) :: g_exp
+!>    the Hermitian matrix to diagonalize
+      integer, intent(in) :: g_x
+!>    temporary
+      integer, intent(in) :: g_t
+!>    the resulting eigen vectors sorted by maximum overlap
+      integer, intent(in) :: g_exp
+!>    the eigen values sorted by maximum overlap
+      double precision, intent(out) :: eig(1:wfn1_param%nmo)
 c
       double precision :: dnormX  ! The norm of alpha*X
       double precision :: dnormXn ! The norm of the n-th term in the
@@ -38,7 +36,7 @@ c
 c     double complex, allocatable :: skvl(:,:) ! left eigenvectors
       double complex              :: skvl      ! left eigenvectors
       double complex, allocatable :: skvr(:,:) ! right eigenvectors
-      double complex, allocatable :: eig(:)    ! eigenvalues
+      double complex, allocatable :: deig(:)   ! eigenvalues
 c
       double precision, allocatable :: rwork(:)   ! scratch space
 c
@@ -52,6 +50,8 @@ c
       integer, allocatable :: icol(:)
 c
       integer :: itypx, nrowx, ncolx
+      integer :: itypt, nrowt, ncolt
+      integer :: itype, nrowe, ncole
       integer :: info ! status flag returned by LAPACK
 c
       integer :: iproc, nproc
@@ -60,6 +60,7 @@ c
       integer :: itlo, ithi, jtlo, jthi ! local block limits
       integer :: ixdim, jxdim
       integer :: itdim, jtdim
+      integer :: nb
 c
       logical :: o_repeat
 c
@@ -69,39 +70,36 @@ c
       nproc = ga_nnodes()
       iproc = ga_nodeid()
 c
+#ifndef SCALAPACK
+You must have ScaLAPACK!
+#endif
       call ga_inquire(g_x,itypx,nrowx,ncolx)
       if (nrowx.ne.ncolx) then
         call errquit(pname//" matrix g_x not square",0,UERR)
       endif
-      call ga_distribution(g_x,iproc,ixlo,ixhi,jxlo,jxhi)
-      ixdim = ixhi-ixlo+1
-      jxdim = jxhi-jxlo+1
-      call ga_distribution(g_t,iproc,itlo,ithi,jtlo,jthi)
-      itdim = ithi-itlo+1
-      jtdim = jthi-jtlo+1
-c
-      allocate(block(ixlo:ixhi,jxlo:jxhi))
-      allocate(eig(1:nrowx))
-      allocate(icol(1:nrowx))
-c
-      call ga_get(g_x,ixlo,ixhi,jxlo,jxhi,block,ixdim)
-      do jj = jxlo, jxhi
-        do ii = ixlo, ixhi
-          if (ii.ne.jj) then
-            block(ii,jj) = alpha*block(ii,jj)
-          endif
-        enddo
-      enddo
-      call ga_put(g_exp,ixlo,ixhi,jxlo,jxhi,block,ixdim)
-      call ga_sync()
-c
-      call ga_diag_std(g_exp,g_t,eig)
+      call ga_inquire(g_t,itypt,nrowt,ncolt)
+      call ga_inquire(g_exp,itype,nrowe,ncole)
+      if (itypx.ne.itypt.or.itypx.ne.itype) then
+        call errquit(pname//" matrices types mismatch",0,UERR)
+      endif
+      allocate(deig(1:wfn1_param%nmo))
+      allocate(icol(1:wfn1_param%nmo))
+      call ga_copy(g_x,g_exp)
+      call wfn1_scale_offdiag(g_exp,alpha)
+      nb = 0
+      if (itypx.eq.MT_DBL) then
+        call ga_pdsyevd(g_exp,g_t,deig,nb)
+      else if (itypx.eq.MT_DCPL) then
+        call ga_pzheevd(g_exp,g_t,deig,nb)
+      else
+        call errquit(pname//" invalid type",itypx,UERR)
+      endif
+      call ga_diag_std(g_exp,g_t,deig)
       call wfn1_column_max(wfn1_param,g_t,icol)
       call wfn1_backorder(wfn1_param,g_t,icol,g_exp)
-c
+      call wfn1_backorder_e(wfn1_param,deig,icol,eig)
       deallocate(icol)
-      deallocate(block)
-      deallocate(eig)
+      deallocate(deig)
 c
       end
 c

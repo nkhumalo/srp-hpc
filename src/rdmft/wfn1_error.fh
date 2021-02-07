@@ -9,6 +9,6 @@ C>
         double precision :: total ! The total error
         double precision :: errna ! The error for the alpha nat orbs
         double precision :: errnb ! The error for the beta nat orbs
-        double precision :: errca ! The error for the alpha corr func
-        double precision :: errcb ! The error for the beta corr func
+        complex(kind=8)  :: errca ! The error for the alpha corr func
+        complex(kind=8)  :: errcb ! The error for the beta corr func
       end type wfn1_error

@@ -1,6 +1,6 @@
-      submodule (wfn1) wfn1_mem_wfn
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_mem_wfn
+!     implicit none
+!     contains
 c
 c-----------------------------------------------------------------------
 !>
@@ -9,7 +9,7 @@ c-----------------------------------------------------------------------
 !> Allocate global arrays for the natural orbitals, the correlation
 !> functions, as well as arrays to store the electron configuration.
 !>
-      module subroutine wfn1_allocate_wfn(wfn1_param,wfn1_inst,
+      subroutine wfn1_allocate_wfn(wfn1_param,wfn1_inst,
      &                                    wfn1_wave)
       implicit none
 !include "wfn1_param.fh"
@@ -88,7 +88,7 @@ c-----------------------------------------------------------------------
 !>
 !> \brief Deallocate wavefunction components
 !>
-      module subroutine wfn1_deallocate_wfn(wfn1_wave)
+      subroutine wfn1_deallocate_wfn(wfn1_wave)
       implicit none
 !include "wfn1_wfn.fh"
 #include "global.fh"
@@ -118,4 +118,4 @@ c-----------------------------------------------------------------------
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_mem_wfn
+!     end submodule wfn1_mem_wfn

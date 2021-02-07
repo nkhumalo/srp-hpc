@@ -6,13 +6,13 @@
 !> compatibility with the rest of NWChem this code needs to be kept in
 !> sync with the code in ddscf/vectors.F.
 !>
-      submodule (wfn1) wfn1_io_movecs
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_io_movecs
+!     implicit none
+!     contains
 c
 c-----------------------------------------------------------------------
 c
-      module function wfn1_movecs_read_header(filename, title,
+      function wfn1_movecs_read_header(filename, title,
      &                basis_name, scftype, nbf, nsets, nmo, ldnmo)
      &   result(wfn1_return)
       implicit none
@@ -128,7 +128,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module function wfn1_movecs_read(filename, iset, occ, evals,
+      function wfn1_movecs_read(filename, iset, occ, evals,
      &                g_vecs)
      &  result(wfn1_return)
       implicit none
@@ -169,7 +169,7 @@ c
       ddblsize=MA_sizeof(MT_DBL,1,MT_BYTE)
       dcplsize=MA_sizeof(MT_DCPL,1,MT_BYTE)
       call ga_sync()
-      call ga_enquire(g_vecs,itype,i,j)
+      call ga_inquire(g_vecs,itype,i,j)
       ok = 0
       if (ga_nodeid() .eq. 0) then
          open(unitno, status='old', form='unformatted', file=filename,
@@ -269,7 +269,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module function wfn1_movecs_gather(filename, iset, nwant, want,
+      function wfn1_movecs_gather(filename, iset, nwant, want,
      &   occ, evals, g_vecs) result(wfn1_return)
       implicit none
 #include "errquit.fh"
@@ -319,7 +319,7 @@ c
      $   l_fulleval, k_fulleval)) call errquit(
      $   'wfn1_movecs_gather: ma failed', nmo(iset), MA_ERR)
 c
-      call ga_enquire(g_vecs,itype,ii,jj)
+      call ga_inquire(g_vecs,itype,ii,jj)
       if ( .not. ga_create( itype, nbf, nmo(iset), 'full vectors',
      $   minchunk, minchunk, g_tmp) ) call errquit(
      $   'wfn1_movecs_gather: ga_create failed', nbf*nmo(iset) , GA_ERR)
@@ -355,7 +355,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module function wfn1_movecs_write(rtdb, basis, filename, scftype,
+      function wfn1_movecs_write(rtdb, basis, filename, scftype,
      &       title, nbf, nsets, nmo, occ, ldocc, evals, ldevals, g_vecs)
      &  result(wfn1_return)
       implicit none
@@ -453,7 +453,7 @@ c
 c Write scf energy at the end of the movecs file. If energy
 c is not in rtdb, it is given a value of zero.
 c
-      call ga_enquire(g_vecs,itype,ii,jj)
+      call ga_inquire(g_vecs,itype,ii,jj)
       write(key,'(a,'':energy'')') scftype(1:inp_strlen(scftype))
       if (.not. rtdb_get(rtdb, key, mt_dbl, 1, energy)) then
         energy=0.0d0
@@ -572,7 +572,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module subroutine wfn1_movecs_swap(rtdb, module, scftype,g_vecs,
+      subroutine wfn1_movecs_swap(rtdb, module, scftype,g_vecs,
      &       occ,eval)
       implicit none
 #include "errquit.fh"
@@ -841,7 +841,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module function wfn1_movecs_converged(rtdb, basis, scftype,
+      function wfn1_movecs_converged(rtdb, basis, scftype,
      &        filename) result(wfn1_converged)
       implicit none
 #include "errquit.fh"
@@ -975,4 +975,4 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_io_movecs
+!     end submodule wfn1_io_movecs

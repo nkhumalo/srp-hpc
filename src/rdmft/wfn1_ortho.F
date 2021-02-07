@@ -1,6 +1,6 @@
-      submodule (wfn1) wfn1_clc_ortho
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_clc_ortho
+!     implicit none
+!     contains
 c
 c-----------------------------------------------------------------------
 c
@@ -11,7 +11,7 @@ C>    This subroutine ortho-normalizes all vectors making up the
 C>    wavefunction, i.e. the natural orbitals as well as the correlation
 C>    functions. 
 C>
-      module subroutine wfn1_ortho(wfn1_mat,wfn1_wave)
+      subroutine wfn1_ortho(wfn1_mat,wfn1_wave)
       implicit none
 !include "wfn1_matcnst.fh"
 !include "wfn1_wfn.fh"
@@ -42,7 +42,7 @@ c
 !> - if `g_vecs` is real then g_over is also real
 !> - if `g_vecs` is complex then g_over is also complex and Hermitian
 !>
-      module subroutine wfn1_orthog(g_vecs, g_over, ometric)
+      subroutine wfn1_orthog(g_vecs, g_over, ometric)
       implicit none
 #include "errquit.fh"
 #include "mafdecls.fh"
@@ -191,7 +191,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module subroutine wfn1_orthog_dvecs(vecs, ld, ni, ulo, uhi, s,
+      subroutine wfn1_orthog_dvecs(vecs, ld, ni, ulo, uhi, s,
      &                                    o, nu, w, ometric)
       implicit none
 #include "errquit.fh"
@@ -285,7 +285,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module subroutine wfn1_orthog_zvecs(vecs, ld, ni, ulo, uhi, s,
+      subroutine wfn1_orthog_zvecs(vecs, ld, ni, ulo, uhi, s,
      &                                    o, nu, w, ometric)
       implicit none
 #include "errquit.fh"
@@ -384,7 +384,7 @@ C>
 C>    This routine simply calls wfn1_ortho but then checks the results
 C>    to make sure that the orbitals returned are actually orthonormal.
 C>
-      module subroutine wfn1_tst_ortho(wfn1_mat,wfn1_wave,g_bfmo,
+      subroutine wfn1_tst_ortho(wfn1_mat,wfn1_wave,g_bfmo,
      &                                 gd_momo,gz_momo)
       implicit none
 #include "stdio.fh"
@@ -498,4 +498,4 @@ c       call ga_print(gz_momo)
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_clc_ortho
+!     end submodule wfn1_clc_ortho

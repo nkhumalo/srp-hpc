@@ -1,6 +1,6 @@
-      submodule (wfn1) wfn1_clc_occ
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_clc_occ
+!     implicit none
+!     contains
 c
 c-----------------------------------------------------------------------
 C>
@@ -11,7 +11,7 @@ C> Note that now the correlation functions are complex valued
 C> but the occupation numbers are still real because we are
 C> taking the norm.
 C>
-      module subroutine wfn1_calc_occ(g_c,nmo,ne,icnf,dcnt,occ)
+      subroutine wfn1_calc_occ(g_c,nmo,ne,icnf,dcnt,occ)
       implicit none
 #include "global.fh"
 #include "mafdecls.fh"
@@ -67,7 +67,7 @@ C>
 C> Note the correlation functions are complex valued now. The occupation
 C> numbers remain real because we are taking norms.
 C>
-      module subroutine wfn1_calc_occ2(g_c,nmo,ne,icnf,dcnt,g_occ)
+      subroutine wfn1_calc_occ2(g_c,nmo,ne,icnf,dcnt,g_occ)
       implicit none
 #include "global.fh"
 #include "mafdecls.fh"
@@ -143,7 +143,7 @@ C> exchange terms are separated. The reason is that the correlation
 C> function Fock matrices for the Coulomb and exchange terms have to be
 C> handled differently because of their nature.
 C>
-      module subroutine wfn1_calc_ocx(g_c,nmo,ne,icnf,dcnt,g_ocx)
+      subroutine wfn1_calc_ocx(g_c,nmo,ne,icnf,dcnt,g_ocx)
       implicit none
 #include "global.fh"
 #include "mafdecls.fh"
@@ -216,7 +216,7 @@ C> exchange terms are separated. The reason is that the correlation
 C> function Fock matrices for the Coulomb and exchange terms have to be
 C> handled differently because of their nature.
 C>
-      module subroutine wfn1_add_occd(nmo,occ,g_occ)
+      subroutine wfn1_add_occd(nmo,occ,g_occ)
       implicit none
 #include "global.fh"
 #include "mafdecls.fh"
@@ -263,7 +263,7 @@ C>
 C> These quantities are the \f$-sum_s C_{js}C_{ks} terms in the
 C> derivative of the 2-electron density matrix.
 C>
-      module subroutine wfn1_calc_docx(g_c,nmo,ne,icnf,dcnt,g_docx)
+      subroutine wfn1_calc_docx(g_c,nmo,ne,icnf,dcnt,g_docx)
       implicit none
 #include "global.fh"
 #include "mafdecls.fh"
@@ -322,4 +322,4 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_clc_occ
+!     end submodule wfn1_clc_occ

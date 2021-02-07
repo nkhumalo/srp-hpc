@@ -1,6 +1,6 @@
-      submodule (wfn1) wfn1_4index
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_4index
+!     implicit none
+!     contains
 !>
 !>----------------------------------------------------------------------
 !>
@@ -23,8 +23,8 @@
 !>    - g\_4mo = go
 !>    - g\_4t1 = gt
 !>
-      subroutine wfn1_4index_aa(wfn1_param,g_na,g_4ao,g_4mo,g_4t1,
-     &                          g_bfbf)
+      subroutine wfn1_4index_aa(wfn1_param,g_na,g_4ao,g_4mo,
+     &           g_4t1,g_bfbf)
       implicit none
 !>    Constant parameters for this calculation
       type(wfn1_prm), intent(in) :: wfn1_param
@@ -224,8 +224,8 @@
 !>    - g\_4mo = go
 !>    - g\_4t1 = gt
 !>
-      subroutine wfn1_4index_ab(wfn1_param,g_na,g_nb,g_4ao,g_4mo,g_4t1,
-     &                          g_bfbf)
+      subroutine wfn1_4index_ab(wfn1_param,g_na,g_nb,g_4ao,g_4mo,
+     &           g_4t1,g_bfbf)
       implicit none
 !>    Constant parameters for this calculation
       type(wfn1_prm), intent(in) :: wfn1_param
@@ -407,4 +407,4 @@
 !>
 !>----------------------------------------------------------------------
 !>
-      end submodule wfn1_4index
+!     end submodule wfn1_4index

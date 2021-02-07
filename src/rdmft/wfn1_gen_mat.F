@@ -1,6 +1,6 @@
-      submodule (wfn1) wfn1_gen_tensors
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_gen_tensors
+!     implicit none
+!     contains
 c
 c-----------------------------------------------------------------------
 c
@@ -10,7 +10,7 @@ c
 !> Calculate the overlap, the 1-electron hamiltonian, and the 
 !> Cauchy-Schwarz matrices.
 !>
-      module subroutine wfn1_gen_mat(wfn1_inst,wfn1_mat)
+      subroutine wfn1_gen_mat(wfn1_inst,wfn1_mat)
       implicit none
 !include "wfn1_param.fh"
 !include "wfn1_matcnst.fh"
@@ -120,7 +120,7 @@ c
 !> given processor the lowest index integral is in local memory
 !> then we calculate the shell quartet.
 !>
-      module subroutine wfn1_gen_ten2(wfn1_inst,wfn1_mat)
+      subroutine wfn1_gen_ten2(wfn1_inst,wfn1_mat)
       implicit none
 #include "bas.fh"
 #include "errquit.fh"
@@ -239,4 +239,4 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_gen_tensors
+!     end submodule wfn1_gen_tensors

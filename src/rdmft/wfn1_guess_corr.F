@@ -1,6 +1,6 @@
-      submodule (wfn1) wfn1_gss_crr
-      implicit none
-      contains
+!     submodule (wfn1) wfn1_gss_crr
+!     implicit none
+!     contains
 c-----------------------------------------------------------------------
 c
 C>
@@ -45,7 +45,7 @@ C> a degenerate set appear in a consecutive sequence of orbitals.
 C>
 C> See also wfn1_nxt_init_occ
 C>
-      module subroutine wfn1_guess_corr(wfn1_param,wfn1_wave,eig,neig)
+      subroutine wfn1_guess_corr(wfn1_param,wfn1_wave,eig,neig)
       implicit none
 #include "mafdecls.fh"
 #include "global.fh"
@@ -119,6 +119,7 @@ c
         deallocate(rrndm)
       endif
       call ga_brdcst(100,rndm,ma_sizeof(MT_DCPL,nmo,MT_BYTE),0)
+      call ga_sync()
 c
 c     Setup the alpha correlation functions
 c
@@ -142,7 +143,7 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      module subroutine wfn1_guess_corr_spin(nmo,ncore,nvirt,g_c,
+      subroutine wfn1_guess_corr_spin(nmo,ncore,nvirt,g_c,
      &                                       eig,neig,rndm,Tt)
       implicit none
 #include "global.fh"
@@ -274,4 +275,4 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      end submodule wfn1_gss_crr
+!     end submodule wfn1_gss_crr

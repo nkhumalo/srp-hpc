@@ -20,13 +20,13 @@ C>
      &                         v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                         oprerr,curit)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_size.fh"
-#include "wfn1_trace.fh"
-#include "wfn1_en.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_size.fh"
+!include "wfn1_trace.fh"
+!include "wfn1_en.fh"
 #include "errquit.fh"
 #include "global.fh"
 #include "stdio.fh"
@@ -135,8 +135,10 @@ c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
       oconverged = (error%total < conv_tol)
       curit      = 0
       curit0     = 0
-      error_nst  = min(error%errna+error%errnb,error%errca+error%errcb)
-      error_cst  = min(error%errna+error%errnb,error%errca+error%errcb)
+      error_nst  = min(error%errna+error%errnb,
+     &                 abs(error%errca)+abs(error%errcb))
+      error_cst  = min(error%errna+error%errnb,
+     &                 abs(error%errca)+abs(error%errcb))
       if (iproc.eq.0) then
         if (.not.oprerr) then
           write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
@@ -154,13 +156,14 @@ c
 c       Alternating optimization of natural orbitals and correlation
 c       functions for better convergence.
 c
-        if      (error%errca+error%errcb > 0.5d0*conv_tol) then
+        if      (abs(error%errca)+abs(error%errcb) > 0.5d0*conv_tol)
+     &  then
           diag_NorC = diag_C
         else if (error%errna+error%errnb > 0.5d0*conv_tol) then
           diag_NorC = diag_N
         endif
         if      (diag_NorC.eq.diag_N) then
-          error_cst = error%errca+error%errcb
+          error_cst = abs(error%errca)+abs(error%errcb)
           call ga_zero(wfn1_deriv%g_dca)
           call ga_zero(wfn1_deriv%g_dcb)
         else if (diag_NorC.eq.diag_C) then

@@ -34,14 +34,11 @@
          wfn1_insert.o \
          wfn1_lindep.o \
          wfn1_linesearch.o \
-         wfn1_mcsearch.o \
          wfn1_print.o \
          wfn1_print_occ.o \
          wfn1_rot_natorb.o \
          wfn1_size.o \
          wfn1_skew.o \
-         wfn1_solve_line.o \
-         wfn1_solve_mc.o \
          wfn1_symm.o \
          wfn1_test_rdms.o \
          wfn1_thimble.o \
@@ -63,10 +60,13 @@
 #        wfn1_gen_mat.o \
 #        wfn1_guess_corr.o \
 #        wfn1_guess_movecs.o \
+#        wfn1_mcsearch.o \
 #        wfn1_ortho.o \
 #        wfn1_print_analysis.o \
 #        wfn1_scale_offdiag.o \
 #        wfn1_solve_diag.o \
+#        wfn1_solve_line.o \
+#        wfn1_solve_mc.o \
 #        wfn1_trace.o \
 #        wfn1_vectors.o \
 

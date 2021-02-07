@@ -283,10 +283,13 @@ c-----------------------------------------------------------------------
 #include "wfn1_gen_mat.F"
 #include "wfn1_guess_corr.F"
 #include "wfn1_guess_movecs.F"
+#include "wfn1_mcsearch.F"
 #include "wfn1_ortho.F"
 #include "wfn1_print_analysis.F"
 #include "wfn1_scale_offdiag.F"
 #include "wfn1_solve_diag.F"
+#include "wfn1_solve_line.F"
+#include "wfn1_solve_mc.F"
 #include "wfn1_trace.F"
 #include "wfn1_vectors.F"
       end module wfn1

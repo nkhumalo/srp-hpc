@@ -28,12 +28,12 @@ C>
 #include "mafdecls.fh"
 #include "global.fh"
 #include "errquit.fh"
-#include "wfn1_trace.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
-#include "wfn1_en.fh"
+!include "wfn1_trace.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
+!include "wfn1_en.fh"
 c
       type(wfn1_prm),     intent(inout) :: wfn1_param
       type(wfn1_prminst), intent(in)    :: wfn1_inst
@@ -104,32 +104,32 @@ c
       sfac    = 1.0d0/sfac 
       sfac    = 0.5d0**sfac
       ntries  = 0
-      call ga_distribution(g_momo1,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
+!     call ga_distribution(g_momo1,iproc,ilo,ihi,jlo,jhi)
+!     allocate(buf(ilo:ihi,jlo:jhi))
       do
         ntries = ntries + 1
 c
 c       Natural orbitals
 c
-        call wfn1_gen_random_orthog(g_momo1,buf,rlim,ilo,ihi,jlo,jhi)
-        call ga_dgemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,
-     &                g_momo1,0.0d0,wfn1_trial_wv%g_na)
+        call wfn1_gen_random_orthog(g_momo1,rlim)
+        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,
+     &                 g_momo1,0.0d0,wfn1_trial_wv%g_na)
         if (.not.oclosed) then
-          call wfn1_gen_random_orthog(g_momo1,buf,rlim,ilo,ihi,jlo,jhi)
+          call wfn1_gen_random_orthog(g_momo1,rlim)
         endif
-        call ga_dgemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_nb,
-     &                g_momo1,0.0d0,wfn1_trial_wv%g_nb)
+        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_nb,
+     &                 g_momo1,0.0d0,wfn1_trial_wv%g_nb)
 c
 c       Correlation functions
 c
-        call wfn1_gen_random_orthog(g_momo1,buf,rlim,ilo,ihi,jlo,jhi)
-        call ga_dgemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,
-     &                g_momo1,0.0d0,wfn1_trial_wv%g_ca)
+        call wfn1_gen_random_orthog(g_momo1,rlim)
+        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,
+     &                 g_momo1,0.0d0,wfn1_trial_wv%g_ca)
         if (.not.oclosed) then
-          call wfn1_gen_random_orthog(g_momo1,buf,rlim,ilo,ihi,jlo,jhi)
+          call wfn1_gen_random_orthog(g_momo1,rlim)
         endif
-        call ga_dgemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_cb,
-     &                g_momo1,0.0d0,wfn1_trial_wv%g_cb)
+        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_cb,
+     &                 g_momo1,0.0d0,wfn1_trial_wv%g_cb)
 c
 c       Evaluate energy
 c
@@ -172,7 +172,7 @@ cDEBUG
           exit
         endif
       end do
-      deallocate(buf)
+!     deallocate(buf)
 c
       end
 c
@@ -180,27 +180,60 @@ c-----------------------------------------------------------------------
 c
 C> \brief Generate a random orthogonal matrix
 C>
-      subroutine wfn1_gen_random_orthog(g_rand,buf,rlim,ilo,ihi,jlo,jhi)
+      subroutine wfn1_gen_random_orthog(g_rand,rlim)
       implicit none
 c
-      integer, intent(inout) :: g_rand ! Global array
-      integer, intent(in)    :: ilo    ! block limit
-      integer, intent(in)    :: ihi    ! block limit
-      integer, intent(in)    :: jlo    ! block limit
-      integer, intent(in)    :: jhi    ! block limit
-      double precision, intent(out) :: buf(ilo:ihi,jlo:jhi)
+#include "global.fh"
+#include "mafdecls.fh"
+c
+      integer, intent(in) :: g_rand ! Global array
       double precision, intent(in)  :: rlim ! random number limits
+c
+      double precision, allocatable :: buf(:,:,:)
+      complex(kind=8),  allocatable :: zbuf(:,:)
+c
       integer :: idum
       integer :: ii ! counter
+      integer :: ilo, ihi, jlo, jhi
+      integer :: iproc
+      integer :: itype, jj
+      double precision :: tt
 c
-      call random_number(buf)
-      buf = (2.0d0*buf-1.0d0)*rlim
-      do ii = max(ilo,jlo),min(ihi,jhi)
-        buf(ii,ii) = 1.0d0
-      enddo
-      call ga_put(g_rand,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      iproc = ga_nodeid()
+      call ga_inquire(g_rand,itype,ii,jj)
+      call ga_distribution(g_rand,iproc,ilo,ihi,jlo,jhi)
+      if (itype.eq.MT_DBL) then
+        allocate(buf(1:1,ilo:ihi,jlo:jhi))
+        call random_number(buf)
+        buf = (2.0d0*buf-1.0d0)*rlim
+        do ii = max(ilo,jlo),min(ihi,jhi)
+          buf(1,ii,ii) = 1.0d0
+        enddo
+        call ga_put(g_rand,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+        deallocate(buf)
+      else if (itype.eq.MT_DCPL) then
+        allocate(buf(1:2,ilo:ihi,jlo:jhi))
+        allocate(zbuf(ilo:ihi,jlo:jhi))
+        call random_number(buf)
+        buf = (2.0d0*buf-1.0d0)
+        do jj = jlo, jhi
+          do ii = ilo, ihi
+            zbuf(ii,jj) = complex(buf(1,ii,jj),buf(2,ii,jj))
+            tt = abs(zbuf(ii,jj))
+            if (tt.gt.1.0d-20) then
+              zbuf(ii,jj) = zbuf(ii,jj)*rlim/tt
+            endif
+          enddo
+        enddo
+        do ii = max(ilo,jlo),min(ihi,jhi)
+          zbuf(ii,ii) = complex(1.0d0,0.0d0)
+        enddo
+        call ga_put(g_rand,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+        deallocate(zbuf)
+        deallocate(buf)
+      endif
       call ga_sync()
-      call ga_orthog(g_rand,idum,.false.)
+      call wfn1_orthog(g_rand,idum,.false.)
 c
       end
 c

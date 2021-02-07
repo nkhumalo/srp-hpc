@@ -18,13 +18,13 @@ C>
      &                       v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                       oprerr,curit)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_size.fh"
-#include "wfn1_trace.fh"
-#include "wfn1_en.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_size.fh"
+!include "wfn1_trace.fh"
+!include "wfn1_en.fh"
 #include "errquit.fh"
 #include "global.fh"
 #include "stdio.fh"
@@ -34,7 +34,7 @@ c
 !     Parameter instances (const complex data structures)
       type(wfn1_prminst), intent(in) :: wfn1_inst
 !     Calculation parameters
-      type(wfn1_prm), intent(in)     :: wfn1_param
+      type(wfn1_prm), intent(inout)  :: wfn1_param
 !     Matrix constants
       type(wfn1_matcnst), intent(in) :: wfn1_mat
 !     The current wave function

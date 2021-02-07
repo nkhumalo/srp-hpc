@@ -21,7 +21,7 @@ C>
 !     The columns where the vectors came from
       integer, intent(in) :: icol(1:wfn1_param%nmo)
 !     The output vectors
-      integer, intent(inout) :: g_out
+      integer, intent(in) :: g_out
 c
 c     Local
 c

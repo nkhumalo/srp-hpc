@@ -13,6 +13,7 @@ C> diagonal to implement a maximum overlap ordering of the states.
 C> 
 !include "wfn1_param.fh"
 #include "errquit.fh"
+#include "mafdecls.fh"
 #include "global.fh"
 !     Calculation parameters
       type(wfn1_prm), intent(in)   :: wfn1_param
@@ -36,7 +37,7 @@ c
 c     double complex, allocatable :: skvl(:,:) ! left eigenvectors
       double complex              :: skvl      ! left eigenvectors
       double complex, allocatable :: skvr(:,:) ! right eigenvectors
-      double complex, allocatable :: deig(:)   ! eigenvalues
+      double precision, allocatable :: deig(:) ! eigenvalues
 c
       double precision, allocatable :: rwork(:)   ! scratch space
 c

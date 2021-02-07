@@ -15,7 +15,7 @@ C>
 #include "global.fh"
 #include "errquit.fh"
 !     The matrix 
-      integer,       intent(inout) :: g_a
+      integer,          intent(in) :: g_a
 !     The scale factor for the off-diagonal elements
       double precision, intent(in) :: fac
 c

@@ -152,10 +152,10 @@ c
      &                           E_2el,E_2el_chf)
       implicit none
 c
-#include "wfn1_param.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_param.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
 #include "errquit.fh"
 #include "global.fh"
 #include "mafdecls.fh"
@@ -396,14 +396,14 @@ c
 c
 c     Correlation function coefficients
 c
-      double precision, allocatable, target :: buf_C_is_a(:)
-      double precision, pointer             :: C_is_a(:,:)
-      double precision, allocatable, target :: buf_C_is_b(:)
-      double precision, pointer             :: C_is_b(:,:)
-      double precision, allocatable, target :: buf_C_jt_a(:)
-      double precision, pointer             :: C_jt_a(:,:)
-      double precision, allocatable, target :: buf_C_jt_b(:)
-      double precision, pointer             :: C_jt_b(:,:)
+      complex(kind=8),  allocatable, target :: buf_C_is_a(:)
+      complex(kind=8),  pointer             :: C_is_a(:,:)
+      complex(kind=8),  allocatable, target :: buf_C_is_b(:)
+      complex(kind=8),  pointer             :: C_is_b(:,:)
+      complex(kind=8),  allocatable, target :: buf_C_jt_a(:)
+      complex(kind=8),  pointer             :: C_jt_a(:,:)
+      complex(kind=8),  allocatable, target :: buf_C_jt_b(:)
+      complex(kind=8),  pointer             :: C_jt_b(:,:)
 c
 c     Occupation numbers of the 2RDM exchange terms
 c

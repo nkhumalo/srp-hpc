@@ -399,14 +399,14 @@ c
 c
 c     Correlation function coefficients
 c
-      double precision, allocatable, target :: buf_C_is_a(:)
-      double precision, pointer             :: C_is_a(:,:)
-      double precision, allocatable, target :: buf_C_is_b(:)
-      double precision, pointer             :: C_is_b(:,:)
-      double precision, allocatable, target :: buf_C_jt_a(:)
-      double precision, pointer             :: C_jt_a(:,:)
-      double precision, allocatable, target :: buf_C_jt_b(:)
-      double precision, pointer             :: C_jt_b(:,:)
+      complex(kind=8),  allocatable, target :: buf_C_is_a(:)
+      complex(kind=8),  pointer             :: C_is_a(:,:)
+      complex(kind=8),  allocatable, target :: buf_C_is_b(:)
+      complex(kind=8),  pointer             :: C_is_b(:,:)
+      complex(kind=8),  allocatable, target :: buf_C_jt_a(:)
+      complex(kind=8),  pointer             :: C_jt_a(:,:)
+      complex(kind=8),  allocatable, target :: buf_C_jt_b(:)
+      complex(kind=8),  pointer             :: C_jt_b(:,:)
 c
 c     Occupation numbers of the 2RDM exchange terms
 c

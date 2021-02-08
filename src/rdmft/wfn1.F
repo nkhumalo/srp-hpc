@@ -130,9 +130,9 @@ c
       type(wfn1_drv) :: wfn1_t_drv ! temporary variable
 c
       logical, external :: int_normalize
-      logical, external :: wfn1_solve_line
-      logical, external :: wfn1_solve_diag
-      logical, external :: wfn1_solve_mc
+!     logical, external :: wfn1_solve_line
+!     logical, external :: wfn1_solve_diag
+!     logical, external :: wfn1_solve_mc
 c
       double precision aa_hl, ab_hl
       double precision fac_redist

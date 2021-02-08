@@ -24,11 +24,11 @@ C
 #include "mafdecls.fh"
 #include "errquit.fh"
 #include "global.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
-#include "wfn1_en.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
+!include "wfn1_en.fh"
 c
       type(wfn1_prm),     intent(in)    :: wfn1_param
       type(wfn1_prminst), intent(in)    :: wfn1_inst
@@ -74,6 +74,7 @@ c
 !>
       double precision, allocatable :: buf(:,:)
       double precision, allocatable :: bufji(:,:)
+      complex(kind=8),  allocatable :: zbuf(:,:)
 c
       integer ilo,  ihi  ! range limits
       integer jlo,  jhi  ! range limits
@@ -214,23 +215,23 @@ c     First add v_dca to the diagonal of the correlation function
 c     Fock matrix in the natural orbital basis.
 c
       call ga_distribution(wfn1_deriv%g_dca,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      call ga_get(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      allocate(zbuf(ilo:ihi,jlo:jhi))
+      call ga_get(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
       do ii = max(ilo,jlo), min(ihi,jhi)
-        buf(ii,ii) = buf(ii,ii) + v_dca(ii)
+        zbuf(ii,ii) = zbuf(ii,ii) + v_dca(ii)
       enddo
-      call ga_put(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(buf)
+      call ga_put(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+      deallocate(zbuf)
 c
       call ga_distribution(wfn1_part_drv%g_dca,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      call ga_get(wfn1_part_drv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      allocate(zbuf(ilo:ihi,jlo:jhi))
+      call ga_get(wfn1_part_drv%g_dca,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
       do ii = max(ilo,jlo), min(ihi,jhi)
-        buf(ii,ii) = buf(ii,ii) + v_dpa(ii)
-        v_dcna(ii) = buf(ii,ii)
+        zbuf(ii,ii) = zbuf(ii,ii) + v_dpa(ii)
+        v_dcna(ii) = zbuf(ii,ii)
       enddo
-      call ga_put(wfn1_part_drv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(buf)
+      call ga_put(wfn1_part_drv%g_dca,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+      deallocate(zbuf)
 c
       call ga_add(1.0d0,wfn1_deriv%g_dca,1.0d0,wfn1_part_drv%g_dca,
      &            wfn1_deriv%g_dca)
@@ -248,23 +249,23 @@ c     First add v_dcb to the diagonal of the correlation function
 c     Fock matrix in the natural orbital basis.
 c
       call ga_distribution(wfn1_deriv%g_dcb,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      call ga_get(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      allocate(zbuf(ilo:ihi,jlo:jhi))
+      call ga_get(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
       do ii = max(ilo,jlo), min(ihi,jhi)
-        buf(ii,ii) = buf(ii,ii) + v_dcb(ii)
+        zbuf(ii,ii) = zbuf(ii,ii) + v_dcb(ii)
       enddo
-      call ga_put(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(buf)
+      call ga_put(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+      deallocate(zbuf)
 c
       call ga_distribution(wfn1_part_drv%g_dcb,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      call ga_get(wfn1_part_drv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      allocate(zbuf(ilo:ihi,jlo:jhi))
+      call ga_get(wfn1_part_drv%g_dcb,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
       do ii = max(ilo,jlo), min(ihi,jhi)
-        buf(ii,ii) = buf(ii,ii) + v_dpb(ii)
-        v_dcnb(ii) = buf(ii,ii)
+        zbuf(ii,ii) = zbuf(ii,ii) + v_dpb(ii)
+        v_dcnb(ii) = zbuf(ii,ii)
       enddo
-      call ga_put(wfn1_part_drv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(buf)
+      call ga_put(wfn1_part_drv%g_dcb,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+      deallocate(zbuf)
 c
       call ga_add(1.0d0,wfn1_deriv%g_dcb,1.0d0,wfn1_part_drv%g_dcb,
      &            wfn1_deriv%g_dcb)
@@ -441,10 +442,10 @@ C>    contribution term.
 C> 5. Add the data from 2. to the diagonal of the correlation function
 C>    Fock matrix in the natural orbital basis.
 C> 
-#include "wfn1_matcnst.fh"
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
 #include "global.fh"
 #include "mafdecls.fh"
 c
@@ -456,8 +457,8 @@ c
       double precision, intent(inout) :: v_dca(1:wfn1_param%nmo)
       double precision, intent(inout) :: v_dcb(1:wfn1_param%nmo)
 c
-      integer, intent(inout) :: g_bfmo ! nbf x nmo scratch GA
-      integer, intent(inout) :: g_momo ! nmo x nmo scratch GA
+      integer, intent(in) :: g_bfmo ! nbf x nmo scratch GA
+      integer, intent(in) :: g_momo ! nmo x nmo scratch GA
 c
       double precision, intent(out) :: E_1el    ! the 1-electron energy
 c
@@ -641,8 +642,8 @@ c
 !>
       subroutine wfn1_e_g_ent(wfn1_param,wfn1_wave,v_dca,v_dcb,E_ent)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
 #include "global.fh"
 #include "mafdecls.fh"
 c
@@ -678,6 +679,9 @@ c
       integer :: ncoreb ! the number of beta  core states
       integer :: nvirta ! the number of alpha virtual states
       integer :: nvirtb ! the number of beta  virtual states
+      integer :: nea    ! the number of alpha electrons
+      integer :: neb    ! the number of beta  electrons
+      integer :: nmo    ! the number of molecular orbitals
 c
       double precision :: s  ! The entropy of a natural orbital
       double precision :: ds ! The derivative
@@ -694,6 +698,9 @@ c
       ncoreb = wfn1_param%ncoreb
       nvirta = wfn1_param%nvirta
       nvirtb = wfn1_param%nvirtb
+      nea    = wfn1_param%nea
+      neb    = wfn1_param%neb
+      nmo    = wfn1_param%nmo
 c
       rho_c = 1.0d-10
       occa  = 0.0d0
@@ -706,30 +713,12 @@ c     -------------------------
 c
 c     Calculate the alpha-occupation numbers
 c
-      call ga_distribution(wfn1_wave%g_ca,iproc,iclo,ichi,jclo,jchi)
-      allocate(buf(iclo:ichi,jclo:jchi))
-      if (ichi.ge.iclo.and.jchi.ge.jclo) then
-        call ga_get(wfn1_wave%g_ca,iclo,ichi,jclo,jchi,buf,ichi-iclo+1)
-      else
-c       This rank holds no part of g_ca
-      endif
-      do jj = 1, wfn1_param%nea
-        if(wfn1_wave%icnfa(jj).ge.jclo.and.wfn1_wave%icnfa(jj).le.jchi)
-     &  then
-          do ii = iclo, ichi
-            occa(ii) = occa(ii)
-     &               + buf(ii,wfn1_wave%icnfa(jj))
-     &               * buf(ii,wfn1_wave%icnfa(jj))
-     &               * wfn1_wave%dcnta(jj)
-          enddo
-        endif
-      enddo
-      deallocate(buf)
-      call ga_dgop(1408,occa,wfn1_param%nmo,"+")
+      call wfn1_calc_occ(wfn1_wave%g_ca,nmo,nea,wfn1_wave%icnfa,
+     &                   wfn1_wave%dcnta,occa)
 c
 c     Calculate the entropy
 c
-      do ii = ncorea+1, wfn1_param%nmo-nvirta
+      do ii = ncorea+1, nmo-nvirta
         call wfn1_entropy1(occa(ii),s,ds)
         E_ent   = E_ent   + wfn1_param%Tbath*s
         e1a(ii) = e1a(ii) + wfn1_param%Tbath*ds
@@ -740,30 +729,12 @@ c     ------------------------
 c
 c     Calculate the beta-occupation numbers
 c
-      call ga_distribution(wfn1_wave%g_cb,iproc,iclo,ichi,jclo,jchi)
-      allocate(buf(iclo:ichi,jclo:jchi))
-      if (ichi.ge.iclo.and.jchi.ge.jclo) then
-        call ga_get(wfn1_wave%g_cb,iclo,ichi,jclo,jchi,buf,ichi-iclo+1)
-      else
-c       This rank holds no part of g_cb
-      endif
-      do jj = 1, wfn1_param%neb
-        if(wfn1_wave%icnfb(jj).ge.jclo.and.wfn1_wave%icnfb(jj).le.jchi)
-     &  then
-          do ii = iclo, ichi
-            occb(ii) = occb(ii)
-     &               + buf(ii,wfn1_wave%icnfb(jj))
-     &               * buf(ii,wfn1_wave%icnfb(jj))
-     &               * wfn1_wave%dcntb(jj)
-          enddo
-        endif
-      enddo
-      deallocate(buf)
-      call ga_dgop(1409,occb,wfn1_param%nmo,"+")
+      call wfn1_calc_occ(wfn1_wave%g_cb,nmo,neb,wfn1_wave%icnfb,
+     &                   wfn1_wave%dcntb,occb)
 c
 c     Calculate the entropy
 c
-      do ii = ncoreb+1, wfn1_param%nmo-nvirtb
+      do ii = ncoreb+1, nmo-nvirtb
         call wfn1_entropy1(occb(ii),s,ds)
         E_ent   = E_ent   + wfn1_param%Tbath*s
         e1b(ii) = e1b(ii) + wfn1_param%Tbath*ds

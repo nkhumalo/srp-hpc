@@ -112,10 +112,10 @@ c
      &                             E_corr)
       implicit none
 c
-#include "wfn1_param.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_param.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
 #include "errquit.fh"
 #include "global.fh"
 #include "mafdecls.fh"

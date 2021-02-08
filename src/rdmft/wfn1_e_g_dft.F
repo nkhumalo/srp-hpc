@@ -31,10 +31,10 @@ C>
      &                        g_bfbf_a,g_bfbf_b,g_bfbf_xa,g_bfbf_xb,
      &                        g_bfmo,g_momo,E_dft)
       implicit none
-#include "wfn1_matcnst.fh"
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
 #include "global.fh"
 #include "mafdecls.fh"
       target :: dbl_mb
@@ -48,12 +48,12 @@ c
       double precision, intent(inout) :: v_dca(1:wfn1_param%nmo)
       double precision, intent(inout) :: v_dcb(1:wfn1_param%nmo)
 c
-      integer, intent(inout) :: g_bfbf_a  ! nbf x nbf scratch GA
-      integer, intent(inout) :: g_bfbf_b  ! nbf x nbf scratch GA
-      integer, intent(inout) :: g_bfbf_xa ! nbf x nbf scratch GA
-      integer, intent(inout) :: g_bfbf_xb ! nbf x nbf scratch GA
-      integer, intent(inout) :: g_bfmo    ! nbf x nmo scratch GA
-      integer, intent(inout) :: g_momo    ! nmo x nmo scratch GA
+      integer, intent(in) :: g_bfbf_a  ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfbf_b  ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfbf_xa ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfbf_xb ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfmo    ! nbf x nmo scratch GA
+      integer, intent(in) :: g_momo    ! nmo x nmo scratch GA
 c
       double precision, intent(out) :: E_dft    ! the 1-electron energy
 c

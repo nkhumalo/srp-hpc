@@ -34,8 +34,8 @@ c
      &                           E_redist)
       use wfn1_fac
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
 c
       type(wfn1_prm),   intent(in)    :: wfn1_param
       type(wfn1_wfn),   intent(in)    :: wfn1_wave

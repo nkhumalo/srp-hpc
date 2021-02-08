@@ -13,7 +13,6 @@
          wfn1_dsytri.o \
          wfn1_element.o \
          wfn1_entropy.o \
-         wfn1_e_g_2el_mx.o \
          wfn1_e_g_2el_vx.o \
          wfn1_e_g_2el_hf.o \
          wfn1_e_g_2el_s.o \
@@ -54,6 +53,7 @@
 #        wfn1_diag.o \
 #        wfn1_e_g.o \
 #        wfn1_e_g_2el_corr.o \
+#        wfn1_e_g_2el_mx.o \
 #        wfn1_e_g_dft.o \
 #        wfn1_e_g_redist.o \
 #        wfn1_gemm.o \

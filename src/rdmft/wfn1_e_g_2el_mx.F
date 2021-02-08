@@ -152,10 +152,10 @@ c
      &                           E_2el,E_2el_chf)
       implicit none
 c
-#include "wfn1_param.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_param.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
 #include "errquit.fh"
 #include "global.fh"
 #include "mafdecls.fh"
@@ -243,6 +243,9 @@ c
       integer :: mem2   ! amount of scratch space needed
       integer :: maxsbf ! maximum no. of basis functions in a shell
       integer :: nshell ! the number of shells
+c
+      integer :: itypc  ! data type of correlation functions
+      integer :: itypx  ! data type of exchange occupation numbers
 c
       logical :: ok_dist ! is the data distribution OK?
 c
@@ -366,10 +369,10 @@ c
       double precision, allocatable, target :: buf_fc_adj_b(:)
       double precision, pointer             :: fc_adj_b(:,:,:)
 c
-      double precision, allocatable, target :: buf_fc_ij_a(:)
-      double precision, pointer             :: fc_ij_a(:,:)
-      double precision, allocatable, target :: buf_fc_ij_b(:)
-      double precision, pointer             :: fc_ij_b(:,:)
+      complex(kind=8),  allocatable, target :: buf_fc_ij_a(:)
+      complex(kind=8),  pointer             :: fc_ij_a(:,:)
+      complex(kind=8),  allocatable, target :: buf_fc_ij_b(:)
+      complex(kind=8),  pointer             :: fc_ij_b(:,:)
 c     double precision, allocatable, target :: buf_fc_bdj_a(:)
 c     double precision, pointer             :: fc_bdj_a(:,:,:)
 c     double precision, allocatable, target :: buf_fc_bdj_b(:)
@@ -1223,11 +1226,14 @@ c
 c
 c     do alpha-spin
 c
+      call ga_inquire(wfn1_deriv%g_dca,itypc,ii,jj)
+      call ga_inquire(g_dx_aa,itypx,ii,jj)
       call ga_distribution(wfn1_deriv%g_dca,iproc,if_lo,if_hi,
      &                     jf_lo,jf_hi)
       call ga_distribution(g_dx_aa,iproc,ix_lo,ix_hi,jx_lo,jx_hi)
       ok_dist =             if_lo.eq.ix_lo.and.if_hi.eq.ix_hi
       ok_dist = ok_dist.and.jf_lo.eq.jx_lo.and.jf_hi.eq.jx_hi
+      ok_dist = ok_dist.and.itypc.eq.MT_DCPL.and.itypx.eq.MT_DCPL
       if (.not.ok_dist) then
         call errquit("Wfn1_e_g_2el: Data distribution mismatch",0,UERR)
       endif
@@ -1235,18 +1241,21 @@ c
       call ga_access(g_dx_aa,ix_lo,ix_hi,jx_lo,jx_hi,idxx,ldx)
       do jj=0,jf_hi-jf_lo
         do ii=0,if_hi-if_lo
-          dbl_mb(idxf+ii+jj*ldf) = dbl_mb(idxf+ii+jj*ldf)
-     &                           * dbl_mb(idxx+ii+jj*ldx)
+          dcpl_mb(idxf+ii+jj*ldf) = dcpl_mb(idxf+ii+jj*ldf)
+     &                            * dcpl_mb(idxx+ii+jj*ldx)
         enddo
       enddo
 c
 c     do beta-spin
 c
+      call ga_inquire(wfn1_deriv%g_dcb,itypc,ii,jj)
+      call ga_inquire(g_dx_bb,itypx,ii,jj)
       call ga_distribution(wfn1_deriv%g_dcb,iproc,if_lo,if_hi,
      &                     jf_lo,jf_hi)
       call ga_distribution(g_dx_bb,iproc,ix_lo,ix_hi,jx_lo,jx_hi)
       ok_dist =             if_lo.eq.ix_lo.and.if_hi.eq.ix_hi
       ok_dist = ok_dist.and.jf_lo.eq.jx_lo.and.jf_hi.eq.jx_hi
+      ok_dist = ok_dist.and.itypc.eq.MT_DCPL.and.itypx.eq.MT_DCPL
       if (.not.ok_dist) then
         call errquit("Wfn1_e_g_2el: Data distribution mismatch",0,UERR)
       endif
@@ -1254,8 +1263,8 @@ c
       call ga_access(g_dx_bb,ix_lo,ix_hi,jx_lo,jx_hi,idxx,ldx)
       do jj=0,jf_hi-jf_lo
         do ii=0,if_hi-if_lo
-          dbl_mb(idxf+ii+jj*ldf) = dbl_mb(idxf+ii+jj*ldf)
-     &                           * dbl_mb(idxx+ii+jj*ldx)
+          dcpl_mb(idxf+ii+jj*ldf) = dcpl_mb(idxf+ii+jj*ldf)
+     &                            * dcpl_mb(idxx+ii+jj*ldx)
         enddo
       enddo
 c

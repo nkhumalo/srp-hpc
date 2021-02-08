@@ -215,14 +215,10 @@ c
         allocate(buf(1:2,ilo:ihi,jlo:jhi))
         allocate(zbuf(ilo:ihi,jlo:jhi))
         call random_number(buf)
-        buf = (2.0d0*buf-1.0d0)
+        buf = (2.0d0*buf-1.0d0)*rlim
         do jj = jlo, jhi
           do ii = ilo, ihi
             zbuf(ii,jj) = complex(buf(1,ii,jj),buf(2,ii,jj))
-            tt = abs(zbuf(ii,jj))
-            if (tt.gt.1.0d-20) then
-              zbuf(ii,jj) = zbuf(ii,jj)*rlim/tt
-            endif
           enddo
         enddo
         do ii = max(ilo,jlo),min(ihi,jhi)

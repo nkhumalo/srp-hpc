@@ -1,0 +1,3109 @@
+\documentclass[pra,nofootinbib]{revtex4-1}
+
+\usepackage{hyperref}
+%\usepackage{amsmath}
+\usepackage[version=3]{mhchem}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\allowdisplaybreaks
+
+\DeclareMathOperator{\tr}{Tr}
+\newcommand{\eria}[4]{\left\langle #1^\alpha #2^\beta \right.\left| #3^\alpha #4^\beta \right\rangle}
+\newcommand{\eris}[4]{\left\langle #1^\sigma #2^{\sigma'} \right.\left| #3^\sigma #4^{\sigma'} \right\rangle}
+\newcommand{\reria}[4]{\left( #1^\alpha #3^\alpha \right.\left| #2^\beta #4^\beta \right)}
+\newcommand{\Xs}[2]{\chi^{#1}_{#2}(r_{#2})}
+\newcommand{\Xa}[1]{\Xs{\alpha}{#1}}
+\newcommand{\Xb}[1]{\Xs{\beta}{#1}}
+\newcommand{\XXa}[2]{|\Xs{\alpha}{#1}\Xs{\alpha}{#2}|}
+\newcommand{\XXb}[2]{|\Xs{\beta}{#1}\Xs{\beta}{#2}|}
+\newcommand{\Cs}[2]{C^{#1}_{#2}}
+\newcommand{\Ca}[1]{\Cs{\alpha}{#1}}
+\newcommand{\Cb}[1]{\Cs{\beta}{#1}}
+\newcommand{\C}[2]{C_{{#1},{#2}}}
+\newcommand{\nel}{{n_{e}}}
+\newcommand{\nela}{{n_{e}^\alpha}}
+ \newcommand{\dlabel}[1]{\text{#1}\label{#1}}
+%\newcommand{\dlabel}[1]{\label{#1}}
+
+\begin{document}
+
+\title{A double Hilbert space approach to natural orbital functional models}
+
+\author{Hubertus J. J. van Dam}
+\affiliation{Brookhaven National Laboratory, Upton, NY 11973-5000}
+\date{February 25, 2020}
+
+\begin{abstract}
+\end{abstract}
+
+\maketitle
+\tableofcontents
+
+\footnote{This paper is dedicated to the memory of my PhD advisor Dr. Joop H. van Lenthe.
+Particularly relevant to this work is that in his lectures Joop would point out every year that the wave function
+itself does not have a physical interpretation. Only the square of the wave function can be interpreted
+as a probability density. The students were told that this would be a question in the exam paper, and the
+question would appear in all past exam papers the students were given as practice papers. Joop insisted
+that this question would remain on all exam papers until the time that all students would answer it 
+correctly. In practice, only about 80\% of the students ever answered this question correctly, and the question
+stood until Joop's retirement.
+
+In this paper we exploit the fact that the wave function does not have a direct physical interpretation
+for the freedom it offers to choose alternative formulations, as long as whatever form is chosen sensible
+probability densities can be generated.}
+
+\section{Introduction}
+
+In a recent paper~\cite{van_Dam_2016} we proposed a form of effective
+one-electron wave function. We showed that this wave function can generate any
+arbitrary N-representable 1-electron density matrix even non-idempotent ones.
+We also demonstrated that this approach can be used to formulate a density 
+matrix functional model. 
+
+Since then this model has been heavily critized by Piris and 
+Pernal~\cite{Piris_2017}. Their criticism essentially questions the approach
+by which we introduced additional degrees of freedom to enable the
+formulation of N-representable density matrices with fractional occupation
+numbers using only a single configuration wave function. In another twist, the
+author was made aware of the fact that the approach we proposed actually was 
+not new at all. In fact as early as 1963 it was recognized in field theories that 
+expectation values of thermal ensembles could be formulated as expectation values
+of wave functions by doubling the degrees of freedom~\cite{Araki_1963}. This idea 
+was extended by Umezawa et al. to a model for finite temperature field theories under
+the name of Thermo Field Dynamics (TFD) by 1975~\cite{TAKAHASHI_1996,Umezawa:1982} (the 
+former paper is a reprint of~\cite{TAKAHASHI_1975} which is no longer available).
+As orginally formulated, TFD is a general approach to finite temperature field
+theories for systems including both bosons and fermions. However, this paper
+focusses exclusively on electrons. 
+
+In electronic structure applications, TFD has recently been used to
+describe finite temperature effects at coupled cluster levels of
+theory~\cite{Harsha_2019,Shushkov_2019}. For these applications an attractive aspect of TFD
+is that it is a wave function based approach. Hence, formulating N-representable density
+matrices should be straightforward. Whereas previously we (unwittingly)
+exploited this property
+to formulate N-representable 1-electron density matrices with fractional occupation
+numbers~\cite{van_Dam_2016}, this
+same property should enable the formulation of N-representable 2-electron density
+matrices as well. Different from TFD the focus in this work is on electron
+correlation instead of finite temperature effects. Nevertheless, independent
+of the physics that generates fractional occupation numbers there is a clear
+advantage to having an N-representable reference point. To exploit this fact we seek
+to apply the mathematical approach to the wave function formulation of TFD as the basis
+for a natural orbital functional model. 
+
+To describe the approach outlined above this paper proceeds by explaining the relationship
+between TFD and our earlier work. In an attempt to formulate an N-representable 2-electron
+density matrix it became clear that our wave function formulation of~\cite{van_Dam_2016}
+did not properly capture all required aspects of the anti-symmetry, the approach
+only captured enough anti-symmetry to formulate N-representable 1-electron density
+matrices. This is a flaw in our earlier work and not of TFD. To rectify this issue we
+summarize the proper form of the wave function and derive the 1- and 2-electron density
+matrices. As the 1-electron density matrix has the same form as in our previous paper we
+refer for the proof of its N-representability to that work. The N-representability of 
+the 2-electron density matrix is demonstrated. At that point a zero-temperature 
+mean field energy expression is given that is N-representable even with fractional
+occupation numbers. This mean field energy expression is subsequently compared to the 
+full-CI energy for a simple model system, \ce{H2} in a minimal basis, to arrive at 
+a correlation energy expression. Implementation details of this correlated electron
+model are given, followed by representative examples.
+
+\section{The thermal state of Thermo Field Dynamics in relation to N-representable 
+         electron density matrices}
+
+The foundational publication of TFD is~\cite{TAKAHASHI_1996} but to explain the relation
+between TFD and the approach in this paper we refer to a more recent work by
+Das~\cite{das2000topics} as the notation is easier to follow. In particular on section 4
+is relevant to this discussion. In terms of 
+an effective 1-electron model the eigenfunctions of the Hamiltonian are
+simply the molecular orbitals. In an effective 1-electron model the molecular
+orbitals are also the same as the natural orbitals. In~\cite{das2000topics} these
+states are referred to as $|n\rangle$ or $|m\rangle$, in our prior paper~\cite{van_Dam_2016} 
+these states are expressed as vectors $N$. In order to define a thermal vacuum state 
+that produces the correct ensemble averages Das shows that this can be done by 
+introducing a fictitious system that is identical to the orginal system, denoted as 
+a tilde system. With this tilde system the Hilbert is space is doubled and the states
+can be written as
+\begin{eqnarray}
+   |n,\tilde{m}\rangle &=& |n\rangle \otimes |\tilde{m}\rangle
+\end{eqnarray}
+This equation is the same as Eq.(8) in~\cite{van_Dam_2016} if we equate the tilde 
+system of TFD with the correlation functions of our earlier paper. It then follows 
+straightforwardly that Das's Eq.(44) is the same as van Dam's Eq.(16) if the density
+matrix of the latter equation is traced with the matrix elements of the operator $O$.
+Hence, it is clear that TFD and our approach share the same foundations for 
+representing the state of a system. 
+
+In our previous paper the states $|n,\tilde{m}\rangle$ were labeled $|G_s(r)\rangle$.
+If multi-electron states were formulated as determinants of these states but with 
+a modified way to translate $|G_s(r)\rangle\langle G_t(r')|$ into a density matrix
+contribution then~\cite{van_Dam_2016} shows you can obtain an N-representable 
+1-electron density matrix. However, this approach is insufficient 
+to obtain N-representable higher order density matrices. In order to obtain
+N-representable higher order density matrices one has to, independently, anti-symmetrize
+over both the natural orbitals as well as the correlation functions. In TFD this issue
+is addressed by expressing the Hamiltonian in second quantization. For the regular part
+of the system the usual annihilation ($a$) and creation ($a^\dagger$) operators are used
+with the corresponding anti-commutation relations
+\begin{eqnarray}
+  \delta_{ij} &=& [a_i,a_j^\dagger]_+ \\
+  0 &=& [a_i,a_j]_+ = [a_i^\dagger,a_j^\dagger]_+
+\end{eqnarray}
+Likewise, annihilation ($\tilde{a}$) and creation ($\tilde{a}^\dagger$) operators for
+the tilde system can be introduced that operate only on the correlation functions.
+These operators obey the same anti-commutation relations
+\begin{eqnarray}
+  \delta_{ij} &=& [\tilde{a}_i,\tilde{a}_j^\dagger]_+ \\
+  0 &=& [\tilde{a}_i,\tilde{a}_j]_+ = [\tilde{a}_i^\dagger,\tilde{a}_j^\dagger]_+
+\end{eqnarray}
+In addition, the regular annihilation and creation operators, and the tilde annihilation and
+creation operators, are assumed to anti-commute. These properties of the regular and tilde
+annihilation and creation operators effect the independent anti-symmetrization of the
+regular and tilde functions, or in our terminology the natural orbitals and correlation
+functions.
+In TFD these operators are used to define thermal annihilation and creation operators of the
+form
+\begin{eqnarray}
+  a(\beta)         &=& cos\theta(\beta)a         - sin\theta(\beta)\tilde{a}^\dagger \\
+  \tilde{a}(\beta) &=& cos\theta(\beta)\tilde{a} + sin\theta(\beta)a\dagger 
+\end{eqnarray}
+where
+\begin{eqnarray}
+  cos\theta(\beta) &=& \frac{1}{\sqrt{1+e^{-\beta\omega}}} \\
+  sin\theta(\beta) &=& \frac{e^{-\beta\omega/2}}{\sqrt{1+e^{-\beta\omega}}} \\
+  \beta            &=& \frac{1}{k_B T}
+\end{eqnarray}
+Omega in turn, is a positive number appearing in the Hamiltonian
+\begin{eqnarray}
+  H         &=& \omega a^\dagger a \\
+  \tilde{H} &=& \omega \tilde{a}^\dagger \tilde{a}
+\end{eqnarray}
+A consequence of this approach is that annihilating a particle in the thermal vacuum is
+equivalent to creating a particle in the tilde system. This leads to be the interpretation 
+that the tilde states are particle states of the heat bath.
+
+The explanation above provides a description of systems at finite temperature, but here
+the focus is on electron correlation. In this context the formalism needs to be applied to
+isolated sytems of fermions at zero temperature. In this situation the interpretation
+that the tilde states are particle states of the heat bath clearly does not apply as
+there is no heat bath. Also at zero temperature the regular system and the tilde system
+decouple leading to $a(\beta) = a$ and $\tilde{a}(\beta) = \tilde{a}$. Even though
+the context is different it should still be possible to use the mathematical foundations 
+of TFD and apply it to systems of interacting electrons at zero temperature but potentially
+with electron correlation. The critical feature in this case is the double Hilbert
+space approach that enables generating N-representable density matrices
+with fractional occupation numbers. In TFD the fractional occupation numbers are generated
+by thermal effects, here these occupation numbers are driven by correlation effects.
+
+To outline how the independent anti-symmetry over the correlation functions and the
+natural orbitals generates N-representable density matrices an updated recipe for 
+their generation is given.
+As stated above, we refer to the regular orbitals with $N=N_i(r)$ where $i$ is an 
+orbital index and $r$ represents the spatial coordinates. The correlation functions
+are referred to as $C=C_s(\epsilon)$ where $s$ is a function index and $\epsilon$ is
+a fictitious coordinate. In a many electron setting these functions need to operate
+on the coordinates of specific electrons and one arrives at a wave function of the form
+\begin{eqnarray}
+   \Psi(\epsilon_1,\ldots,\epsilon_\nel,r_1,\ldots,r_n)
+   &=& \Psi(\epsilon)\otimes\Psi(r) \\
+   &=& |C_1(\epsilon_1)\ldots C_s(\epsilon_s)\ldots C_t(\epsilon_t)\ldots C_\nel(\epsilon_\nel)|
+   \otimes |N_1(r_1)\ldots N_i(r_i)\ldots N_j(r_j)\ldots N_n(r_n)|
+   \label{Eq:Psi}
+\end{eqnarray}
+where the notation $|\ldots|$ refers to the usual Slater determinant. In addition all 
+1-electron states are assumed to be spin-states of the same spin. The extension to
+wave functions with 1-electron states of different spin is trivial.
+Also $\nel$ is the number of electrons.
+Incidentally, $n$ is chosen as the number of orbitals to represent the problem in.
+
+Obviously, this wave function seems strange in that the $\Psi(r)$ factor has more 
+coordinates than the $\Psi(\epsilon)$ factor. However, this is essentially a short-hand
+notation where the $\epsilon$-coordinates and $C(\epsilon)$ functions corresponding to
+unoccupied states have been omitted. One could include these states and their 
+correlation function occupation numbers in the derivations but other than requiring
+more writing the results would be no different than the abridged derivation given here.
+
+Note that in Eq.~\ref{Eq:Psi} the factor $\Psi(r)$ has as many coordinates as there 
+are natural orbitals in which the problem is expressed. 
+It will be shown that introducing such a high dimensional coordinate
+system is a convenient tool to introduce all natural orbitals into the density matrices.
+In fact, as every natural orbital appears exactly once in $\Psi(r)$ the 1- and 2-electron 
+density matrices generated from it will be unit density matrices. This result is very convenient
+as a starting point for generating more general (non-unit) density matrices.
+
+Second, every correlation function represents exactly one electron hence $C_s(\epsilon)C^*_s(\epsilon)$
+represents the probability density of finding an electron at coordinate $\epsilon$.
+It will be shown that to obtain N-representable density
+matrices the coordinates $\epsilon$ can be integrated out until the right order density matrix of 
+the $\Psi(\epsilon)$ part is obtained. In a final step the remaining $\epsilon$ coordinates can be integrated
+out by first discretizing the coordinate to obtain points $\epsilon_i$, associating every discretization
+point $\epsilon_i$ with a natural orbital index $i$, and subsequently summing over the corresponding
+index $i$.
+
+Clearly, there is reason for unease with such an unusual approach. However, remember that the 
+wave function itself is not an observable. It is merely a mathematical tool to formulate 
+physically sensible probability densities that can be used to express observable quantities.
+As unusual as this wave function may seem it should be judged by its usefulness in 
+expressing observable quantities.
+
+Physically sensible probabilities densities are directly related to N-representable
+density matrices. To demonstrate how a wave function of the form of Eq.~\ref{Eq:Psi}
+leads to N-representable density matrices remember that the basis is a set of
+orthonormal 1-electron functions, hence
+\begin{eqnarray}
+   \delta_{ij} &=& \langle N_i(r)        | N_j(r)        \rangle \\
+   \delta_{st} &=& \langle C_s(\epsilon) | C_t(\epsilon) \rangle
+\end{eqnarray}
+As outlined above, the wavefunction defined in Eq.\ref{Eq:Psi} provides an opportunity
+to consider the spatial components, generated from $\Psi(r)$, and the
+natural orbital occupation numbers,
+generated from $\Psi(\epsilon)$, of the density matrices separately. 
+Considering the $\Psi(r)$ part the 1-electron and 2-electron 
+density matrices of the natural orbitals become
+\begin{eqnarray}
+  \sum_{i=1}^{n} |\psi_i(r_1)\rangle \langle\psi_i(r'_1)|
+  &=& n \int\Psi(r_1,\ldots,r_n)\Psi^*(r'_1,\ldots,r_n) d(r_2,\ldots,r_n) \\
+  &=& \sum_{i=1}^{n} N_i(r_1) \hat{1} N_i^*(r'_1) \dlabel{Eq:D1:r} \\
+  \sum_{i,j=1}^{n} |\psi_i(r_1)\psi_j(r_2)\rangle \langle\psi_i(r'_1)\psi_j(r'_2)| 
+  &=& \frac{n(n-1)}{2}\int\Psi(r_1,r_2,\ldots,r_n)\Psi^*(r'_1,r'_2,\ldots,r_n) d(r_3,\ldots,r_n) \\
+  &=&+\frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) \hat{1} N_i^*(r'_1)N_j^*(r'_2) \nonumber \\
+  &&- \frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) \hat{1} N_j^*(r'_1)N_i^*(r'_2) \nonumber \\
+  &&- \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) \hat{1} N_i^*(r'_1)N_j^*(r'_2) \nonumber \\
+  &&+ \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) \hat{1} N_j^*(r'_1)N_i^*(r'_2) \dlabel{Eq:D2:r}
+\end{eqnarray}
+The equations~\ref{Eq:D1:r} and~\ref{Eq:D2:r} yield identity operators in the space
+of anti-symmetrized density matrices.
+
+The next step is to modulate the identity operators~\ref{Eq:D1:r} and~\ref{Eq:D2:r} by including the
+factors stemming from the correlation functions that act as 1- and 2-electron occupation numbers.
+\begin{eqnarray}
+  \sum_{s=1}^\nel |\psi_s(\epsilon_1)\rangle \langle\psi_s(\epsilon'_1)|
+  &=& \nel\int\Psi(\epsilon_1,\ldots,\epsilon_n)\Psi^*(\epsilon'_1,\ldots,\epsilon_n)
+      d(\epsilon_2,\ldots,\epsilon_n) \\
+  &=& \sum_{s=1}^\nel C_s(\epsilon_1) C_s^*(\epsilon'_1) \dlabel{Eq:D1:e} \\
+  \sum_{s,t=1}^\nel |\psi_s(\epsilon_1)\psi_t(\epsilon_2)\rangle \langle\psi_s(\epsilon'_1)\psi_t(\epsilon'_2)| 
+  &=& \frac{\nel(\nel-1)}{2}\int\Psi(\epsilon_1,\epsilon_2,\ldots,\epsilon_\nel)
+      \Psi^*(\epsilon'_1,\epsilon'_2,\ldots,\epsilon_\nel) d(\epsilon_3,\ldots,\epsilon_\nel) \\
+  &=&+\frac{1}{2}\sum_{s,t=1}^{\nel} C_s(\epsilon_1)C_t(\epsilon_2)
+                                     C_s^*(\epsilon'_1)C_t^*(\epsilon'_2) \nonumber \\
+  &&- \frac{1}{2}\sum_{s,t=1}^{\nel} C_s(\epsilon_1)C_t(\epsilon_2)
+                                     C_t^*(\epsilon'_1)C_s^*(\epsilon'_2) \nonumber \\
+  &&- \frac{1}{2}\sum_{s,t=1}^{\nel} C_t(\epsilon_1)C_s(\epsilon_2)
+                                     C_s^*(\epsilon'_1)C_t^*(\epsilon'_2) \nonumber \\
+  &&+ \frac{1}{2}\sum_{s,t=1}^{\nel} C_t(\epsilon_1)C_s(\epsilon_2)
+                                     C_t^*(\epsilon'_1)C_s^*(\epsilon'_2) \dlabel{Eq:D2:e}
+\end{eqnarray}
+To obtain the diagonal $d_i$ of the 1-electron density matrix from Eq.~\ref{Eq:D1:e} we discretize
+the coordinate $\epsilon$ as
+\begin{eqnarray}
+   d_i &=& \sum_{s=1}^\nel C_s(\epsilon_i) C_s^*(\epsilon_i) \\
+       &=& \sum_{s=1}^\nel C_{is}C^*_{is} \dlabel{Eq:D1:di}
+\end{eqnarray}
+for all $i \in [1,n]$. The equating of $\epsilon_1$ and $\epsilon'_1$ comes from the contraction
+of these coordinates as they are not free coordinates of the density matrix (only the spatial
+coordinates are).
+
+Similarly the diagonal $d_{ij}$ of the 2-electron density matrix can be obtained from Eq.~\ref{Eq:D2:e}
+by discretizing the coordinates $\epsilon_1$ and $\epsilon_2$. 
+\begin{eqnarray}
+   d_{ij}
+   &=&+\frac{1}{2}\sum_{s,t=1}^{\nel} C_s(\epsilon_i)C_t(\epsilon_j) 
+                                      C_s^*(\epsilon_i)C_t^*(\epsilon_j) \nonumber \\
+   &&- \frac{1}{2}\sum_{s,t=1}^{\nel} C_s(\epsilon_i)C_t(\epsilon_j) 
+                                      C_t^*(\epsilon_i)C_s^*(\epsilon_j) \nonumber \\
+   &&- \frac{1}{2}\sum_{s,t=1}^{\nel} C_t(\epsilon_i)C_s(\epsilon_j) 
+                                      C_s^*(\epsilon_i)C_t^*(\epsilon_j) \nonumber \\
+   &&+ \frac{1}{2}\sum_{s,t=1}^{\nel} C_t(\epsilon_i)C_s(\epsilon_j) 
+                                      C_t^*(\epsilon_i)C_s^*(\epsilon_j) \\
+   &=&+\frac{1}{2}\sum_{s,t=1}^{\nel} C_{is}C_{jt} C_{is}^*C_{jt}^* \nonumber \\
+   &&- \frac{1}{2}\sum_{s,t=1}^{\nel} C_{is}C_{jt} C_{it}^*C_{js}^* \nonumber \\
+   &&- \frac{1}{2}\sum_{s,t=1}^{\nel} C_{it}C_{js} C_{is}^*C_{jt}^* \nonumber \\
+   &&+ \frac{1}{2}\sum_{s,t=1}^{\nel} C_{it}C_{js} C_{it}^*C_{js}^* \\
+   &=&+\frac{1}{2}\sum_{s,t=1}^{\nel} C_{is}C_{is}^* C_{jt}C_{jt}^* \nonumber \\
+   &&- \frac{1}{2}\sum_{s,t=1}^{\nel} C_{is}C_{it}^* C_{jt}C_{js}^* \nonumber \\
+   &&- \frac{1}{2}\sum_{s,t=1}^{\nel} C_{it}C_{is}^* C_{js}C_{jt}^* \nonumber \\
+   &&+ \frac{1}{2}\sum_{s,t=1}^{\nel} C_{it}C_{it}^* C_{js}C_{js}^* \dlabel{Eq:D2:dij}
+\end{eqnarray}
+for all $i,j \in [1,n]$.
+
+The full 1-electron density matrix can then be obtained by multiplying $\hat{1}$ in Eq.~\ref{Eq:D1:r}
+with $d_i$ from Eq.~\ref{Eq:D1:di} to obtain
+\begin{eqnarray}
+  D(r_1,r'_1) 
+  &=& \sum_{i=1}^{n}\sum_{s=1}^\nel
+      |\psi_i(r_1),\psi_s(\epsilon_i)\rangle \langle\psi_s(\epsilon_i),\psi_i(r'_1)| \\
+  &=& \sum_{i=1}^{n} N_i(r_1) d_i N_i^*(r'_1) \dlabel{Eq:D1:di:r}
+\end{eqnarray}
+Likewise the full 2-electron density matrix can be obtained
+by multiplying $\hat{1}$ in Eq.~\ref{Eq:D2:r} with $d_{ij}$ from Eq.~\ref{Eq:D2:dij} to obtain
+\begin{eqnarray}
+  \Gamma(r_1,r_2,r'_1,r'_2)
+  &&= \sum_{i,j=1}^{n}\sum_{s,t=1}^\nel
+      |\psi_i(r_1)\psi_j(r_2),\psi_s(\epsilon_i)\psi_t(\epsilon_j)\rangle
+      \langle\psi_s(\epsilon_i)\psi_t(\epsilon_j),\psi_i(r'_1)\psi_j(r'_2)| 
+      \\
+  &&= \frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) d_{ij} N_i^*(r'_1)N_j^*(r'_2) \nonumber \\
+  &&- \frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) d_{ij} N_j^*(r'_1)N_i^*(r'_2) \nonumber \\
+  &&- \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) d_{ij} N_i^*(r'_1)N_j^*(r'_2) \nonumber \\
+  &&+ \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) d_{ij} N_j^*(r'_1)N_i^*(r'_2) \dlabel{Eq:D2:dij:r}
+\end{eqnarray}
+To obtain the final expressions the natural orbitals need to be expanded in a basis.
+In general this basis may involve non-orthogonal basis functions, such as Gaussians.
+In such a case the orthonormality condition for the natural orbitals becomes
+\begin{eqnarray}
+  \delta_{ij} &=& \sum_{a,c=1}^{n} N_{ai}S_{ac} N_{cj} \\
+  S_{ac} &=& \int \chi_a(r) \chi^*_c(r) \mathrm{d}r
+\end{eqnarray}
+Likewise, the 1-electron energy term associated with Eq.~\ref{Eq:D1:di:r} becomes
+\begin{eqnarray}
+  E^{(1)}
+  &=& \sum_{i=1}^{n} \sum_{a,c=1}^{n} h_{ac} N_{ai} d_i N_{ci}^* \dlabel{Eq:E1:di:r} \\
+  h_{ac}
+  &=& \int \chi_a(r) \hat{H}_{1} \chi^*_c(r) \mathrm{d}r
+\end{eqnarray}
+and the 2-electron energy term associated with Eq.~\ref{Eq:D2:dij:r} becomes
+\begin{eqnarray}
+  E^{(2)}
+  &=& \sum_{a,b,c,d=1}^{n} \langle a b | c d \rangle \Gamma_{abcd} \dlabel{Eq:E2:dij:r} \\
+  \Gamma_{abcd}
+  &&= \frac{1}{2}\sum_{i,j=1}^{n} N_{ai}N_{bj} d_{ij} N_{ci}^*N_{dj}^* \nonumber \\
+  &&- \frac{1}{2}\sum_{i,j=1}^{n} N_{ai}N_{bj} d_{ij} N_{cj}^*N_{di}^* \nonumber \\
+  &&- \frac{1}{2}\sum_{i,j=1}^{n} N_{aj}N_{bi} d_{ij} N_{ci}^*N_{dj}^* \nonumber \\
+  &&+ \frac{1}{2}\sum_{i,j=1}^{n} N_{aj}N_{bi} d_{ij} N_{cj}^*N_{di}^* \dlabel{Eq:E2:dij:basis} \\
+  \langle a b | c d \rangle
+  &=& \int\int \chi_a(r_1) \chi^*_c(r_1) \frac{1}{r_{12}} \chi_b(r_2) \chi^*_d(r_2) 
+      \mathrm{d}r_1 \mathrm{d}r_2
+\end{eqnarray}
+
+That the 1-electron density matrix obtained is N-representable was already shown in~\cite{van_Dam_2016}.
+In the next section the N-representability of the 2-electron density matrix will be shown.
+
+\section{The N-representability of the 2-electron density matrix in a double Hilbert space}
+
+As stated above, the N-representability of the 1-electron density matrix as given by
+Eq.~\ref{Eq:D1:di:r} was shown already in~\cite{van_Dam_2016}. In that work the emphasis 
+was on 1-electron density matrices and the 2-electron density matrix was not given any
+consideration. In this work the 1-electron density matrix was rederived but also the
+2-electron density matrix has been derived resulting in Eq.~\ref{Eq:D2:dij:r}. However,
+the derivation is of the 2-electron density matrix is based on an unconventional approach
+based on the foundations of TFD. Hence, prudence requires to verify that the result actually
+meets the conditions that N-representability imposes. 
+
+Note that the 2-electron density matrix separates into different blocks when the system
+is described with spin-free Hamiltonians. The $\alpha\beta$ and $\beta\alpha$ blocks 
+can be represented as outer products of the corresponding 1-electron density matrices. As a
+result these parts are trivially N-representable as long as the individual 1-electron
+density matrices are themselves N-representable. The $\alpha\alpha$ and $\beta\beta$ blocks of 
+the 2-electron density matrix are more complicated as the exchange operator comes into
+play. Hence this section will focus on showing the N-representability of these blocks.
+In fact, the focus is on the $\alpha\alpha$ block as the analysis for the $\beta\beta$ 
+block is the same. 
+
+For the $\alpha\alpha$-block of the 2-electron density matrix to be N-representable
+it must satisfy the following conditions:
+\begin{enumerate}
+\item The $D$ condition states that the matrix must be non-negative (all eigenvalues must be $\ge 0$),
+      or equivalently
+      the pair-probability function for any pair of natural orbitals must be non-negative~\cite{Coleman_1963}
+      \dlabel{Cond:N2repres:1:D};
+\item The $Q$ condition states that the density matrix of hole states must be non-negative
+      \dlabel{Cond:N2repres:1:Q};
+\item The $G$ condition states that the density matrix of particle-hole pairs must be
+      non-negative~\cite{Garrod_1964}
+      \dlabel{Cond:N2repres:1:G};
+\item The trace of the matrix must sum to the number of $\alpha$-electron pairs, i.e.
+      $n_e^\alpha(n_e^\alpha-1)/2$ where $n_e^\alpha$ is the number of $\alpha$-electrons
+      \dlabel{Cond:N2repres:2};
+\item The 2-electron density matrix must be anti-symmetric, i.e. 
+      $\Gamma_{abcd} = -\Gamma_{bacd} = -\Gamma_{abdc} = \Gamma_{badc} = \Gamma_{cdab} = -\Gamma_{cdba} = -\Gamma_{dcab} = \Gamma_{dcba}$
+      \dlabel{Cond:N2repres:3};
+\item The 1-electron density matrix must be obtainable from the 2-electron density matrix
+      by integrating out the coordinates of one of the electrons
+      \dlabel{Cond:N2repres:4}.
+\end{enumerate}
+
+\subsection{Non-negativity}
+\dlabel{Sect:NonNegative}
+
+Physically it is important that probability densities are non-negative. 
+For pair probability densities to be non-negative the 2-electron density 
+must be non-negative. 
+In this subsection we prove that the 2-electron density matrix of Eq.~\ref{Eq:D2:dij:r}
+satisfies the $D$ condition~\ref{Cond:N2repres:1:D}. 
+In addition we show that the resulting pair probability densities are non-negative as well.
+Furthermore, we will show that because of the structure of the equations it also follows
+that if condition~\ref{Cond:N2repres:1:D} is satisfied, then the
+$Q$ condition~\ref{Cond:N2repres:1:Q} and the $G$ condition~\ref{Cond:N2repres:1:G}
+are satisfied as well. As the pair probability density is 
+constructed as an ensemble the proof proceeds in two parts. First it is 
+proven that the weights $d_{ij}$ (the eigenvalues of the 2-electron density matrix)
+are all non-negative. Next it shown that
+the individual natural orbital pair states generate non-negative probability densities.
+As the density matrix is expressed in the basis where it is diagonal it follows
+from these two parts that the pair probability density overall is non-negative.
+
+The fact that the weights of Eq.~\ref{Eq:D2:dij} are non-negative can be
+proven by making use of the Cauchy-Schwarz inequality which states that
+\begin{eqnarray}
+  \left|\sum_{i=1}^n x_i y_i^*\right|^2
+  &\leq& \left(\sum_{j=1}^n|x_j|^2\right)\left(\sum_{k=1}^n|y_k|^2\right)
+  \dlabel{Eq:CauchySchwarz}
+\end{eqnarray}
+For simplicity we prove that the first term in Eq.~\ref{Eq:D2:dij} is
+larger than the second term for every combination of $i$ and $j$.
+I.e. we have to show that
+\begin{eqnarray}
+  \sum_{s,t=1}^{n_e^\alpha} C_{is}C^*_{it}C_{jt}C^*_{js} &\leq&
+  \sum_{s,t=1}^{n_e^\alpha} C_{is}C^*_{is}C_{jt}C^*_{jt}
+\end{eqnarray}
+where $s$ and $t$ are drawn from the $1$ to $n_e^\alpha$ occupied correlation 
+functions.
+By trivially rearranging the factors and the summations this expression can be
+rewritten as
+\begin{eqnarray}
+  \left(\sum_{s=1}^{n_e^\alpha}C_{is}C^*_{js}\right)
+  \left(\sum_{t=1}^{n_e^\alpha}C_{jt}C^*_{it}\right) &\leq&
+  \left(\sum_{s=1}^{n_e^\alpha}C_{is}C^*_{is}\right)
+  \left(\sum_{t=1}^{n_e^\alpha}C_{jt}C^*_{jt}\right)
+  \dlabel{Eq:positivity:dij}
+\end{eqnarray}
+which is the same as Eq.~\ref{Eq:CauchySchwarz} if the vector $y$ is equated to
+the $j$-th row of $C$ and vector $x$ is equated to the $i$-th row of $C$.
+Furthermore as the first and last terms in Eq.~\ref{Eq:D2:dij} are obviously
+non-negative it immediately follows that $d_{ij}$ are non-negative.
+
+% Since $C$ is a unitary matrix it is known that 
+% $\sum_{s=1}^{n_b} C_{is}C^*_{js} = \delta_{ij}$. From this it follows that
+% the maximum of $d_{ij}$ is obtained if $s$ and $t$ are summed over all 
+% correlation functions. In this case the first term of Eq.~\ref{Eq:D2:dij}
+% becomes 1 and the second term vanishes, hence it follows that
+% $d_{ij} \le 1$. 
+
+To prove the second part, again the Cauchy-Schwarz inequality will be used.
+However, first the non-negativity of the one electron density is considered.
+The one electron probability density is the norm of a natural orbital at 
+any point in space, i.e.
+\begin{eqnarray}
+  \rho(r_1)
+  &=& \phi_i(r_1)\phi_i^*(r_1) \\
+  &\ge& 0
+\end{eqnarray}
+The non-negativity is guaranteed by taking the norm of the natural orbital.
+
+For pair probability densities consider
+\begin{eqnarray}
+  \rho_{ij}(r_1,r_2)
+  &=& \phi_i(r_1)\phi^*_i(r_1)\phi_j(r_2)\phi^*_j(r_2)
+     +\phi_j(r_1)\phi^*_j(r_1)\phi_i(r_2)\phi^*_i(r_2) \nonumber \\
+  && -\phi_i(r_1)\phi^*_j(r_1)\phi_j(r_2)\phi^*_i(r_2)
+     -\phi_j(r_1)\phi^*_i(r_1)\phi_i(r_2)\phi^*_j(r_2) 
+\end{eqnarray}
+The Cauchy-Schwarz inequality assumes a sum over a number of terms but nothing
+precludes the number of terms being 1. From that it immediately follows that
+\begin{eqnarray}
+  \phi_i(r_1)\phi^*_i(r_1)\phi_j(r_2)\phi^*_j(r_2) 
+  +\phi_j(r_1)\phi^*_j(r_1)\phi_i(r_2)\phi^*_i(r_2)
+  &\ge& \phi_i(r_1)\phi^*_j(r_1)\phi_j(r_2)\phi^*_i(r_2)
+       +\phi_j(r_1)\phi^*_i(r_1)\phi_i(r_2)\phi^*_j(r_2) 
+\end{eqnarray}
+And therefore that
+\begin{eqnarray}
+   \rho_{ij}(r_1,r_2) &\ge& 0
+   \dlabel{Eq:positivity:rij}
+\end{eqnarray}
+for any pair of natural orbitals $i$ and $j$.
+
+As Eq.~\ref{Eq:positivity:dij} proves that the 2-electron density matrix
+is non-negative, and Eq.~\ref{Eq:positivity:rij} proves that every orbital
+pair probability density is non-negative it follows that the total 
+electron pair probability density
+\begin{eqnarray}
+   \rho(r_1,r_2) 
+   &=& \sum_{ij}d_{ij}\rho_{ij}(r_1,r_2) \\
+   &\ge& 0
+\end{eqnarray}
+which implies that the relevant non-negativity conditions are met.
+
+In the above the $D$ condition was proven, and the proof was based on including
+only the occupied correlations functions in the occupation numbers of the 2-electron
+density matrix. However, the natural orbital for occupied states are the same as
+the natural orbitals for the hole states. From that it follows that to show the 
+non-negativity of the 2-electron density matrix of the hole states, i.e. the $Q$ 
+N-representability condition~\ref{Cond:N2repres:1:Q}, we just need to replace
+the occupied $s$ and $t$ correlation functions with unoccupied $s$ and $t$
+correlation functions. I.e. instead of drawing $s$ and $t$ from the correlation
+functions $1$ to $n_e^\alpha$, we draw $s$ and $t$ from the correlation functions
+$n_e^\alpha+1$ to $n_b$. Now note that the form of the expression Eq.~\ref{Eq:D2:dij}
+does not change irrespective of whether $s$ or $t$ are occupied or unoccupied
+correlation functions. Therefore, if Eq.~\ref{Eq:D2:dij} is non-negative when 
+$s$ and $t$ are occupied correlation functions then Eq.~\ref{Eq:D2:dij} is also
+non-negative if one of $s$ or $t$, or both $s$ and $t$ are unoccupied correlation
+functions. This proves that the $Q$ and $G$
+conditions~\ref{Cond:N2repres:1:Q} and~\ref{Cond:N2repres:1:G} hold as well.
+
+\subsection{Trace}
+\dlabel{Sect:Trace}
+
+In this subsection condition~\ref{Cond:N2repres:2} is considered which amounts
+to showing that integrating both the positions of electron 1 and 2 out generates
+the correct number of electron pairs, i.e. $n_e^\alpha(n_e^\alpha-1)/2$.
+
+Again, the proof proceeds in two stages starting from Eq.~\ref{Eq:D2:dij:r}.
+First it is shown that each factor consisting of just the natural orbital
+parts contributes $1-\delta_{ij}$ which implies that the trace amounts to the
+sum $\sum_{ij,i \ne j}d_{ij}$. Next, it is shown that 
+$\sum_{ij,i \ne j}d_{ij}=n_e^\alpha(n_e^\alpha-1)/2$.
+
+The natural orbital factor of Eq.~\ref{Eq:D2:dij:r} is
+\begin{eqnarray}
+  F_{ij}(r_1,r_2,r'_1,r'_2)
+  &&= \frac{1}{2} N_i(r_1)N_j(r_2) N_i^*(r'_1)N_j^*(r'_2) \nonumber \\
+  &&- \frac{1}{2} N_i(r_1)N_j(r_2) N_j^*(r'_1)N_i^*(r'_2) \nonumber \\
+  &&- \frac{1}{2} N_j(r_1)N_i(r_2) N_i^*(r'_1)N_j^*(r'_2) \nonumber \\
+  &&+ \frac{1}{2} N_j(r_1)N_i(r_2) N_j^*(r'_1)N_i^*(r'_2)
+\end{eqnarray}
+Given that 
+\begin{eqnarray}
+  \delta_{ij} &=& \int N_i(r) N_j^*(r)\mathrm{d}r
+\end{eqnarray}
+it follows that 
+\begin{eqnarray}
+  \int\int F_{ij}(r_1,r_2,r_1,r_2)\mathrm{d}r_1\mathrm{d}r_2
+  &&= \frac{1}{2} \int N_i(r_1)N_i^*(r_1)\mathrm{d}r_1 \int N_j(r_2)N_j^*(r_2)\mathrm{d}r_2 \nonumber \\
+  &&- \frac{1}{2} \int N_i(r_1)N_j^*(r_1)\mathrm{d}r_1 \int N_j(r_2)N_i^*(r_2)\mathrm{d}r_2 \nonumber \\
+  &&- \frac{1}{2} \int N_j(r_1)N_i^*(r_1)\mathrm{d}r_1 \int N_i(r_2)N_j^*(r_2)\mathrm{d}r_2 \nonumber \\
+  &&+ \frac{1}{2} \int N_j(r_1)N_j^*(r_1)\mathrm{d}r_1 \int N_i(r_2)N_i^*(r_2)\mathrm{d}r_2 \\
+  &&= \frac{1}{2} 1 \cdot 1 \nonumber \\
+  &&- \frac{1}{2} \delta_{ij} \cdot \delta_{ij} \nonumber \\
+  &&- \frac{1}{2} \delta_{ij} \cdot \delta_{ij} \nonumber \\
+  &&+ \frac{1}{2} 1 \cdot 1  \\
+  &&= 1-\delta_{ij}
+\end{eqnarray}
+From this we have that the trace of the 2-electron density matrix is
+$\sum_{ij,i < j}d_{ij}$. Also note from Eq.~\ref{Eq:D2:dij} that $d_{ii} = 0$
+and therefore the trace of the 2-electron density matrix is
+$\frac{1}{2}\sum_{ij,i \ne j}d_{ij} = \frac{1}{2}\sum_{ij}d_{ij}$. This sum is given by
+\begin{eqnarray}
+   \frac{1}{2}\sum_{ij}d_{ij}
+   &=&+ \frac{1}{4}\sum_{ij}\sum_{s,t=1}^{\nela} C_{is}C_{is}^* C_{jt}C_{jt}^* \nonumber \\
+   &&-  \frac{1}{4}\sum_{ij}\sum_{s,t=1}^{\nela} C_{is}C_{it}^* C_{jt}C_{js}^* \nonumber \\
+   &&-  \frac{1}{4}\sum_{ij}\sum_{s,t=1}^{\nela} C_{it}C_{is}^* C_{js}C_{jt}^* \nonumber \\
+   &&+  \frac{1}{4}\sum_{ij}\sum_{s,t=1}^{\nela} C_{it}C_{it}^* C_{js}C_{js}^* \\
+   &=&+ \frac{1}{4}\left(\nela\right)^2 \nonumber\\
+   &&-  \frac{1}{4}\sum_{s,t=1}^{\nela}\left(\delta_{st}\right)^2  \nonumber \\
+   &&-  \frac{1}{4}\sum_{s,t=1}^{\nela}\left(\delta_{st}\right)^2  \nonumber \\
+   &&+  \frac{1}{4}\left(\nela\right)^2 \\
+   &=&+ \frac{1}{2}\left(\nela\right)^2 \nonumber\\
+   &&-  \frac{1}{2}\nela \\
+   &=&  \frac{\nela(\nela-1)}{2}
+\end{eqnarray}
+From this it is clear that the trace of the 2-electron density matrix equals the number
+of electron pairs.
+
+\subsection{Permutation symmetry}
+\dlabel{Sect:Perm}
+
+The 2-electron density matrix needs to have a permutation symmetry that is
+consistent with the anti-symmetry of exchanging electrons.
+This permutation symmetry can be expressed in terms of the labels on 
+the 2-electron density matrix as
+$\Gamma_{abcd} = -\Gamma_{bacd} = -\Gamma_{abdc} = \Gamma_{badc}$,
+it can also be expressed in terms of the electron coordinates as
+$\Gamma(r_1,r_2,r'_1,r'_2) = -\Gamma(r_1,r_2,r'_2,r'_1) = -\Gamma(r_2,r_1,r'_1,r'_2) = \Gamma(r_2,r_1,r'_2,r'_1)$.
+Either way this permutation symmetry requires considering the natural orbital
+factors only. In fact, as the basis function labels are introduced
+by the discretization of the natural orbitals it would seem that the more
+general case is considering the interchange of the electron coordinates. 
+Considering that $\Gamma(r_1,r_2,r'_1,r'_2)$ is given by Eq.~\ref{Eq:D2:dij:r} one
+obtains that
+\begin{eqnarray}
+   \Gamma(r_1,r_2,r'_2,r'_1)
+   &=&+ \frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) d_{ij} N_i^*(r'_2)N_j^*(r'_1) \nonumber \\
+   &&-  \frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) d_{ij} N_j^*(r'_2)N_i^*(r'_1) \nonumber \\
+   &&-  \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) d_{ij} N_i^*(r'_2)N_j^*(r'_1) \nonumber \\
+   &&+  \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) d_{ij} N_j^*(r'_2)N_i^*(r'_1) \\
+   &=&+ \frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) d_{ij} N_j^*(r'_1)N_i^*(r'_2) \nonumber \\
+   &&-  \frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) d_{ij} N_i^*(r'_1)N_j^*(r'_2) \nonumber \\
+   &&-  \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) d_{ij} N_j^*(r'_1)N_i^*(r'_2) \nonumber \\
+   &&+  \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) d_{ij} N_i^*(r'_1)N_j^*(r'_2) \\
+   &=&- \frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) d_{ij} N_i^*(r'_1)N_j^*(r'_2) \nonumber \\
+   &&+  \frac{1}{2}\sum_{i,j=1}^{n} N_i(r_1)N_j(r_2) d_{ij} N_j^*(r'_1)N_i^*(r'_2) \nonumber \\
+   &&+  \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) d_{ij} N_i^*(r'_1)N_j^*(r'_2) \nonumber \\
+   &&-  \frac{1}{2}\sum_{i,j=1}^{n} N_j(r_1)N_i(r_2) d_{ij} N_j^*(r'_1)N_i^*(r'_2) \\
+   &=& -\Gamma(r_1,r_2,r'_1,r'_2)
+\end{eqnarray}
+Verifying that $\Gamma(r_2,r_1,r'_1,r'_2) = -\Gamma(r_1,r_2,r'_1,r'_2)$ proceeds the same way.
+Finally, 
+$\Gamma(r_2,r_1,r'_2,r'_1) = -\Gamma(r_1,r_2,r'_2,r'_1)= -(-\Gamma(r_1,r_2,r'_1,r'_2)) = \Gamma(r_1,r_2,r'_1,r'_2)$
+which concludes the proof.
+
+\subsection{Obtaining the 1-electron density matrix from the 2-electron density matrix}
+\dlabel{Sect:Integrate}
+
+In this section it will be shown that
+Eq.~\ref{Eq:D1:di:r} can be obtained from Eq.~\ref{Eq:D2:dij:r} by integrating the coordinates
+of electron 2 out. As the $\alpha\beta$ part of this issue is trivial this section focusses
+on the relation between the $\alpha$-spin 1-electron density matrix and the $\alpha\alpha$ part of
+the 2-electron density matrix by assuming that the contains only $\alpha$ electrons. 
+Hence, it is to be shown that
+\begin{eqnarray}
+   D(r_1,r'_1) = \frac{2}{\nela-1}\int\Gamma(r_1,r_2,r'_1,r_2)\mathrm{d}r_2
+\end{eqnarray}
+The right-hand-side of this equation can be written out as
+\begin{eqnarray}
+  \frac{2}{\nela-1}\int\Gamma(r_1,r_2,r'_1,r_2)\mathrm{d}r_2 \nonumber \\
+  &&= \frac{1}{\nela-1}\sum_{i,j=1}^{n}\int N_i(r_1)N_j(r_2) d_{ij} N_i^*(r'_1)N_j^*(r_2)\mathrm{d}r_2 \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{i,j=1}^{n}\int N_i(r_1)N_j(r_2) d_{ij} N_j^*(r'_1)N_i^*(r_2)\mathrm{d}r_2 \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{i,j=1}^{n}\int N_j(r_1)N_i(r_2) d_{ij} N_i^*(r'_1)N_j^*(r_2)\mathrm{d}r_2 \nonumber \\
+  &&+ \frac{1}{\nela-1}\sum_{i,j=1}^{n}\int N_j(r_1)N_i(r_2) d_{ij} N_j^*(r'_1)N_i^*(r_2)\mathrm{d}r_2 
+\end{eqnarray}
+Because of the orthonormality of the natural orbitals it follows
+\begin{eqnarray}
+  \frac{2}{\nela-1}\int\Gamma(r_1,r_2,r'_1,r_2)\mathrm{d}r_2 \nonumber \\
+  &&= \frac{1}{\nela-1}\sum_{i,j=1}^{n}     N_i(r_1)         d_{ij} N_i^*(r'_1) \cdot 1                \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{i,j=1}^{n}     N_i(r_1)         d_{ij} N_j^*(r'_1) \cdot \delta_{ij}      \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{i,j=1}^{n}     N_j(r_1)         d_{ij} N_i^*(r'_1) \cdot \delta_{ij}      \nonumber \\
+  &&+ \frac{1}{\nela-1}\sum_{i,j=1}^{n}     N_j(r_1)         d_{ij} N_j^*(r'_1) \cdot 1                
+\end{eqnarray}
+As $d_{ij} = 0$ if $i=j$ and $\delta_{ij} = 0$ if $i \ne j$ it is clear that the second and third terms are 
+both $0$. Furthermore, as a result of summing over all combinations of $i$ and $j$ the first and fourth terms
+are the same. Hence,
+\begin{eqnarray}
+  \frac{2}{\nela-1}\int\Gamma(r_1,r_2,r'_1,r_2)\mathrm{d}r_2 \nonumber \\
+  &&= \frac{2}{\nela-1}\sum_{i,j=1}^{n} N_i(r_1) d_{ij} N_i^*(r'_1) 
+\end{eqnarray}
+Substituting Eq.~\ref{Eq:D2:dij} for $d_{ij}$ gives
+\begin{eqnarray}
+  \frac{2}{\nela-1}\int\Gamma(r_1,r_2,r'_1,r_2)\mathrm{d}r_2 \nonumber \\
+  &&= \frac{1}{\nela-1}\sum_{s,t=1}^{\nela}\sum_{i,j=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{is}C_{is}^* C_{jt}C_{jt}^* \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{s,t=1}^{\nela}\sum_{i,j=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{is}C_{it}^* C_{jt}C_{js}^* \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{s,t=1}^{\nela}\sum_{i,j=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{it}C_{is}^* C_{js}C_{jt}^* \nonumber \\
+  &&+ \frac{1}{\nela-1}\sum_{s,t=1}^{\nela}\sum_{i,j=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{it}C_{it}^* C_{js}C_{js}^* 
+\end{eqnarray}
+Because of the orthonormality of the correlation functions the following substitutions 
+can be made
+\begin{eqnarray}
+  \sum_{t=1}^{\nela}\sum_{j}C_{jt}C^*_{jt} 
+  &=& \nela \\
+  \sum_{t=1}^{\nela}\sum_{j}C_{jt}C^*_{js}
+  &=& \delta_{st}
+\end{eqnarray}
+to give
+\begin{eqnarray}
+  \frac{2}{\nela-1}\int\Gamma(r_1,r_2,r'_1,r_2)\mathrm{d}r_2 \nonumber \\
+  &&= \frac{1}{\nela-1}\sum_{s=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{is}C_{is}^* \nela \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{s,t=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{is}C_{it}^* \delta_{ts} \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{s,t=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{it}C_{is}^* \delta_{st} \nonumber \\
+  &&+ \frac{1}{\nela-1}\sum_{t=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{it}C_{it}^* \nela \\
+  &&= \frac{1}{\nela-1}\sum_{s=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{is}C_{is}^* \nela \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{s=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{is}C_{is}^*  \nonumber \\
+  &&- \frac{1}{\nela-1}\sum_{s=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{is}C_{is}^*  \nonumber \\
+  &&+ \frac{1}{\nela-1}\sum_{t=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{it}C_{it}^* \nela \\
+  &&= \frac{2}{\nela-1}\sum_{s=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{is}C_{is}^* (\nela-1) \\
+  &&= 2\sum_{s=1}^{\nela}\sum_{i=1}^{n}
+      N_i(r_1) N_i^*(r'_1) C_{is}C_{is}^* \\
+  &&= 2D(r_1,r'_1)
+\end{eqnarray}
+{\bf check factor 2} 
+This concludes the proof.
+
+\subsection{Summary}
+
+The proofs the N-representability of the 1-electron density matrix given
+in~\cite{van_Dam_2016} and those of the 2-electron density matrix given here 
+show that Eqs.~\ref{Eq:D1:di:r} and~\ref{Eq:D2:dij:r} do offer N-representable
+density matrices even if the recipe to generate those is a bit unusual.
+
+Also remember that the form of the 1-electron density matrix admits the exact
+1-electron density matrix even of a correlated system. The 2-electron density
+matrix expression admits fractional natural orbital pair occupation numbers,
+but it does not represent correlated states (eigen functions of a correlated
+2-electron density matrix would be geminals, i.e. linear combinations of natural
+orbital pairs). 
+
+Hence, the result is an effective 1-electron model that is N-representable
+even in the presence of fractionally occupied natural orbitals. However,
+as this model does not capture electron correlation to drive fractional
+occupation numbers, the next step has to be deriving some expression
+for the electron correlation energy.
+
+\subsection{Electron correlation by comparing the Full-CI and WFN1 energy expressions for \ce{H2} in
+            a minimal basis set}
+\dlabel{sect:FCI:H2:min}
+
+The model that has been derived so far generates N-representable energy expressions even
+in the presence of fractional occupation numbers. However, without a description of 
+electron correlation effects there are no effects that drive taking advantage of this
+feature. Of course the energy expression derived here is rather different from the 
+more conventional energy expressions that can be obtained of conventional configuration
+interaction (CI) methods. A straightforward approach to investigating what correlation 
+effects in the model formulated here might look like is to compare energy expressions
+of Full-CI~\cite{Ross_1952} (or exact diagonalization) to the energy expressions of the model 
+formulated here for a given molecular system.
+
+A typical system that comes to mind for such an analysis is the hydrogen molecule in a 
+minimal basis set. This is a system consisting of only two electrons represented in a basis
+set of two spatial orbitals. For a system this simple the exact energy expressions for both
+Full-CI as well as the model proposed here can easily be formulated. By comparing the 
+resulting energy expressions it should be possible to establish what the form of the
+correlation energy for this system is.
+
+First of all in this simple representation there are only two orbitals which are fixed by
+symmetry. These orbitals are the bonding and the anti-bonding orbitals, and assuming that
+the hydrogen atoms are labeled $A$ and $B$ these orbitals are
+\begin{eqnarray}
+   \phi_1(r) &=& (\chi_A(r)+\chi_B(r))/\sqrt{2} \\
+   \phi_2(r) &=& (\chi_A(r)-\chi_B(r))/\sqrt{2} 
+\end{eqnarray}
+In terms of these orbitals we can write down the Full-CI wave function as a sum of
+Slater determinants. Although, because we have only 1 $\alpha$-electron and 1 $\beta$-electron
+it is actually sufficient to just list the Hartree products.
+\begin{eqnarray}
+   \Psi &=& C_{11}\phi^\alpha_1(r_1)\phi^\beta_1(r_2)
+         +  C_{12}\phi^\alpha_1(r_1)\phi^\beta_2(r_2)
+         +  C_{21}\phi^\alpha_2(r_1)\phi^\beta_1(r_2)
+         +  C_{22}\phi^\alpha_2(r_1)\phi^\beta_2(r_2)
+\end{eqnarray}
+By symmetry we have that $C_{12} = C_{21} = 0$. Furthermore because the wave function must be
+normalized we have
+\begin{eqnarray}
+   1 &=& C_{11}^2+C_{22}^2
+\end{eqnarray}
+Hence $C_{22} = \pm \sqrt{1-C_{11}^2}$. Ultimately the 2-electron contribution to the total
+energy can be written as $\tr(R,D)$ where $R$ is the matrix of 2-electron repulsion integrals,
+$D$ is the 2-electron density matrix.
+The electron repulsion matrix is
+\begin{eqnarray}
+   R &=& 
+   \begin{pmatrix}
+   \eria{1}{1}{1}{1} & \eria{1}{1}{1}{2} & \eria{1}{1}{2}{1} & \eria{1}{1}{2}{2} \\
+   \eria{1}{2}{1}{1} & \eria{1}{2}{1}{2} & \eria{1}{2}{2}{1} & \eria{1}{2}{2}{2} \\
+   \eria{2}{1}{1}{1} & \eria{2}{1}{1}{2} & \eria{2}{1}{2}{1} & \eria{2}{1}{2}{2} \\
+   \eria{2}{2}{1}{1} & \eria{2}{2}{1}{2} & \eria{2}{2}{2}{1} & \eria{2}{2}{2}{2}
+   \end{pmatrix} 
+\end{eqnarray}
+where $\eria{i}{j}{k}{l} = \int\int \phi_i^\alpha(r_1)\phi_j^\beta(r_2)\frac{1}{r_{12}}{\phi_k^\alpha}^*(r_1){\phi_l^\beta}^*(r_2)\mathrm{d}r_1\mathrm{d}r_2$.
+Of course, because we are dealing with a 2-electron closed shell system electron 1 has $\alpha$-spin and
+electron 2 has $\beta$-spin. I.e. $\langle i^\alpha j^\beta|k^\alpha l^\beta \rangle = 
+(i^\alpha k^\alpha |j^\beta l^\beta)$.
+The corresponding Full-CI 2-electron density matrix
+\begin{eqnarray}
+   D &=& 
+   \begin{pmatrix}
+   C_{11}^2     & 0 & 0 & C_{11}C^*_{22} \\
+   0            & 0 & 0 & 0            \\
+   0            & 0 & 0 & 0            \\
+   C_{22}C^*_{11} & 0 & 0 & C_{22}^2
+   \end{pmatrix}
+   \dlabel{eq:fci:h2}
+\end{eqnarray}
+is obtained from $\Psi(r_1,r_2)\Psi^*(r'_1,r'_2)$.
+By contrast, within the WFN1 approach the 2-electron density matrix, in this case, is constructed from the
+1-electron density matrices. The 1-electron density matrix is constructed from the correlation functions.
+The correlation functions are given by
+\begin{eqnarray}
+   \psi^\sigma(r_1)
+        &=& c^\sigma_{1}\phi^\sigma_1(r_1)
+         +  c^\sigma_{2}\phi^\sigma_2(r_1)
+\end{eqnarray}
+The corresponding 1-electron density matrix is
+\begin{eqnarray}
+   d &=& 
+   \begin{pmatrix}
+   \left.c_{1}^\sigma\right.^2 & 0                           \\
+   0                           & \left.c_{2}^\sigma\right.^2
+   \end{pmatrix} \\
+   &=& 
+   \begin{pmatrix}
+   p_{1}^\sigma & 0            \\
+   0            & p_{2}^\sigma
+   \end{pmatrix}
+\end{eqnarray}
+and the 2-electron density matrix becomes
+\begin{eqnarray}
+  \Gamma &=&
+  \begin{pmatrix}
+  p_{1}^\alpha p_{1}^\beta & 0 & 0 & 0 \\
+  0 & p_{1}^\alpha p_{2}^\beta & 0 & 0 \\
+  0 & 0 & p_{2}^\alpha p_{1}^\beta & 0 \\
+  0 & 0 & 0 & p_{2}^\alpha p_{2}^\beta 
+  \end{pmatrix}
+\end{eqnarray}
+.
+Comparing the 2-electron interaction as
+\begin{eqnarray}
+   T &=& E_{FullCI}-E_{WFN1} \\
+   E_{FullCI} &=& E_{WFN1}+T
+\end{eqnarray}
+Then we have
+\begin{eqnarray}
+   E_{FullCI} &=& \eria{1}{1}{1}{1} C_{11}^2 + \eria{1}{1}{2}{2} C_{11}C_{22}^*
+               +  \eria{2}{2}{1}{1} C_{22}C_{11}^* + \eria{2}{2}{2}{2} C_{22}^2 \\
+   E_{WFN1}   &=& \eria{1}{1}{1}{1} p_1^\alpha p_1^\beta + \eria{1}{2}{1}{2} p_1^\alpha p_2^\beta
+               +  \eria{2}{1}{2}{1} p_2^\alpha p_1^\beta + \eria{2}{2}{2}{2} p_2^\alpha p_2^\beta \\
+   T
+   &=& \eria{1}{1}{1}{1} (C_{11}^2-p_1^\alpha p_1^\beta)
+    +  \eria{2}{2}{2}{2} (C_{22}^2-p_2^\alpha p_2^\beta) \nonumber \\
+   &&+ \eria{1}{1}{2}{2} C_{11}C_{22}^*
+    +  \eria{2}{2}{1}{1} C_{22}C_{11}^*       \nonumber \\
+   &&- \eria{1}{2}{1}{2} p_1^\alpha p_2^\beta
+    -  \eria{2}{1}{2}{1} p_2^\alpha p_1^\beta 
+   \dlabel{Eq:T:subtract}
+\end{eqnarray}
+The Full-CI coefficients can equated to
+\begin{eqnarray}
+C_{11}^2 &=& \sqrt{p_1^\alpha p_1^\beta} 
+             \dlabel{Eq:C2:11}
+\end{eqnarray}
+Based on this we also have that
+\begin{eqnarray}
+C_{11} &=& \pm\sqrt[4]{p_1^\alpha p_1^\beta} 
+           \dlabel{Eq:C1:11}
+\end{eqnarray}
+Obviously in Eq.~\ref{Eq:T:subtract} we have to choose the sign of $C_{11}C^*_{22}$ and 
+$C_{22}C^*_{11}$ so as to minimize
+the Full-CI energy. If we now insert Eqs.~\ref{Eq:C2:11} and~\ref{Eq:C1:11} into Eq.~\ref{Eq:T:subtract} we have
+\begin{eqnarray}
+   T
+   &=& \eria{1}{1}{1}{1} (\sqrt{p_1^\alpha p_1^\beta}-p_1^\alpha p_1^\beta)
+    +  \eria{2}{2}{2}{2} (\sqrt{p_2^\alpha p_2^\beta}-p_2^\alpha p_2^\beta) \nonumber \\
+   &&- \eria{1}{1}{2}{2} \sqrt[4]{p_1^\alpha p_1^\beta p_2^\alpha p_2^\beta}
+    -  \eria{2}{2}{1}{1} \sqrt[4]{p_2^\alpha p_2^\beta p_1^\alpha p_1^\beta} \nonumber \\
+   &&- \eria{1}{2}{1}{2} p_1^\alpha p_2^\beta
+    -  \eria{2}{1}{2}{1} p_2^\alpha p_1^\beta 
+   \dlabel{Eq:T:subtract:2}
+\end{eqnarray}
+In the following the terms in Eq.~\ref{Eq:T:subtract:2} are numbered 1 to 6 according to the 2-electron
+integral involved.
+Next we need to test what happens if one of the orbitals is not correlated. 
+The fact that an
+orbital is not correlated is evident from the occupation number being either $0$ or $1$. The argument is simply
+that if in a pair of orbitals at least one is not correlated then the other orbital cannot be correlated
+to it (even if the other orbital is correlated). Even if the other orbital is correlated it cannot be
+correlated with an uncorrelated orbital, instead it has to be correlated to something else.
+In other words, if the occupation of a particular orbital is $0$ or $1$ then $T$ of Eq.~\ref{Eq:T:subtract:2}
+should be $0$. As written, all terms in Eq.~\ref{Eq:T:subtract:2} violate this condition. However, in the case
+of a 2-electron system represented in 2-spatial orbitals there are additional conditions that constrain
+the energy expression of Eq.~\ref{Eq:T:subtract:2} to avoid such problems. These constraints are not manifest
+in Eq.~\ref{Eq:T:subtract:2}, however, but they can be explicitly introduced.
+To address these issues there are two important relationships that hold for the closed shell 
+2-electron molecules in a two orbital basis:
+\begin{eqnarray}
+  p_i^\sigma &=& 1-p_j^\sigma  \dlabel{Eq:constraint:2orb} \\
+  p_i^\sigma &=& p_i^{\sigma'} \dlabel{Eq:constraint:closedshell}
+\end{eqnarray}
+Using these relationships one can replace the following quantity as
+\begin{eqnarray}
+  p_1^\alpha p_2^\beta 
+  &=& \sqrt{p_1^\alpha p_1^\alpha p_2^\beta p_2^\beta} \\
+  &=& \sqrt{p_1^\alpha(1-p_2^\alpha)p_2^\beta(1-p_1^\beta)} \\
+  &=& \sqrt{p_1^\alpha(1-p_2^\beta)p_2^\beta(1-p_1^\alpha)} \\
+  &=& \sqrt{p_1^\alpha(1-p_1^\alpha)p_2^\beta(1-p_2^\beta)}
+\end{eqnarray}
+where we have first used the fact that in a 2-orbital system with 1 electron
+per spin the occupation numbers of the orbitals must add up to 1, in the second
+step we have used the fact that in closed shell system the $\alpha$- and $\beta$-occupation
+numbers are the same.
+Likewise
+\begin{eqnarray}
+  p_1^\beta p_2^\alpha 
+  &=& \sqrt{p_1^\beta(1-p_1^\beta)p_2^\alpha(1-p_2^\alpha)}
+\end{eqnarray}
+and
+\begin{eqnarray}
+  \sqrt[4]{p_1^\alpha p_1^\beta p_2^\alpha p_2^\beta}
+  &=& \sqrt[4]{p_1^\alpha (1-p_2^\beta)(1-p_1^\alpha)p_2^\beta} \\
+  &=& \sqrt[4]{p_1^\alpha (1-p_1^\alpha) p_2^\beta (1-p_2^\beta)} \\
+  &=& \sqrt[4]{p_1^\beta (1-p_1^\beta) p_2^\alpha (1-p_2^\alpha)}
+\end{eqnarray}
+Using the relationships above in the expression for $T$ we may obtain
+\begin{eqnarray}
+   T
+   &=& \eria{1}{1}{1}{1} \left(\sqrt{p_1^\alpha p_1^\beta}-p_1^\alpha p_1^\beta\right)
+    +  \eria{2}{2}{2}{2} \left(\sqrt{p_2^\alpha p_2^\beta}-p_2^\alpha p_2^\beta\right) \nonumber \\
+   &&- \eria{1}{1}{2}{2} \sqrt[4]{p_1^\alpha (1-p_1^\alpha) p_2^\beta (1-p_2^\beta)}
+    -  \eria{2}{2}{1}{1} \sqrt[4]{p_2^\alpha (1-p_2^\alpha) p_1^\beta (1-p_1^\beta)} \nonumber \\
+   &&- \eria{1}{2}{1}{2} \sqrt{p_1^\alpha (1-p_1^\alpha) p_2^\beta (1-p_2^\beta)}
+    -  \eria{2}{1}{2}{1} \sqrt{p_2^\alpha (1-p_2^\alpha) p_1^\beta (1-p_1^\beta)}
+   \dlabel{Eq:T:subtract:3}
+\end{eqnarray}
+Clearly, if either $p_1^\sigma$ or $p_2^\sigma$ is either $0$ or $1$ all terms $T_3$ to $T_6$ in
+Eq.~\ref{Eq:T:subtract:3} are $0$. The only two terms that cannot be addressed in this way are the
+first two terms of Eq.~\ref{Eq:T:subtract:3}. However, both these terms are non-negative. As the 
+energy will be optimized by minimization it is expected that this will reduce the inappropriate
+correlation behavior as much as possible by driving the occupation numbers to suitable values.
+
+Note that the substitutions introduced above are exact, but only for closed shell systems with 
+2-electrons in 2 spatial orbitals. In all other cases Eqs.~\ref{Eq:constraint:2orb} 
+and~\ref{Eq:constraint:closedshell} do not hold. Hence, Eq.~\ref{Eq:T:subtract:3} is approximate
+for all other systems, and its suitability for other systems needs to be tested.
+
+%An important question related to extending this approximation to system with more
+%electrons or more basis functions is how to do this. In the system studied thus
+%far we have assumed only 2 spatial orbitals. In any realistic system there will likely
+%be more orbitals. The fact that thus far we have only considered 2 orbital systems
+%imposes a balance between the different terms in $T$. For example, in a 2 orbital system
+%there are equally many $ii$ as $ij$ terms. For a system with more than two orbitals the
+%number of $ij$ terms goes as $N^2$ whereas the number of $ii$ terms goes as $N$. 
+
+To answer the questions of how to apply Eq.~\ref{Eq:T:subtract:3} more generally it is convenient
+to split the expression into separate terms. 
+First of all there are the diagonal terms $ii$:
+\begin{eqnarray}
+   T_{ii}       &=& \eria{i}{i}{i}{i} \left(\sqrt{p_i^\alpha p_i^\beta}-p_i^\alpha p_i^\beta\right)
+                    \dlabel{Eq:Tii} \\
+   T_{ii}       &=& T^{(2)}_{ii}-T^{(1)}_{ii}  \\
+   T^{(1)}_{ii} &=& \eria{i}{i}{i}{i}p_i^\alpha p_i^\beta        \dlabel{Eq:Tii:1} \\
+   T^{(2)}_{ii} &=& \eria{i}{i}{i}{i}\sqrt{p_i^\alpha p_i^\beta} \dlabel{Eq:Tii:2}
+\end{eqnarray}
+then there are the $ij$ terms where $i \ne j$:
+\begin{eqnarray}
+   T_{ij}       &=& -\eria{i}{i}{j}{j} \sqrt[4]{p_i^\alpha(1-p_i^\alpha) p_j^\beta(1-p_j^\beta)} \nonumber \\
+                &-& \eria{i}{j}{i}{j} \sqrt{p_i^\alpha(1-p_i^\alpha) p_j^\beta(1-p_j^\beta)}
+                    \dlabel{Eq:Tij} \\
+   T_{ij}       &=& -T^{(4)}_{ij}-T^{(2)}_{ij} \\
+   T^{(4)}_{ij} &=& \eria{i}{i}{j}{j}\sqrt[4]{p_i^\alpha(1-p_i^\alpha) p_j^\beta(1-p_j^\beta)} \dlabel{Eq:Tij:4} \\
+   T^{(2)}_{ij} &=& \eria{i}{j}{i}{j}\sqrt{p_i^\alpha(1-p_i^\alpha) p_j^\beta(1-p_j^\beta)}    \dlabel{Eq:Tij:2}
+\end{eqnarray}
+The terms $T^{(1)}_{ii}$, $T^{(2)}_{ii}$, $T^{(2)}_{ij}$, and $T^{(4)}_{ij}$ are named based on the order of
+the root involved as well as the pair of indeces.
+The total $T$ can be written as
+\begin{eqnarray}
+   T &=& \sum_{i,j} T_{ij}
+\end{eqnarray}
+where $T_{ij}$ is given by either Eq.~\ref{Eq:Tii} or Eq.~\ref{Eq:Tij} depending on the values of $i$ and $j$.
+
+As \ce{H2} has only 1 $\alpha$ and 1 $\beta$ electron it is clear that this can provide information
+about the inter-spin electron correlation. Nothing can be learned from this system about the correlation
+effects between electrons with the same spin. This might be resolved by looking at systems with more 
+electrons such as have been used in the coupled cluster theory~\cite{Kowalski_1998,Surj_n_2001} investigating
+the solutions of \ce{H4} and \ce{H8}.
+
+\subsection{Electron correlation by comparing the Full-CI and WFN1 energy expressions for \ce{H2}
+            in a double zeta basis set}
+
+In the previous section it was shown that the 2 electrons in 2 orbitals can be solved exactly.
+However, the resulting energy expression contains $T_{ij}$ terms which grow like $O(N^2)$ with
+the size of the basis set. This creates an imbalance with the $T_{ii}$ which grow like $O(N)$.
+A simple renormalization to address this problem failed as it resulted in a non-convex energy
+expression, that generates as many different solutions as there are virtual orbitals. Clearly
+such an approach is useless. To try and find a different way forward \ce{H2} in a double zeta
+basis set (i.e. 4 orbitals instead of 2) is considered in this section.
+
+To facilitate the comparison the equations will be expressed in terms of the Full-CI natural
+orbitals. The symmetry of the system allows for bonding and anti-bonding orbitals as in
+\begin{eqnarray}
+   \phi_1(r) &=& (\chi_A^1(r)+\chi_B^1(r))/\sqrt{2} \\
+   \phi_2(r) &=& (\chi_A^1(r)-\chi_B^1(r))/\sqrt{2} \\
+   \phi_3(r) &=& (\chi_A^2(r)+\chi_B^2(r))/\sqrt{2} \\
+   \phi_4(r) &=& (\chi_A^2(r)-\chi_B^2(r))/\sqrt{2} \\
+\end{eqnarray}
+In terms of these orbitals the wave function can be given as
+\begin{eqnarray}
+  \Psi &=& C_{11}\phi^\alpha_1(r_1)\phi^\beta_1(r_2)
+        +  C_{13}\phi^\alpha_1(r_1)\phi^\beta_3(r_2)
+        +  C_{31}\phi^\alpha_3(r_1)\phi^\beta_1(r_2)
+        +  C_{33}\phi^\alpha_3(r_1)\phi^\beta_3(r_2) \nonumber \\
+       &&+ C_{22}\phi^\alpha_2(r_1)\phi^\beta_2(r_2)
+        +  C_{24}\phi^\alpha_2(r_1)\phi^\beta_4(r_2)
+        +  C_{42}\phi^\alpha_4(r_1)\phi^\beta_2(r_2)
+        +  C_{44}\phi^\alpha_4(r_1)\phi^\beta_4(r_2)
+\end{eqnarray}
+all other coefficients being zero by symmetry.
+Because the wave function must be normalized we have
+\begin{eqnarray}
+  1 &=& C_{11}^2 + C_{13}^2 + C_{31}^2 + C_{33}^2 
+     +  C_{22}^2 + C_{24}^2 + C_{42}^2 + C_{44}^2
+\end{eqnarray}
+Like in the previous section the 2-electron repulsion matrix can be given as
+\begin{eqnarray}
+  R &=& 
+  \begin{pmatrix}
+  \eria{1}{1}{1}{1} & \eria{1}{1}{1}{2} & \eria{1}{1}{1}{3} & \eria{1}{1}{1}{4} & \ldots & \eria{1}{1}{4}{4} \\
+  \eria{1}{2}{1}{1} & \eria{1}{2}{1}{2} & \eria{1}{2}{1}{3} & \eria{1}{2}{1}{4} & \ldots & \eria{1}{2}{4}{4} \\
+  \eria{1}{3}{1}{1} & \eria{1}{3}{1}{2} & \eria{1}{3}{1}{3} & \eria{1}{3}{1}{4} & \ldots & \eria{1}{3}{4}{4} \\
+  \eria{1}{4}{1}{1} & \eria{1}{4}{1}{2} & \eria{1}{4}{1}{3} & \eria{1}{4}{1}{4} & \ldots & \eria{1}{4}{4}{4} \\
+  \vdots            & \vdots            & \vdots            & \vdots            & \ddots & \vdots            \\
+  \eria{4}{4}{1}{1} & \eria{4}{4}{1}{2} & \eria{4}{4}{1}{3} & \eria{4}{4}{1}{4} & \ldots & \eria{4}{4}{4}{4} \\
+  \end{pmatrix}
+\end{eqnarray}
+The corresponding Full-CI 2-electron density matrix is given by
+\setcounter{MaxMatrixCols}{20}
+\tiny
+\begin{eqnarray}
+  D &=& 
+  \begin{pmatrix}
+  C_{11}^2       & 0 & C_{11}C^*_{13} & 0 & 0 & C_{11}C^*_{22} & 0 & C_{11}C^*_{24} &
+  C_{11}C^*_{31} & 0 & C_{11}C^*_{33} & 0 & 0 & C_{11}C^*_{42} & 0 & C_{11}C^*_{44} \\
+  %
+  0 & C_{12}^2       & 0 & C_{12}C^*_{14} & C_{12}C^*_{21} & 0 & C_{12}C^*_{23} & 0 &
+  0 & C_{12}C^*_{32} & 0 & C_{12}C^*_{34} & C_{12}C^*_{41} & 0 & C_{12}C^*_{43} & 0 \\
+  %
+  C_{13}C^*_{11} & 0 & C_{13}^2       & 0 & 0 & C_{13}C^*_{22} & 0 & C_{13}C^*_{24} &
+  C_{13}C^*_{31} & 0 & C_{13}C^*_{33} & 0 & 0 & C_{13}C^*_{42} & 0 & C_{13}C^*_{44} \\
+  %
+  \end{pmatrix}
+\end{eqnarray}
+\normalsize
+
+\subsection{Electron correlation by comparing the Full-CI and WFN1 energy expressions for \ce{H4}}
+
+In the previous section \ce{H2} in a minimal basis set was consider and it was shown 
+that the exact total energy can be obtained with a suitable expression for the 
+correlation energy. This expression can be obtained by simply comparing the
+Full-CI energy and the WFN1 energy. However, this expression has a number of limitations:
+1. It is valid only for 2 electrons in 2 orbitals; 2. It does not give any insight in
+the correlation effects between electrons of the same spin. In particular the first
+limitation is rather severe. Attempts to apply this energy expression to systems with larger
+basis sets immediately led to energies that are far too low (there is an imbalance between
+the $T_{ii}$ terms and the $T_{ij}$ simply because there are $O(N)$ of the first and $O(N^2)$
+of the second). A renormalization of the $T_{ij}$ terms led to a variety of artifact: 
+underestimation of the correlation effects with constant scaling factors; a non-convex energy
+expression with adaptive scaling factor (and hence multiple ground state approximations). 
+
+In a bid to resolve these issues a similar comparison is attempted here but for \ce{H4} in
+a minimal basis set. In this system the hydrogen atoms are place on a straight line at equal
+bond distances. Assuming the hydrogen atoms are labeled $A$, $B$, $C$, and $D$ then orbitals
+are fixed by symmetry to be
+\begin{eqnarray}
+  \phi_1(r) &=& (\chi_A(r)+\chi_B(r)+\chi_C(r)+\chi_D(r))/2 \\
+  \phi_2(r) &=& (\chi_A(r)+\chi_B(r)-\chi_C(r)-\chi_D(r))/2 \\
+  \phi_3(r) &=& (\chi_A(r)-\chi_B(r)-\chi_C(r)+\chi_D(r))/2 \\
+  \phi_4(r) &=& (\chi_A(r)-\chi_B(r)+\chi_C(r)-\chi_D(r))/2
+\end{eqnarray}
+Note that $\phi_1$ and $\phi_3$ have the same symmetry, as do $\phi_2$ and $\phi_4$.
+The $\alpha$-spin part of the wave function is 
+\begin{eqnarray}
+  \Psi^\alpha &=& \Ca{12}|\Xa{1}\Xa{2}|+\Ca{13}|\Xa{1}\Xa{3}|+\Ca{14}|\Xa{1}\Xa{4}| \nonumber \\
+              &+& \Ca{23}|\Xa{2}\Xa{3}|+\Ca{24}|\Xa{2}\Xa{4}|+\Ca{34}|\Xa{3}\Xa{4}|
+\end{eqnarray}
+the $\beta$-spin part of the wave function is similar. This leaves for the total 
+wave functions
+\begin{eqnarray}
+  \Psi &=& \C{12}{12}\XXa{1}{2}\XXb{1}{2}
+        +  \C{12}{14}\XXa{1}{2}\XXb{1}{4} \nonumber \\
+       &+& \C{12}{23}\XXa{1}{2}\XXb{2}{3}
+        +  \C{12}{34}\XXa{1}{2}\XXb{3}{4} \nonumber \\
+       &+& \C{13}{13}\XXa{1}{3}\XXb{1}{3}
+        +  \C{13}{24}\XXa{1}{3}\XXb{2}{4} \nonumber \\
+       &+& \C{14}{12}\XXa{1}{4}\XXb{1}{2}
+        +  \C{14}{14}\XXa{1}{4}\XXb{1}{4} \nonumber \\
+       &+& \C{14}{23}\XXa{1}{4}\XXb{2}{3}
+        +  \C{14}{34}\XXa{1}{4}\XXb{3}{4} \nonumber \\
+       &+& \C{23}{12}\XXa{2}{3}\XXb{1}{2}
+        +  \C{23}{14}\XXa{2}{3}\XXb{1}{4} \nonumber \\
+       &+& \C{23}{23}\XXa{2}{3}\XXb{2}{3}
+        +  \C{23}{34}\XXa{2}{3}\XXb{3}{4} \nonumber \\
+       &+& \C{24}{13}\XXa{2}{4}\XXb{1}{3}
+        +  \C{24}{24}\XXa{2}{4}\XXb{2}{4} \nonumber \\
+       &+& \C{34}{12}\XXa{3}{4}\XXb{1}{2}
+        +  \C{34}{14}\XXa{3}{4}\XXb{1}{4} \nonumber \\
+       &+& \C{34}{23}\XXa{3}{4}\XXb{2}{3}
+        +  \C{34}{34}\XXa{3}{4}\XXb{3}{4} 
+\end{eqnarray}
+Next we need to consider 3 different density matrices: 
+\begin{itemize}
+\item the $\alpha\alpha$ part of the 2-electron density matrix
+\item the $\alpha\beta$ part of the 2-electron density matrix
+\item the $\alpha$ part of the 1-electron density matrix
+\end{itemize}
+The $\alpha$ 1-electron density matrix is
+\begin{eqnarray}
+   \left(\begin{array}{cccc}
+     \begin{array}{c}
+     + \C{12}{12}^2 + \C{12}{14}^2 \\
+     + \C{12}{23}^2 + \C{12}{34}^2 \\
+     + \C{13}{13}^2 + \C{13}{24}^2 \\
+     + \C{14}{12}^2 + \C{14}{14}^2 \\
+     + \C{14}{23}^2 + \C{14}{34}^2 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{12}\C{23}{12} \\
+     - \C{12}{14}\C{23}{14} \\
+     - \C{12}{23}\C{23}{23} \\
+     - \C{12}{34}\C{23}{34} \\
+     + \C{14}{12}\C{34}{12} \\
+     + \C{14}{14}\C{34}{14} \\
+     + \C{14}{23}\C{34}{23} \\
+     + \C{14}{34}\C{34}{34} 
+     \end{array} &
+     0 \\
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}^2 + \C{12}{14}^2 \\
+     + \C{12}{23}^2 + \C{12}{34}^2 \\
+     + \C{23}{12}^2 + \C{23}{14}^2 \\
+     + \C{23}{23}^2 + \C{23}{34}^2 \\
+     + \C{24}{13}^2 + \C{24}{24}^2
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{14}{12} \\
+     + \C{12}{14}\C{14}{14} \\
+     + \C{12}{23}\C{14}{23} \\
+     + \C{12}{34}\C{14}{34} \\
+     - \C{23}{12}\C{34}{12} \\
+     - \C{23}{14}\C{34}{14} \\
+     - \C{23}{23}\C{34}{23} \\
+     - \C{23}{34}\C{34}{34} 
+     \end{array} \\
+     \begin{array}{c}
+     - \C{23}{12}\C{12}{12} \\
+     - \C{23}{14}\C{12}{14} \\
+     - \C{23}{23}\C{12}{23} \\
+     - \C{23}{34}\C{12}{34} \\
+     + \C{34}{12}\C{14}{12} \\
+     + \C{34}{14}\C{14}{14} \\
+     + \C{34}{23}\C{14}{23} \\
+     + \C{34}{34}\C{14}{34} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}^2 + \C{13}{24}^2 \\
+     + \C{23}{12}^2 + \C{23}{14}^2 \\
+     + \C{23}{23}^2 + \C{23}{34}^2 \\
+     + \C{34}{12}^2 + \C{34}{14}^2 \\
+     + \C{34}{23}^2 + \C{34}{34}^2
+     \end{array} &
+     0 \\
+     0 &
+     \begin{array}{c}
+     + \C{14}{12}\C{12}{12} \\
+     + \C{14}{14}\C{12}{14} \\
+     + \C{14}{23}\C{12}{23} \\
+     + \C{14}{34}\C{12}{34} \\
+     - \C{34}{12}\C{23}{12} \\
+     - \C{34}{14}\C{23}{14} \\
+     - \C{34}{23}\C{23}{23} \\
+     - \C{34}{34}\C{23}{34}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{12}^2 + \C{14}{14}^2 \\
+     + \C{14}{23}^2 + \C{14}{34}^2 \\
+     + \C{24}{13}^2 + \C{24}{24}^2 \\
+     + \C{34}{12}^2 + \C{34}{14}^2 \\
+     + \C{34}{23}^2 + \C{34}{34}^2
+     \end{array} 
+   \end{array}\right)
+\end{eqnarray}
+Note that as these equations are expressed in the natural orbital basis
+the off diagonal elements of the 1-electron density matrix have to be zero.
+
+The $\alpha\alpha$ block of the 2-electron density matrix is
+\begin{eqnarray}
+   \left(\begin{array}{cccccc}
+     \begin{array}{c}
+     + \C{12}{12}^2 \\
+     + \C{12}{14}^2 \\
+     + \C{12}{23}^2 \\
+     + \C{12}{34}^2
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{14}{12} \\
+     + \C{12}{14}\C{14}{14} \\
+     + \C{12}{23}\C{14}{23} \\
+     + \C{12}{34}\C{14}{34} 
+     \end{array} &
+     \begin{array}{c}
+     + \C{12}{12}\C{23}{12} \\
+     + \C{12}{14}\C{23}{14} \\
+     + \C{12}{23}\C{23}{23} \\
+     + \C{12}{34}\C{23}{34}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{34}{12} \\
+     + \C{12}{14}\C{34}{14} \\
+     + \C{12}{23}\C{34}{23} \\
+     + \C{12}{34}\C{34}{34} 
+     \end{array} \\
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}^2 \\
+     + \C{13}{24}^2
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{24}{13} \\
+     + \C{13}{24}\C{24}{24}
+     \end{array} &
+     0 \\
+     \begin{array}{c}
+     + \C{14}{12}\C{12}{12} \\
+     + \C{14}{14}\C{12}{14} \\
+     + \C{14}{23}\C{12}{23} \\
+     + \C{14}{34}\C{12}{34} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{12}^2 \\
+     + \C{14}{14}^2 \\
+     + \C{14}{23}^2 \\
+     + \C{14}{34}^2 
+     \end{array} &
+     \begin{array}{c}
+     + \C{14}{12}\C{23}{12} \\
+     + \C{14}{14}\C{23}{14} \\
+     + \C{14}{23}\C{23}{23} \\
+     + \C{14}{34}\C{23}{34} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{12}\C{34}{12} \\
+     + \C{14}{14}\C{34}{14} \\
+     + \C{14}{23}\C{34}{23} \\
+     + \C{14}{34}\C{34}{34}
+     \end{array} \\
+     \begin{array}{c}
+     + \C{23}{12}\C{12}{12} \\
+     + \C{23}{14}\C{12}{14} \\
+     + \C{23}{23}\C{12}{23} \\
+     + \C{23}{34}\C{12}{34} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{23}{12}\C{14}{12} \\
+     + \C{23}{14}\C{14}{14} \\
+     + \C{23}{23}\C{14}{23} \\
+     + \C{23}{34}\C{14}{34}
+     \end{array} &
+     \begin{array}{c}
+     + \C{23}{12}^2 \\
+     + \C{23}{14}^2 \\
+     + \C{23}{23}^2 \\
+     + \C{23}{34}^2
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{23}{12}\C{34}{12} \\
+     + \C{23}{14}\C{34}{14} \\
+     + \C{23}{23}\C{34}{23} \\
+     + \C{23}{34}\C{34}{34}
+     \end{array} \\
+     0 &
+     \begin{array}{c}
+     + \C{24}{13}\C{13}{13} \\
+     + \C{24}{24}\C{13}{24}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{24}{13}^2 \\
+     + \C{24}{24}^2
+     \end{array} &
+     0 \\
+     \begin{array}{c}
+     + \C{34}{12}\C{12}{12} \\
+     + \C{34}{14}\C{12}{14} \\
+     + \C{34}{23}\C{12}{23} \\
+     + \C{34}{34}\C{12}{34}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{34}{12}\C{14}{12} \\
+     + \C{34}{14}\C{14}{14} \\
+     + \C{34}{23}\C{14}{23} \\
+     + \C{34}{34}\C{14}{34} 
+     \end{array} &
+     \begin{array}{c}
+     + \C{34}{12}\C{23}{12} \\
+     + \C{34}{14}\C{23}{14} \\
+     + \C{34}{23}\C{23}{23} \\
+     + \C{34}{34}\C{23}{34} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{34}{12}^2 \\
+     + \C{34}{14}^2 \\
+     + \C{34}{23}^2 \\
+     + \C{34}{34}^2 
+     \end{array} 
+   \end{array}\right)
+\end{eqnarray}
+
+The $\alpha\beta$ block of the 2-electron density matrix is
+\noindent
+%\scalebox{0.125}{0.125}{%
+\tiny
+%\begingroup\makeatletter\def\f@size{1}\check@mathfonts
+%\def\maketag@@@#1{\hbox{\m@th\large\normalfont#1}}%
+\begin{eqnarray}
+   \left(\begin{array}{cccccccccccccccc}
+     \begin{array}{c}
+     + \C{12}{12}^2 \\
+     + \C{12}{14}^2 \\
+     + \C{13}{13}^2 \\
+     + \C{14}{12}^2 \\
+     + \C{14}{14}^2
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{12}\C{12}{23} \\
+     + \C{12}{14}\C{12}{34} \\
+     - \C{14}{12}\C{14}{23} \\
+     + \C{14}{14}\C{14}{34}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{23}{23} \\
+     + \C{14}{14}\C{24}{24} \\
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{13}{13}\C{23}{34} \\
+     - \C{14}{12}\C{24}{24}
+     \end{array} &
+     \begin{array}{c}
+     - \C{12}{12}\C{23}{12} \\
+     - \C{12}{14}\C{23}{14} \\
+     + \C{14}{12}\C{34}{12} \\
+     + \C{14}{14}\C{34}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{23}{23} \\
+     - \C{12}{14}\C{23}{34} \\
+     - \C{14}{12}\C{34}{23} \\
+     + \C{14}{14}\C{34}{34}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     - \C{12}{14}\C{24}{24} \\
+     - \C{13}{13}\C{34}{23} \\
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{24}{24} \\
+     + \C{13}{13}\C{34}{34}
+     \end{array} \\
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}^2 \\
+     + \C{12}{23}^2 \\
+     + \C{13}{24}^2 \\
+     + \C{14}{12}^2 \\
+     + \C{14}{23}^2
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{12}{14} \\
+     - \C{12}{23}\C{12}{34} \\
+     + \C{14}{12}\C{14}{14} \\
+     - \C{14}{23}\C{14}{34}
+     \end{array} &
+     \begin{array}{c}
+     + \C{13}{24}\C{23}{14} \\
+     + \C{14}{23}\C{24}{13} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{24}\C{23}{34} \\
+     + \C{14}{12}\C{24}{13} 
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     - \C{12}{12}\C{23}{12} \\
+     - \C{12}{23}\C{23}{23} \\
+     + \C{14}{12}\C{34}{12} \\
+     + \C{14}{23}\C{34}{23}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{12}\C{23}{14} \\
+     + \C{12}{23}\C{23}{34} \\
+     + \C{14}{12}\C{34}{14} \\
+     - \C{14}{23}\C{34}{34}
+     \end{array} &
+     \begin{array}{c}
+     - \C{12}{23}\C{24}{13} \\
+     - \C{13}{24}\C{34}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{12}\C{24}{13} \\
+     - \C{13}{24}\C{34}{34}
+     \end{array} &
+     0 \\
+     \begin{array}{c}
+     - \C{12}{23}\C{12}{12} \\
+     + \C{12}{34}\C{12}{14} \\
+     - \C{14}{23}\C{14}{12} \\
+     + \C{14}{34}\C{14}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{23}^2 \\
+     + \C{12}{34}^2 \\
+     + \C{13}{13}^2 \\
+     + \C{14}{23}^2 \\
+     + \C{14}{34}^2
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{23}{12} \\
+     + \C{14}{34}\C{24}{24}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{23}{14} \\
+     + \C{14}{23}\C{24}{24}
+     \end{array} &
+     \begin{array}{c}
+     + \C{12}{23}\C{23}{12} \\
+     - \C{12}{34}\C{23}{14} \\
+     - \C{14}{23}\C{34}{12} \\
+     + \C{14}{34}\C{34}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{23}\C{23}{23} \\
+     - \C{12}{34}\C{23}{34} \\
+     + \C{14}{23}\C{34}{23} \\
+     + \C{14}{34}\C{34}{34}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     - \C{12}{34}\C{24}{24} \\
+     - \C{13}{13}\C{34}{12}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{23}\C{24}{24} \\
+     - \C{13}{13}\C{34}{14}
+     \end{array} \\
+     0 &
+     \begin{array}{c}
+     + \C{12}{14}\C{12}{12} \\
+     - \C{12}{34}\C{12}{23} \\
+     + \C{14}{14}\C{14}{12} \\
+     - \C{14}{34}\C{14}{23}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{14}^2 \\
+     + \C{12}{34}^2 \\
+     + \C{13}{24}^2 \\
+     + \C{14}{14}^2 \\
+     + \C{14}{34}^2
+     \end{array} &
+     \begin{array}{c}
+     - \C{13}{24}\C{23}{12} \\
+     - \C{14}{34}\C{24}{13}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{24}\C{23}{23} \\
+     + \C{14}{14}\C{24}{13}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     - \C{12}{14}\C{23}{12} \\
+     + \C{12}{34}\C{23}{23} \\
+     + \C{14}{14}\C{34}{12} \\
+     - \C{14}{34}\C{34}{23}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{14}\C{23}{14} \\
+     - \C{12}{34}\C{23}{34} \\
+     + \C{14}{14}\C{34}{14} \\
+     + \C{14}{34}\C{34}{34}
+     \end{array} &
+     \begin{array}{c}
+     + \C{12}{34}\C{24}{13} \\
+     + \C{13}{24}\C{34}{12}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{14}\C{24}{13} \\
+     - \C{13}{24}\C{34}{23}
+     \end{array} &
+     0 \\
+     0 &
+     \begin{array}{c}
+     + \C{23}{14}\C{13}{24} \\
+     + \C{24}{13}\C{14}{23}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{23}{12}\C{13}{24} \\
+     - \C{24}{13}\C{14}{34}
+     \end{array} &
+     \begin{array}{c}
+     + \C{12}{12}^2 \\
+     + \C{12}{14}^2 \\
+     + \C{23}{12}^2 \\
+     + \C{23}{14}^2 \\
+     + \C{24}{13}^2
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{12}\C{12}{23} \\
+     + \C{12}{14}\C{12}{34} \\
+     - \C{23}{12}\C{23}{23} \\
+     + \C{23}{14}\C{23}{34}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{12}{14}\C{13}{24} \\
+     + \C{24}{13}\C{34}{23}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{12}\C{13}{24} \\
+     - \C{24}{13}\C{34}{34}
+     \end{array} &
+     \begin{array}{c}
+     + \C{12}{12}\C{14}{12} \\
+     + \C{12}{14}\C{14}{14} \\
+     - \C{23}{12}\C{34}{12} \\
+     - \C{23}{14}\C{34}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{12}{12}\C{14}{23} \\
+     + \C{12}{14}\C{14}{34} \\
+     + \C{23}{12}\C{34}{23} \\
+     - \C{23}{14}\C{34}{34}
+     \end{array} &
+     0 \\
+     \begin{array}{c}
+     + \C{23}{23}\C{13}{13} \\
+     + \C{24}{24}\C{14}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{23}{12}\C{13}{13} \\
+     + \C{24}{24}\C{14}{34}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}^2 \\
+     + \C{12}{23}^2 \\
+     + \C{23}{12}^2 \\
+     + \C{23}{23}^2 \\
+     + \C{24}{24}^2
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{12}{14} \\
+     - \C{12}{23}\C{12}{34} \\
+     + \C{23}{12}\C{23}{14} \\
+     - \C{23}{23}\C{23}{34}
+     \end{array} &
+     \begin{array}{c}
+     + \C{12}{23}\C{13}{13} \\
+     + \C{24}{24}\C{34}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{13}{13} \\
+     + \C{24}{24}\C{34}{34}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{14}{12} \\
+     + \C{12}{23}\C{14}{23} \\
+     - \C{23}{12}\C{34}{12} \\
+     - \C{23}{23}\C{34}{23}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{12}\C{14}{14} \\
+     - \C{12}{23}\C{14}{34} \\
+     - \C{23}{12}\C{34}{14} \\
+     + \C{23}{23}\C{34}{34}
+     \end{array} \\
+     0 &
+     \begin{array}{c}
+     + \C{23}{34}\C{13}{24} \\
+     + \C{24}{13}\C{14}{12}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{23}{23}\C{13}{24} \\
+     + \C{24}{13}\C{14}{14}
+     \end{array} &
+     \begin{array}{c}
+     - \C{12}{23}\C{12}{12} \\
+     + \C{12}{34}\C{12}{14} \\
+     - \C{23}{23}\C{23}{12} \\
+     + \C{23}{34}\C{23}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{23}^2 \\
+     + \C{12}{34}^2 \\
+     + \C{23}{23}^2 \\
+     + \C{23}{34}^2 \\
+     + \C{24}{13}^2
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{12}{34}\C{13}{24} \\
+     + \C{24}{13}\C{34}{12}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{23}\C{13}{24} \\
+     + \C{24}{13}\C{34}{14}
+     \end{array} &
+     \begin{array}{c}
+     - \C{12}{23}\C{14}{12} \\
+     + \C{12}{34}\C{14}{14} \\
+     + \C{23}{23}\C{34}{12} \\
+     - \C{23}{34}\C{34}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{23}\C{14}{23} \\
+     + \C{12}{34}\C{14}{34} \\
+     - \C{23}{23}\C{34}{23} \\
+     - \C{23}{34}\C{34}{34}
+     \end{array} &
+     0 \\
+     \begin{array}{c}
+     - \C{23}{34}\C{13}{13} \\
+     - \C{24}{24}\C{14}{12}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{23}{14}\C{13}{13} \\
+     + \C{24}{24}\C{14}{23}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{12}{14}\C{12}{12} \\
+     - \C{12}{34}\C{12}{23} \\
+     + \C{23}{14}\C{23}{12} \\
+     - \C{23}{34}\C{23}{23}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{14}^2 \\
+     + \C{12}{34}^2 \\
+     + \C{23}{14}^2 \\
+     + \C{23}{34}^2 \\
+     + \C{24}{24}^2
+     \end{array} &
+     \begin{array}{c}
+     - \C{12}{34}\C{13}{13} \\
+     - \C{24}{24}\C{34}{12}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{14}\C{13}{13} \\
+     + \C{24}{24}\C{34}{23}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{12}{14}\C{14}{12} \\
+     - \C{12}{34}\C{14}{23} \\
+     - \C{23}{14}\C{34}{12} \\
+     + \C{23}{34}\C{34}{23}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{12}{14}\C{14}{14} \\
+     + \C{12}{34}\C{14}{34} \\
+     - \C{23}{14}\C{34}{14} \\
+     - \C{23}{34}\C{34}{34} 
+     \end{array} \\
+     \begin{array}{c}
+     - \C{23}{12}\C{12}{12} \\
+     - \C{23}{14}\C{12}{14} \\
+     + \C{34}{12}\C{14}{12} \\
+     + \C{34}{14}\C{14}{14} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{23}{12}\C{12}{23} \\
+     - \C{23}{14}\C{12}{34} \\
+     - \C{34}{12}\C{14}{23} \\
+     + \C{34}{14}\C{14}{34}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{12}{23} \\
+     + \C{34}{14}\C{24}{24}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{13}{13}\C{12}{34} \\
+     - \C{34}{12}\C{24}{24}
+     \end{array} &
+     \begin{array}{c}
+     + \C{13}{13}^2 \\
+     + \C{23}{12}^2 \\
+     + \C{23}{14}^2 \\
+     + \C{34}{12}^2 \\
+     + \C{34}{14}^2
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{23}{12}\C{23}{23} \\
+     + \C{23}{14}\C{23}{34} \\
+     - \C{34}{12}\C{34}{23} \\
+     + \C{34}{14}\C{34}{34}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{14}{23} \\
+     + \C{23}{14}\C{24}{24}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{13}{13}\C{14}{34} \\
+     - \C{23}{12}\C{24}{24} 
+     \end{array} \\
+     0 &
+     \begin{array}{c}
+     - \C{23}{12}\C{12}{12} \\
+     - \C{23}{23}\C{12}{23} \\
+     + \C{34}{12}\C{14}{12} \\
+     + \C{34}{23}\C{14}{23}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{23}{12}\C{12}{14} \\
+     + \C{23}{23}\C{12}{34} \\
+     + \C{34}{12}\C{14}{14} \\
+     - \C{34}{23}\C{14}{34}
+     \end{array} &
+     \begin{array}{c}
+     + \C{13}{24}\C{12}{14} \\
+     + \C{34}{23}\C{24}{13}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{24}\C{12}{34} \\
+     + \C{34}{12}\C{24}{13}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{13}{24}^2 \\
+     + \C{23}{12}^2 \\
+     + \C{23}{23}^2 \\
+     + \C{34}{12}^2 \\
+     + \C{34}{23}^2
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{23}{12}\C{23}{14} \\
+     - \C{23}{23}\C{23}{34} \\
+     + \C{34}{12}\C{34}{14} \\
+     - \C{34}{23}\C{34}{34}
+     \end{array} &
+     \begin{array}{c}
+     + \C{13}{24}\C{14}{14} \\
+     + \C{23}{23}\C{24}{13}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{24}\C{14}{34} \\
+     + \C{23}{12}\C{24}{13}
+     \end{array} &
+     0 \\
+     \begin{array}{c}
+     + \C{23}{23}\C{12}{12} \\
+     - \C{23}{34}\C{12}{14} \\
+     - \C{34}{23}\C{14}{12} \\
+     + \C{34}{34}\C{14}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{23}{23}\C{12}{23} \\
+     - \C{23}{34}\C{12}{34} \\
+     + \C{34}{23}\C{14}{23} \\
+     + \C{34}{34}\C{14}{34}
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{12}{12} \\
+     + \C{34}{34}\C{24}{24}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{12}{14} \\
+     + \C{34}{23}\C{24}{24} 
+     \end{array} &
+     \begin{array}{c}
+     - \C{23}{23}\C{23}{12} \\
+     + \C{23}{34}\C{23}{14} \\
+     - \C{34}{23}\C{34}{12} \\
+     + \C{34}{34}\C{34}{14}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}^2 \\
+     + \C{23}{23}^2 \\
+     + \C{23}{34}^2 \\
+     + \C{34}{23}^2 \\
+     + \C{34}{34}^2
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{14}{12} \\
+     + \C{23}{34}\C{24}{24}
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{13}\C{14}{14} \\
+     + \C{23}{23}\C{24}{24}
+     \end{array} \\
+     0 &
+     \begin{array}{c}
+     - \C{23}{14}\C{12}{12} \\
+     + \C{23}{34}\C{12}{23} \\
+     + \C{34}{14}\C{14}{12} \\
+     - \C{34}{34}\C{14}{23} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{23}{14}\C{12}{14} \\
+     - \C{23}{34}\C{12}{34} \\
+     + \C{34}{14}\C{14}{14} \\
+     + \C{34}{34}\C{14}{34} 
+     \end{array} &
+     \begin{array}{c}
+     - \C{13}{24}\C{12}{12} \\
+     - \C{34}{34}\C{24}{13} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{24}\C{12}{23} \\
+     + \C{34}{14}\C{24}{13} 
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{23}{14}\C{23}{12} \\
+     - \C{23}{34}\C{23}{23} \\
+     + \C{34}{14}\C{34}{12} \\
+     - \C{34}{34}\C{34}{23} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{24}^2 \\
+     + \C{23}{14}^2 \\
+     + \C{23}{34}^2 \\
+     + \C{34}{14}^2 \\
+     + \C{34}{34}^2 
+     \end{array} &
+     \begin{array}{c}
+     - \C{13}{24}\C{14}{12} \\
+     - \C{23}{34}\C{24}{13} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{13}{24}\C{14}{23} \\
+     + \C{23}{14}\C{24}{13} 
+     \end{array} &
+     0 \\
+     0 &
+     \begin{array}{c}
+     - \C{24}{13}\C{12}{23} \\
+     - \C{34}{14}\C{13}{24} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{24}{13}\C{12}{34} \\
+     + \C{34}{12}\C{13}{24} 
+     \end{array} &
+     \begin{array}{c}
+     + \C{14}{12}\C{12}{12} \\
+     + \C{14}{14}\C{12}{14} \\
+     - \C{34}{12}\C{23}{12} \\
+     - \C{34}{14}\C{23}{14} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{14}{12}\C{12}{23} \\
+     + \C{14}{14}\C{12}{34} \\
+     + \C{34}{12}\C{23}{23} \\
+     - \C{34}{14}\C{23}{34} 
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{14}{14}\C{13}{24} \\
+     + \C{24}{13}\C{23}{23} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{14}{12}\C{13}{24} \\
+     - \C{24}{13}\C{23}{34} 
+     \end{array} &
+     \begin{array}{c}
+     + \C{14}{12}^2 \\
+     + \C{14}{14}^2 \\
+     + \C{24}{13}^2 \\
+     + \C{34}{12}^2 \\
+     + \C{34}{14}^2 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{14}{12}\C{14}{23} \\
+     + \C{14}{14}\C{14}{34} \\
+     - \C{34}{12}\C{34}{23} \\
+     + \C{34}{14}\C{34}{34} 
+     \end{array} &
+     0 \\
+     \begin{array}{c}
+     - \C{24}{24}\C{12}{14} \\
+     - \C{34}{23}\C{13}{13} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{24}{24}\C{12}{34} \\
+     - \C{34}{12}\C{13}{13} 
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{14}{12}\C{12}{12} \\
+     + \C{14}{23}\C{12}{23} \\
+     - \C{34}{12}\C{23}{12} \\
+     - \C{34}{23}\C{23}{23} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{12}\C{12}{14} \\
+     - \C{14}{23}\C{12}{34} \\
+     - \C{34}{12}\C{23}{14} \\
+     + \C{34}{23}\C{23}{34} 
+     \end{array} &
+     \begin{array}{c}
+     + \C{14}{23}\C{13}{13} \\
+     + \C{24}{24}\C{23}{14} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{12}\C{13}{13} \\
+     + \C{24}{24}\C{23}{34} 
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{14}{12}^2 \\
+     + \C{14}{23}^2 \\
+     + \C{24}{24}^2 \\
+     + \C{34}{12}^2 \\
+     + \C{34}{23}^2 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{12}\C{14}{14} \\
+     - \C{14}{23}\C{14}{34} \\
+     + \C{34}{12}\C{34}{14} \\
+     - \C{34}{23}\C{34}{34} 
+     \end{array} \\
+     0 &
+     \begin{array}{c}
+     - \C{24}{13}\C{12}{12} \\
+     - \C{34}{34}\C{13}{24} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{24}{13}\C{12}{14} \\
+     - \C{34}{23}\C{13}{24} 
+     \end{array} &
+     \begin{array}{c}
+     - \C{14}{23}\C{12}{12} \\
+     + \C{14}{34}\C{12}{14} \\
+     + \C{34}{23}\C{23}{12} \\
+     - \C{34}{34}\C{23}{14} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{23}\C{12}{23} \\
+     + \C{14}{34}\C{12}{34} \\
+     - \C{34}{23}\C{23}{23} \\
+     - \C{34}{34}\C{23}{34} 
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{14}{34}\C{13}{24} \\
+     + \C{24}{13}\C{23}{12} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{23}\C{13}{24} \\
+     + \C{24}{13}\C{23}{14} 
+     \end{array} &
+     \begin{array}{c}
+     - \C{14}{23}\C{14}{12} \\
+     + \C{14}{34}\C{14}{14} \\
+     - \C{34}{23}\C{34}{12} \\
+     + \C{34}{34}\C{34}{14} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{23}^2 \\
+     + \C{14}{34}^2 \\
+     + \C{24}{13}^2 \\
+     + \C{34}{23}^2 \\
+     + \C{34}{34}^2 
+     \end{array} &
+     0 \\
+     \begin{array}{c}
+     + \C{24}{24}\C{12}{12} \\
+     + \C{34}{34}\C{13}{13} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     - \C{24}{24}\C{12}{23} \\
+     - \C{34}{14}\C{13}{13} 
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{14}{14}\C{12}{12} \\
+     - \C{14}{34}\C{12}{23} \\
+     - \C{34}{14}\C{23}{12} \\
+     + \C{34}{34}\C{23}{23} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{14}\C{12}{14} \\
+     + \C{14}{34}\C{12}{34} \\
+     - \C{34}{14}\C{23}{14} \\
+     - \C{34}{34}\C{23}{34} 
+     \end{array} &
+     \begin{array}{c}
+     - \C{14}{34}\C{13}{13} \\
+     - \C{24}{24}\C{23}{12} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{14}\C{13}{13} \\
+     + \C{24}{24}\C{23}{23} 
+     \end{array} &
+     0 &
+     0 &
+     \begin{array}{c}
+     + \C{14}{14}\C{14}{12} \\
+     - \C{14}{34}\C{14}{23} \\
+     + \C{34}{14}\C{34}{12} \\
+     - \C{34}{34}\C{34}{23} 
+     \end{array} &
+     0 &
+     \begin{array}{c}
+     + \C{14}{14}^2 \\
+     + \C{14}{34}^2 \\
+     + \C{24}{24}^2 \\
+     + \C{34}{14}^2 \\
+     + \C{34}{34}^2 
+     \end{array}  
+   \end{array}\right)
+\end{eqnarray}
+%} %end_scalebox
+\normalsize
+%\endgroup
+
+\section{Minimizing the total energy}
+
+The correlation functions and the natural orbitals may be optimized by
+starting from an energy expression with appropriate Lagrangians and 
+minimizing it. An approach similar to that of our previous
+paper~\cite{van_Dam_2016} is used. There is a difference because the energy
+expression in this work cannot be represented entirely in terms of 1-electron
+density matrices as the 2-electron term is orbital dependent. This means
+that the trick of multiplying the Lagrangian for the natural orbitals with
+the occupation numbers to enable factoring them out cannot be used here.
+
+The problem to consider is minimizing
+\begin{eqnarray}
+  L &=&
+  E(N^\alpha,C^\alpha;N^\beta,C^\beta)
+  + \sum_{\sigma=\{\alpha,\beta\}}\sum_{i,j=1}^{n_b}\lambda^{N^\sigma}_{ij}
+    \left(I_{ij}-\sum_{a,b=1}^{n_b}N^{\sigma*}_{ai}S_{ab}N^\sigma_{bj}\right)
+    \nonumber \\
+  &&+ \sum_{\sigma=\{\alpha,\beta\}}\sum_{r,s=1}^{n_b}\lambda^{C^\sigma}_{rs}
+      \left(I_{rs}-\sum_{i,j=1}^{n_b}C^{\sigma*}_{ir}I_{ij}C^\sigma_{js}\right) 
+\end{eqnarray}
+\begin{equation}
+  \min_{N^\alpha,C^\alpha,\lambda^{N^\alpha}_{ij},\lambda^{C^\alpha}_{rs}} L
+\end{equation}
+Before continuing the energy expression $E(N^\alpha,C^\alpha;N^\beta,C^\beta)$
+must be clarified. In general the energy expression may be written as
+\begin{eqnarray}
+  E(N^\alpha,C^\alpha;N^\beta,C^\beta)
+  &=& \sum_{\sigma,\sigma'=\{\alpha,\beta\}}
+      \left(\sum_{a,b=1}^{n_b}\frac{1}{2}h_{ab}D^\sigma_{ab}
+   +  \sum_{a,b,c,d=1}^{n_b}\frac{1}{2}(ab|cd)\Gamma_{abcd}^{\sigma\sigma'}
+      \right) 
+      \dlabel{Eq:ENC}
+\end{eqnarray}
+Note that the two-electron terms may be reformulated as
+\begin{eqnarray}
+   W &=& \sum_{a,b,c,d=1}^{n_b}(ab|cd)\Gamma_{abcd} \\
+     &=& \sum_{a,b,c,d=1}^{n_b}(ab|cd)
+         \sum_{\sigma,\sigma'=\{\alpha,\beta\}}\Gamma^{\sigma\sigma'}_{abcd}
+         \dlabel{Eq:ENC2} \\
+     &=& \sum_{\sigma,\sigma'=\{\alpha,\beta\}}W^{\sigma,\sigma'}
+\end{eqnarray}
+In the subsequent derivations the derivatives w.r.t. the $\alpha$-spin channel
+will be given. The equations for the $\beta$-spin channel can be obtained by
+interchanging the the $\alpha$ and $\beta$ spin labels.
+
+For the orthogonality of the natural orbitals we obtain from
+$\partial L/\partial\lambda^{C\alpha}_{rs} = 0$
+\begin{eqnarray}
+  \sum_{i,j=1}^{n_b}C^{\alpha*}_{ir}I_{ij}C^\alpha_{js} &=& I_{rs}
+\end{eqnarray}
+Likewise for the natural orbitals
+$\partial L/\partial\lambda^{N\alpha}_{ij} = 0$ gives
+\begin{eqnarray}
+  \sum_{a,b=1}^{n_b}N^{\alpha*}_{ai}S_{ab}N^\alpha_{bj} &=& I_{ij}
+\end{eqnarray}
+
+\subsection{Derivatives with respect to the natural orbital coefficients}
+
+\subsubsection{1-electron terms}
+
+Considering derivatives w.r.t. the natural orbitals there are only two relevant
+quantities. Those are the 1-electron energy terms of Eq.~\ref{Eq:ENC} and the
+2-electron terms.
+
+Differentiating the 1-electron energy terms we obtain
+\begin{eqnarray}
+  \frac{\partial}{\partial N^{*}_{ek}}\sum_{a,b=1}^{n_b}h_{ab}D_{ab}
+  &=& \frac{\partial}{\partial N^{*}_{ek}}
+      \sum_{a,b,i=1}^{n_b}h_{ab}N_{ai}d_iN^*_{bi} \\
+  &=& \sum_{a,b,i=1}^{n_b}h_{ab}N_{ai}d_i\delta_{eb}\delta_{ki} \\
+  &=& \sum_{a,i=1}^{n_b}h_{ae}N_{ai}d_i\delta_{ki} \\
+  &=& \sum_{a=1}^{n_b}h_{ae}N_{ak}d_k
+\end{eqnarray}
+This derivative may be transformed into the natural orbital basis to give
+\begin{eqnarray}
+  \sum_{a,e=1}^{n_b}h_{ae}N_{ak}d_k N^*_{el}
+  &=& d_k h_{kl} \\
+  &=& M^{(1)}_{kl}
+      \dlabel{Eq:M1:kl}
+\end{eqnarray}
+The result is a matrix where the rows are scaled by the occupation numbers
+of the natural orbitals.
+
+\subsubsection{2-electron terms}
+
+The derivatives of the $\Gamma^{\sigma\sigma'}_{abcd}$ terms of
+Eq.~\ref{Eq:ENC2} with respect to the natural orbitals are similar to the
+1-electron terms because they only involve Coulomb interactions and no exchange
+interactions. The derivatives of the $\Gamma^{\sigma\sigma}_{abcd}$ terms
+are more involved and will be considered here in detail. Considering the
+derivatives with respect to the natural orbitals the electron pair occupation
+numbers do not have to considered in detail. Hence, those occupation numbers 
+are simply represented as $d_{ij}$.
+
+Recall, from Eq.~\ref{Eq:E2:dij:basis} that the basis function coefficients
+$a$ and $c$ are associated with electron 1, and the coefficients $b$ and $d$
+are associated with electron 2. Choosing that $N_{ek}^*$ is a coefficient of
+electron 1,
+consider
+\begin{eqnarray}
+   \frac{\partial}{\partial N^*_{ek}}W^{\sigma\sigma}
+   &=& \sum_{a,b,c,d=1}^{n_b}(ab|cd)\frac{\partial}{\partial N^*_{ek}}
+       \Gamma_{abcd}^{\sigma\sigma} \\
+   &=& \sum_{a,b,c,d=1}^{n_b}(ab|cd)\frac{\partial}{\partial N^*_{ek}}
+       \sum_{i,j=1}^{n_b}\left[
+       N_{ai}N_{ci}N_{bj}N_{dj} d_{ij}
+      +N_{aj}N_{cj}N_{bi}N_{di} d_{ij}\right. \nonumber \\
+   && \left.-N_{ai}N_{cj}N_{bj}N_{di} d_{ij}
+      -N_{aj}N_{ci}N_{bi}N_{dj} d_{ij}\right] \\
+   &=& \sum_{a,b,c,d=1}^{n_b}(ab|cd)
+       \sum_{i,j=1}^{n_b}\left[
+       N_{ai}\delta_{ec}\delta_{ik}N_{bj}N_{dj} d_{ij}
+      +N_{aj}\delta_{ec}\delta_{jk}N_{bi}N_{di} d_{ij}\right. \nonumber \\
+   && \left.-N_{ai}\delta_{ec}\delta_{jk}N_{bj}N_{di} d_{ij}
+      -N_{aj}\delta_{ec}\delta_{ik}N_{bi}N_{dj} d_{ij}\right] \\
+   &=& \sum_{a,b,d=1}^{n_b}(ab|ed)
+       \sum_{i,j=1}^{n_b}\left[
+       N_{ak}\delta_{ik}N_{bj}N_{dj} d_{kj}
+      +N_{ak}\delta_{jk}N_{bi}N_{di} d_{ik}\right. \nonumber \\
+   && \left.-N_{ai}\delta_{jk}N_{bk}N_{di} d_{ik}
+      -N_{aj}\delta_{ik}N_{bk}N_{dj} d_{kj}\right] \\
+   &=& \sum_{a,b,d=1}^{n_b}(ab|ed)
+       \sum_{j=1}^{n_b}\left[
+       2 N_{ak}N_{bj}N_{dj} d_{kj}
+      -2 N_{aj}N_{bk}N_{dj} d_{kj}\right] \\
+   &=& \sum_{a,b,d=1}^{n_b}(ab|ed)
+       \sum_{j=1}^{n_b}\left[
+       2 N_{ak}N_{bj}N_{dj} d_{kj}
+      -2 N_{ak}N_{bj}N_{dk} d_{kj}\right]
+\end{eqnarray}
+This equation can be transformed into the natural orbital basis to generate
+\begin{eqnarray}
+   M^{(2)}_{kl}
+   &=& \sum_{a,b,e,d=1}^{n_b}(ab|ed)
+       \sum_{j=1}^{n_b}\left[
+       2 N_{ak}N^*_{el}N_{bj}N_{dj} d_{kj}
+      -2 N_{ak}N^*_{el}N_{bj}N_{dk} d_{kj}\right]
+       \dlabel{Eq:M2:kl}
+\end{eqnarray}
+
+\subsubsection{electron correlation terms}
+
+To evaluate the derivatives of the correlation energy with respect to the natural
+orbital coefficients the 2-electron integrals in the natural orbital basis have
+to be considered. To focus on those integrals, first rewrite the occupation number
+based factors as
+\begin{eqnarray}
+   P_{ii}       &=& P^{(2)}_{ii}-P^{(1)}_{ii}                                 \dlabel{Eq:Pii}  \\
+   P^{(1)}_{ii} &=& p^\alpha_i p^\beta_i                                      \dlabel{Eq:P1ii} \\
+   P^{(2)}_{ii} &=& \sqrt{p^\alpha_i p^\beta_i}                               \dlabel{Eq:P2ii} \\
+   P^{(2)}_{ij} &=& \sqrt{p^\alpha_i(1-p^\alpha_i) p^\beta_j(1-p^\beta_j)}    \dlabel{Eq:P2ij} \\
+   P^{(4)}_{ij} &=& \sqrt[4]{p^\alpha_i(1-p^\alpha_i) p^\beta_j(1-p^\beta_j)} \dlabel{Eq:P4ij}
+\end{eqnarray}
+With the expressions above the correlation energy terms can be rephrased as
+\begin{eqnarray}
+   T_{ii}       &=& \eria{i}{i}{i}{i}P_{ii}       \\
+   T^{(2)}_{ij} &=& \eria{i}{j}{i}{j}P^{(2)}_{ij} \\
+   T^{(4)}_{ij} &=& \eria{i}{i}{j}{j}P^{(4)}_{ij}
+\end{eqnarray}
+Taking the derivatives with respect to the natural orbital coefficient $N^{\alpha*}_{ek}$ we have
+\begin{eqnarray}
+   \frac{\partial T_{ii}}{\partial N^{\alpha*}_{ek}}
+   &=& \sum_c \eria{i}{i}{c}{i}P_{ii}
+       \frac{\partial N^{\alpha*}_{ci}}{\partial N^{\alpha*}_{ek}} \\
+   &=& \sum_c \eria{i}{i}{c}{i}P_{ii}\delta_{ce}\delta_{ik} \\
+   &=& \eria{k}{k}{e}{k}P_{kk}
+\end{eqnarray}
+Likewise, differentiating $T^{(2)}_{ij}$ gives
+\begin{eqnarray}
+   \frac{\partial T^{(2)}_{ij}}{\partial N^{\alpha*}_{ek}}
+   &=& \sum_c\eria{i}{j}{c}{j}P^{(2)}_{ij}
+       \frac{\partial N^{\alpha*}_{ci}}{\partial N^{\alpha*}_{ek}} \\
+   &=& \sum_c\eria{i}{j}{c}{j}P^{(2)}_{ij}\delta_{ce}\delta_{ik} \\
+   &=& \eria{k}{j}{e}{j}P^{(2)}_{kj}
+\end{eqnarray}
+Finally, differentiating $T^{(4)}_{ij}$ gives
+\begin{eqnarray}
+   \frac{\partial T^{(4)}_{ij}}{\partial N^{\alpha*}_{ek}}
+   &=& \sum_c\eria{i}{i}{c}{j}P^{(4)}_{ij}
+       \frac{\partial N^{\alpha*}_{cj}}{\partial N^{\alpha*}_{ek}} \\
+   &=& \sum_c\eria{i}{i}{c}{j}P^{(4)}_{ij}\delta_{ce}\delta_{jk} \\
+   &=& \eria{i}{i}{e}{k}P^{(4)}_{ik}
+\end{eqnarray}
+Note that ultimately we want Fock matrices in the natural orbitals basis
+for the natural orbital optimization. For this reason we transform the remaining
+atomic orbital index to natural orbital index $l$ as in
+\begin{eqnarray}
+   M^{(ii)}_{kl}
+   &=& \sum_e\eria{k}{k}{e}{k}P_{kk}N^{\alpha*}_{el}
+       \dlabel{Eq:Mii:kl} \\
+   M^{(2,ij)}_{kl}
+   &=& \sum_e\eria{k}{j}{e}{j}P^{(2)}_{kj}N^{\alpha*}_{el}
+       \dlabel{Eq:M2ij:kl} \\
+   M^{(4,ij)}_{kl}
+   &=& \sum_e\eria{i}{i}{e}{k}P^{(4)}_{ik}N^{\alpha*}_{el}
+       \dlabel{Eq:M4ij:kl} 
+\end{eqnarray}
+Note that for the full Fock matrices of Eq.~\ref{Eq:M2ij:kl} and~\ref{Eq:M4ij:kl}
+we still need to sum over $j \ne k$ and $i \ne k$ respectively.
+
+\subsubsection{Combining the natural orbital terms}
+
+In the previous section various derivative terms where derived. Here all the
+terms are brought together to arrive at the full Fock matrix to generate the
+natural orbital rotations from. The only term that has not been discussed in the
+previous sections is the 2-electron term stemming from the $\alpha\beta$ 
+interaction. This term is in form the same as the 1-electron term from
+Eq.~\ref{Eq:M1:kl} except that operator $h_{kl}$ is obtained from contracting
+the 2-electron integrals with the 1-electron density matrix of the opposing 
+spin
+\begin{eqnarray}
+   M^{\sigma\sigma'}_{kl}
+   &=& \sum_{bd}d^{\sigma}_k(k^{\sigma}b|l^{\sigma}d)D^{\sigma'}_{bd}
+       \dlabel{Eq:Mssp:kl}
+\end{eqnarray}
+Combining the terms of Eqs.~\ref{Eq:M1:kl}, \ref{Eq:M2:kl}, \ref{Eq:Mii:kl},
+\ref{Eq:M2ij:kl}, \ref{Eq:M4ij:kl} and~\ref{Eq:Mssp:kl} obtains
+\begin{eqnarray}
+  M_{kl} 
+  &=& M^{(1)}_{kl} + M^{(2)}_{kl} + M^{(ii)}_{kl} +
+      \sum_j M^{(2,ij)}_{kl} + \sum_i M^{(4,ij)}_{kl} + M^{\sigma\sigma'}_{kl}
+\end{eqnarray}
+Note that $M_{kl}$ is not Hermitian but this can be achieved by constructing
+the final Fock matrix as
+\begin{eqnarray}
+  F^{N}_{kl} &=& \frac{1}{2}\left(M_{kl}+(M^\dagger)_{kl}\right)
+                 \dlabel{Eq:FN:kl}
+\end{eqnarray}
+The natural orbitals can be updated with the rotation that is determined
+by diagonalizing $F^{N}_{kl}$.
+
+\subsection{Derivatives with respect to the correlation function coefficients}
+
+\subsubsection{1-electron terms}
+
+Next considering the derivatives w.r.t. to the correlation functions there are
+two terms or factors to consider. They are the 1-electron energy terms, and the
+2-electron terms. Considering the 1-electron energy terms we
+have
+\begin{eqnarray}
+  \frac{\partial}{\partial C^{*}_{kt}}\sum_{a,b=1}^{n_b}h_{ab}D_{ab}
+  &=& \frac{\partial}{\partial C^{*}_{kt}}\sum_{a,b,i=1}^{n_b}\sum_{r=1}^{n_e}
+      h_{ab}N_{ai}C_{ir}C^*_{ir}N^*_{bi} \\
+  &=& \sum_{a,b,i=1}^{n_b}\sum_{r=1}^{n_e}
+      h_{ab}N_{ai}C_{ir}N^*_{bi}\delta_{ik}\delta_{rt} \\
+  &=& \sum_{a,b=1}^{n_b}
+      h_{ab}N_{ak}C_{kt}N^*_{bk}
+\end{eqnarray}
+This equation can be expressed in terms of a Fock-matrix in the natural orbital 
+basis as
+\begin{eqnarray}
+  F^{C(1)}_{jk}
+  &=& \delta_{jk}\sum_{a,b=1}^{n_b}h_{ab}N_{ak}N^*_{bk}\\
+  \frac{\partial}{\partial C^{*}_{kt}}\sum_{a,b=1}^{n_b}h_{ab}D_{ab}
+  &=& F^{C(1)}_{jk}C_{kt}
+\end{eqnarray}
+This 1-electron Fock-matrix transformed into the correlation function basis
+determines the rotation among the correlation functions. This transformed
+Fock-matrix 1-electron term is
+\begin{eqnarray}
+  F^{C(1)}_{st}
+  &=& \sum_{j,k=1}^{n_b} C_{js}F^{C^1}_{jk}C^*_{kt}
+      \dlabel{Eq:FC1:st}
+\end{eqnarray}
+
+\subsubsection{2-electron terms}
+
+For the 2-electron energy contributions focus on the occupation numbers
+and their dependence on the correlation functions. This can be formulated
+more compactly by integrating the basis function indeces out.
+The resulting expression can them be 
+combined with the derivative of the correlation function part. The natural
+orbital dependent part can be written as
+\begin{eqnarray}
+   f_{ij} 
+   &= \sum_{a,b,c,d=1}^{n_b}(ab|cd)&\left[
+       N_{ai}N_{ci}N_{bj}N_{dj}+N_{aj}N_{cj}N_{bi}N_{di}
+       \right. \nonumber \\
+   &&  \left.
+      -N_{ai}N_{cj}N_{bj}N_{di}-N_{aj}N_{ci}N_{bi}N_{dj}
+       \right]
+\end{eqnarray}
+Note that, similar to the 1-electron case, $f_{ij}$ is also diagonal in the
+natural orbital basis. However, $f_{ij}$ is an electron pair quantity and
+therefore an $N^2$x$N^2$ diagonal matrix. To compute the contribution
+to the correlation function Fock-matrix the quantity needs to be reduced
+to a $N$x$N$ matrix. For this the derivative of the electron-pair occupation
+numbers are considered, assuming that $C^*_{ku}$ are coefficients of electron 1, 
+as the coefficients indexed with $i$.
+\begin{eqnarray}
+   \frac{\partial}{\partial C^*_{ku}}d_{ij}
+   &=& \sum_{s,t=1}^{n_e}
+       C_{is}\delta_{ik}\delta_{su}C_{jt}C_{jt}
+      -C_{is}\delta_{ik}\delta_{tu}C_{jt}C_{js} \\
+   &=& \sum_{s,t=1}^{n_e}
+       C_{is}\delta_{ik}\delta_{su}C_{jt}C_{jt}
+      -C_{it}\delta_{ik}\delta_{su}C_{js}C_{jt} \\
+   &=& \sum_{t=1}^{n_e}
+       C_{ku}\delta_{ik}C_{jt}C_{jt}
+      -C_{kt}\delta_{ik}C_{ju}C_{jt}
+\end{eqnarray}
+To compute the 2-electron Fock-matrix terms in the correlation function basis
+\begin{eqnarray}
+  F^{C(2)}_{uv}
+  &=& \sum_{k,i,j=1}^{n_b}f_{ij}C^*_{kv}\frac{\partial}{\partial C^*_{ku}}d_{ij}
+      \\
+  &=& \sum_{k,j=1}^{n_b}f_{kj}\sum_{t=1}^{n_e}
+      C_{ku}C_{kv}C_{jt}C_{jt}
+     -C_{kt}C_{kv}C_{ju}C_{jt}
+      \dlabel{Eq:FC2:uv}
+\end{eqnarray}
+where electron 2 has been integrated out by summing over $t$.
+
+\subsubsection{electron correlation terms}
+
+In this section the focus is on differentiating the term of $T$ with respect to the 
+correlation function coefficients. This means that the 2-electron integrals in the 
+natural orbital basis can be considered as constants in these expressions. Hence,
+only the derivatives of $P^{(1)}_{ii}$, $P^{(2)}_{ii}$, $P^{(2)}_{ij}$, and $P^{(4)}_{ij}$
+of Eqs.~\ref{Eq:P1ii}, \ref{Eq:P2ii}, \ref{Eq:P2ij}, and~\ref{Eq:P4ij},
+need to be considered here.
+First of all the occupation number of a particular natural orbital is given by
+\begin{eqnarray}
+   p_i^\alpha &=& \sum_{s=1}^{n_e}C_{is}^\alpha C_{is}^{*\alpha}
+\end{eqnarray}
+Differentiating this with respect to $C_{kr}^{*\alpha}$ we get
+\begin{eqnarray}
+   \frac{\partial p_i^\alpha}{\partial C_{kr}^{*\alpha}}
+   &=& \sum_{s=1}^{n_e}C_{is}^\alpha \delta_{ki}\delta_{rs} \\
+   &=& \left\{
+       \begin{array}{l}
+         C_{kr}^\alpha, r \le n_e \\
+         0, r > n_e
+       \end{array}
+       \right.
+\end{eqnarray}
+For the square root of the occupation number we have
+\begin{eqnarray}
+   \frac{\partial \sqrt{p_i^\alpha}}{\partial C_{kr}^{*\alpha}}
+   &=& \frac{\partial \sqrt{p_i^\alpha}}{\partial p_i^\alpha}
+       \frac{\partial p_i^\alpha}{\partial C_{kr}^{*\alpha}} \\
+   &=& \frac{1}{2\sqrt{p_i^\alpha}}\frac{\partial p_i^\alpha}{\partial C_{kr}^{*\alpha}}
+       \dlabel{Eq:d:p:2}
+\end{eqnarray}
+For the factors in the $T_{ij}^{(2)}$ terms we have
+\begin{eqnarray}
+   \frac{\partial \sqrt{p_i^\alpha(1-p_i^\alpha)}}{\partial C_{kr}^{*\alpha}}
+   &=& \frac{\partial \sqrt{p_i^\alpha(1-p_i^\alpha)}}{\partial p_i^\alpha}
+       \frac{\partial p_i^\alpha}{\partial C_{kr}^{*\alpha}} \\
+   &=& \frac{(1-p_i^\alpha)-p_i^\alpha}{2\sqrt{p_i^\alpha(1-p_i^\alpha)}}
+       \frac{\partial p_i^\alpha}{\partial C_{kr}^{*\alpha}} \\
+   &=& \frac{1-2p_i^\alpha}{2\sqrt{p_i^\alpha(1-p_i^\alpha)}}
+       \frac{\partial p_i^\alpha}{\partial C_{kr}^{*\alpha}}
+       \dlabel{Eq:d:p1p:2}
+\end{eqnarray}
+For the factors in the $T_{ij}^{(4)}$ terms we have
+\begin{eqnarray}
+   \frac{\partial \sqrt[4]{p_i^\alpha(1-p_i^\alpha)}}{\partial C_{kr}^{*\alpha}}
+   &=& \frac{\partial \sqrt[4]{p_i^\alpha(1-p_i^\alpha)}}{\partial p_i^\alpha}
+       \frac{\partial p_i^\alpha}{\partial C_{kr}^{*\alpha}} \\
+   &=& \frac{(1-p_i^\alpha)-p_i^\alpha}{4\sqrt[4]{p_i^\alpha(1-p_i^\alpha)}^3}
+       \frac{\partial p_i^\alpha}{\partial C_{kr}^{*\alpha}} \\
+   &=& \frac{1-2p_i^\alpha}{4\sqrt[4]{p_i^\alpha(1-p_i^\alpha)}^3}
+       \frac{\partial p_i^\alpha}{\partial C_{kr}^{*\alpha}}
+       \dlabel{Eq:d:p1p:4}
+\end{eqnarray}
+Combining these derivatives with the 2-electron integral parts obtains
+for the $T_{ii}$ terms
+\begin{eqnarray}
+   \frac{\partial T_{ii}}{\partial C^{*\alpha}_{kr}}
+   &=& \eria{i}{i}{i}{i}\left( 
+           \frac{\partial P^{(2)}_{ii}}{\partial C^{*\alpha}_{kr}}
+          -\frac{\partial P^{(1)}_{ii}}{\partial C^{*\alpha}_{kr}}
+       \right) \\
+   &=& \eria{i}{i}{i}{i}\left(
+           \frac{1}{2}\sqrt{\frac{p^\beta_i}{p^\alpha_i}}
+          -p^\beta_i
+       \right) C^\alpha_{kr}\delta_{ki}
+\end{eqnarray}
+Summing over all $i$ and transforming into the correlation function
+basis leads to
+\begin{eqnarray}
+   F^{C(ii)}_{rs}
+   &=& \sum_{k}\eria{i}{i}{i}{i}\left(
+           \frac{1}{2}\sqrt{\frac{p^\beta_i}{p^\alpha_i}}
+          -p^\beta_i
+       \right)C^\alpha_{kr}C^{*\alpha}_{ks}
+       \dlabel{Eq:FC:ii}
+\end{eqnarray}
+For the $T^{(2)}_{ij}$ terms this obtains
+\begin{eqnarray}
+   \frac{\partial T^{(2)}_{ij}}{\partial C^{*\alpha}_{kr}}
+   &=& \eria{i}{j}{i}{j}
+       \frac{\sqrt{p_i^\alpha(1-p_i^\alpha)}}{\partial C^{*\alpha}_{kr}}
+       \sqrt{p_j^\beta(1-p_j^\beta)} \\
+   &=& \eria{i}{j}{i}{j}
+       \frac{1-2p_i^\alpha}{2\sqrt{p_i^\alpha(1-p_i^\alpha)}}
+       \sqrt{p_j^\beta(1-p_j^\beta)} 
+       C^\alpha_{kr}\delta_{ki}
+\end{eqnarray}
+Summing over all $i$ and $j$ and transforming into the correlation
+function basis leads to
+\begin{eqnarray}
+   F^{C(2,ij)}_{rs}
+   &=& \sum_{kj}\eria{k}{j}{k}{j}
+       \frac{1-2p_k^\alpha}{2\sqrt{p_k^\alpha(1-p_k^\alpha)}}
+       \sqrt{p_j^\beta(1-p_j^\beta)} 
+       C^\alpha_{kr}C^{*\alpha}_{ks}
+       \dlabel{Eq:FC2:ij}
+\end{eqnarray}
+For the $T^{(4)}_{ij}$ terms this obtains
+\begin{eqnarray}
+   \frac{\partial T^{(4)}_{ij}}{\partial C^{*\alpha}_{kr}}
+   &=& \eria{i}{i}{j}{j}
+       \frac{\sqrt[4]{p_i^\alpha(1-p_i^\alpha)}}{\partial C^{*\alpha}_{kr}}
+       \sqrt[4]{p_j^\beta(1-p_j^\beta)} \\
+   &=& \eria{i}{i}{j}{j}
+       \frac{1-2p_i^\alpha}{4\sqrt[4]{p_i^\alpha(1-p_i^\alpha)}^3}
+       \sqrt[4]{p_j^\beta(1-p_j^\beta)} 
+       C^\alpha_{kr}\delta_{ki}
+\end{eqnarray}
+Summing over all $i$ and $j$ and transforming into the correlation
+function basis leads to
+\begin{eqnarray}
+   F^{C(4,ij)}_{rs}
+   &=& \sum_{kj}\eria{k}{k}{j}{j}
+       \frac{1-2p_k^\alpha}{4\sqrt[4]{p_k^\alpha(1-p_k^\alpha)}^3}
+       \sqrt[4]{p_j^\beta(1-p_j^\beta)}
+       C^\alpha_{kr}C^{*\alpha}_{ks}
+       \dlabel{Eq:FC4:ij}
+\end{eqnarray}
+
+
+\subsubsection{Combining the correlation function terms}
+
+In the previous subsections the various correlation function derivatives
+were discussed, except the 2-electron term stemming from the $\alpha\beta$
+interaction. The form of that term is similar to that of the 1-electron
+interaction $h_{rs}$ except that it is formed by contracting the
+2-electron integrals with the density matrix of the opposing spin
+\begin{eqnarray}
+   F^{C\sigma\sigma'}_{rs}
+   &=& \sum_{k}\sum_{bd}\eria{k}{b}{k}{d}D^{\sigma'}_{bd}
+       C^\sigma_{kr}C^{*\sigma}_{ks}
+       \dlabel{Eq:FCssp}
+\end{eqnarray}
+Combining Eqs.~\ref{Eq:FC1:st}, \ref{Eq:FC2:uv}, \ref{Eq:FC:ii},
+\ref{Eq:FC2:ij}, \ref{Eq:FC4:ij}, and~\ref{Eq:FCssp} gives
+\begin{eqnarray}
+   F^{C}_{uv}
+   &=& F^{C(1)}_{uv} + F^{C(2)}_{uv} + F^{C\sigma\sigma'}_{uv} +
+       F^{C(ii)}_{uv} + F^{C(2,ij)}_{uv} + F^{C(4,ij)}_{uv}
+       \dlabel{Eq:FC:uv}
+\end{eqnarray}
+The correlation functions can be updated with the rotation obtained
+from diagonalizing $F^{C}_{uv}$.
+
+\section{Note on renormalization}
+
+The $T^{(2)}_{ij}$ and $T^{(4)}_{ij}$ terms occur proportional to $N(N-1)$ whereas
+the $T_{ii}$ terms are proportional to $N$. This imbalance causes the correlation
+effects to be over estimated for larger basis sets (and larger numbers of electrons).
+To correct for this the offending terms need to be scaled by $(N-1)_\mathrm{effective}$.
+We propose to approximate
+\begin{eqnarray}
+   \frac{1}{(N-1)_\mathrm{effective}}
+   &\approx&
+   \frac{\sum_{i}\sqrt{p^\alpha_i p^\beta_i}-p^\alpha_i p^\beta_i}
+        {\sum_{i,j\ne i}\sqrt{p^\alpha_i(1-p^\alpha_i)p^\beta_j(1-p^\beta_j)}}
+   \dlabel{Eq:1Nm1:eff}
+\end{eqnarray}
+With this approximation the new $T$ terms $T'^{(2)}_{ij}$ and $T'^{(4)}_{ij}$
+become
+\begin{eqnarray}
+   T'^{(2)}_{ij} &=& 
+   T^{(2)}_{ij}
+   \frac{\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+        {\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+   \dlabel{Eq:Tp2:ij} \\
+   T'^{(4)}_{ij} &=& 
+   T^{(4)}_{ij}
+   \frac{\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+        {\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+   \dlabel{Eq:Tp4:ij}
+\end{eqnarray}
+With respect to the Fock matrices we get
+\begin{eqnarray}
+   \frac{\partial T'}{\partial C^{*\alpha}_{kr}}
+   &=& \frac{\partial T}{\partial C^{*\alpha}_{kr}}
+       \frac{\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            {\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &+& T
+       \frac{\sum_{m}\delta_{km}\left(\frac{1}{2}
+             \sqrt{\frac{p^\beta_m}{p^\alpha_m}}-p^\beta_m\right)
+             \frac{\partial p^\alpha_m}{\partial C^{*\alpha}_{kr}}}
+            {\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &-& T
+       \frac{\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            {\left(\sum_{m,n\ne m}
+                   \sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}\right)^2}
+       \frac{\partial\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+            {\partial C^{*\alpha}_{kr}}
+       \\
+   &=& \frac{\partial T}{\partial C^{*\alpha}_{kr}}
+       \frac{\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            {\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &+& T
+       \frac{\sum_{m}\delta_{km}\left(\frac{1}{2}
+             \sqrt{\frac{p^\beta_m}{p^\alpha_m}}-p^\beta_m\right)
+             \frac{\partial p^\alpha_m}{\partial C^{*\alpha}_{kr}}}
+            {\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &-& T
+       \frac{\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            {\left(\sum_{m,n\ne m}
+                   \sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}\right)^2}
+       \sum_{m,n\ne m}\delta_{mk}\frac{1}{2}
+       \sqrt{\frac{p^\beta_n(1-p^\beta_n)}{p^\alpha_m(1-p^\alpha_m)}}
+       \frac{\partial p^\alpha_m(1-p^\alpha_m)}
+            {\partial C^{*\alpha}_{kr}}
+       \\
+   &=& \frac{\partial T}{\partial C^{*\alpha}_{kr}}
+       \frac{\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            {\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &+& T
+       \frac{\sum_{m}\delta_{km}\left(\frac{1}{2}
+             \sqrt{\frac{p^\beta_m}{p^\alpha_m}}-p^\beta_m\right)
+             \frac{\partial p^\alpha_m}{\partial C^{*\alpha}_{kr}}}
+            {\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &-& T
+       \frac{\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            {\left(\sum_{m,n\ne m}
+                   \sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}\right)^2}
+       \sum_{m,n\ne m}\delta_{mk}\frac{1}{2}
+       \sqrt{\frac{p^\beta_n(1-p^\beta_n)}{p^\alpha_m(1-p^\alpha_m)}}
+       (1-2p^\alpha_m)\frac{\partial p^\alpha_m}
+                           {\partial C^{*\alpha}_{kr}}
+       \\
+\end{eqnarray}
+
+\section{Note on renormalization II}
+
+The $T^{(2)}_{ij}$ and $T^{(4)}_{ij}$ terms occur proportional to $N(N-1)$ whereas
+the $T_{ii}$ terms are proportional to $N$. This imbalance causes the correlation
+effects to be over estimated for larger basis sets (and larger numbers of electrons).
+To correct for this the offending terms need to be scaled, and the scale factor must
+be $1$ for $N=2$. In the previous section we proposed a scale factor that is 
+approximately $1/(N-1)$ in Eq.~\ref{Eq:1Nm1:eff}. However, when implemented the
+correlation energy turned out to be too small. Alternatively we can write the
+scale factor as
+\begin{eqnarray}
+   \left(\frac{2}{N}\right)_\mathrm{effective}
+   &\approx&
+   \frac{2\sum_{i}\sqrt{p^\alpha_i p^\beta_i}-p^\alpha_i p^\beta_i}
+        { \sum_{i}\sqrt{p^\alpha_i p^\beta_i}-p^\alpha_i p^\beta_i
+         +\sum_{i,j\ne i}\sqrt{p^\alpha_i(1-p^\alpha_i)p^\beta_j(1-p^\beta_j)}}
+  \dlabel{Eq:2N:eff}
+\end{eqnarray}
+For large $N$ this expression approximates $\frac{2}{N}$ whereas Eq.~\ref{Eq:1Nm1:eff}
+approximates $\frac{1}{N}$.
+
+With this approximation the new $T$ terms $T'^{(2)}_{ij}$ and $T'^{(4)}_{ij}$
+become
+\begin{eqnarray}
+   T'^{(2)}_{ij} &=& 
+   T^{(2)}_{ij}
+   \frac{2\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+        { \sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m
+         +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+   \dlabel{Eq:Tp2:ij:2} \\
+   T'^{(4)}_{ij} &=& 
+   T^{(4)}_{ij}
+   \frac{2\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+        { \sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m
+         +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+   \dlabel{Eq:Tp4:ij:2}
+\end{eqnarray}
+With respect to the Fock matrices we get
+\begin{eqnarray}
+   \frac{\partial T'}{\partial C^{*\alpha}_{kr}}
+   &=& \frac{\partial T}{\partial C^{*\alpha}_{kr}}
+       \frac{2\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            { \sum_{m}\left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+             +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &+& T
+       \frac{2\sum_{m}\delta_{km}\left(\frac{1}{2}
+             \sqrt{\frac{p^\beta_m}{p^\alpha_m}}-p^\beta_m\right)
+             \frac{\partial p^\alpha_m}{\partial C^{*\alpha}_{kr}}}
+            { \sum_{m}\left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+             +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &-& T
+       \frac{2\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            {\left(
+                 \sum_{m}\left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+                +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}
+             \right)^2} \nonumber \\
+   &&  \cdot\frac{\partial\sum_{m}
+            \left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+             +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+            {\partial C^{*\alpha}_{kr}}
+       \\
+   &=& \frac{\partial T}{\partial C^{*\alpha}_{kr}}
+       \frac{2\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            { \sum_{m}\left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+             +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &+& T
+       \frac{2\sum_{m}\delta_{km}\left(\frac{1}{2}
+             \sqrt{\frac{p^\beta_m}{p^\alpha_m}}-p^\beta_m\right)
+             \frac{\partial p^\alpha_m}{\partial C^{*\alpha}_{kr}}}
+            { \sum_{m}\left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+             +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &-& T
+       \frac{2\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            {\left(
+                 \sum_{m}\left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+                +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}
+             \right)^2} \nonumber \\
+   &&  \cdot\left(
+       \sum_{m}\delta_{km}\left[\frac{1}{2}
+       \sqrt{\frac{p^\beta_m}{p^\alpha_m}}-p^\beta_m\right]
+       \frac{\partial p^\alpha_m}{\partial C^{*\alpha}_{kr}}
+       +\sum_{m,n\ne m}\delta_{mk}\frac{1}{2}
+       \sqrt{\frac{p^\beta_n(1-p^\beta_n)}{p^\alpha_m(1-p^\alpha_m)}}
+       \frac{\partial p^\alpha_m(1-p^\alpha_m)}
+            {\partial C^{*\alpha}_{kr}}
+       \right) \\
+   &=& \frac{\partial T}{\partial C^{*\alpha}_{kr}}
+       \frac{2\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            { \sum_{m}\left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+             +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &+& T
+       \frac{2\sum_{m}\delta_{km}\left(\frac{1}{2}
+             \sqrt{\frac{p^\beta_m}{p^\alpha_m}}-p^\beta_m\right)
+             \frac{\partial p^\alpha_m}{\partial C^{*\alpha}_{kr}}}
+            { \sum_{m}\left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+             +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}}
+       \nonumber \\
+   &-& T
+       \frac{2\sum_{m}\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m}
+            {\left(
+                 \sum_{m}\left[\sqrt{p^\alpha_m p^\beta_m}-p^\alpha_m p^\beta_m\right]
+                +\sum_{m,n\ne m}\sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}
+             \right)^2} \nonumber \\
+   &&  \cdot\left(
+       \sum_{m}\delta_{km}\left[\frac{1}{2}
+       \sqrt{\frac{p^\beta_m}{p^\alpha_m}}-p^\beta_m\right]
+       \frac{\partial p^\alpha_m}{\partial C^{*\alpha}_{kr}}
+       +\sum_{m,n\ne m}\delta_{mk}\frac{1}{2}
+       \sqrt{\frac{p^\beta_n(1-p^\beta_n)}{p^\alpha_m(1-p^\alpha_m)}}
+       (1-2p^\alpha_m)
+       \frac{\partial p^\alpha_m}{\partial C^{*\alpha}_{kr}}
+       \right)
+       \\
+\end{eqnarray}
+
+\section{Note on renormalization III}
+
+The $T^{(2)}_{ij}$ and $T^{(4)}_{ij}$ terms occur proportional to $N(N-1)$ whereas
+the $T_{ii}$ terms are proportional to $N$. This imbalance causes the correlation
+effects to be over estimated for larger basis sets (and larger numbers of electrons).
+To correct for this the offending terms need to be scaled, and the scale factor must
+be $1$ for $N=2$. In the previous section we proposed a scale factor that is 
+approximately $1/(N-1)$ in Eq.~\ref{Eq:1Nm1:eff}. However, when implemented the
+correlation energy turned out to be too small. Alternatively we can write the
+scale factor in a way that is approximately $2/N$ as in Eq.~\ref{Eq:2N:eff}.
+However, the latter scale factor leads to correlation effects that are still
+too large. However, as the overal behavior seems right in that both rescaling 
+factors lead to a factor $1$ for $N=2$ we can define yet another rescaling
+factor by interpolating between the two as in
+\begin{eqnarray}
+   R &=& (1-a)\frac{1}{N-1} + a\frac{2}{N}
+\end{eqnarray}
+To rederive the expressions, in particular for the derivatives, let's first re-express
+these equations by defining some common terms. We introduce the terms $B_{ii}$ and
+$B_{ij}$ as
+\begin{eqnarray}
+  B_{ii}
+  &=& \sum_m \sqrt{p^\alpha_m p^\beta_m} - p^\alpha_m p^\beta_m 
+      \dlabel{Eq:Bii} \\
+  B_{ij}
+  &=& \sum_{m,n \ne m} \sqrt{p^\alpha_m(1-p^\alpha_m)p^\beta_n(1-p^\beta_n)}
+      \dlabel{Eq:Bij}
+\end{eqnarray}
+Next we write Eq.~\ref{Eq:1Nm1:eff} and~\ref{Eq:2N:eff} as
+\begin{eqnarray}
+  K_1 &=& \frac{B_{ii}}{B_{ij}}
+          \dlabel{Eq:K1} \\
+  K_2 &=& \frac{2B_{ii}}{B_{ii}+B_{ij}} 
+          \dlabel{Eq:K2}
+\end{eqnarray}
+With these factors the rescaled $T$s become
+\begin{eqnarray}
+  T' &=& T\left((1-a) K_1 + a K_2\right) 
+\end{eqnarray}
+For the derivatives this gives
+\begin{eqnarray}
+  \frac{\partial T'}{\partial C^{*\alpha}_{kr}}
+  &=& \frac{\partial T}{\partial C^{*\alpha}_{kr}}\left(a K_1 + (1-a) K_2\right) 
+   +  T\left(a    \frac{\partial K_1}{\partial C^{*\alpha}_{kr}}
+            +(1-a)\frac{\partial K_2}{\partial C^{*\alpha}_{kr}}\right)
+\end{eqnarray}
+The derivatives of the $K$ factors are
+\begin{eqnarray}
+  \frac{\partial K_1}{\partial C^{*\alpha}_{kr}}
+  &=& \frac{1}{B_{ij}}\frac{\partial B_{ii}}{\partial C^{*\alpha}_{kr}}
+   -  \frac{B_{ii}}{B_{ij}^2}\frac{\partial B_{ij}}{\partial C^{*\alpha}_{kr}} \\
+  \frac{\partial K_2}{\partial C^{*\alpha}_{kr}}
+  &=& \frac{2}{B_{ii}+B_{ij}}\frac{\partial B_{ii}}{\partial C^{*\alpha}_{kr}}
+   -  \frac{2B_{ii}}{(B_{ii}+B_{ij})^2}\left(
+         \frac{\partial B_{ii}}{\partial C^{*\alpha}_{kr}}
+       + \frac{\partial B_{ij}}{\partial C^{*\alpha}_{kr}}
+      \right) 
+\end{eqnarray}
+Differentiating the $B$ factors we have
+\begin{eqnarray}
+  \frac{\partial B_{ii}}{\partial C^{*\alpha}_{kr}}
+  &=& \sum_m \delta_{km}\left(\frac{1}{2}\sqrt{\frac{p_m^\beta}{p_m^\alpha}}-p_m^\beta\right)
+      \frac{\partial p_m^\alpha}{\partial C^{*\alpha}_{kr}} \\
+  \frac{\partial B_{ij}}{\partial C^{*\alpha}_{kr}}
+  &=& \sum_{m,n \ne m}\delta_{mk}\frac{1}{2}
+      \sqrt{\frac{p_n^\beta(1-p_n^\beta)}{p_m^\alpha(1-p_m^\alpha)}}\left(1-2p_m^\alpha\right)
+      \frac{\partial p_m^\alpha}{\partial C^{*\alpha}_{kr}}
+\end{eqnarray}
+
+Tests with this renormalization strategy are highlighting another problem. I have implemented
+a Monte-Carlo optimizer (to test the gradients), and this showed different results in
+different runs. Table~\ref{Table:MCRenorm} shows the results for 10 different runs. Each run
+performed 1000 accepted Monte-Carlo steps, printed the results, and then restart from the
+results and did another 1000 accepted Monte-Carlo steps. The second set of Monte-Carlo steps
+are essentially a test on the convergence on the first set of Monte-Carlo step. The results in the
+table show the calculation number, the energy after 1000 steps, after 2000 steps, and the final
+occupation numbers.
+
+\begin{table}
+\begin{tabular}{|c|c|c|cccccccccc|}
+\hline\hline 
+ID & E$_{1000}$ & E$_{2000}$ & \multicolumn{10}{c}{occupation numbers} \\
+\hline 
+0 & -1.1617670620 & -1.1621052342 & 0.984420 & 0.000004 & 0.015296 & 0.000156 & 0.000031 & 0.000029 & 0.000031 & 0.000009 & 0.000009 & 0.000014 \\
+1 & -1.1474268342 & -1.1474681905 & 0.996056 & 0.000002 & 0.000003 & 0.000013 & 0.003886 & 0.000007 & 0.000006 & 0.000002 & 0.000023 & 0.000002 \\
+2 & -1.1618764561 & -1.1622929633 & 0.984318 & 0.000003 & 0.015390 & 0.000167 & 0.000030 & 0.000030 & 0.000029 & 0.000009 & 0.000010 & 0.000013 \\
+3 & -1.1908897338 & -1.1909608606 & 0.955809 & 0.043794 & 0.000027 & 0.000036 & 0.000062 & 0.000062 & 0.000101 & 0.000039 & 0.000039 & 0.000032 \\
+4 & -1.1909377927 & -1.1909959527 & 0.955701 & 0.043900 & 0.000026 & 0.000038 & 0.000062 & 0.000062 & 0.000103 & 0.000039 & 0.000038 & 0.000030 \\
+5 & -1.1908782018 & -1.1909677076 & 0.955680 & 0.043920 & 0.000028 & 0.000039 & 0.000062 & 0.000063 & 0.000100 & 0.000039 & 0.000039 & 0.000030 \\
+6 & -1.1908838730 & -1.1909667200 & 0.955842 & 0.043761 & 0.000026 & 0.000033 & 0.000062 & 0.000062 & 0.000103 & 0.000038 & 0.000039 & 0.000033 \\
+7 & -1.1908938420 & -1.1909591106 & 0.955802 & 0.043801 & 0.000028 & 0.000036 & 0.000062 & 0.000062 & 0.000100 & 0.000039 & 0.000039 & 0.000032 \\
+8 & -1.1586775499 & -1.1624595808 & 0.989206 & 0.000000 & 0.000012 & 0.010686 & 0.000013 & 0.000016 & 0.000035 & 0.000009 & 0.000010 & 0.000014 \\
+9 & -1.1619564634 & -1.1622760992 & 0.984356 & 0.000004 & 0.015355 & 0.000164 & 0.000030 & 0.000030 & 0.000030 & 0.000009 & 0.000009 & 0.000013 \\
+\hline\hline
+\end{tabular}
+\dlabel{Table:MCRenorm}
+\caption{The results of 10 Monte-Carlo optimizations with $a=0$, showing the total energy after 1000 and 2000 
+accepted Monte-Carlo steps, followed by the orbital occupation numbers of \ce{H2} in a 6-31G** basis
+set. The Hartree-Fock energy is -1.131329765611, the Full-CI energy is -1.149414557325.}
+\end{table}
+
+The results clearly show that the renormalized energy expression is non-convex, it has multiple minima for
+different approximations of the ground state. In fact, looking at the occupation numbers there is a highly
+occupied orbital, a medium occupied orbital, and several low occupied orbitals. The different results are 
+associated with different virtual orbitals having a medium occupation number. Hence, it is likely that
+for every different virtual orbital there is a different minimum of the energy expression. On top of that
+most renormalization factors over estimate the correlation energy, most by 0.04 Hartrees or more
+than 24 kcal/mol. 
+
+In conclusion this renormalization approach is useless (even at $a=0$ let alone $a>0$).
+
+\section{Note on renormalization IV}
+
+Given the total and utter failure of more advanced renormalization methods it would seem
+that a much simpler approach might work better. The simplest approach to address the imbalance
+between the $ii$ and the $ij$ terms is to address the difference in their basic scaling.
+The $ii$ terms scale as $O(N)$ whereas the $ij$ terms scale as $O\left(N(N-1)\right)$. 
+The simplest way to address this imbalance is to scale the $ij$ terms down by a factor
+$\frac{1}{N-1}$. A problem with this approach is that if you create big basis sets not
+every basis function might actually contribute. It is easy to add basis functions that 
+do not do anything. Counting those spurious basis functions into the scale factor might
+just bias the calculation.
+
+However, as an attempt to incorporate the relevance of a basis function into the renormalization
+failed badly this simple approach might have some advantages. Note that if orbitals don't 
+actually get any significant occupation they don't contribute in any significant way to the
+$ij$ part, however, they also don't contribute to the $ii$ terms either. So, maybe this
+naive approach does actually work.
+
+The results are given in Table~\ref{Table:MCRenorm:1overNm1} and clearly show that with
+a constant scale factor there is a single solution for this problem. However, as the 
+Hartree-Fock energy is $-1.131329765611$ and the Full-CI energy is $-1.149414557325$
+the correlation energy is underestimated.
+
+\begin{table}
+\begin{tabular}{|c|c|c|cccccccccc|}
+\hline\hline 
+ID & E$_{1000}$ & E$_{2000}$ & \multicolumn{10}{c}{occupation numbers} \\
+\hline 
+0 & -1.1357532484 & -1.1358047293 & 0.998564 & 0.000556 & 0.000232 & 0.000210 & 0.000104 & 0.000104 & 0.000079 & 0.000058 & 0.000058 & 0.000034 \\
+1 & -1.1357285553 & -1.1357840156 & 0.998558 & 0.000549 & 0.000236 & 0.000214 & 0.000104 & 0.000105 & 0.000081 & 0.000059 & 0.000059 & 0.000034 \\
+2 & -1.1357689069 & -1.1358200801 & 0.998553 & 0.000566 & 0.000231 & 0.000211 & 0.000105 & 0.000103 & 0.000080 & 0.000058 & 0.000060 & 0.000033 \\
+3 & -1.1357393732 & -1.1357940625 & 0.998573 & 0.000543 & 0.000233 & 0.000213 & 0.000103 & 0.000104 & 0.000081 & 0.000058 & 0.000059 & 0.000034 \\
+4 & -1.1357691192 & -1.1358189473 & 0.998547 & 0.000565 & 0.000235 & 0.000213 & 0.000104 & 0.000105 & 0.000080 & 0.000059 & 0.000059 & 0.000034 \\
+5 & -1.1357338144 & -1.1357867772 & 0.998567 & 0.000547 & 0.000231 & 0.000213 & 0.000105 & 0.000105 & 0.000081 & 0.000059 & 0.000058 & 0.000035 \\
+6 & -1.1358057224 & -1.1358539970 & 0.998532 & 0.000586 & 0.000235 & 0.000206 & 0.000105 & 0.000104 & 0.000081 & 0.000059 & 0.000059 & 0.000034 \\
+7 & -1.1357563659 & -1.1358076807 & 0.998550 & 0.000561 & 0.000234 & 0.000212 & 0.000105 & 0.000106 & 0.000081 & 0.000059 & 0.000059 & 0.000033 \\
+8 & -1.1358067602 & -1.1358554599 & 0.998528 & 0.000588 & 0.000237 & 0.000208 & 0.000104 & 0.000105 & 0.000080 & 0.000058 & 0.000059 & 0.000033 \\
+9 & -1.1358025170 & -1.1358521235 & 0.998530 & 0.000583 & 0.000237 & 0.000213 & 0.000104 & 0.000103 & 0.000080 & 0.000059 & 0.000059 & 0.000034 \\
+\hline\hline
+\end{tabular}
+\dlabel{Table:MCRenorm:1overNm1}
+\caption{The results of 10 Monte-Carlo optimizations with $a=0$, showing the total energy after 1000 and 2000 
+accepted Monte-Carlo steps, followed by the orbital occupation numbers of \ce{H2} in a 6-31G** basis
+set. The Hartree-Fock energy is -1.131329765611, the Full-CI energy is -1.149414557325.}
+\end{table}
+
+In Table~\ref{Table:MCRenorm:1overNm1} the results for the $\frac{1}{N-1}$ renormalization are given. As it
+underestimates the correlation we can try $\frac{2}{N}$ as a renormalization instead. The corresponding 
+result is given in Table~\ref{Table:MCRenorm:2overN}.
+
+\begin{table}
+\begin{tabular}{|c|c|c|cccccccccc|}
+\hline\hline 
+ID & E$_{1000}$ & E$_{2000}$ & \multicolumn{10}{c}{occupation numbers} \\
+\hline 
+0 & -1.1499571633 & -1.1503162250 & 0.992160 & 0.003352 & 0.001269 & 0.000941 & 0.000551 & 0.000548 & 0.000399 & 0.000305 & 0.000305 & 0.000170 \\
+\hline\hline
+\end{tabular}
+\dlabel{Table:MCRenorm:2overN}
+\caption{The results of 1 Monte-Carlo optimizations with $a=1$, showing the total energy after 1000 and 2000 
+accepted Monte-Carlo steps, followed by the orbital occupation numbers of \ce{H2} in a 6-31G** basis
+set. The Hartree-Fock energy is -1.131329765611, the Full-CI energy is -1.149414557325.}
+\end{table}
+
+\section{Note on optimization algorithm}
+
+To minimize the energy expression we need to deal with very steep gradients near occupation 
+numbers of $0$ and $1$. Attempts of using a conventional linesearch method failed as this
+does not remove redundant rotations. A conventional repeat diagonalization method also
+failed as the energy often converges upwards instead of downwards, often resulting in
+the Hartree-Fock solution instead of the correlated solution. 
+
+In another attempt we explore a dynamic damping approach, is essentially a combination
+of linesearch and repeat diagonalization approach. In this approach we start with a
+wavefunction $\Psi_i(N,C)$ with corresponding energy $E(\Psi_i)$ from which we derive
+Fock matrices $F(\Psi_i) = \partial E(\Psi_i)/\partial N,C$. Subsequently, we damp the
+Fock matrix $F'_{ij} = F_{ij}d_{i\ne j}$ meaning we scale the off diagonal elements by
+a factor $d \in (0,\inf)$. Diagonalizing $F'$ updates the wavefunction and we obtain
+a new energy. At this point we have $E(\Psi_i)$, $F(\Psi_i)$, and $E(\Psi_{i+1})$ where
+$F$ contains information about the gradient. This is sufficient to formulate a second
+order polynomial and find its minimum. The problem is that the energy expression is
+not quadratic in $d$ by any means. The energy expression is closest to quadratic in
+terms of the occupation numbers and the square of the natural orbitals. These quantities
+are dependent on $d$ but in a highly non-linear fashion.
+
+In order to deal with this issue we need to map $d$ to the coordinates in which
+$E$ is quadratic. Find the minimum of $E$ in those coordinates, and then find $d$ 
+that matches the minimum, and use this value as the damping factor.
+
+Lets look at the transformation.
+We start with a 2x2 Fock matrix:
+\begin{eqnarray}
+   F = \left(\begin{array}{cc}
+       F_{11} & F_{12} \\
+       F_{21} & F_{22}
+       \end{array}\right)
+\end{eqnarray}
+Diagonalization leads to eigenvectors
+\begin{eqnarray}
+   V = \left(\begin{array}{cc}
+       c      & s      \\
+      -s      & c     
+       \end{array}\right)
+\end{eqnarray}
+where $c = cos(\phi)$ and $s = sin(\phi)$. 
+In addition we have from the Jacobi transformation that
+\begin{eqnarray}
+   \cot(2\phi) &=& \frac{F_{22} - F_{11}}{2 F_{12}}
+\end{eqnarray}
+and $E$ is a function of $s^2 = b$.
+In the current context that means that $b = b(d)$ where 
+\begin{eqnarray}
+   b(d) &=& \sin\left(\frac{1}{2}\arctan\left(\frac{2F_{12}d}{F_{22}-F_{11}}\right)\right)^2
+\end{eqnarray}
+The inverse of this expression is
+\begin{eqnarray}
+   d    &=& \frac{F_{22}-F_{11}}{2F_{12}}\tan\left(2\arcsin\left(\sqrt{b}\right)\right)
+\end{eqnarray}
+In these equations the factor $\frac{F_{22} - F_{11}}{2 F_{12}}$ is Fock matrix dependent
+and different for every orbital pair. Hence we are better off suppressing this factor and
+replacing it with $1$. This gives:
+\begin{eqnarray}
+   b(d) &=& \sin\left(\frac{1}{2}\arctan\left(d\right)\right)^2 \\
+   d    &=& \tan\left(2\arcsin\left(\sqrt{b}\right)\right)
+\end{eqnarray}
+As for the scale of the gradient we have
+\begin{eqnarray}
+   \frac{\partial E(b(d))}{\partial d} 
+   &=& \frac{\partial E(b(d))}{\partial b}\frac{\partial b(d)}{\partial d} \\
+   \frac{\partial b(d)}{\partial d} 
+   &=& \frac{\cos(\arctan(d)/2)\sin(\arctan(d)/2)}{d^2+1}
+\end{eqnarray}
+
+\section{Note on the wavefunction}
+
+In section \ref{sect:FCI:H2:min} we investigated the form of the correlation energy.
+Obviously as we have a wavefunction that represents the exact 1-electron density
+matrix, all the 1-electron energy terms are also exactly represented. Therefore, the
+piece that is missing is the exact representation of the 2-electron energy. We would
+be able to represent this exactly if we had the exact 2-electron density. In
+section~\ref{sect:FCI:H2:min} this density matrix is given by Eq.~\ref{eq:fci:h2}.
+If we try to represent Eq.~\ref{eq:fci:h2} directly in terms of the wavefunction then we
+have that
+\begin{eqnarray}
+C_{11}C_{11}^* &=& c_1^\alpha c_1^\beta c_1^{\alpha*}c_1^{\beta*} \\
+C_{22}C_{22}^* &=& c_2^\alpha c_2^\beta c_2^{\alpha*}c_2^{\beta*}
+\end{eqnarray}
+In other words $C_{ij} \approx c_i^\alpha c_j^\beta$. One remaining problem lies in the
+terms like $C_{11}C_{22}^*$ and $C_{22}C_{11}^*$ as these might have to have to negative
+values, as was found in Eq.~\ref{Eq:T:subtract:2}. If the $\alpha$-correlation functions
+equal the $\beta$-correlation functions, as one would expect from a closed shell system,
+then a product $C_{11}C_{22}^*$ can only be negative if the coefficients $c_i^\sigma$ are
+complex valued. Because if $c_i^\alpha = c_i^\beta$ then $C_{ii} = c_i^\alpha c_i^\beta = c_i^2$.
+Therefore, if $C_{ii} < 0$ or $C_{ii}^* < 0$ then $c_i$ has to be complex if not purely
+imaginary.
+
+The next aspect is the evaluation of the 2-electron density matrix. If we evaluate it
+according to the ensemble approximation (like for the 1-electron density matrix), then it
+does not represent any correlation effects. In particular any entanglement effects are
+entirely absent. Hence, for a reasonable 2-electron density approximation we have to 
+assume a different approach. In fact, Eq.~\ref{Eq:D2:dij} can be interpreted as
+a way to approximate the CI coefficients of the wavefunction. Instead of representing
+the 2-electron density matrix as an ensemble approximation of the wavefunction we
+can evaluate the 2-electron part as the proper expectation value of the wavefunction. 
+Essentially, this may seem inconsistent as the 1-electron density matrix is represented
+using an ensemble representation. However, for the 1-electron density matrix an ensemble
+representation can be exact, for the 2-electron density matrix that is never true!
+A challenge with evaluating the 2-electron terms as a proper expectation value
+is the cost of doing so. Previously we tried to express this in terms of the 
+1-electron density matrix which allowed key quantities to be evaluated outside of the
+the 4-fold nested loops over integrals. If we cannot do that within a wavefunction approach
+then the cost would spiral to $O(N^6)$ (4-fold loop over integrals, and for every integral
+consider all possible pair combinations of the correlation functions). This would put
+the cost of the method at the same level as CCSD but likely yield less accurate results.
+Anyway, for the $\alpha\beta$-electron interaction we have
+\begin{eqnarray}
+   d_{ijkl}^{\alpha\beta} \approx d_{ik}^\alpha d_{jl}^\beta \\
+   d_{ij}^\sigma = \sum_{t=1}^{n_e^\sigma} C_{it}^\sigma \left(C_{jt}^\sigma\right)^*
+\end{eqnarray}
+For the $\sigma\sigma$ interaction we get
+\begin{eqnarray}
+   d_{ijkl}^{\sigma\sigma} \approx
+   \sum_{s,t=1}^{n_e^\sigma} C_{is}^\sigma \left(C_{ks}^\sigma\right)^* 
+                             C_{jt}^\sigma \left(C_{lt}^\sigma\right)^*
+                           - C_{is}^\sigma \left(C_{kt}^\sigma\right)^* 
+                             C_{jt}^\sigma \left(C_{ls}^\sigma\right)^*
+\end{eqnarray}
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{WFN1C,WFN1C_alt}
+
+\end{document}

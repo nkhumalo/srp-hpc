@@ -1,0 +1,9 @@
+s1(di)=lgamma(1+di)+lgamma(1+(1-di))
+s2(di,dj)=lgamma(1+di*dj)+lgamma(1+(1-di)*dj)+lgamma(1+di*(1-dj))+lgamma(1+(1-di)*(1-dj))
+s(di,dj)=s1(di)+s1(dj)-s2(di,dj)
+set xrange [0:1]
+set yrange [0:1]
+set isosamples 20, 20
+set terminal latex
+set output "Sij.tex"
+splot s(x,y)/s(0.5,0.5) with lines

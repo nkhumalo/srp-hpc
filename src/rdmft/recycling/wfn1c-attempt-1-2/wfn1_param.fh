@@ -1,0 +1,55 @@
+C>
+C> \brief The parameters data type
+C>
+C> This data type stores various parameters of the calculation.
+C> These parameters are entities that do not change throughout the
+C> calculation but are also simple objects (e.g. the convergence
+C> criterion, the maximum number of iterations, etc.) which are
+C> stored in a replicated fashion. Distributed quantities are stored
+C> in a different data type.
+C>
+      type wfn1_prm
+         character*256    :: movecs_in   ! input movecs (file) name
+         character*256    :: movecs_out  ! output movecs (file) name
+         character*16     :: corr_expr   ! correlation energy expression
+         character*16     :: solver      ! method to minimize energy
+         double precision :: convergence ! convergence criterion
+         double precision :: enuc        ! nuclear repulsion energy
+         double precision :: Tinitial    ! initial guess temperature
+         double precision :: Tbath       ! the bath temperature
+         double precision :: fraca       ! fraction of alpha electron
+         double precision :: fracb       ! fraction of beta electron
+         double precision :: damp_c      ! damping factor for correlation
+                                         ! function Fock matrices
+         double precision :: damp_n      ! damping factor for natural
+                                         ! orbital Fock matrices
+         double precision :: denom_min   ! the minimum denominator due to
+                                         ! differentiating sqrt-s.
+         double precision :: fac_a       ! factor A
+         double precision :: pfac        ! Monte-Carlo exponent
+         double precision :: rlim        ! Monte-Carlo random # limit
+         integer          :: maxiter     ! maximum number of iterations
+         integer          :: nbf         ! number of basis functions
+         integer          :: nmo         ! number of molecular orbitals
+         integer          :: nea         ! number of alpha electrons
+         integer          :: neb         ! number of beta electrons
+         integer          :: ncorea      ! number of alpha core orbitals
+         integer          :: ncoreb      ! number of beta core orbitals
+         integer          :: nvirta      ! number of alpha virtual orbitals
+         integer          :: nvirtb      ! number of beta virtual orbitals
+      end type wfn1_prm
+C>
+C> \brief The parameter instance data type
+C>
+C> This data type stores various parameter instances of the calculation.
+C> These parameters are entities that do not change throughout the
+C> calculation but are complex instances. Typically these instances are
+C> stored in a replicated fashion. Distributed quantities are stored
+C> in a different data type. The runtime database is a bit different in
+C> it gets updated with the calculation results at the end.
+C>
+      type wfn1_prminst
+         integer :: geom  ! handle of the geometry object
+         integer :: basis ! handle of the basis set object
+         integer :: rtdb  ! handle of the runtime database
+      end type wfn1_prminst

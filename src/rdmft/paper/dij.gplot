@@ -1,0 +1,8 @@
+d1(di)=di*(1-di)
+d(di,dj)=d1(di)*d1(dj)
+set xrange [0:1]
+set yrange [0:1]
+set isosamples 20, 20
+#set terminal latex
+#set output "dij.tex"
+splot d(x,y)/d(0.5,0.5) with lines

@@ -1,7 +1,5 @@
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
-      implicit none
 C>
 C> \brief Zero the virtual-virtual block of the correlation function
 C> matrices
@@ -14,10 +12,12 @@ C> impression that the calculation is not converging.
 C> To avoid this confusion this routine explicitly zeroes the 
 C> virtual-virtual blocks.
 C>
+      subroutine wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
+      implicit none
 #include "global.fh"
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
 c
       type(wfn1_prm), intent(in)    :: wfn1_param
       type(wfn1_wfn), intent(in)    :: wfn1_wave

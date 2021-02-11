@@ -41,7 +41,7 @@
 !include "wfn1_wfn.fh"
 !include "wfn1_drv.fh"
 !include "wfn1_matcnst.fh"
-#include "wfn1_size.fh"
+!include "wfn1_size.fh"
 #include "wfn1_trace.fh"
 !include "wfn1_en.fh"
 #include "bas.fh"
@@ -784,110 +784,28 @@ c
 c     == Initial wavefunction complete ==
 c
       call ga_sync() ! make sure wave function guesses are completed
-#ifdef JUNK
-      if (iproc.eq.0) then
-        if (.not.oprerr) then
-          write(luout,'(a10,a20,a16)')"iteration","energy","error"
-          write(luout,'(a10,a20,a16)')"---------","------","-----"
-        else
-          write(luout,'(a10,a20,a16,4a16)')"iteration","energy","error",
-     &          "err Na","err Nb","err Ca","err Cb"
-          write(luout,'(a10,a20,a16,4a16)')"---------","------","-----",
-     &          "------","------","------","------"
-        endif
-      endif
-      call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
-     &              wfn1_energy,g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
-     &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dna,v_dnb,v_dca,v_dcb,
-     &              v_dnna,v_dnnb,v_dcna,v_dcnb)
-      call wfn1_skew(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
-c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
-      error = wfn1_trace(wfn1_deriv,wfn1_deriv)
-      oconverged = (error%total < conv_tol)
-      curit      = 0
-      do while ((.not.oconverged).and.(curit.lt.maxit))
-        curit = curit + 1
-c
-c       Alternating optimization of natural orbitals and correlation
-c       functions for better convergence.
-c
-        if (error%errna+error%errnb > 0.5d0*conv_tol .and.
-     &      error%errca+error%errcb > 0.5d0*conv_tol) then
-          if (mod(curit,2).eq.0) then
-            call ga_zero(wfn1_deriv%g_dca)
-            call ga_zero(wfn1_deriv%g_dcb)
-          else
-            call ga_zero(wfn1_deriv%g_dna)
-            call ga_zero(wfn1_deriv%g_dnb)
-          endif
-        else if (error%errna+error%errnb >
-     &           error%errca+error%errcb) then
-          call ga_zero(wfn1_deriv%g_dca)
-          call ga_zero(wfn1_deriv%g_dcb)
-        else
-          call ga_zero(wfn1_deriv%g_dna)
-          call ga_zero(wfn1_deriv%g_dnb)
-        endif
-c
-c       end of alternating optimization
-c
-        call wfn1_linesearch(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
-     &                       wfn1_deriv,wfn1_energy,
-     &                       wfn1_trial_wv,wfn1_trial_drv,wfn1_trial_en,
-     &                       g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
-     &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                       v_dna,v_dnb,v_dca,v_dcb,
-     &                       v_dnna,v_dnnb,v_dcna,v_dcnb)
-c
-        error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
-        oconverged = (error%total < conv_tol)
-c
-c       swap trial wavefunctions, derivatives and energies with the 
-c       regular ones.
-c
-        wfn1_t_wv      = wfn1_trial_wv
-        wfn1_trial_wv  = wfn1_wave
-        wfn1_wave      = wfn1_t_wv
-c
-        wfn1_t_drv     = wfn1_trial_drv
-        wfn1_trial_drv = wfn1_deriv
-        wfn1_deriv     = wfn1_t_drv
-c
-        wfn1_energy    = wfn1_trial_en
-
-        if (iproc.eq.0) then
-          if (.not.oprerr) then
-            write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
-     &                                      error%total
-          else
-            write(luout,'(i10,f20.8,5f16.6)')curit,wfn1_energy%E_tot,
-     &                                       error%total,
-     &                                       error%errna,error%errnb,
-     &                                       error%errca,error%errcb
-          endif
-        endif
-      enddo
-      wfn1_success = oconverged
-#endif
       if (wfn1_param%solver.eq."linesearch") then
-        oconverged = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
-     &                    wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
-     &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
-     &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                    v_dna,v_dnb,v_dca,v_dcb,
-     &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
-     &                    oprerr,curit)
+        call errquit("wfn1_task_energy: no linesearch implemented",
+     &               0,UERR)
+c       oconverged = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
+c    &                    wfn1_wave,wfn1_deriv,wfn1_energy,
+c    &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
+c    &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+c    &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+c    &                    v_dna,v_dnb,v_dca,v_dcb,
+c    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
+c    &                    oprerr,curit)
       else if (wfn1_param%solver.eq."diagonalize") then
-        oconverged = wfn1_solve_diag(wfn1_param,wfn1_inst,wfn1_mat,
-     &                    wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
-     &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
-     &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                    v_dna,v_dnb,v_dca,v_dcb,
-     &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
-     &                    oprerr,curit)
+        call errquit("wfn1_task_energy: no diagonalize implemented",
+     &               0,UERR)
+c       oconverged = wfn1_solve_diag(wfn1_param,wfn1_inst,wfn1_mat,
+c    &                    wfn1_wave,wfn1_deriv,wfn1_energy,
+c    &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
+c    &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+c    &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+c    &                    v_dna,v_dnb,v_dca,v_dcb,
+c    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
+c    &                    oprerr,curit)
       else if (wfn1_param%solver.eq."monte-carlo") then
         oconverged = wfn1_solve_mc(wfn1_param,wfn1_inst,wfn1_mat,
      &                    wfn1_wave,wfn1_deriv,wfn1_energy,
@@ -953,9 +871,9 @@ c
       call wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
      &                         v_dna,v_dnb,v_dca,v_dcb,g_momo1,g_momo2)
 cDEBUG
-      call wfn1_print_orb_energies(wfn1_param,
-     &     v_dna,v_dnb,v_dca,v_dcb,
-     &     v_dnna,v_dnnb,v_dcna,v_dcnb)
+c     call wfn1_print_orb_energies(wfn1_param,
+c    &     v_dna,v_dnb,v_dca,v_dcb,
+c    &     v_dnna,v_dnnb,v_dcna,v_dcnb)
 cDEBUG
 c
 c     == Clean up ==

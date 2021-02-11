@@ -3,7 +3,7 @@ c
       subroutine wfn1_print_wave(wfn1_wave)
       implicit none
 c
-#include "wfn1_wfn.fh"
+!include "wfn1_wfn.fh"
 #include "global.fh"
 #include "stdio.fh"
 c
@@ -60,7 +60,7 @@ c
       subroutine wfn1_print_deriv(wfn1_deriv)
       implicit none
 c
-#include "wfn1_drv.fh"
+!include "wfn1_drv.fh"
 #include "global.fh"
 #include "stdio.fh"
 c
@@ -106,7 +106,7 @@ c-----------------------------------------------------------------------
 c
       subroutine wfn1_print_energy(wfn1_energy)
       implicit none
-#include "wfn1_en.fh"
+!include "wfn1_en.fh"
 #include "global.fh"
 #include "stdio.fh"
       type(wfn1_en), intent(in) :: wfn1_energy
@@ -150,7 +150,7 @@ c-----------------------------------------------------------------------
 c
       subroutine wfn1_print_error(wfn1_err)
       implicit none
-#include "wfn1_error.fh"
+!include "wfn1_error.fh"
 #include "global.fh"
 #include "stdio.fh"
       type(wfn1_error), intent(in) :: wfn1_err
@@ -274,7 +274,7 @@ c
      &           e_nna,e_nnb,e_cna,e_cnb)
       implicit none
 #include "stdio.fh"
-#include "wfn1_param.fh"
+!include "wfn1_param.fh"
 !>    Calculation parameters 
       type(wfn1_prm), intent(in)   :: wfn1_param
 !>    \f$\alpha\f$ natural orbital Fock matrix eigenvalues

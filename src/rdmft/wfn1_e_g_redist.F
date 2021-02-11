@@ -53,7 +53,9 @@ c
       double precision, allocatable :: occa(:)
       double precision, allocatable :: occb(:)
 c
-      if (fac_redist.le.0.0d0) return
+!     double precision, external :: wfn1_redist
+c
+      if (wfn1_redist().le.0.0d0) return
 c
       nmo = wfn1_param%nmo
       nea = wfn1_param%nea
@@ -68,10 +70,10 @@ c
       call wfn1_sort(ea,nmo)
       call wfn1_sort(eb,nmo)
       do ii = 1, nea
-        E_redist = E_redist - fac_redist*ea(ii)
+        E_redist = E_redist - wfn1_redist()*ea(ii)
       enddo
       do ii = 1, neb
-        E_redist = E_redist - fac_redist*eb(ii)
+        E_redist = E_redist - wfn1_redist()*eb(ii)
       enddo
       deallocate(eb)
       deallocate(ea)
@@ -87,18 +89,18 @@ c
       call wfn1_calc_occ(wfn1_wave%g_cb,nmo,neb,wfn1_wave%icnfb,
      &                   wfn1_wave%dcntb,occb)
       do ii = 1, nmo
-        E_redist = E_redist + fac_redist*orb_ea(ii)*occa(ii)
+        E_redist = E_redist + wfn1_redist()*orb_ea(ii)*occa(ii)
       enddo
       do ii = 1, nmo
-        E_redist = E_redist + fac_redist*orb_eb(ii)*occb(ii)
+        E_redist = E_redist + wfn1_redist()*orb_eb(ii)*occb(ii)
       enddo
       deallocate(occb)
       deallocate(occa)
 c
 c     Add the terms to the Fock matrix
 c
-      v_dca = v_dca + fac_redist*orb_ea
-      v_dcb = v_dcb + fac_redist*orb_eb
+      v_dca = v_dca + wfn1_redist()*orb_ea
+      v_dcb = v_dcb + wfn1_redist()*orb_eb
 c
       end subroutine wfn1_e_g_redist
 c

@@ -15,9 +15,9 @@ c
       function wfn1_select_max(wfn1_deriv)
       implicit none
 #include "errquit.fh"
-#include "wfn1_max.fh"
-#include "wfn1_error.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_max.fh"
+!include "wfn1_error.fh"
+!include "wfn1_drv.fh"
 !<    The result of the function
       type(wfn1_error) :: wfn1_select_max
 !<    The Fock matrixes
@@ -28,8 +28,8 @@ c
       character*16 :: pname
       parameter(pname="wfn1_select_max:")
 c
-      double precision :: val_Ca
-      double precision :: val_Cb
+      complex(kind=8)  :: val_Ca
+      complex(kind=8)  :: val_Cb
       double precision :: val_Na
       double precision :: val_Nb
 c
@@ -41,30 +41,32 @@ c
       error%total = 0.0d0
       error%errna = 0.0d0
       error%errnb = 0.0d0
-      error%errca = 0.0d0
-      error%errcb = 0.0d0
+      error%errca = complex(0.0d0,0.0d0)
+      error%errcb = complex(0.0d0,0.0d0)
 c
       call nga_select_elem(wfn1_deriv%g_dna,"max",val_Na,pos_Na)
       call nga_select_elem(wfn1_deriv%g_dnb,"max",val_Nb,pos_Nb)
       call nga_select_elem(wfn1_deriv%g_dca,"max",val_Ca,pos_Ca)
       call nga_select_elem(wfn1_deriv%g_dcb,"max",val_Cb,pos_Cb)
 c
-      if      (val_Na.eq.max(val_Na,val_Nb,val_Ca,val_Cb)) then
+      if      (val_Na.eq.max(val_Na,val_Nb,abs(val_Ca),abs(val_Cb)))then
         mat_kind    = MAT_N
         spin_kind   = SPIN_A
         elm_pos     = pos_Na
         error%errna = val_Na
-      else if (val_Nb.eq.max(val_Na,val_Nb,val_Ca,val_Cb)) then
+      else if (val_Nb.eq.max(val_Na,val_Nb,abs(val_Ca),abs(val_Cb)))then
         mat_kind    = MAT_N
         spin_kind   = SPIN_B
         elm_pos     = pos_Nb
         error%errnb = val_Nb
-      else if (val_Ca.eq.max(val_Na,val_Nb,val_Ca,val_Cb)) then
+      else if (abs(val_Ca).eq.
+     &         max(val_Na,val_Nb,abs(val_Ca),abs(val_Cb))) then
         mat_kind    = MAT_C
         spin_kind   = SPIN_A
         elm_pos     = pos_Ca
         error%errca = val_Ca
-      else if (val_Cb.eq.max(val_Na,val_Nb,val_Ca,val_Cb)) then
+      else if (abs(val_Cb).eq.
+     &         max(val_Na,val_Nb,abs(val_Ca),abs(val_Cb))) then
         mat_kind    = MAT_C
         spin_kind   = SPIN_B
         elm_pos     = pos_Cb
@@ -93,9 +95,9 @@ c
       function wfn1_fetch_max(wfn1_deriv)
       implicit none
 #include "errquit.fh"
-#include "wfn1_max.fh"
-#include "wfn1_error.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_max.fh"
+!include "wfn1_error.fh"
+!include "wfn1_drv.fh"
       type(wfn1_error) :: wfn1_fetch_max
 !<    The Fock matrices
       type(wfn1_drv), intent(in) :: wfn1_deriv
@@ -108,8 +110,8 @@ c
       error%total = 0.0d0
       error%errna = 0.0d0
       error%errnb = 0.0d0
-      error%errca = 0.0d0
-      error%errcb = 0.0d0
+      error%errca = complex(0.0d0,0.0d0)
+      error%errcb = complex(0.0d0,0.0d0)
 c
       if      (mat_kind.eq.MAT_N) then
         if      (spin_kind.eq.SPIN_A) then
@@ -157,9 +159,9 @@ c
 #include "mafdecls.fh"
 #include "errquit.fh"
 #include "global.fh"
-#include "wfn1_max.fh"
-#include "wfn1_error.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_max.fh"
+!include "wfn1_error.fh"
+!include "wfn1_drv.fh"
       type(wfn1_error) :: wfn1_limit_max
 !<    The Fock matrices
       type(wfn1_drv), intent(inout) :: wfn1_deriv
@@ -174,6 +176,8 @@ c
 c
       double precision, allocatable :: bufa(:,:)
       double precision, allocatable :: bufb(:,:)
+      complex(kind=8),  allocatable :: zbufa(:,:)
+      complex(kind=8),  allocatable :: zbufb(:,:)
       double precision :: dmax, fmax
       integer :: ialo, iahi, jalo, jahi, nia
       integer :: iblo, ibhi, jblo, jbhi, nib
@@ -184,8 +188,8 @@ c
       error%total = 0.0d0
       error%errna = 0.0d0
       error%errnb = 0.0d0
-      error%errca = 0.0d0
-      error%errcb = 0.0d0
+      error%errca = complex(0.0d0,0.0d0)
+      error%errcb = complex(0.0d0,0.0d0)
 c
       iproc = ga_nodeid()
 c
@@ -267,10 +271,10 @@ c
         endif
         nia = iahi-ialo+1
         nib = ibhi-iblo+1
-        allocate(bufa(ialo:iahi,jalo:jahi))
-        allocate(bufb(iblo:ibhi,jblo:jbhi))
-        call ga_get(wfn1_deriv%g_dca,ialo,iahi,jalo,jahi,bufa,nia)
-        call ga_get(wfn1_deriv%g_dcb,iblo,ibhi,jblo,jbhi,bufb,nib)
+        allocate(zbufa(ialo:iahi,jalo:jahi))
+        allocate(zbufb(iblo:ibhi,jblo:jbhi))
+        call ga_get(wfn1_deriv%g_dca,ialo,iahi,jalo,jahi,zbufa,nia)
+        call ga_get(wfn1_deriv%g_dcb,iblo,ibhi,jblo,jbhi,zbufb,nib)
         dmax = 0.0d0
         fmax = 0.0d0
         do jj = jalo, jahi
@@ -279,8 +283,8 @@ c
             fmax = max(fmax,abs(bufa(ii,jj)),abs(bufb(ii,jj)))
           enddo
         enddo
-        deallocate(bufa)
-        deallocate(bufb)
+        deallocate(zbufa)
+        deallocate(zbufb)
         call ga_dgop(1502,dmax,1,"max")
         call ga_dgop(1503,fmax,1,"max")
 cDEBUG

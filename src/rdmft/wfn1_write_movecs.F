@@ -14,8 +14,9 @@ c
       subroutine wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave,
      &                             v_dna,v_dnb,v_dca,v_dcb)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
+#include "errquit.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
 !>    The parameters of the calculation
       type(wfn1_prm),     intent(in) :: wfn1_param
 !>    The parameter instances of the calculation
@@ -81,19 +82,23 @@ c
       else
         covecs_out = covecs_out(1:ii)//".covecs"
       endif
-      call movecs_write(wfn1_inst%rtdb,wfn1_inst%basis,
-     &                  trim(covecs_out),
-     &                  "WFN1","",wfn1_param%nmo,2,nmo,
-     &                  occ,wfn1_param%nmo,evc,wfn1_param%nmo,g_vecs)
+      if (.not.wfn1_movecs_write(wfn1_inst%rtdb,wfn1_inst%basis,
+     &         trim(covecs_out),
+     &         "WFN1","",wfn1_param%nmo,2,nmo,
+     &         occ,wfn1_param%nmo,evc,wfn1_param%nmo,g_vecs)) then
+        call errquit("wfn1_write_movecs: i/o error",0,UERR)
+      endif
 c
 c     Store the natural orbitals
 c
       g_vecs(1) = wfn1_wave%g_na
       g_vecs(2) = wfn1_wave%g_nb
-      call movecs_write(wfn1_inst%rtdb,wfn1_inst%basis,
-     &                  trim(wfn1_param%movecs_out),
-     &                  "WFN1","",wfn1_param%nmo,2,nmo,
-     &                  ocn,wfn1_param%nmo,evn,wfn1_param%nmo,g_vecs)
+      if (.not.wfn1_movecs_write(wfn1_inst%rtdb,wfn1_inst%basis,
+     &         trim(wfn1_param%movecs_out),
+     &         "WFN1","",wfn1_param%nmo,2,nmo,
+     &         ocn,wfn1_param%nmo,evn,wfn1_param%nmo,g_vecs)) then
+        call errquit("wfn1_write_movecs: i/o error",0,UERR)
+      endif
 c
       deallocate(evn)
       deallocate(evc)

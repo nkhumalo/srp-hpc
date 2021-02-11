@@ -1,57 +1,12 @@
-      module wfn1_fac
-      double precision :: fac_aa
-      double precision :: fac_ab
-      double precision :: fac_redist
-      double precision :: del_ab
-      double precision :: pow_x1_aa
-      double precision :: pow_x2_aa
-      double precision :: pow_x1_ab
-      double precision :: pow_x2_ab
-      double precision :: pow_y1_aa
-      double precision :: pow_y1_ab
-      double precision :: pow_y2_aa
-      double precision :: pow_y2_ab
-      double precision :: pow_y3_aa
-      double precision :: pow_y3_ab
-      double precision :: pow_y4_aa
-      double precision :: pow_y4_ab
-      double precision :: pow_y5_aa
-      double precision :: pow_y5_ab
-      double precision :: pow_z1_aa
-      double precision :: pow_z1_ab
-      double precision :: pow_z2_aa
-      double precision :: pow_z2_ab
-      double precision :: pow_z3_aa
-      double precision :: pow_z3_ab
-      double precision :: pow_z4_aa
-      double precision :: pow_z4_ab
-      double precision :: pow_z5_aa
-      double precision :: pow_z5_ab
-      double precision :: powhf_y1_aa
-      double precision :: powhf_y1_ab
-      double precision :: powhf_y2_aa
-      double precision :: powhf_y2_ab
-      double precision :: powhf_y3_aa
-      double precision :: powhf_y3_ab
-      double precision :: powhf_y4_aa
-      double precision :: powhf_y4_ab
-      double precision :: powhf_y5_aa
-      double precision :: powhf_y5_ab
-      double precision :: powhf_z1_aa
-      double precision :: powhf_z1_ab
-      double precision :: powhf_z2_aa
-      double precision :: powhf_z2_ab
-      double precision :: powhf_z3_aa
-      double precision :: powhf_z3_ab
-      double precision :: powhf_z4_aa
-      double precision :: powhf_z4_ab
-      double precision :: powhf_z5_aa
-      double precision :: powhf_z5_ab
-      double precision, allocatable :: orb_ea(:)
-      double precision, allocatable :: orb_eb(:)
-      double precision, allocatable :: orb_ea_hf(:)
-      double precision, allocatable :: orb_eb_hf(:)
-      end module wfn1_fac
+c-----------------------------------------------------------------------
+c
+      function wfn1_redist() result(fredist)
+      use wfn1_fac
+      implicit none
+      double precision :: fredist
+      fredist = fac_redist
+      end function wfn1_redist
+c
 c-----------------------------------------------------------------------
 c
 C>
@@ -215,7 +170,7 @@ c     write(*,'(" HVD a ",e24.16)')a
       double precision :: b = 0.9757d0
       a = (0.5d0*log(0.5d0)+(1.0d0-0.5d0)*log(1.0d0-0.5d0))/
      &    ((0.5d0*(1.0d0-0.5d0))**b)
-      tol = 1.0d-10
+      tol = 1.0d-4
       if   (p.lt.tol) then
         s  = 0.0d0
         ds = a*b*((tol*(1.0d0-tol))**(b-1.0d0))*(1.0d0-2.0d0*tol)
@@ -228,7 +183,7 @@ c     write(*,'(" HVD a ",e24.16)')a
       endif
 #endif
 c
-      end
+      end subroutine wfn1_entropy1
 c
 c-----------------------------------------------------------------------
 c
@@ -969,7 +924,7 @@ cDEBUG
       endif
 #endif
 c
-      end
+      end subroutine wfn1_entropy2_ab
 c
 c-----------------------------------------------------------------------
 c
@@ -1218,7 +1173,7 @@ cDEBUG
       dsij = 0.0d0
 #endif
 c
-      end
+      end subroutine wfn1_entropy2_aa
 c
 c-----------------------------------------------------------------------
 c

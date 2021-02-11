@@ -187,6 +187,7 @@ C> @}
 *
 * $Id$
 *
+      use wfn1
       implicit none
 #include "errquit.fh"
 #include "rtdb.fh"
@@ -235,8 +236,8 @@ c     external oimp2
       external dc_energy
       logical leps_energy
       external leps_energy
-      logical  wfn1_task_energy
-      external wfn1_task_energy
+!     logical  wfn1_task_energy
+!     external wfn1_task_energy
 c
       logical status
       double precision dipole(3)

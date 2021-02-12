@@ -17,4 +17,5 @@ fi
 ./runtests.mpi.unix procs $np water/water_pme
 ./runtests.mpi.unix procs $np ethanol/ethanol_md
 ./runtests.mpi.unix procs $np ethanol/ethanol_ti
-./runtests.mpi.unix procs $np trypsin/trypsin_md
+# The next test case cannot be repaired because of a lack of a PDB file
+#./runtests.mpi.unix procs $np trypsin/trypsin_md

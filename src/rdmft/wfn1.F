@@ -516,7 +516,7 @@ c
       if (.not.rtdb_cget(wfn1_inst%rtdb,"wfn1:solver",
      &                   len(wfn1_param%solver),
      &                   wfn1_param%solver)) then
-         wfn1_param%solver="diagonalize"
+         wfn1_param%solver="monte-carlo"
       endif
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:conv_tol",MT_DBL,
      &                  1,conv_tol)) conv_tol = 1.0d-6

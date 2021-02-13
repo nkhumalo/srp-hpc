@@ -70,11 +70,6 @@
 #        wfn1_write_movecs.o \
 #        wfn1_zero_vv.o 
 
-  USES_BLAS = wfn1_dlasyf.F \
-              wfn1_dsytf2.F \
-              wfn1_dsytri.F
-
-
    LIBRARY = librdmft.a
 
  LIB_DEFINES =

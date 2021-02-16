@@ -33,6 +33,27 @@ c
       call ga_inquire(g_c,itype_c,ii,jj)
 c
       if (itype_a.ne.itype_b.or.itype_a.ne.itype_c) then
+        if (itype_a.eq.MT_DBL) then
+          write(*,*)"g_a is DOUBLE"
+        else if (itype_a.eq.MT_DCPL) then
+          write(*,*)"g_a is COMPLEX"
+        else
+          write(*,*)"g_a is ",itype_a
+        endif
+        if (itype_b.eq.MT_DBL) then
+          write(*,*)"g_b is DOUBLE"
+        else if (itype_b.eq.MT_DCPL) then
+          write(*,*)"g_b is COMPLEX"
+        else
+          write(*,*)"g_b is ",itype_b
+        endif
+        if (itype_c.eq.MT_DBL) then
+          write(*,*)"g_c is DOUBLE"
+        else if (itype_c.eq.MT_DCPL) then
+          write(*,*)"g_c is COMPLEX"
+        else
+          write(*,*)"g_c is ",itype_c
+        endif
         call errquit("wfn1_gemm: not all matrix types are the same",0,
      &               MA_ERR)
       endif

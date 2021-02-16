@@ -11,8 +11,8 @@ c
 !> This routine is essentially implemented as a wrapper around the
 !> conventional `movecs_write` routine.
 !>
-      subroutine wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave,
-     &                             v_dna,v_dnb,v_dca,v_dcb)
+      subroutine wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave)
+!    &                             v_dna,v_dnb,v_dca,v_dcb)
       implicit none
 #include "errquit.fh"
 !include "wfn1_param.fh"
@@ -24,13 +24,13 @@ c
 !>    The wave function
       type(wfn1_wfn),     intent(in) :: wfn1_wave
 !>    The \f$\alpha\f$ natural orbital energies
-      double precision,   intent(in) :: v_dna(wfn1_param%nmo)
+!     double precision,   intent(in) :: v_dna(wfn1_param%nmo)
 !>    The \f$\beta\f$ natural orbital energies
-      double precision,   intent(in) :: v_dnb(wfn1_param%nmo)
+!     double precision,   intent(in) :: v_dnb(wfn1_param%nmo)
 !>    The \f$\alpha\f$ correlation function energies
-      double precision,   intent(in) :: v_dca(wfn1_param%nmo)
+!     double precision,   intent(in) :: v_dca(wfn1_param%nmo)
 !>    The \f$\beta\f$ correlation function energies
-      double precision,   intent(in) :: v_dcb(wfn1_param%nmo)
+!     double precision,   intent(in) :: v_dcb(wfn1_param%nmo)
 c
       double precision, allocatable :: ocn(:,:)
       double precision, allocatable :: occ(:,:)
@@ -66,10 +66,12 @@ c
 c
 c     Set the energies up
 c
-      evn(:,1) = v_dna(:)
-      evn(:,2) = v_dnb(:)
-      evc(:,1) = v_dca(:)
-      evc(:,2) = v_dcb(:)
+!     evn(:,1) = v_dna(:)
+!     evn(:,2) = v_dnb(:)
+!     evc(:,1) = v_dca(:)
+!     evc(:,2) = v_dcb(:)
+      evn = 0.0d0
+      evc = 0.0d0
 c
 c     Store the correlation functions
 c

@@ -72,6 +72,8 @@
 
    LIBRARY = librdmft.a
 
+   USES_BLAS = wfn1_e_g_2el_mx.F
+
  LIB_DEFINES =
 ifdef TEST_RDMS
  LIB_DEFINES += -DTEST_RDMS

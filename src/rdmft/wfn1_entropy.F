@@ -1,14 +1,5 @@
 c-----------------------------------------------------------------------
 c
-      function wfn1_redist() result(fredist)
-      use wfn1_fac
-      implicit none
-      double precision :: fredist
-      fredist = fac_redist
-      end function wfn1_redist
-c
-c-----------------------------------------------------------------------
-c
 C>
 C> \brief Calculate the 1-electron entropy associated with an 
 C> orbital and its derivative
@@ -499,7 +490,9 @@ c
 !> This subroutine is a temporary feature until there is more clarity
 !> on the required parameters.
 !>
-      subroutine wfn1_set_entropy_fac(faa,fab,taa,dab,
+      subroutine wfn1_set_entropy_fac(faa,fab,
+!    &                                taa,
+     &                                dab,
      &                                px1aa,px2aa,px1ab,px2ab,
      &                                py1aa,py1ab,py2aa,py2ab,
      &                                py3aa,py3ab,py4aa,py4ab,
@@ -520,7 +513,7 @@ c
 !>    The opposite-spin overal scale factor
       double precision, intent(in) :: fab
 !>    The same-spin coordinate offset term
-      double precision, intent(in) :: taa
+!     double precision, intent(in) :: taa
 !>    The opposite-spin same orbital scale factor
       double precision, intent(in) :: dab
 !>    The same-spin power-x
@@ -595,7 +588,7 @@ c    +                pow_z_aa,pow_z_ab,
 c    +                orb_ea,orb_eb
       fac_aa    = faa
       fac_ab    = fab
-      fac_redist= taa
+!     fac_redist= taa
       del_ab    = dab
       pow_x1_aa = px1aa
       pow_x2_aa = px2aa
@@ -652,15 +645,15 @@ c
 !> This subroutine is a temporary feature until there is more clarity
 !> on the required parameters.
 !>
-      subroutine wfn1_set_entropy_eorb(eorb_a,eorb_b,nmo)
-      use wfn1_fac
-      implicit none
+!     subroutine wfn1_set_entropy_eorb(eorb_a,eorb_b,nmo)
+!     use wfn1_fac
+!     implicit none
 !>    The number of MOs
-      integer, intent(in)          :: nmo
+!     integer, intent(in)          :: nmo
 !>    The alpha-spin orbital energies
-      double precision, intent(in) :: eorb_a(1:nmo)
+!     double precision, intent(in) :: eorb_a(1:nmo)
 !>    The beta-spin orbital energies
-      double precision, intent(in) :: eorb_b(1:nmo)
+!     double precision, intent(in) :: eorb_b(1:nmo)
 !>
 c     double precision :: fac_aa
 c     double precision :: fac_ab
@@ -677,21 +670,21 @@ c    +                trm_aa,trm_ab,
 c    +                pow_y_aa,pow_y_ab,
 c    +                pow_z_aa,pow_z_ab,
 c    +                orb_ea,orb_eb
-      if (.not.allocated(orb_ea)) then
-        allocate(orb_ea(1:nmo))
-      endif
-      if (.not.allocated(orb_eb)) then
-        allocate(orb_eb(1:nmo))
-      endif
-      orb_ea = eorb_a
-      orb_eb = eorb_b
+!     if (.not.allocated(orb_ea)) then
+!       allocate(orb_ea(1:nmo))
+!     endif
+!     if (.not.allocated(orb_eb)) then
+!       allocate(orb_eb(1:nmo))
+!     endif
+!     orb_ea = eorb_a
+!     orb_eb = eorb_b
 cDEBUG
-      write(110,*)abs(eorb_a(1)-eorb_a(2))
-      write(111,*)abs(eorb_a(1)-eorb_a(2))
-      close(110)
-      close(111)
+!     write(110,*)abs(eorb_a(1)-eorb_a(2))
+!     write(111,*)abs(eorb_a(1)-eorb_a(2))
+!     close(110)
+!     close(111)
 cDEBUG
-      end subroutine wfn1_set_entropy_eorb
+!     end subroutine wfn1_set_entropy_eorb
 c
 c-----------------------------------------------------------------------
 c
@@ -700,15 +693,15 @@ c
 !> This subroutine is a temporary feature until there is more clarity
 !> on the required parameters.
 !>
-      subroutine wfn1_set_entropy_eorb_hf(eorb_a,eorb_b,nmo)
-      use wfn1_fac
-      implicit none
+!     subroutine wfn1_set_entropy_eorb_hf(eorb_a,eorb_b,nmo)
+!     use wfn1_fac
+!     implicit none
 !>    The number of MOs
-      integer, intent(in)          :: nmo
+!     integer, intent(in)          :: nmo
 !>    The alpha-spin orbital energies
-      double precision, intent(in) :: eorb_a(1:nmo)
+!     double precision, intent(in) :: eorb_a(1:nmo)
 !>    The beta-spin orbital energies
-      double precision, intent(in) :: eorb_b(1:nmo)
+!     double precision, intent(in) :: eorb_b(1:nmo)
 !>
 c     double precision :: fac_aa
 c     double precision :: fac_ab
@@ -725,21 +718,21 @@ c    +                trm_aa,trm_ab,
 c    +                pow_y_aa,pow_y_ab,
 c    +                pow_z_aa,pow_z_ab,
 c    +                orb_ea,orb_eb
-      if (.not.allocated(orb_ea_hf)) then
-        allocate(orb_ea_hf(1:nmo))
-      endif
-      if (.not.allocated(orb_eb_hf)) then
-        allocate(orb_eb_hf(1:nmo))
-      endif
-      orb_ea_hf = eorb_a
-      orb_eb_hf = eorb_b
+!     if (.not.allocated(orb_ea_hf)) then
+!       allocate(orb_ea_hf(1:nmo))
+!     endif
+!     if (.not.allocated(orb_eb_hf)) then
+!       allocate(orb_eb_hf(1:nmo))
+!     endif
+!     orb_ea_hf = eorb_a
+!     orb_eb_hf = eorb_b
 cDEBUG
-      write(120,*)abs(eorb_a(1)-eorb_a(2))
-      write(121,*)abs(eorb_a(1)-eorb_a(2))
-      close(120)
-      close(121)
+!     write(120,*)abs(eorb_a(1)-eorb_a(2))
+!     write(121,*)abs(eorb_a(1)-eorb_a(2))
+!     close(120)
+!     close(121)
 cDEBUG
-      end subroutine wfn1_set_entropy_eorb_hf
+!     end subroutine wfn1_set_entropy_eorb_hf
 c
 c-----------------------------------------------------------------------
 c
@@ -896,8 +889,10 @@ c     call wfn1_entropy2_sij(pi,pj,s,dsi,dsj)
 cDEBUG
 c     write(0,*)'HVD: ii,jj,Ea_ii,Eb_jj=',ii,jj,orb_ea(ii),orb_eb(jj)
 cDEBUG
-      de    = orb_ea(ii)-orb_eb(jj)
-      de_hf = orb_ea_hf(ii)-orb_eb_hf(jj)
+!     de    = orb_ea(ii)-orb_eb(jj)
+!     de_hf = orb_ea_hf(ii)-orb_eb_hf(jj)
+      de    = 0.0d0
+      de_hf = 0.0d0
       call wfn1_thimble(pii,pjj,de_hf,de,
      &                  pow_x1_ab,pow_x2_ab,
      &                  pow_y1_ab,pow_y2_ab,

@@ -57,50 +57,50 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      subroutine wfn1_print_deriv(wfn1_deriv)
-      implicit none
+!     subroutine wfn1_print_deriv(wfn1_deriv)
+!     implicit none
 c
 !include "wfn1_drv.fh"
-#include "global.fh"
-#include "stdio.fh"
+!include "global.fh"
+!include "stdio.fh"
 c
-      type(wfn1_drv), intent(in) :: wfn1_deriv ! The derivative
+!     type(wfn1_drv), intent(in) :: wfn1_deriv ! The derivative
 c
-      integer iproc ! the process rank
-      integer nproc ! the number of process ranks
+!     integer iproc ! the process rank
+!     integer nproc ! the number of process ranks
 c
-      nproc = ga_nnodes()
-      iproc = ga_nodeid()
+!     nproc = ga_nnodes()
+!     iproc = ga_nodeid()
 c
-      if (iproc.eq.0) then
-        write(LuOut,'(" The alpha natural orbital derivatives")')
-        write(LuOut,'(" -------------------------------------")')
-        write(LuOut,*)
-      endif
-      call ga_print(wfn1_deriv%g_dna)
-      if (iproc.eq.0) then
-        write(LuOut,*)
-        write(LuOut,'(" The beta natural orbitals derivatives")')
-        write(LuOut,'(" -------------------------------------")')
-        write(LuOut,*)
-      endif
-      call ga_print(wfn1_deriv%g_dnb)
-      if (iproc.eq.0) then
-        write(LuOut,*)
-        write(LuOut,'(" The alpha correlation function derivatives")')
-        write(LuOut,'(" ------------------------------------------")')
-        write(LuOut,*)
-      endif
-      call ga_print(wfn1_deriv%g_dca)
-      if (iproc.eq.0) then
-        write(LuOut,*)
-        write(LuOut,'(" The beta correlation function derivatives")')
-        write(LuOut,'(" -----------------------------------------")')
-        write(LuOut,*)
-      endif
-      call ga_print(wfn1_deriv%g_dcb)
+!     if (iproc.eq.0) then
+!       write(LuOut,'(" The alpha natural orbital derivatives")')
+!       write(LuOut,'(" -------------------------------------")')
+!       write(LuOut,*)
+!     endif
+!     call ga_print(wfn1_deriv%g_dna)
+!     if (iproc.eq.0) then
+!       write(LuOut,*)
+!       write(LuOut,'(" The beta natural orbitals derivatives")')
+!       write(LuOut,'(" -------------------------------------")')
+!       write(LuOut,*)
+!     endif
+!     call ga_print(wfn1_deriv%g_dnb)
+!     if (iproc.eq.0) then
+!       write(LuOut,*)
+!       write(LuOut,'(" The alpha correlation function derivatives")')
+!       write(LuOut,'(" ------------------------------------------")')
+!       write(LuOut,*)
+!     endif
+!     call ga_print(wfn1_deriv%g_dca)
+!     if (iproc.eq.0) then
+!       write(LuOut,*)
+!       write(LuOut,'(" The beta correlation function derivatives")')
+!       write(LuOut,'(" -----------------------------------------")')
+!       write(LuOut,*)
+!     endif
+!     call ga_print(wfn1_deriv%g_dcb)
 c
-      end subroutine wfn1_print_deriv
+!     end subroutine wfn1_print_deriv
 c
 c-----------------------------------------------------------------------
 c
@@ -129,8 +129,8 @@ c
      &              wfn1_energy%E_corr
         write(LuOut,'(" DFT XC energy      = ",f22.10)')
      &              wfn1_energy%E_dft
-        write(LuOut,'(" El. redistribution = ",f22.10)')
-     &              wfn1_energy%E_redist
+!       write(LuOut,'(" El. redistribution = ",f22.10)')
+!    &              wfn1_energy%E_redist
         write(LuOut,'(" Entropy energy     = ",f22.10)')
      &              wfn1_energy%E_ent
         write(LuOut,'(" Nuclear energy     = ",f22.10)')
@@ -163,8 +163,8 @@ c
       if (iproc.eq.0) then
         write(LuOut,'(" Tot:",f16.6," Na:",e16.6," Nb:",e16.6,
      &                              " Ca:",e16.6," Cb:",e16.6)')
-     &    wfn1_err%total,wfn1_err%errna,wfn1_err%errnb,wfn1_err%errca,
-     &    wfn1_err%errcb
+     &    wfn1_err%total,wfn1_err%errna,wfn1_err%errnb,
+     &                   abs(wfn1_err%errca),abs(wfn1_err%errcb)
       endif
 c
       end subroutine wfn1_print_error

@@ -2,7 +2,7 @@
       implicit none
       double precision :: fac_aa
       double precision :: fac_ab
-      double precision :: fac_redist
+!     double precision :: fac_redist
       double precision :: del_ab
       double precision :: pow_x1_aa
       double precision :: pow_x2_aa
@@ -48,8 +48,8 @@
       double precision :: powhf_z4_ab
       double precision :: powhf_z5_aa
       double precision :: powhf_z5_ab
-      double precision, allocatable :: orb_ea(:)
-      double precision, allocatable :: orb_eb(:)
-      double precision, allocatable :: orb_ea_hf(:)
-      double precision, allocatable :: orb_eb_hf(:)
+!     double precision, allocatable :: orb_ea(:)
+!     double precision, allocatable :: orb_eb(:)
+!     double precision, allocatable :: orb_ea_hf(:)
+!     double precision, allocatable :: orb_eb_hf(:)
       end module wfn1_fac

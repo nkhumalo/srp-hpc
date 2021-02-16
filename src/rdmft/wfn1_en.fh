@@ -9,7 +9,6 @@ C> - The 2-electron energy
 C> - The electron correlation energy
 C> - The entropy dependent term (i.e. the coupling to a bath)
 C> - The DFT exchange-correlation term
-C> - The electron redistribution term
 C> It is not clear yet whether the 2-electron energy will be broken
 C> down into separate Coulomb and Exchange contributions.
 C>
@@ -23,6 +22,4 @@ C>
          double precision :: E_dft    ! The DFT exchange-correlation term
          double precision :: E_2el_hf ! The conventional Hartree-Fock
                                       ! 2-electron energy
-         double precision :: E_redist ! The electron redistribution 
-                                      ! energy
       end type wfn1_en

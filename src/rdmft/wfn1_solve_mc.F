@@ -9,13 +9,15 @@ C> test (albeit slow).
 C>
       logical
      &function wfn1_solve_mc(wfn1_param,wfn1_inst,wfn1_mat,
-     &                       wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                       wfn1_trial_wv,wfn1_trial_drv,
-     &                       wfn1_part_drv,
+     &                       wfn1_wave,
+!    &                       wfn1_deriv,
+     &                       wfn1_energy,wfn1_trial_wv,
+!    &                       wfn1_trial_drv,wfn1_part_drv,
      &                       g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                       v_dna,v_dnb,v_dca,v_dcb,
-     &                       v_dnna,v_dnnb,v_dcna,v_dcnb,
+     &                       gz_momo1,
+!    &                       v_dna,v_dnb,v_dca,v_dcb,
+!    &                       v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                       oprerr,curit)
       implicit none
 !include "wfn1_param.fh"
@@ -40,16 +42,16 @@ c
 !     The current wave function
       type(wfn1_wfn), intent(inout)  :: wfn1_wave
 !     The current wave function derivative
-      type(wfn1_drv), intent(inout)  :: wfn1_deriv
+!     type(wfn1_drv), intent(inout)  :: wfn1_deriv
 !     The energy terms
       type(wfn1_en), intent(inout)   :: wfn1_energy
 c
 !     The trial wave function
       type(wfn1_wfn), intent(inout)  :: wfn1_trial_wv
 !     The trial wave function derivative
-      type(wfn1_drv), intent(inout)  :: wfn1_trial_drv
+!     type(wfn1_drv), intent(inout)  :: wfn1_trial_drv
 !     The non-correlation, non-thermal part of wave function derivative
-      type(wfn1_drv), intent(inout)  :: wfn1_part_drv
+!     type(wfn1_drv), intent(inout)  :: wfn1_part_drv
 !     The trial energy terms
       type(wfn1_en)      :: wfn1_trial_en  ! the trial energy
 !     GA dimensions nbf x nbf
@@ -70,31 +72,36 @@ c
       integer :: g_momo3
 !     GA dimensions nmo x nmo
       integer :: g_momo4
+!     GA dimensions nmo x nmo complex
+      integer :: gz_momo1
 c
 !     Print detailed errors or not
       logical :: oprerr
 !     The current iteration count
       integer :: curit
 c
-      double precision, intent(out) :: v_dna(1:wfn1_param%nmo)
-      double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
-      double precision, intent(out) :: v_dca(1:wfn1_param%nmo)
-      double precision, intent(out) :: v_dcb(1:wfn1_param%nmo)
-      double precision, intent(out) :: v_dnna(1:wfn1_param%nmo)
-      double precision, intent(out) :: v_dnnb(1:wfn1_param%nmo)
-      double precision, intent(out) :: v_dcna(1:wfn1_param%nmo)
-      double precision, intent(out) :: v_dcnb(1:wfn1_param%nmo)
+!     double precision, intent(out) :: v_dna(1:wfn1_param%nmo)
+!     double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
+!     double precision, intent(out) :: v_dca(1:wfn1_param%nmo)
+!     double precision, intent(out) :: v_dcb(1:wfn1_param%nmo)
+!     double precision, intent(out) :: v_dnna(1:wfn1_param%nmo)
+!     double precision, intent(out) :: v_dnnb(1:wfn1_param%nmo)
+!     double precision, intent(out) :: v_dcna(1:wfn1_param%nmo)
+!     double precision, intent(out) :: v_dcnb(1:wfn1_param%nmo)
 c
 c     Local
 c
       integer :: iproc
       integer :: maxit
 c
+      double precision :: rlimo ! the old rlimit
+c
       type(wfn1_wfn)   :: wfn1_t_wv
       type(wfn1_error) :: error
 c
       iproc = ga_nodeid()
       maxit = wfn1_param%maxiter
+      rlimo = wfn1_param%rlim
       wfn1_solve_mc = .false.
       if (iproc.eq.0) then
         if (.not.oprerr) then
@@ -107,15 +114,17 @@ c
      &          "------","------","------","------"
         endif
       endif
-      call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
-     &              wfn1_part_drv,wfn1_energy,
+      call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &              wfn1_deriv,wfn1_part_drv,
+     &              wfn1_energy,
      &              g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &              g_bfmo,
-     &              g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dna,v_dnb,v_dca,v_dcb,
-     &              v_dnna,v_dnnb,v_dcna,v_dcnb)
-      error      = wfn1_trace(wfn1_deriv,wfn1_deriv)
-      curit      = 0
+     &              g_momo1,g_momo2,g_momo3,g_momo4)
+!    &              v_dna,v_dnb,v_dca,v_dcb,
+!    &              v_dnna,v_dnnb,v_dcna,v_dcnb)
+!     error       = wfn1_trace(wfn1_deriv,wfn1_deriv)
+      error%total = rlimo
+      curit       = 0
       if (iproc.eq.0) then
         if (.not.oprerr) then
           write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
@@ -124,20 +133,29 @@ c
           write(luout,'(i10,f20.8,5f16.6)')curit,wfn1_energy%E_tot,
      &                                     error%total,
      &                                     error%errna,error%errnb,
-     &                                     error%errca,error%errcb
+     &                                     abs(error%errca),
+     &                                     abs(error%errcb)
         endif
       endif
-      do while (curit.lt.maxit)
+      do while (curit.lt.maxit.and.
+     &          error%total.gt.wfn1_param%convergence)
         curit = curit + 1
         call wfn1_mcsearch(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
-     &                     wfn1_deriv,wfn1_energy,wfn1_trial_wv,
-     &                     wfn1_trial_drv,wfn1_part_drv,wfn1_trial_en,
+!    &                     wfn1_deriv,
+     &                     wfn1_energy,wfn1_trial_wv,
+!    &                     wfn1_trial_drv,wfn1_part_drv,
+     &                     wfn1_trial_en,
      &                     g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &                     g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                     v_dna,v_dnb,v_dca,v_dcb,
-     &                     v_dnna,v_dnnb,v_dcna,v_dcnb)
+     &                     gz_momo1)
+!    &                     v_dna,v_dnb,v_dca,v_dcb,
+!    &                     v_dnna,v_dnnb,v_dcna,v_dcnb)
 c
-        error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
+!       error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
+        if (wfn1_param%rlim.lt.rlimo) then
+          error%total = rlimo
+          rlimo       = wfn1_param%rlim
+        endif
 c
 c       swap trial wavefunctions, derivatives and energies with the 
 c       regular ones.
@@ -157,7 +175,7 @@ c
      &            curit,wfn1_energy%E_tot,
      &            error%total,
      &            error%errna,error%errnb,
-     &            error%errca,error%errcb
+     &            abs(error%errca),abs(error%errcb)
           endif
         endif
       enddo

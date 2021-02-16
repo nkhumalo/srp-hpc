@@ -83,7 +83,7 @@ c
      &                 'type',UERR)
         endif
       endif
-      uchunk = max(8, (nu-1)/ga_nnodes()+1)
+      uchunk = max(8, (nu+ga_nnodes()-1)/ga_nnodes())
       ulo  = ga_nodeid()*uchunk + 1
       uhi  = min(ulo + uchunk - 1, nu)
       ld   = uhi - ulo + 1
@@ -302,6 +302,8 @@ c
 c     
       integer i, j, u, npass
       complex(kind=8) :: si, scale
+      complex(kind=8), parameter :: zero = complex(0.0d0,0.0d0)
+      complex(kind=8), parameter :: one  = complex(1.0d0,0.0d0)
 c     
 c     Orthogonalize columns of a matrix distributed so that
 c     each process has vecs(ulo:uhi,1:ni) ... uses global sums only.
@@ -313,34 +315,31 @@ c
 c       If have a metric then first form overlap*vec(i)
 c     
         if (ometric) then
-          w = complex(0.0d0,0.0d0)
+          w = zero
           if ((uhi-ulo+1) .gt. 0) 
-     &      call zgemv('n', nu, (uhi-ulo+1), 1.0d0, o, nu,
-     &           vecs(ulo,i), 1, 0.0d0, w, 1)
+     &      call zgemv('n', nu, (uhi-ulo+1), one, o, nu,
+     &           vecs(ulo,i), 1, zero, w, 1)
           call ga_zgop(msg_orthog_1, w, nu, '+') ! Actually only need ulo:hi local
-          do j = 1, nu
-            w(j) = conjg(w(j))
-          enddo
         else
           do u = ulo, uhi
-            w(u) = conjg(vecs(u,i))
+            w(u) = vecs(u,i)
           end do
         end if
 c     
 c       Now form overlap between vector i and vectors 1...i
 c     
-        s = complex(0.0d0,0.0d0)
+        s = zero
         if ((uhi-ulo+1) .gt. 0) then
-          call zgemv('t', (uhi-ulo+1), i, 1.0d0,
-     &         vecs(ulo,1), ld, w(ulo), 1, 0.0d0, s(1), 1)
+          call zgemv('c', (uhi-ulo+1), i, one,
+     &         vecs(ulo,1), ld, w(ulo), 1, zero, s(1), 1)
         endif
         call ga_zgop(msg_orthog_2, s, i, '+')
 c
 c       Apply the rotation
 c     
         if ((uhi-ulo+1).gt.0 .and. i.gt.1) then
-          call zgemv('n', (uhi-ulo+1), i-1, -1.0d0,
-     &         vecs(ulo,1), ld, s(1), 1, 1.0d0, vecs(ulo,i), 1)
+          call zgemv('n', (uhi-ulo+1), i-1, -one,
+     &         vecs(ulo,1), ld, s(1), 1, one, vecs(ulo,i), 1)
         end if
 c     
 c       Renormalize vector i
@@ -367,7 +366,7 @@ c
         if (abs(si) .eq. 0.0d0) then
           call errquit('wfn1_orthog_zvecs: hard zero', i, GA_ERR)
         endif
-        scale = complex(1.0d0,0.0d0)/sqrt(si)
+        scale = one/sqrt(si)
         do u = ulo, uhi
           vecs(u,i) = vecs(u,i) * scale
         end do
@@ -498,4 +497,72 @@ c       call ga_print(gz_momo)
 c
 c-----------------------------------------------------------------------
 c
-!     end submodule wfn1_clc_ortho
+!> \brief Call wfn1_orthog and test whether the resulting vectors are 
+!>        orthogonal
+!>
+      subroutine wfn1_tst_orthog(g_vecs,g_over,ometric)
+      implicit none
+#include "errquit.fh"
+#include "mafdecls.fh"
+#include "global.fh"
+#include "msgids.fh"
+!>    The GA with the vectors
+      integer, intent(in) :: g_vecs 
+!>    The GA with the overlap
+      integer, intent(in) :: g_over 
+!>    Flag if .true. there is an overlap matrix, .false. there is not.
+      logical, intent(in) :: ometric
+c
+      integer :: itypv, itypo
+      integer :: ii, jj
+      integer :: nbf, nmo
+      integer :: g_bfmo, g_momo
+c
+      character(len=1) :: tn 
+      character(len=1) :: tt 
+c
+      call ga_inquire(g_vecs,itypv,nbf,nmo)
+      if (ometric) then
+        call ga_inquire(g_over,itypo,ii,nbf)
+        if (itypv.ne.itypo) then
+          call errquit("wfn1_tst_orthog: mismatching types",0,UERR)
+        endif
+      endif
+      if (itypv.eq.MT_DBL) then
+        tn = 'n'
+        tt = 't'
+      else if (itypv.eq.MT_DCPL) then
+        tn = 'n'
+        tt = 'c'
+      else
+        call errquit("wfn1_tst_orthog: invalid type",itypv,MA_ERR)
+      endif
+c
+      call wfn1_orthog(g_vecs,g_over,ometric)
+c
+      if (.not.ga_create(itypv,nbf,nmo,"g_bfmo",-1,-1,g_bfmo)) then
+        call errquit("wfn1_tst_orthog: g_bfmo create failed",0,MA_ERR)
+      endif
+      if (.not.ga_create(itypv,nmo,nmo,"g_momo",-1,-1,g_momo)) then
+        call errquit("wfn1_tst_orthog: g_momo create failed",0,MA_ERR)
+      endif
+      if (ometric) then
+        call wfn1_gemm(tn,tn,nbf,nmo,nbf,1.0d0,g_over,g_vecs,
+     &                                   0.0d0,g_bfmo)
+        call wfn1_gemm(tt,tn,nmo,nmo,nbf,1.0d0,g_vecs,g_bfmo,
+     &                                   0.0d0,g_momo)
+      else
+        call wfn1_gemm(tt,tn,nmo,nmo,nbf,1.0d0,g_vecs,g_vecs,
+     &                                   0.0d0,g_momo)
+      endif
+      call ga_print(g_momo)
+      if (.not.ga_destroy(g_momo)) then
+        call errquit("wfn1_tst_orthog: g_momo destroy failed",0,MA_ERR)
+      endif
+      if (.not.ga_destroy(g_bfmo)) then
+        call errquit("wfn1_tst_orthog: g_bfmo destroy failed",0,MA_ERR)
+      endif
+c
+      end subroutine wfn1_tst_orthog
+c
+c-----------------------------------------------------------------------

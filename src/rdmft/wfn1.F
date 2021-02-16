@@ -1,6 +1,3 @@
-!     submodule (wfn1) wfn1_for_nw
-!     implicit none
-!     contains
       subroutine wfn1_input(rtdb)
       implicit none
 !>
@@ -88,6 +85,7 @@ c
       integer g_momo2    ! nmo x nmo scratch global array
       integer g_momo3    ! nmo x nmo scratch global array
       integer g_momo4    ! nmo x nmo scratch global array
+      integer gz_momo1    ! nmo x nmo complex scratch global array
 c
       integer ndep_nmo          ! the number of linearly independent
                                 ! vectors set as a user parameter
@@ -100,34 +98,34 @@ c
       double precision conv_tol ! the convergence tolerance
 c
       double precision, allocatable :: eig(:)
-      double precision, allocatable :: v_dna(:)
-      double precision, allocatable :: v_dnb(:)
-      double precision, allocatable :: v_dca(:)
-      double precision, allocatable :: v_dcb(:)
-      double precision, allocatable :: v_dnna(:)
-      double precision, allocatable :: v_dnnb(:)
-      double precision, allocatable :: v_dcna(:)
-      double precision, allocatable :: v_dcnb(:)
+!     double precision, allocatable :: v_dna(:)
+!     double precision, allocatable :: v_dnb(:)
+!     double precision, allocatable :: v_dca(:)
+!     double precision, allocatable :: v_dcb(:)
+!     double precision, allocatable :: v_dnna(:)
+!     double precision, allocatable :: v_dnnb(:)
+!     double precision, allocatable :: v_dcna(:)
+!     double precision, allocatable :: v_dcnb(:)
       type(wfn1_error)              :: error
 c
       type(wfn1_prminst) :: wfn1_inst    ! paramater instances
       type(wfn1_prm)     :: wfn1_param   ! calculation parameters
       type(wfn1_matcnst) :: wfn1_mat     ! matrix constants
       type(wfn1_wfn)     :: wfn1_wave    ! the current wave function
-      type(wfn1_drv)     :: wfn1_deriv   ! the derivative of the current
-                                         ! wave function
+!     type(wfn1_drv)     :: wfn1_deriv   ! the derivative of the current
+!                                        ! wave function
       type(wfn1_en)      :: wfn1_energy  ! the energy terms
 c
       type(wfn1_wfn)     :: wfn1_trial_wv  ! the trial wave function
-      type(wfn1_drv)     :: wfn1_trial_drv ! the derivative wrt the trial
-                                           ! wave function
-      type(wfn1_drv)     :: wfn1_part_drv ! the non-correlation, non-
-                                          ! thermal part of derivative
-                                          ! wrt the wave function
+!     type(wfn1_drv)     :: wfn1_trial_drv ! the derivative wrt the trial
+!                                          ! wave function
+!     type(wfn1_drv)     :: wfn1_part_drv ! the non-correlation, non-
+!                                         ! thermal part of derivative
+!                                         ! wrt the wave function
       type(wfn1_en)      :: wfn1_trial_en  ! the trial energy
 c
       type(wfn1_wfn) :: wfn1_t_wv  ! temporary variable
-      type(wfn1_drv) :: wfn1_t_drv ! temporary variable
+!     type(wfn1_drv) :: wfn1_t_drv ! temporary variable
 c
       logical, external :: int_normalize
 !     logical, external :: wfn1_solve_line
@@ -135,7 +133,7 @@ c
 !     logical, external :: wfn1_solve_mc
 c
       double precision aa_hl, ab_hl
-      double precision fac_redist
+!     double precision fac_redist
       double precision fac_aa,         pow_x1_aa, pow_x2_aa,
      +                                 pow_y1_aa, pow_z1_aa,
      +                                 pow_y2_aa, pow_z2_aa,
@@ -161,8 +159,17 @@ c
      +                                 powhf_y4_ab, powhf_z4_ab,
      +                                 powhf_y5_ab, powhf_z5_ab
 c
+      integer :: nseedsize
+      integer, allocatable :: nseed(:)
+c
       iproc = ga_nodeid()
       nproc = ga_nnodes()
+      call random_seed(size=nseedsize)
+      allocate(nseed(1:nseedsize))
+      call random_seed(get=nseed)
+      nseed = nseed + iproc
+      call random_seed(put=nseed)
+      deallocate(nseed)
 c
       wfn1_inst%rtdb = rtdb
       pname = "wfn1_energy:"
@@ -353,9 +360,9 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_aa',MT_DBL,1,
      &                   fac_aa))
      &  fac_aa    = 0.0d0
-      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_redist',MT_DBL,1,
-     &                   fac_redist))
-     &  fac_redist= 0.0d0
+!     if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_redist',MT_DBL,1,
+!    &                   fac_redist))
+!    &  fac_redist= 0.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_x1_aa',MT_DBL,1,
      &                   pow_x1_aa))
      &  pow_x1_aa  = 0.0d0
@@ -494,7 +501,7 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:powhf_z5_ab',MT_DBL,1,
      &                   powhf_z5_ab))
      &  powhf_z5_ab = 0.0d0
-      call wfn1_set_entropy_fac(fac_aa,fac_ab,fac_redist,del_ab,
+      call wfn1_set_entropy_fac(fac_aa,fac_ab,del_ab,
      &                          pow_x1_aa,pow_x2_aa,pow_x1_ab,pow_x2_ab,
      &                          pow_y1_aa,pow_y1_ab,pow_y2_aa,pow_y2_ab,
      &                          pow_y3_aa,pow_y3_ab,pow_y4_aa,pow_y4_ab,
@@ -677,6 +684,11 @@ c
         call errquit(pname//" allocate g_momo4 failed",
      &               wfn1_ibd_proc(wfn1_param%nmo**2,nproc),GA_ERR)
       endif
+      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+     &                   "gz_momo1",-1,-1,gz_momo1)) then
+        call errquit(pname//" allocate gz_momo1 failed",
+     &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
+      endif
 c
 c     == Load any DFT related variables ==
 c
@@ -694,35 +706,35 @@ c
 c
 c     == Allocate memory for the natural orbital energies
 c
-      allocate(v_dna(1:wfn1_param%nmo), v_dnb(1:wfn1_param%nmo))
-      allocate(v_dca(1:wfn1_param%nmo), v_dcb(1:wfn1_param%nmo))
-      allocate(v_dnna(1:wfn1_param%nmo),v_dnnb(1:wfn1_param%nmo))
-      allocate(v_dcna(1:wfn1_param%nmo),v_dcnb(1:wfn1_param%nmo))
-      v_dna = 0.0d0
-      v_dnb = 0.0d0
-      v_dca = 0.0d0
-      v_dcb = 0.0d0
-      v_dnna = 0.0d0
-      v_dnnb = 0.0d0
-      v_dcna = 0.0d0
-      v_dcnb = 0.0d0
+!     allocate(v_dna(1:wfn1_param%nmo), v_dnb(1:wfn1_param%nmo))
+!     allocate(v_dca(1:wfn1_param%nmo), v_dcb(1:wfn1_param%nmo))
+!     allocate(v_dnna(1:wfn1_param%nmo),v_dnnb(1:wfn1_param%nmo))
+!     allocate(v_dcna(1:wfn1_param%nmo),v_dcnb(1:wfn1_param%nmo))
+!     v_dna = 0.0d0
+!     v_dnb = 0.0d0
+!     v_dca = 0.0d0
+!     v_dcb = 0.0d0
+!     v_dnna = 0.0d0
+!     v_dnnb = 0.0d0
+!     v_dcna = 0.0d0
+!     v_dcnb = 0.0d0
 cDEBUG
-      if (wfn1_param%corr_expr.eq."wfn1s") then
-        read(70,*)v_dna(1:wfn1_param%nmo)
-        read(70,*)v_dnb(1:wfn1_param%nmo)
-        close(70)
-        call wfn1_set_entropy_eorb_hf(v_dna,v_dnb,wfn1_param%nmo)
-        call wfn1_set_entropy_eorb(v_dna,v_dnb,wfn1_param%nmo)
-        v_dna = 0.0d0
-        v_dnb = 0.0d0
-      endif
+!     if (wfn1_param%corr_expr.eq."wfn1s") then
+!       read(70,*)v_dna(1:wfn1_param%nmo)
+!       read(70,*)v_dnb(1:wfn1_param%nmo)
+!       close(70)
+!       call wfn1_set_entropy_eorb_hf(v_dna,v_dnb,wfn1_param%nmo)
+!       call wfn1_set_entropy_eorb(v_dna,v_dnb,wfn1_param%nmo)
+!       v_dna = 0.0d0
+!       v_dnb = 0.0d0
+!     endif
 cDEBUG
 c
 c     == Allocate memory for the derivatives wrt the wavefunctions ==
 c
-      call wfn1_allocate_drv(wfn1_param,wfn1_deriv)
-      call wfn1_allocate_drv(wfn1_param,wfn1_trial_drv)
-      call wfn1_allocate_drv(wfn1_param,wfn1_part_drv)
+!     call wfn1_allocate_drv(wfn1_param,wfn1_deriv)
+!     call wfn1_allocate_drv(wfn1_param,wfn1_trial_drv)
+!     call wfn1_allocate_drv(wfn1_param,wfn1_part_drv)
 c
 c     == Populate the natural orbitals with the eigenfunctions of ==
 c     == the S^{-1/2} matrix                                      == 
@@ -808,12 +820,15 @@ c    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
 c    &                    oprerr,curit)
       else if (wfn1_param%solver.eq."monte-carlo") then
         oconverged = wfn1_solve_mc(wfn1_param,wfn1_inst,wfn1_mat,
-     &                    wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
+     &                    wfn1_wave,
+!    &                    wfn1_deriv,
+     &                    wfn1_energy,wfn1_trial_wv,
+!    &                    wfn1_trial_drv,wfn1_part_drv,
      &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                    v_dna,v_dnb,v_dca,v_dcb,
-     &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
+     &                    gz_momo1,
+!    &                    v_dna,v_dnb,v_dca,v_dcb,
+!    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                    oprerr,curit)
       else
         if (iproc.eq.0) then
@@ -859,8 +874,8 @@ c
       if (.not.rtdb_put(rtdb,'wfn1:converged',MT_LOG,1,oconverged))
      &  call errquit(pname//' failed to store converged in rtdb', 
      &               0, RTDB_ERR)
-      call wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave,
-     &                       v_dna,v_dnb,v_dca,v_dcb)
+      call wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave)
+!    &                       v_dna,v_dnb,v_dca,v_dcb)
 c
 c     == Print results ==
 c
@@ -869,7 +884,8 @@ c
         call wfn1_print_energy(wfn1_energy)
       endif
       call wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
-     &                         v_dna,v_dnb,v_dca,v_dcb,g_momo1,g_momo2)
+!    &                         v_dna,v_dnb,v_dca,v_dcb,
+     &                         g_momo1,g_momo2)
 cDEBUG
 c     call wfn1_print_orb_energies(wfn1_param,
 c    &     v_dna,v_dnb,v_dca,v_dcb,
@@ -882,13 +898,13 @@ cDEBUG
 c     wfn1_success = .true.
 cDEBUG
       call grid_cleanup(.false.)
-      call wfn1_deallocate_drv(wfn1_part_drv)
-      call wfn1_deallocate_drv(wfn1_trial_drv)
-      call wfn1_deallocate_drv(wfn1_deriv)
-      deallocate(v_dcna,v_dcnb)
-      deallocate(v_dnna,v_dnnb)
-      deallocate(v_dca, v_dcb)
-      deallocate(v_dna, v_dnb)
+!     call wfn1_deallocate_drv(wfn1_part_drv)
+!     call wfn1_deallocate_drv(wfn1_trial_drv)
+!     call wfn1_deallocate_drv(wfn1_deriv)
+!     deallocate(v_dcna,v_dcnb)
+!     deallocate(v_dnna,v_dnnb)
+!     deallocate(v_dca, v_dcb)
+!     deallocate(v_dna, v_dnb)
       deallocate(wfn1_t_wv%dcntb)
       deallocate(wfn1_t_wv%dcnta)
       deallocate(wfn1_t_wv%icnfb)
@@ -897,6 +913,9 @@ cDEBUG
       call wfn1_deallocate_wfn(wfn1_wave)
       call wfn1_deallocate_mat(wfn1_mat)
 c
+      if (.not.ga_destroy(gz_momo1)) then
+        call errquit(pname//" deallocate gz_momo1 failed",0,GA_ERR)
+      endif
       if (.not.ga_destroy(g_momo4)) then
         call errquit(pname//" deallocate g_momo4 failed",0,GA_ERR)
       endif
@@ -936,4 +955,3 @@ c
      &  call errquit(pname//' Failed to destroy geometry',0,GEOM_ERR)
 c
       end function wfn1_task_energy
-!     end submodule wfn1_for_nw

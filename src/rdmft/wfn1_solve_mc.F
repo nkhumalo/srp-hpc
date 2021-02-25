@@ -91,6 +91,7 @@ c
 c
 c     Local
 c
+      integer :: nmo
       integer :: iproc
       integer :: maxit
 c
@@ -102,6 +103,7 @@ c
       iproc = ga_nodeid()
       maxit = wfn1_param%maxiter
       rlimo = wfn1_param%rlim
+      nmo   = wfn1_param%nmo
       wfn1_solve_mc = .false.
       if (iproc.eq.0) then
         if (.not.oprerr) then
@@ -123,7 +125,13 @@ c
 !    &              v_dna,v_dnb,v_dca,v_dcb,
 !    &              v_dnna,v_dnnb,v_dcna,v_dcnb)
 !     error       = wfn1_trace(wfn1_deriv,wfn1_deriv)
-      error%total = rlimo
+!
+!     Estimate of the distance to the solution based on the hypercube
+!     defined by the interval in which the random numbers are chosen.
+!     The estimate corresponds to the distance of the center to one
+!     of the corners of the hypercube.
+!
+      error%total = 2.0d0*rlimo*nmo
       curit       = 0
       if (iproc.eq.0) then
         if (.not.oprerr) then
@@ -153,7 +161,7 @@ c
 c
 !       error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
         if (wfn1_param%rlim.lt.rlimo) then
-          error%total = rlimo
+          error%total = 2.0d0*rlimo*nmo
           rlimo       = wfn1_param%rlim
         endif
 c

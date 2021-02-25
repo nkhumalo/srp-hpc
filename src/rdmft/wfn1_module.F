@@ -24,6 +24,7 @@ c-----------------------------------------------------------------------
 #include "wfn1_e_g_2el_mx.F"
 !include "wfn1_e_g_2el_vx.F"
 #include "wfn1_e_g_2el_s.F"
+#include "wfn1_e_g_2el_wfn.F"
 #include "wfn1_e_g_dft.F"
 !include "wfn1_e_g_redist.F"
 #include "wfn1_entropy.F"

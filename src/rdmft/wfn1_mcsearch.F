@@ -146,11 +146,12 @@ c
 !    &                v_dnna,v_dnnb,v_dcna,v_dcnb)
 
         Ewf_trial = wfn1_trial_en%E_tot
-        de = Ewf - Ewf_trial
+        de = Ewf_trial - Ewf
         if (iproc.eq.0) then
-c         call random_number(random)
-c         ostop = random.le.exp(pfac*de)
-          ostop = de.gt.0.0d0
+c
+c         If the energy goes down we are going in the right direction
+c
+          ostop = de.le.0.0d0
         endif
         call ga_brdcst(1200,ostop,ma_sizeof(MT_LOG,1,MT_BYTE),0)
         if (.not.ostop.and.(mod(ntries,20).eq.0)) then

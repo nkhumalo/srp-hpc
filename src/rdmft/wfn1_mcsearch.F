@@ -24,6 +24,7 @@ C>
      &                         wfn1_trial_en,
      &                         g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                         g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                         g_4t1,g_4t2,
      &                         gz_momo1)
 !    &                         v_dna,v_dnb,v_dca,v_dcb,
 !    &                         v_dnna,v_dnnb,v_dcna,v_dcnb)
@@ -58,6 +59,8 @@ c
       integer, intent(inout) :: g_momo2 ! nmo x nmo scratch GA
       integer, intent(inout) :: g_momo3 ! nmo x nmo scratch GA
       integer, intent(inout) :: g_momo4 ! nmo x nmo scratch GA
+      integer, intent(inout) :: g_4t1   ! nbf x nbf x nbf x nbf scratch GA
+      integer, intent(inout) :: g_4t2   ! nbf x nbf x nbf x nbf scratch GA
       integer, intent(inout) :: gz_momo1 ! nmo x nmo complex scratch GA
 c
 c     Natural orbital energies
@@ -141,7 +144,8 @@ c
 !    &                wfn1_trial_drv,wfn1_part_drv,
      &                wfn1_trial_en,
      &                g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
-     &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4)
+     &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                g_4t1,g_4t2)
 !    &                v_dna,v_dnb,v_dca,v_dcb,
 !    &                v_dnna,v_dnnb,v_dcna,v_dcnb)
 

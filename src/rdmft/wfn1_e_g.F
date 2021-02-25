@@ -11,7 +11,8 @@ C>
      &                    wfn1_energy,
      &                    g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &                    g_bfmo,
-     &                    g_momo,g_momo2,g_momo3,g_momo4)
+     &                    g_momo,g_momo2,g_momo3,g_momo4,
+     &                    g_4t1,g_4t2)
       implicit none
 C 
 #include "mafdecls.fh"
@@ -40,6 +41,8 @@ c
       integer, intent(in) :: g_momo2 ! nmo x nmo scratch GA
       integer, intent(in) :: g_momo3 ! nmo x nmo scratch GA
       integer, intent(in) :: g_momo4 ! nmo x nmo scratch GA
+      integer, intent(in) :: g_4t1   ! nbf x nbf x nbf x nbf scratch GA
+      integer, intent(in) :: g_4t2   ! nbf x nbf x nbf x nbf scratch GA
 c
 !>    The \$\alpha\f$ natural orbital energies
 !     double precision, intent(out) :: v_dna(1:wfn1_param%nmo)
@@ -157,6 +160,10 @@ c
      &                         g_momo,g_momo2,
 !    &                         g_momo3,g_momo4,
      &                         wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1w") then
+        call wfn1_e_g_2el_wfn(wfn1_param,wfn1_mat,wfn1_wave,
+     &                        g_bfbf,g_4t1,g_4t2,
+     &                        wfn1_energy%E_2el)
       else
         call errquit("invalid correlation energy option",0,UERR)
       endif

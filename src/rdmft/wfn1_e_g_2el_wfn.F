@@ -4,7 +4,7 @@ c
 !>        model
 !>
       subroutine wfn1_e_g_2el_wfn(wfn1_param,wfn1_mat,wfn1_wave,
-     &                            E_2el,g_bfbf,g_4mo,g_4t1)
+     &                            g_bfbf,g_4mo,g_4t1,E_2el)
       implicit none
 #include "errquit.fh"
 #include "mafdecls.fh"

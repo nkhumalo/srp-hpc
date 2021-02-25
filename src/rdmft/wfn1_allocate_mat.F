@@ -21,7 +21,7 @@ c
       type(wfn1_prminst), intent(in)  :: wfn1_inst
       type(wfn1_matcnst), intent(out) :: wfn1_mat
       integer, external :: ga_create_atom_blocked
-      integer :: idim(4)
+      integer :: idims(4)
       integer :: ichnk(4)
 !>
       wfn1_mat%g_s   = ga_create_atom_blocked(
@@ -32,9 +32,9 @@ c
      &                   wfn1_inst%geom,wfn1_inst%basis,"1-electron")
       wfn1_mat%g_cs  = ga_create_atom_blocked(
      &                   wfn1_inst%geom,wfn1_inst%basis,"schwarz")
-      idim = wfn1_param%nbf
+      idims = wfn1_param%nbf
       ichnk = -1
-      if (.not.nga_create(MT_DBL,4,idim,"2-electron",ichnk,
+      if (.not.nga_create(MT_DBL,4,idims,"2-electron",ichnk,
      &                    wfn1_mat%g_2el)) then
         call errquit("failed to create g_2el",0,GA_ERR)
       endif

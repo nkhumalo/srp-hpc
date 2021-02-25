@@ -15,6 +15,7 @@ C>
 !    &                       wfn1_trial_drv,wfn1_part_drv,
      &                       g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                       g_4t1,g_4t2,
      &                       gz_momo1,
 !    &                       v_dna,v_dnb,v_dca,v_dcb,
 !    &                       v_dnna,v_dnnb,v_dcna,v_dcnb,
@@ -72,6 +73,10 @@ c
       integer :: g_momo3
 !     GA dimensions nmo x nmo
       integer :: g_momo4
+!     GA dimensions nbf x nbf x nbf x nbf
+      integer :: g_4t1
+!     GA dimensions nbf x nbf x nbf x nbf
+      integer :: g_4t2
 !     GA dimensions nmo x nmo complex
       integer :: gz_momo1
 c
@@ -121,7 +126,8 @@ c
      &              wfn1_energy,
      &              g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &              g_bfmo,
-     &              g_momo1,g_momo2,g_momo3,g_momo4)
+     &              g_momo1,g_momo2,g_momo3,g_momo4,
+     &              g_4t1,g_4t2)
 !    &              v_dna,v_dnb,v_dca,v_dcb,
 !    &              v_dnna,v_dnnb,v_dcna,v_dcnb)
 !     error       = wfn1_trace(wfn1_deriv,wfn1_deriv)
@@ -155,6 +161,7 @@ c
      &                     wfn1_trial_en,
      &                     g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &                     g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                     g_4t1,g_4t2,
      &                     gz_momo1)
 !    &                     v_dna,v_dnb,v_dca,v_dcb,
 !    &                     v_dnna,v_dnnb,v_dcna,v_dcnb)

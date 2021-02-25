@@ -85,6 +85,8 @@ c
       integer g_momo2    ! nmo x nmo scratch global array
       integer g_momo3    ! nmo x nmo scratch global array
       integer g_momo4    ! nmo x nmo scratch global array
+      integer g_4t1      ! nbf x nbf x nbf x nbf scratch global array
+      integer g_4t2      ! nbf x nbf x nbf x nbf scratch global array
       integer gz_momo1    ! nmo x nmo complex scratch global array
 c
       integer ndep_nmo          ! the number of linearly independent
@@ -159,6 +161,8 @@ c
      +                                 powhf_y4_ab, powhf_z4_ab,
      +                                 powhf_y5_ab, powhf_z5_ab
 c
+      integer :: idims(4) ! To set up 4-D GAs
+      integer :: ichnk(4) ! To set up 4-D GAs
       integer :: nseedsize
       integer, allocatable :: nseed(:)
 c
@@ -684,6 +688,16 @@ c
         call errquit(pname//" allocate g_momo4 failed",
      &               wfn1_ibd_proc(wfn1_param%nmo**2,nproc),GA_ERR)
       endif
+      idims = wfn1_param%nbf
+      ichnk = -1
+      if (.not.nga_create(MT_DBL,4,idims,"g_4t1",ichnk,g_4t1)) then
+        call errquit(pname//" allocate g_4t1 failed",
+     &               wfn1_ibd_proc(wfn1_param%nbf**4,nproc),GA_ERR)
+      endif
+      if (.not.nga_create(MT_DBL,4,idims,"g_4t2",ichnk,g_4t2)) then
+        call errquit(pname//" allocate g_4t2 failed",
+     &               wfn1_ibd_proc(wfn1_param%nbf**4,nproc),GA_ERR)
+      endif
       if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
      &                   "gz_momo1",-1,-1,gz_momo1)) then
         call errquit(pname//" allocate gz_momo1 failed",
@@ -826,6 +840,7 @@ c    &                    oprerr,curit)
 !    &                    wfn1_trial_drv,wfn1_part_drv,
      &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                    g_4t1,g_4t2,
      &                    gz_momo1,
 !    &                    v_dna,v_dnb,v_dca,v_dcb,
 !    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
@@ -915,6 +930,12 @@ cDEBUG
 c
       if (.not.ga_destroy(gz_momo1)) then
         call errquit(pname//" deallocate gz_momo1 failed",0,GA_ERR)
+      endif
+      if (.not.ga_destroy(g_4t2)) then
+        call errquit(pname//" deallocate g_4t2 failed",0,GA_ERR)
+      endif
+      if (.not.ga_destroy(g_4t1)) then
+        call errquit(pname//" deallocate g_4t1 failed",0,GA_ERR)
       endif
       if (.not.ga_destroy(g_momo4)) then
         call errquit(pname//" deallocate g_momo4 failed",0,GA_ERR)

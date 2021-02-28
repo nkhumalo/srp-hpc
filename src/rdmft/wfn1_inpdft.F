@@ -24,7 +24,7 @@ c
 #include "mafdecls.fh"
 #include "../nwdft/include/cdft.fh"
 #include "../nwdft/grid/cgridfile.fh"
-#include "wfn1_param.fh"
+!include "wfn1_param.fh"
 !> General calculation parameters
       type(wfn1_prm),     intent(in) :: wfn1_param
 !> Calculation instances such as the runtime database, geometry, etc.

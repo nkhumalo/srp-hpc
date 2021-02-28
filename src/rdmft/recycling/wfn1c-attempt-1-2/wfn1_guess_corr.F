@@ -1,0 +1,299 @@
+c-----------------------------------------------------------------------
+c
+C>
+C> \brief Guess the correlation functions 
+C>
+C> Currently it is believed that it is important that the correlation
+C> function coefficients are non-zero everywhere so that all functions
+C> will mix if fractional occupation numbers are beneficial. At the
+C> same time it is important that the correlation functions 
+C> coefficients decay as a function of energy so that the calculation
+C> starts reasonably close to the expected answer. 
+C>
+C> To guess the correlation function coefficients the eigenvalues of
+C> the natural orbitals are used. For each orbital it is assumed that
+C> the coefficients decay exponentially as a function of the energy
+C> difference with the current function. In the case guess functions
+C> are degenerate some additional tricks are needed to ensure 
+C> orthogonality within the degenerate set. Basically we assume that the
+C> weights are multiplied with a plane wave style phase factor.
+C>
+C> Considering the coefficients as a function of the natural orbital
+C> energies we assume they are proportional to 
+C> \f{eqnarray}{
+C>   C^s_i \propto \exp(|\epsilon_s-\epsilon_i|/2T)
+C> \f}
+C> In addition a degenerate set is defined as the set of functions such
+C> all functions within the set are connected to all other functions
+C> through a path
+C> \f$i\rightarrow k = i\rightarrow j \land j\rightarrow k\f$ such that
+C> the probability \f$\exp(|\epsilon_j-\epsilon_i|/T)\f$ associated with
+C> \f$i\rightarrow j\f$ exceeds \f$1/2\f$. This means there should be
+C> at least one other vector in the degenerate set such that
+C> \f{eqnarray}{
+C>   -|\epsilon_j-\epsilon_i| \geq T \ln(1/2)
+C> \f}
+C> Within a degenerate set the coefficients are multiplied with a 
+C> phase factor that depends on the distance to the lowest energy
+C> natural orbital within the degenerate set.
+C>
+C> In addition it is assumed that the natural orbitals that constitute
+C> a degenerate set appear in a consecutive sequence of orbitals.
+C>
+C> See also wfn1_nxt_init_occ
+C>
+      subroutine wfn1_guess_corr(wfn1_param,wfn1_wave,eig,neig)
+      implicit none
+#include "mafdecls.fh"
+#include "global.fh"
+#include "wfn1_param.fh"
+#include "wfn1_wfn.fh"
+C>    The calculation parameters
+      type(wfn1_prm),   intent(in)    :: wfn1_param
+C>    The wave function
+      type(wfn1_wfn),   intent(inout) :: wfn1_wave
+C>    The number of eigenvalues
+      integer,          intent(in)    :: neig
+C>    The eigenvalues of the natural orbitals
+      double precision, intent(in)    :: eig(neig)
+c
+      integer nproc   ! the number of ranks
+      integer iproc   ! the number of the current rank
+      integer ii      ! counter
+      integer jj      ! counter
+      integer kk      ! counter
+      integer ll      ! counter
+      integer ilo,ihi ! loop limits
+      integer jlo,jhi ! loop limits
+c
+      integer nea     ! local number of alpha electrons
+      integer neb     ! local number of alpha electrons
+      integer nmo     ! local number of molecular orbitals
+      integer ncorea  ! local number of alpha core orbitals
+      integer ncoreb  ! local number of beta core orbitals
+      integer nvirta  ! local number of alpha virtual orbitals
+      integer nvirtb  ! local number of beta virtual orbitals
+c
+      double precision :: Tinitial
+c
+      double precision, allocatable :: buf(:,:)
+      double precision, allocatable :: dnrm(:)
+      double precision :: pi
+      double precision :: delta
+      double precision :: x
+c
+      integer :: ideglo ! the bottom end of a degenerate set
+      integer :: ideghi ! the top end of a degenerate set
+      integer :: ndeg   ! the number of degenerate set functions
+c
+      nproc = ga_nnodes()
+      iproc = ga_nodeid()
+c
+      pi = acos(-1.0d0)
+      nea = wfn1_param%nea
+      neb = wfn1_param%neb
+      nmo = wfn1_param%nmo
+      ncorea   = wfn1_param%ncorea
+      ncoreb   = wfn1_param%ncoreb
+      nvirta   = wfn1_param%nvirta
+      nvirtb   = wfn1_param%nvirtb
+      Tinitial = wfn1_param%Tinitial
+      delta    = 0.0d0
+c
+c     Setup the alpha correlation functions
+c
+      call ga_distribution(wfn1_wave%g_ca,iproc,ilo,ihi,jlo,jhi)
+      allocate(buf(ilo:ihi,jlo:jhi))
+      allocate(dnrm(1:nmo))
+c
+c     Put initial values in (just weights, no phases)
+c
+      buf = 0.0d0
+      do jj = jlo, jhi
+        if (jj.le.ncorea) then
+          if (jj.ge.ilo.and.jj.le.ihi) then
+            buf(jj,jj) = 1.0d0
+          endif
+        else if (jj.gt.nmo-nvirta) then
+          if (jj.ge.ilo.and.jj.le.ihi) then
+            buf(jj,jj) = 1.0d0
+          endif
+        else
+          if (Tinitial.lt.1.0d-10) then
+            do ii = max(ncorea+1,ilo), min(ihi,nmo-nvirta)
+              if (ii.eq.jj) then
+                buf(ii,jj) = 1.0d0
+              else
+                buf(ii,jj) = 0.0d0
+              endif
+            enddo
+          else
+            do ii = max(ncorea+1,ilo), min(ihi,nmo-nvirta)
+              buf(ii,jj) = exp(-abs(eig(ii)-eig(jj))/(2*Tinitial))
+            enddo
+          endif
+        endif
+      enddo
+c
+c     Next adjust the phases to avoid all correlation functions within
+c     a degenerate set becoming linearly dependent
+c
+      ideglo = 0
+      ideghi = 0
+      do while (ideglo.lt.nmo)
+        ideglo = ideglo + 1
+        ideghi = ideglo
+        do while(ideghi.gt.ncorea.and.ideghi.le.nmo-nvirta.and.
+     &           (-abs(eig(ideghi+1)-eig(ideglo)).gt.Tinitial*log(0.5d0)
+     &            .or.
+     &            -abs(eig(ideghi+1)-eig(ideghi)).gt.Tinitial*log(0.5d0)
+     &          ))
+          ideghi = ideghi + 1
+        enddo ! ideghi
+        ndeg = ideghi-ideglo+1
+        if (ndeg.eq.1) then
+          delta = 0.0d0
+        else
+          delta = pi/ndeg
+        endif
+        do jj = max(ideglo,jlo), min(ideghi,jhi)
+          do ii = ilo, ihi
+            x = (ii-ideglo+0.5d0)*(jj-ideglo)*delta
+            if (abs(cos(x)).lt.0.1d0) then
+              buf(ii,jj) = 0.0d0
+            else if (cos(x).lt.0.0d0) then
+              buf(ii,jj) = -buf(ii,jj)
+            endif
+          enddo ! ii
+        enddo ! jj
+        ideglo = ideghi
+      enddo ! ideglo
+c
+c     Normalize vectors
+c
+      dnrm = 0.0d0
+      do jj = jlo, jhi
+        do ii = ilo, ihi
+          dnrm(jj) = dnrm(jj) + buf(ii,jj)*buf(ii,jj)
+        enddo
+      enddo
+      call ga_dgop(1600,dnrm,nmo,"+")
+      do jj = jlo, jhi
+        dnrm(jj) = 1.0d0/dsqrt(dnrm(jj))
+      enddo
+      do jj = jlo, jhi
+        do ii = ilo, ihi
+          buf(ii,jj) = dnrm(jj) * buf(ii,jj)
+        enddo
+      enddo
+      if (ihi.ge.ilo.and.jhi.ge.jlo) then
+        call ga_put(wfn1_wave%g_ca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      else
+c       This process hold no part of g_ca
+      endif
+      deallocate(dnrm)
+      deallocate(buf)
+c
+c     Setup the beta correlation functions
+c
+      call ga_distribution(wfn1_wave%g_cb,iproc,ilo,ihi,jlo,jhi)
+      allocate(buf(ilo:ihi,jlo:jhi))
+      allocate(dnrm(1:nmo))
+c
+c     Put initial values in (just weights, no phases)
+c
+      buf = 0.0d0
+      do jj = jlo, jhi
+        if (jj.le.ncoreb) then
+          if (jj.ge.ilo.and.jj.le.ihi) then
+            buf(jj,jj) = 1.0d0
+          endif
+        else if (jj.gt.nmo-nvirtb) then
+          if (jj.ge.ilo.and.jj.le.ihi) then
+            buf(jj,jj) = 1.0d0
+          endif
+        else
+          if (Tinitial.lt.1.0d-10) then
+            do ii = max(ncoreb+1,ilo), min(ihi,nmo-nvirtb)
+              if (ii.eq.jj) then
+                buf(ii,jj) = 1.0d0
+              else
+                buf(ii,jj) = 0.0d0
+              endif
+            enddo
+          else
+            do ii = max(ncoreb+1,ilo), min(ihi,nmo-nvirtb)
+              buf(ii,jj) = exp(-abs(eig(ii)-eig(jj))/(2*Tinitial))
+            enddo
+          endif
+        endif
+      enddo
+c
+c     Next adjust the phases to avoid all correlation functions within
+c     a degenerate set becoming linearly dependent
+c
+      ideglo = 0
+      ideghi = 0
+      do while (ideglo.lt.nmo)
+        ideglo = ideglo + 1
+        ideghi = ideglo
+        do while(ideghi.gt.ncoreb.and.ideghi.le.nmo-nvirtb.and.
+     &           (-abs(eig(ideghi+1)-eig(ideglo)).gt.Tinitial*log(0.5d0)
+     &            .or.
+     &            -abs(eig(ideghi+1)-eig(ideghi)).gt.Tinitial*log(0.5d0)
+     &          ))
+          ideghi = ideghi + 1
+        enddo ! ideghi
+        ndeg = ideghi-ideglo+1
+        if (ndeg.eq.1) then
+          delta = 0.0d0
+        else
+          delta = pi/ndeg
+        endif
+        do jj = max(ideglo,jlo), min(ideghi,jhi)
+          do ii = ilo, ihi
+            x = (ii-ideglo+0.5d0)*(jj-ideglo)*delta
+            if (abs(cos(x)).lt.0.1d0) then
+              buf(ii,jj) = 0.0d0
+            else if (cos(x).lt.0.0d0) then
+              buf(ii,jj) = -buf(ii,jj)
+            endif
+          enddo ! ii
+        enddo ! jj
+        ideglo = ideghi
+      enddo ! ideglo
+c
+c     Normalize vectors
+c
+      dnrm = 0.0d0
+      do jj = jlo, jhi
+        do ii = ilo, ihi
+          dnrm(jj) = dnrm(jj) + buf(ii,jj)*buf(ii,jj)
+        enddo
+      enddo
+      call ga_dgop(1601,dnrm,nmo,"+")
+      do jj = jlo, jhi
+        dnrm(jj) = 1.0d0/dsqrt(dnrm(jj))
+      enddo
+      do jj = jlo, jhi
+        do ii = ilo, ihi
+          buf(ii,jj) = dnrm(jj) * buf(ii,jj)
+        enddo
+      enddo
+      if (ihi.ge.ilo.and.jhi.ge.jlo) then
+        call ga_put(wfn1_wave%g_cb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+      else
+c       This process hold no part of g_ca
+      endif
+      deallocate(dnrm)
+      deallocate(buf)
+      call ga_sync()
+c
+c     Orthonormalize the vectors
+c
+      call ga_orthog(wfn1_wave%g_ca,ii,.false.)
+      call ga_orthog(wfn1_wave%g_cb,ii,.false.)
+c
+      end
+c
+c-----------------------------------------------------------------------

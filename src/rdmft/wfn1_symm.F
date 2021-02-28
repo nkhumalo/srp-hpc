@@ -9,8 +9,8 @@ c
 #include "mafdecls.fh"
 #include "errquit.fh"
 #include "global.fh"
-#include "wfn1_param.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_param.fh"
+!include "wfn1_drv.fh"
 c
 !>    The molecular system parameters
       type(wfn1_prm), intent(in)    :: wfn1_param
@@ -35,6 +35,7 @@ c
 c
 !>    Buffers
       double precision, allocatable :: buf(:,:), bufji(:,:)
+      complex(kind=8),  allocatable :: zbuf(:,:), zbufji(:,:)
 c
       iproc = ga_nodeid()
 c
@@ -87,46 +88,46 @@ c
       v_dcb = 0.0d0
 c
       call ga_distribution(wfn1_deriv%g_dca,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      allocate(bufji(jlo:jhi,ilo:ihi))
-      call ga_get(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      call ga_get(wfn1_deriv%g_dca,jlo,jhi,ilo,ihi,bufji,jhi-jlo+1)
+      allocate(zbuf(ilo:ihi,jlo:jhi))
+      allocate(zbufji(jlo:jhi,ilo:ihi))
+      call ga_get(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+      call ga_get(wfn1_deriv%g_dca,jlo,jhi,ilo,ihi,zbufji,jhi-jlo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
           if      (ii.lt.jj) then
-            buf(ii,jj) = 0.5d0*(buf(ii,jj)+bufji(jj,ii))
+            zbuf(ii,jj) = 0.5d0*(zbuf(ii,jj)+conjg(zbufji(jj,ii)))
           else if (ii.eq.jj) then
-            v_dca(ii)  = buf(ii,jj)
+            v_dca(ii)  = zbuf(ii,jj)
           else if (ii.gt.jj) then
-            buf(ii,jj) = 0.5d0*(buf(ii,jj)+bufji(jj,ii))
+            zbuf(ii,jj) = 0.5d0*(zbuf(ii,jj)+conjg(zbufji(jj,ii)))
           endif
         enddo
       enddo
       call ga_sync()
-      call ga_put(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(bufji)
-      deallocate(buf)
+      call ga_put(wfn1_deriv%g_dca,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+      deallocate(zbufji)
+      deallocate(zbuf)
 c
       call ga_distribution(wfn1_deriv%g_dcb,iproc,ilo,ihi,jlo,jhi)
-      allocate(buf(ilo:ihi,jlo:jhi))
-      allocate(bufji(jlo:jhi,ilo:ihi))
-      call ga_get(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      call ga_get(wfn1_deriv%g_dcb,jlo,jhi,ilo,ihi,bufji,jhi-jlo+1)
+      allocate(zbuf(ilo:ihi,jlo:jhi))
+      allocate(zbufji(jlo:jhi,ilo:ihi))
+      call ga_get(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+      call ga_get(wfn1_deriv%g_dcb,jlo,jhi,ilo,ihi,zbufji,jhi-jlo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
           if      (ii.lt.jj) then
-            buf(ii,jj) = 0.5d0*(buf(ii,jj)+bufji(jj,ii))
+            zbuf(ii,jj) = 0.5d0*(zbuf(ii,jj)+conjg(zbufji(jj,ii)))
           else if (ii.eq.jj) then
-            v_dcb(ii)  = buf(ii,jj)
+            v_dcb(ii)  = zbuf(ii,jj)
           else if (ii.gt.jj) then
-            buf(ii,jj) = 0.5d0*(buf(ii,jj)+bufji(jj,ii))
+            zbuf(ii,jj) = 0.5d0*(zbuf(ii,jj)+conjg(zbufji(jj,ii)))
           endif
         enddo
       enddo
       call ga_sync()
-      call ga_put(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-      deallocate(bufji)
-      deallocate(buf)
+      call ga_put(wfn1_deriv%g_dcb,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+      deallocate(zbufji)
+      deallocate(zbuf)
 c
       call ga_dgop(1402,v_dna,wfn1_param%nmo,"+")
       call ga_dgop(1403,v_dnb,wfn1_param%nmo,"+")

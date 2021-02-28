@@ -973,7 +973,7 @@ c
 !>    Derivative of Entropy wrt. r2
       double precision, intent(out) :: dhdr2
 c
-      double precision, external :: signum
+!     double precision, external :: signum
 c
       h     = 0.0d0
       dhdr1 = 0.0d0
@@ -1047,7 +1047,7 @@ c
 !>    Derivative of Entropy wrt. r2
       double precision, intent(out) :: dhdr2
 c
-      double precision, external :: signum
+!     double precision, external :: signum
 c
       h     = 0.0d0
       dhdr1 = 0.0d0
@@ -1118,7 +1118,7 @@ c
 !>    Derivative of Entropy wrt. r2
       double precision, intent(out) :: dhdr2
 c
-      double precision, external :: signum
+!     double precision, external :: signum
 c
       h     = 0.0d0
       dhdr1 = 0.0d0

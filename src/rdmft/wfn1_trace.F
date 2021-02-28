@@ -12,8 +12,8 @@ C>
 #include "errquit.fh"
 #include "mafdecls.fh"
 #include "global.fh"
-#include "wfn1_drv.fh"
-#include "wfn1_error.fh"
+!include "wfn1_drv.fh"
+!include "wfn1_error.fh"
 c
       type(wfn1_drv), intent(in) :: wfn1_drva
       type(wfn1_drv), intent(in) :: wfn1_drvb
@@ -31,6 +31,8 @@ c
 c
       double precision, allocatable :: bufa(:,:)
       double precision, allocatable :: bufb(:,:)
+      complex(kind=8),  allocatable :: zbufa(:,:)
+      complex(kind=8),  allocatable :: zbufb(:,:)
 c
       iproc = ga_nodeid()
       nproc = ga_nnodes()
@@ -38,8 +40,8 @@ c
       error%total = 0.0d0
       error%errna = 0.0d0
       error%errnb = 0.0d0
-      error%errca = 0.0d0
-      error%errcb = 0.0d0
+      error%errca = complex(0.0d0,0.0d0)
+      error%errcb = complex(0.0d0,0.0d0)
 c
       call ga_inquire(wfn1_drva%g_dna,itypa,nrowa,ncola)
       call ga_inquire(wfn1_drvb%g_dna,itypb,nrowb,ncolb)
@@ -98,39 +100,41 @@ c
       deallocate(bufa)
 c
       call ga_distribution(wfn1_drva%g_dca,iproc,ilo,ihi,jlo,jhi)
-      allocate(bufa(ilo:ihi,jlo:jhi))
-      allocate(bufb(ilo:ihi,jlo:jhi))
-      call ga_get(wfn1_drva%g_dca,ilo,ihi,jlo,jhi,bufa,ihi-ilo+1)
-      call ga_get(wfn1_drvb%g_dca,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
+      allocate(zbufa(ilo:ihi,jlo:jhi))
+      allocate(zbufb(ilo:ihi,jlo:jhi))
+      call ga_get(wfn1_drva%g_dca,ilo,ihi,jlo,jhi,zbufa,ihi-ilo+1)
+      call ga_get(wfn1_drvb%g_dca,ilo,ihi,jlo,jhi,zbufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
           if (ii.ne.jj) then
-            error%errca = error%errca + bufa(ii,jj)*bufb(ii,jj)
+            error%errca = error%errca + 
+     &                    zbufa(ii,jj)*conjg(zbufb(ii,jj))
           endif
         enddo
       enddo
-      deallocate(bufb)
-      deallocate(bufa)
+      deallocate(zbufb)
+      deallocate(zbufa)
 c
       call ga_distribution(wfn1_drva%g_dcb,iproc,ilo,ihi,jlo,jhi)
-      allocate(bufa(ilo:ihi,jlo:jhi))
-      allocate(bufb(ilo:ihi,jlo:jhi))
-      call ga_get(wfn1_drva%g_dcb,ilo,ihi,jlo,jhi,bufa,ihi-ilo+1)
-      call ga_get(wfn1_drvb%g_dcb,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
+      allocate(zbufa(ilo:ihi,jlo:jhi))
+      allocate(zbufb(ilo:ihi,jlo:jhi))
+      call ga_get(wfn1_drva%g_dcb,ilo,ihi,jlo,jhi,zbufa,ihi-ilo+1)
+      call ga_get(wfn1_drvb%g_dcb,ilo,ihi,jlo,jhi,zbufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
           if (ii.ne.jj) then
-            error%errcb = error%errcb + bufa(ii,jj)*bufb(ii,jj)
+            error%errcb = error%errcb +
+     &                    zbufa(ii,jj)*conjg(zbufb(ii,jj))
           endif
         enddo
       enddo
-      deallocate(bufb)
-      deallocate(bufa)
+      deallocate(zbufb)
+      deallocate(zbufa)
 c
       error%total = error%errna + error%errnb 
-     &            + error%errca + error%errcb
+     &            + abs(error%errca) + abs(error%errcb)
 c
-      call ga_dgop(1700,error,5,"+")
+      call ga_dgop(1700,error,7,"+")
       wfn1_trace = error
 c
       return
@@ -138,8 +142,6 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      function wfn1_etrace(wfn1_param,wfn1_wave,wfn1_drva,wfn1_drvb)
-      implicit none
 C>
 C> \brief Compute the trace of the energy gradients
 C>
@@ -147,13 +149,15 @@ C> This version computes the change of the energy while taking into
 C> account the constrains on the energy optimization. I.e. the fact that
 C> the energy does not change if the density matrix does not change.
 C>
+      function wfn1_etrace(wfn1_param,wfn1_wave,wfn1_drva,wfn1_drvb)
+      implicit none
 #include "errquit.fh"
 #include "mafdecls.fh"
 #include "global.fh"
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
-#include "wfn1_error.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
+!include "wfn1_error.fh"
 c
       type(wfn1_prm), intent(in) :: wfn1_param
       type(wfn1_wfn), intent(in) :: wfn1_wave
@@ -175,6 +179,8 @@ c
 c
       double precision, allocatable :: bufa(:,:)
       double precision, allocatable :: bufb(:,:)
+      complex(kind=8),  allocatable :: zbufa(:,:)
+      complex(kind=8),  allocatable :: zbufb(:,:)
 c
       double precision, allocatable :: occ_na(:)
       double precision, allocatable :: occ_nb(:)
@@ -189,8 +195,8 @@ c
       error%total = 0.0d0
       error%errna = 0.0d0
       error%errnb = 0.0d0
-      error%errca = 0.0d0
-      error%errcb = 0.0d0
+      error%errca = complex(0.0d0,0.0d0)
+      error%errcb = complex(0.0d0,0.0d0)
 c
       nmo = wfn1_param%nmo
       nea = wfn1_param%nea
@@ -269,34 +275,36 @@ c
       deallocate(bufa)
 c
       call ga_distribution(wfn1_drva%g_dca,iproc,ilo,ihi,jlo,jhi)
-      allocate(bufa(ilo:ihi,jlo:jhi))
-      allocate(bufb(ilo:ihi,jlo:jhi))
-      call ga_get(wfn1_drva%g_dca,ilo,ihi,jlo,jhi,bufa,ihi-ilo+1)
-      call ga_get(wfn1_drvb%g_dca,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
+      allocate(zbufa(ilo:ihi,jlo:jhi))
+      allocate(zbufb(ilo:ihi,jlo:jhi))
+      call ga_get(wfn1_drva%g_dca,ilo,ihi,jlo,jhi,zbufa,ihi-ilo+1)
+      call ga_get(wfn1_drvb%g_dca,ilo,ihi,jlo,jhi,zbufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
           if (abs(occ_ca(ii)-occ_ca(jj)).gt.tol) then
-            error%errca = error%errca + bufa(ii,jj)*bufb(ii,jj)
+            error%errca = error%errca +
+     &                    zbufa(ii,jj)*conjg(zbufb(ii,jj))
           endif
         enddo
       enddo
-      deallocate(bufb)
-      deallocate(bufa)
+      deallocate(zbufb)
+      deallocate(zbufa)
 c
       call ga_distribution(wfn1_drva%g_dcb,iproc,ilo,ihi,jlo,jhi)
-      allocate(bufa(ilo:ihi,jlo:jhi))
-      allocate(bufb(ilo:ihi,jlo:jhi))
-      call ga_get(wfn1_drva%g_dcb,ilo,ihi,jlo,jhi,bufa,ihi-ilo+1)
-      call ga_get(wfn1_drvb%g_dcb,ilo,ihi,jlo,jhi,bufb,ihi-ilo+1)
+      allocate(zbufa(ilo:ihi,jlo:jhi))
+      allocate(zbufb(ilo:ihi,jlo:jhi))
+      call ga_get(wfn1_drva%g_dcb,ilo,ihi,jlo,jhi,zbufa,ihi-ilo+1)
+      call ga_get(wfn1_drvb%g_dcb,ilo,ihi,jlo,jhi,zbufb,ihi-ilo+1)
       do jj = jlo, jhi
         do ii = ilo, ihi
           if (abs(occ_cb(ii)-occ_cb(jj)).gt.tol) then
-            error%errcb = error%errcb + bufa(ii,jj)*bufb(ii,jj)
+            error%errcb = error%errcb +
+     &                    zbufa(ii,jj)*conjg(zbufb(ii,jj))
           endif
         enddo
       enddo
-      deallocate(bufb)
-      deallocate(bufa)
+      deallocate(zbufb)
+      deallocate(zbufa)
 c
       deallocate(occ_cb)
       deallocate(occ_ca)
@@ -304,9 +312,9 @@ c
       deallocate(occ_na)
 c
       error%total = error%errna + error%errnb 
-     &            + error%errca + error%errcb
+     &            + abs(error%errca) + abs(error%errcb)
 c
-      call ga_dgop(1701,error,5,"+")
+      call ga_dgop(1701,error,7,"+")
       wfn1_etrace = error
 c
       return

@@ -107,15 +107,13 @@ c
 !>    as well as reduce memory access both of which would be beneficial.
 !>
       subroutine wfn1_e_g_2el_corr(wfn1_param,wfn1_inst,wfn1_mat,
-     &                             wfn1_wave,wfn1_deriv,v_dc_a,v_dc_b,
-     &                             g_x_aa,g_x_bb,g_dx_aa,g_dx_bb,
-     &                             E_corr)
+     &                             wfn1_wave,g_x_aa,g_x_bb,E_corr)
       implicit none
 c
-#include "wfn1_param.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_param.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
 #include "errquit.fh"
 #include "global.fh"
 #include "mafdecls.fh"
@@ -126,16 +124,16 @@ c
       type(wfn1_matcnst), intent(in) :: wfn1_mat   ! matrix constants
       type(wfn1_wfn),     intent(in) :: wfn1_wave  ! the wavefunction
 c
-      type(wfn1_drv),  intent(inout) :: wfn1_deriv ! the derivatives
+!     type(wfn1_drv),  intent(inout) :: wfn1_deriv ! the derivatives
 c
 c     Correlation function Fock matrices in the natural orbital basis
 c     alpha-, and beta-spin respectively (excluding exchange)
 c
-      double precision, intent(inout) :: v_dc_a(1:wfn1_param%nmo)
-      double precision, intent(inout) :: v_dc_b(1:wfn1_param%nmo)
+!     double precision, intent(inout) :: v_dc_a(1:wfn1_param%nmo)
+!     double precision, intent(inout) :: v_dc_b(1:wfn1_param%nmo)
 c
-c     This implementation assumes that g_x_aa, g_x_bb, g_dx_aa,
-c     and g_dx_bb all have the same data distribution. If the actual
+c     This implementation assumes that g_x_aa and g_x_bb
+c     have the same data distribution. If the actual
 c     data distributions are different then this will not affect the
 c     results as these differences will be resolved by the Global
 c     Arrays. However, this may generate additional communication and
@@ -152,8 +150,8 @@ c     OBSOLETE:
 c     Nmo x nmo global arrays for the 2RDM exchange diagonals
 c     derivatives. See the diagonal terms of Eq.(119) of [5].
 c
-      integer, intent(in) :: g_dx_aa ! exchange alpha-alpha block
-      integer, intent(in) :: g_dx_bb ! exchange beta-beta block
+!     integer, intent(in) :: g_dx_aa ! exchange alpha-alpha block
+!     integer, intent(in) :: g_dx_bb ! exchange beta-beta block
 c
 c     The electron correlation energy [5]:
 c
@@ -176,7 +174,8 @@ c
       integer :: la, lb, lc, ld ! atomic orbital shell labels
       integer :: na, nb, nc, nd ! number of shell functions
 c
-      integer :: ni, nj ! number of natural orbitals
+!     integer :: ni, nj ! number of natural orbitals
+      integer ::     nj ! number of natural orbitals
       integer :: jjj ! counter over sub-ranges of jj
 c
       integer :: ia_lo, ia_hi ! a-index atomic orbital limits
@@ -209,6 +208,7 @@ c
       double precision :: p_a_12,    p_b_12
       double precision :: p1p_a_12,  p1p_b_12
       double precision :: p1p_a_14,  p1p_b_14
+      double precision :: p1p_a_34,  p1p_b_34
       double precision :: dp_a_12,   dp_b_12
       double precision :: dp1p_a_12, dp1p_b_12
       double precision :: dp1p_a_14, dp1p_b_14
@@ -245,32 +245,32 @@ c     For the Fock matrices for the natural orbitals
 c
 c     - Partially transformed
 c
-      double precision, allocatable, target :: buf_fn_ic_a(:)
-      double precision, pointer             :: fn_ic_a(:,:)
-      double precision, allocatable, target :: buf_fn_ic_b(:)
-      double precision, pointer             :: fn_ic_b(:,:)
-      double precision, allocatable, target :: buf_fn_ib_a(:)
-      double precision, pointer             :: fn_ib_a(:,:)
-      double precision, allocatable, target :: buf_fn_ib_b(:)
-      double precision, pointer             :: fn_ib_b(:,:)
+!     double precision, allocatable, target :: buf_fn_ic_a(:)
+!     double precision, pointer             :: fn_ic_a(:,:)
+!     double precision, allocatable, target :: buf_fn_ic_b(:)
+!     double precision, pointer             :: fn_ic_b(:,:)
+!     double precision, allocatable, target :: buf_fn_ib_a(:)
+!     double precision, pointer             :: fn_ib_a(:,:)
+!     double precision, allocatable, target :: buf_fn_ib_b(:)
+!     double precision, pointer             :: fn_ib_b(:,:)
 c
 c     - Same as above but fully transformed
 c
-      double precision, allocatable, target :: buf_fn_ij_a(:)
-      double precision, pointer             :: fn_ij_a(:,:)
-      double precision, allocatable, target :: buf_fn_ij_b(:)
-      double precision, pointer             :: fn_ij_b(:,:)
+!     double precision, allocatable, target :: buf_fn_ij_a(:)
+!     double precision, pointer             :: fn_ij_a(:,:)
+!     double precision, allocatable, target :: buf_fn_ij_b(:)
+!     double precision, pointer             :: fn_ij_b(:,:)
 c
 c     For the Fock matrices for the correlation functions
 c
-      double precision, allocatable, target :: buf_fc_ij_a(:)
-      double precision, pointer             :: fc_ij_a(:,:)
-      double precision, allocatable, target :: buf_fc_ij_b(:)
-      double precision, pointer             :: fc_ij_b(:,:)
-      double precision, allocatable, target :: buf_fc_ji_a(:)
-      double precision, pointer             :: fc_ji_a(:,:)
-      double precision, allocatable, target :: buf_fc_ji_b(:)
-      double precision, pointer             :: fc_ji_b(:,:)
+!     double precision, allocatable, target :: buf_fc_ij_a(:)
+!     double precision, pointer             :: fc_ij_a(:,:)
+!     double precision, allocatable, target :: buf_fc_ij_b(:)
+!     double precision, pointer             :: fc_ij_b(:,:)
+!     double precision, allocatable, target :: buf_fc_ji_a(:)
+!     double precision, pointer             :: fc_ji_a(:,:)
+!     double precision, allocatable, target :: buf_fc_ji_b(:)
+!     double precision, pointer             :: fc_ji_b(:,:)
 c
 c     Orbital coefficients
 c
@@ -291,8 +291,21 @@ c
       double precision, allocatable, target :: buf_N_ai_b(:)
       double precision, pointer             :: N_ai_b(:,:)
 c
-      double precision :: c_ii
-      double precision :: c2_ij
+      double precision :: f_a
+      double precision :: b_ii
+      double precision :: b_ij
+      double precision :: dbii_ab
+      double precision :: dbii_ba
+      double precision :: dbij_ab
+      double precision :: dbij_ba
+      double precision :: k1
+      double precision :: k2
+      double precision :: dk1_ab
+      double precision :: dk1_ba
+      double precision :: dk2_ab
+      double precision :: dk2_ba
+      double precision :: dT_ab
+      double precision :: dT_ba
 c
       double precision :: c_a_j
       double precision :: c_b_j
@@ -302,7 +315,9 @@ cDEBUG
       double precision E_ii_cor
       double precision E2_ij_cor
       double precision E4_ij_cor
+      double precision c_ii
       double precision c2_ii
+      double precision c2_ij
 cDEBUG
 c
 c     Functions:
@@ -320,15 +335,16 @@ cDEBUG
       E_ii_cor  = 0.0d0
       E2_ij_cor = 0.0d0
       E4_ij_cor = 0.0d0
-      c_ii      = 0.0d0
+      b_ii      = 0.0d0
       c2_ii     = 0.0d0
-      c2_ij     = 0.0d0
+      b_ij      = 0.0d0
 cDEBUG
 c
       nbf  = wfn1_param%nbf
       nmo  = wfn1_param%nmo
       ne_a = wfn1_param%nea
       ne_b = wfn1_param%neb
+      f_a  = wfn1_param%fac_a
 c
       if (.not. bas_numcont(wfn1_inst%basis, nshell)) call errquit
      &     ('wfn1_e_g_2el_corr: bas_numcont failed for basis',
@@ -337,8 +353,10 @@ c
      &     ('wfn1_e_g_2el_corr: bas_nbf_cn_max failed for basis',
      &      wfn1_inst%basis, BASIS_ERR)
 c
-      call ga_distribution(wfn1_deriv%g_dna,0,ii_lo,ii_hi,jj_lo,jj_hi)
-      ni = ii_hi-ii_lo+1
+!     call ga_distribution(wfn1_deriv%g_dna,0,ii_lo,ii_hi,jj_lo,jj_hi)
+!     ni = ii_hi-ii_lo+1
+!     nj = jj_hi-jj_lo+1
+      call ga_distribution(wfn1_wave%g_na,0,ii_lo,ii_hi,jj_lo,jj_hi)
       nj = jj_hi-jj_lo+1
       call int_mem_2e4c(max2e,mem2)
 c
@@ -370,14 +388,14 @@ c
       allocate(buf_N_ci_a(maxsbf*nmo),buf_N_ci_b(maxsbf*nmo))
       allocate(buf_N_di_a(maxsbf*nmo),buf_N_di_b(maxsbf*nmo))
 c
-      allocate(buf_fn_ic_a(nmo*maxsbf),buf_fn_ic_b(nmo*maxsbf))
-      allocate(buf_fn_ib_a(nmo*maxsbf),buf_fn_ib_b(nmo*maxsbf))
-      allocate(buf_fn_ij_a(nmo*nj),    buf_fn_ij_b(nmo*nj))
+!     allocate(buf_fn_ic_a(nmo*maxsbf),buf_fn_ic_b(nmo*maxsbf))
+!     allocate(buf_fn_ib_a(nmo*maxsbf),buf_fn_ib_b(nmo*maxsbf))
+!     allocate(buf_fn_ij_a(nmo*nj),    buf_fn_ij_b(nmo*nj))
 c
-      allocate(buf_fc_ij_a(nmo*nj))
-      allocate(buf_fc_ij_b(nmo*nj))
-      allocate(buf_fc_ji_a(nj*nmo))
-      allocate(buf_fc_ji_b(nj*nmo))
+!     allocate(buf_fc_ij_a(nmo*nj))
+!     allocate(buf_fc_ij_b(nmo*nj))
+!     allocate(buf_fc_ji_a(nj*nmo))
+!     allocate(buf_fc_ji_b(nj*nmo))
 c
 c     Calculate occupation numbers
 c     ----------------------------
@@ -396,8 +414,41 @@ c
 c
 c     Calculate renormalization quantities
 c
+c     do ii = 1, nmo
+c       b_ii  = b_ii  + sqrt(occ_a(ii)*occ_b(ii))-occ_a(ii)*occ_b(ii)
+c       do jj = 1, ii-1
+c         b_ij = b_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
+c    &                       occ_b(jj)*(1.0d0-occ_b(jj)))
+c       enddo
+c       do jj = ii+1, nmo
+c         b_ij = b_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
+c    &                       occ_b(jj)*(1.0d0-occ_b(jj)))
+c       enddo
+c     enddo
+      oTrenorm = .true.
+      if (nmo.le.1) then
+c       If there is no correlation then b_ii and b_ij are both 0
+c       In that case the renormalization factor is 1 and its derivatives
+c       are 0.
+        oTrenorm = .false. 
+        k1       = 1.0d0
+        k2       = 1.0d0
+        Trenorm  = (1.0d0-f_a)*k1+f_a*k2
+        dT_ab    = 0.0d0
+        dT_ba    = 0.0d0
+      else
+        oTrenorm = .true.
+        k1       = 1.0d0/(dble(nmo)-1.0d0)
+        k2       = 2.0d0/dble(nmo)
+        Trenorm  = (1.0d0-f_a)*k1+f_a*k2
+        dT_ab    = 0.0d0
+        dT_ba    = 0.0d0
+      endif
+cDEBUG
       do ii = 1, nmo
         c_ii  = c_ii  + sqrt(occ_a(ii)*occ_b(ii))-occ_a(ii)*occ_b(ii)
+        c2_ii = c2_ii + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
+     &                       occ_b(ii)*(1.0d0-occ_b(ii)))
         do jj = 1, ii-1
           c2_ij = c2_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
      &                         occ_b(jj)*(1.0d0-occ_b(jj)))
@@ -407,30 +458,11 @@ c
      &                         occ_b(jj)*(1.0d0-occ_b(jj)))
         enddo
       enddo
-      oTrenorm = .true.
-      if (c2_ij.le.c_ii) then
-c       If there is no correlation then c_ii and c2_ij are both 0
-c       In that case the renormalization factor is 1 and its derivatives
-c       are 0.
-        oTrenorm = .false. 
-        Trenorm  = 1.0d0
-      else
-        oTrenorm = .true.
-        Trenorm  = c_ii/c2_ij
-      endif
-cDEBUG
-      do ii = 1, nmo
-        c2_ii = c2_ii + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
-     &                       occ_b(ii)*(1.0d0-occ_b(ii)))
-      enddo
-      write(*,'(" HVD: c_ii        = ",e22.8)')c_ii
-      write(*,'(" HVD: c2_ii       = ",e22.8)')c2_ii
-      write(*,'(" HVD: c2_ij       = ",e22.8)')c2_ij
-      write(*,'(" HVD: c2_IJ       = ",e22.8)')c2_ij+c2_ii
-      write(*,'(" HVD: c2_ij/c_ii  = ",e22.8)')c2_ij/c_ii
-      write(*,'(" HVD: c2_IJ/c_ii  = ",e22.8)')(c2_ij+c2_ii)/c_ii
-      write(*,'(" HVD: c2_ij/c2_ii = ",e22.8)')c2_ij/c2_ii
-      write(*,'(" HVD: c2_IJ/c2_ii = ",e22.8)')(c2_ij+c2_ii)/c2_ii
+c     write(*,'(" HVD: c_ii        = ",e22.8)')c_ii
+c     write(*,'(" HVD: c2_ij       = ",e22.8)')c2_ij
+c     write(*,'(" HVD: c2_IJ       = ",e22.8)')c2_ij+c2_ii
+c     write(*,'(" HVD: c_ii/c2_ij  = ",e22.8)')c_ii/c2_ij
+c     write(*,'(" HVD: c_ii/c2_IJ  = ",e22.8)')2.0d0*c_ii/(c2_ij+c2_ii)
 cDEBUG
 c
       do ld = 1, nshell
@@ -646,319 +678,343 @@ c             matrices.
 c
 c             - First do the T_ii terms
 c
-              fn_ic_a(1:nmo,ic_lo:ic_hi) => buf_fn_ic_a
-              fn_ic_b(1:nmo,ic_lo:ic_hi) => buf_fn_ic_b
-              fn_ic_a = 0.0d0
-              fn_ic_b = 0.0d0
-              do ii = 1, nmo
-                do ic = ic_lo, ic_hi
-                  do ia = ia_lo, ia_hi
-                    fn_ic_a(ii,ic) = fn_ic_a(ii,ic)
-     &              + e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)
-     &              * (sqrt(occ_a(ii)*occ_b(ii))-occ_a(ii)*occ_b(ii))
-                    fn_ic_b(ii,ic) = fn_ic_b(ii,ic)
-     &              + e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)
-     &              * (sqrt(occ_b(ii)*occ_a(ii))-occ_b(ii)*occ_a(ii))
-                  enddo ! ia
-                enddo ! ic
-              enddo ! ii
-c
-c             - Second do the T2_ij terms
-c
-              do jj = 1, nmo
-                do ii = 1, jj-1
-                  do ic = ic_lo, ic_hi
-                    do ia = ia_lo, ia_hi
-                      fn_ic_a(ii,ic) = fn_ic_a(ii,ic)
-     &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
-                      fn_ic_b(ii,ic) = fn_ic_b(ii,ic)
-     &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
-                    enddo ! ia
-                  enddo ! ic
-                enddo ! ii
-                do ii = jj+1, nmo
-                  do ic = ic_lo, ic_hi
-                    do ia = ia_lo, ia_hi
-                      fn_ic_a(ii,ic) = fn_ic_a(ii,ic)
-     &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
-                      fn_ic_b(ii,ic) = fn_ic_b(ii,ic)
-     &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
-                    enddo ! ia
-                  enddo ! ic
-                enddo ! ii
-              enddo ! jj
-c
-c             - Third do the T4_ij terms
-c
-              fn_ib_a(1:nmo,ib_lo:ib_hi) => buf_fn_ib_a
-              fn_ib_b(1:nmo,ib_lo:ib_hi) => buf_fn_ib_b
-              fn_ib_a = 0.0d0
-              fn_ib_b = 0.0d0
-              do jj = 1, nmo
-                do ii = 1, jj-1
-                  do ib = ib_lo, ib_hi
-                    do ia = ia_lo, ia_hi
-                      fn_ib_b(ii,ib) = fn_ib_b(ii,ib)
-     &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
-                      fn_ib_a(ii,ib) = fn_ib_a(ii,ib)
-     &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
-                    enddo ! ia
-                  enddo ! ib
-                enddo ! ii
-                do ii = jj+1, nmo
-                  do ib = ib_lo, ib_hi
-                    do ia = ia_lo, ia_hi
-                      fn_ib_b(ii,ib) = fn_ib_b(ii,ib)
-     &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
-                      fn_ib_a(ii,ib) = fn_ib_a(ii,ib)
-     &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
-                    enddo ! ia
-                  enddo ! ib
-                enddo ! ii
-              enddo ! jj
-c
-c             - Fourth transform to natural orbital basis and accumulate
-c
-              do jj = 1, nmo, nj
-                fn_ij_a(1:nmo,jj:min(nmo,jj+nj-1)) => buf_fn_ij_a
-                fn_ij_b(1:nmo,jj:min(nmo,jj+nj-1)) => buf_fn_ij_b
-                fn_ij_a = 0.0d0
-                fn_ij_b = 0.0d0
-                do jjj = jj, min(nmo,jj+nj-1)
-                  do ic = ic_lo, ic_hi
-                    do ii = 1, nmo
-                      fn_ij_a(ii,jjj) = fn_ij_a(ii,jjj)
-     &                    + fn_ic_a(ii,ic)*N_ci_a(ic,jjj)
-                      fn_ij_b(ii,jjj) = fn_ij_b(ii,jjj)
-     &                    + fn_ic_b(ii,ic)*N_ci_b(ic,jjj)
-                    enddo ! ii
-                  enddo ! ic
-                  do ib = ib_lo, ib_hi
-                    do ii = 1, nmo
-                      fn_ij_a(ii,jjj) = fn_ij_a(ii,jjj)
-     &                  + fn_ib_a(ii,ib)*N_bi_a(ib,jjj)
-                      fn_ij_b(ii,jjj) = fn_ij_b(ii,jjj)
-     &                  + fn_ib_b(ii,ib)*N_bi_b(ib,jjj)
-                    enddo ! ii
-                  enddo ! id
-                enddo ! jjj
-                call ga_acc(wfn1_deriv%g_dna,1,nmo,jj,min(nmo,jj+nj-1),
-     &                      fn_ij_a,nmo,1.0d0)
-                call ga_acc(wfn1_deriv%g_dnb,1,nmo,jj,min(nmo,jj+nj-1),
-     &                      fn_ij_b,nmo,1.0d0)
-              enddo ! jj 
+!             fn_ic_a(1:nmo,ic_lo:ic_hi) => buf_fn_ic_a
+!             fn_ic_b(1:nmo,ic_lo:ic_hi) => buf_fn_ic_b
+!             fn_ic_a = 0.0d0
+!             fn_ic_b = 0.0d0
+!             do ii = 1, nmo
+!               do ic = ic_lo, ic_hi
+!                 do ia = ia_lo, ia_hi
+!                   fn_ic_a(ii,ic) = fn_ic_a(ii,ic)
+!    &              + e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)
+!    &              * (sqrt(occ_a(ii)*occ_b(ii))-occ_a(ii)*occ_b(ii))
+!                   fn_ic_b(ii,ic) = fn_ic_b(ii,ic)
+!    &              + e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)
+!    &              * (sqrt(occ_b(ii)*occ_a(ii))-occ_b(ii)*occ_a(ii))
+!                 enddo ! ia
+!               enddo ! ic
+!             enddo ! ii
+!
+!             - Second do the T2_ij terms
+!
+!             do jj = 1, nmo
+!               do ii = 1, jj-1
+!                 do ic = ic_lo, ic_hi
+!                   do ia = ia_lo, ia_hi
+!                     fn_ic_a(ii,ic) = fn_ic_a(ii,ic)
+!    &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)
+!    &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
+!                     fn_ic_b(ii,ic) = fn_ic_b(ii,ic)
+!    &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)
+!    &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
+!                   enddo ! ia
+!                 enddo ! ic
+!               enddo ! ii
+!               do ii = jj+1, nmo
+!                 do ic = ic_lo, ic_hi
+!                   do ia = ia_lo, ia_hi
+!                     fn_ic_a(ii,ic) = fn_ic_a(ii,ic)
+!    &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)
+!    &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
+!                     fn_ic_b(ii,ic) = fn_ic_b(ii,ic)
+!    &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)
+!    &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
+!                   enddo ! ia
+!                 enddo ! ic
+!               enddo ! ii
+!             enddo ! jj
+!
+!             - Third do the T4_ij terms
+!
+!             fn_ib_a(1:nmo,ib_lo:ib_hi) => buf_fn_ib_a
+!             fn_ib_b(1:nmo,ib_lo:ib_hi) => buf_fn_ib_b
+!             fn_ib_a = 0.0d0
+!             fn_ib_b = 0.0d0
+!             do jj = 1, nmo
+!               do ii = 1, jj-1
+!                 do ib = ib_lo, ib_hi
+!                   do ia = ia_lo, ia_hi
+!                     fn_ib_b(ii,ib) = fn_ib_b(ii,ib)
+!    &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)
+!    &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
+!                     fn_ib_a(ii,ib) = fn_ib_a(ii,ib)
+!    &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)
+!    &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
+!                   enddo ! ia
+!                 enddo ! ib
+!               enddo ! ii
+!               do ii = jj+1, nmo
+!                 do ib = ib_lo, ib_hi
+!                   do ia = ia_lo, ia_hi
+!                     fn_ib_b(ii,ib) = fn_ib_b(ii,ib)
+!    &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)
+!    &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
+!                     fn_ib_a(ii,ib) = fn_ib_a(ii,ib)
+!    &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)
+!    &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
+!                   enddo ! ia
+!                 enddo ! ib
+!               enddo ! ii
+!             enddo ! jj
+!
+!             - Fourth transform to natural orbital basis and accumulate
+!
+!             do jj = 1, nmo, nj
+!               fn_ij_a(1:nmo,jj:min(nmo,jj+nj-1)) => buf_fn_ij_a
+!               fn_ij_b(1:nmo,jj:min(nmo,jj+nj-1)) => buf_fn_ij_b
+!               fn_ij_a = 0.0d0
+!               fn_ij_b = 0.0d0
+!               do jjj = jj, min(nmo,jj+nj-1)
+!                 do ic = ic_lo, ic_hi
+!                   do ii = 1, nmo
+!                     fn_ij_a(ii,jjj) = fn_ij_a(ii,jjj)
+!    &                    + fn_ic_a(ii,ic)*N_ci_a(ic,jjj)
+!                     fn_ij_b(ii,jjj) = fn_ij_b(ii,jjj)
+!    &                    + fn_ic_b(ii,ic)*N_ci_b(ic,jjj)
+!                   enddo ! ii
+!                 enddo ! ic
+!                 do ib = ib_lo, ib_hi
+!                   do ii = 1, nmo
+!                     fn_ij_a(ii,jjj) = fn_ij_a(ii,jjj)
+!    &                  + fn_ib_a(ii,ib)*N_bi_a(ib,jjj)
+!                     fn_ij_b(ii,jjj) = fn_ij_b(ii,jjj)
+!    &                  + fn_ib_b(ii,ib)*N_bi_b(ib,jjj)
+!                   enddo ! ii
+!                 enddo ! id
+!               enddo ! jjj
+!               call ga_acc(wfn1_deriv%g_dna,1,nmo,jj,min(nmo,jj+nj-1),
+!    &                      fn_ij_a,nmo,1.0d0)
+!               call ga_acc(wfn1_deriv%g_dnb,1,nmo,jj,min(nmo,jj+nj-1),
+!    &                      fn_ij_b,nmo,1.0d0)
+!             enddo ! jj 
 c
 c             Construct contributions to the correlation function Fock
 c             matrices.
 c
 c             - First do the T_ii terms
 c
-              do ii = 1, nmo
-                e_iiii_ab = 0.0d0
-                e_iiii_ba = 0.0d0
-                do ic = ic_lo, ic_hi
-                  do ia = ia_lo, ia_hi
-                    e_iiii_ab = e_iiii_ab
-     &              + e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-                    e_iiii_ba = e_iiii_ba
-     &              + e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-                  enddo ! ia
-                enddo ! ic
-                p_a = occ_a(ii)
-                p_b = occ_b(ii)
-                p_a_12 = sqrt(p_a)
-                p_b_12 = sqrt(p_b)
-                dp_a_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_a_12)
-                dp_b_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_b_12)
-                v_dc_a(ii) = v_dc_a(ii)
-     &          + e_iiii_ab*(dp_a_12*p_b_12-p_b)
-                v_dc_b(ii) = v_dc_b(ii)
-     &          + e_iiii_ba*(p_a_12*dp_b_12-p_a)
-              enddo ! ii
-c
-c             - Second do the T2_ij terms
-c
-              do ii = 1, nmo
-                e_iijj_ab = 0.0d0
-                e_iijj_ba = 0.0d0
-                do jj = 1, ii-1
-                  do ic = ic_lo, ic_hi
-                    do ia = ia_lo, ia_hi
-                      e_iijj_ab = e_iijj_ab
-     &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-                      e_iijj_ba = e_iijj_ba
-     &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-                    enddo ! ia
-                  enddo ! ic
-                enddo ! jj
-                do jj = ii+1, nmo
-                  do ic = ic_lo, ic_hi
-                    do ia = ia_lo, ia_hi
-                      e_iijj_ab = e_iijj_ab
-     &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-                      e_iijj_ba = e_iijj_ba
-     &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-                    enddo ! ia
-                  enddo ! ic
-                enddo ! jj
-                p_a = occ_a(ii)
-                p_b = occ_b(ii)
-                p_a_12 = sqrt(p_a)
-                p_b_12 = sqrt(p_b)
-                p1p_a_12 = sqrt(p_a*(1.0d0-p_a))
-                p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
-                dp_a_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_a_12)
-                dp_b_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_b_12)
-                dp1p_a_12 = (1.0d0-2.0d0*p_a)/
-     &                      max(wfn1_param%denom_min,2.0d0*p1p_a_12)
-                dp1p_b_12 = (1.0d0-2.0d0*p_b)/
-     &                      max(wfn1_param%denom_min,2.0d0*p1p_b_12)
-                v_dc_a(ii) = v_dc_a(ii)
-     &          + e_iijj_ab*dp1p_a_12*Trenorm
-                v_dc_b(ii) = v_dc_b(ii)
-     &          + e_iijj_ba*dp1p_b_12*Trenorm
-                if (oTrenorm) then
-                  c_b_j = 0.0d0
-                  c_a_j = 0.0d0
-                  do jj = 1, ii-1
-                    c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
-                    c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
-                  enddo
-                  do jj = ii+1, nmo
-                    c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
-                    c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
-                  enddo
-                  v_dc_a(ii) = v_dc_a(ii)
-     &            + e_iijj_ab*p1p_a_12*(dp_a_12*p_b_12-p_b)/
-     &              max(wfn1_param%denom_min,c2_ij)
-     &            - e_iijj_ab*p1p_a_12*Trenorm/
-     &              max(wfn1_param%denom_min,c2_ij)*c_b_j*dp1p_a_12
-                  v_dc_b(ii) = v_dc_b(ii)
-     &            + e_iijj_ba*p1p_b_12*(p_a_12*dp_b_12-p_a)/
-     &              max(wfn1_param%denom_min,c2_ij)
-     &            - e_iijj_ba*p1p_b_12*Trenorm/
-     &              max(wfn1_param%denom_min,c2_ij)*c_a_j*dp1p_b_12
-                endif
-              enddo ! ii
-c
-c             - Third do the T4_ij terms
-c
-              do jj = 1, nmo, nj
-                do jjj = jj, min(nmo,jj+nj-1)
-                  do ii = 1, jjj-1
-                    e_iijj_ab = 0.0d0
-                    e_iijj_ba = 0.0d0
-                    do ib = ib_lo, ib_hi
-                      do ia = ia_lo, ia_hi
-                        e_iijj_ab = -e4_abj_ab(ia,ib,jjj)*
-     &                               N_ai_a(ia,ii)*N_bi_b(ib,ii)
-                        e_iijj_ba = -e4_abj_ba(ia,ib,jjj)*
-     &                               N_ai_b(ia,ii)*N_bi_a(ib,ii)
-                      enddo ! ia
-                    enddo ! ib
-                    p_a = occ_a(ii)
-                    p_b = occ_b(ii)
-                    p1p_a_12 = sqrt(p_a*(1.0d0-p_a))
-                    p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
-                    p1p_a_14 = sqrt(sqrt(p_a*(1.0d0-p_a)))
-                    p1p_b_14 = sqrt(sqrt(p_b*(1.0d0-p_b)))
-                    dp1p_a_12 = (1.0d0-2.0d0*p_a)/
-     &                     max(wfn1_param%denom_min,2.0d0*p1p_a_12)
-                    dp1p_b_12 = (1.0d0-2.0d0*p_b)/
-     &                     max(wfn1_param%denom_min,2.0d0*p1p_b_12)
-                    dp1p_a_14 = (1.0d0-2.0d0*p_a)/
-     &                     max(wfn1_param%denom_min,4.0d0*p1p_a_14**3)
-                    dp1p_b_14 = (1.0d0-2.0d0*p_b)/
-     &                     max(wfn1_param%denom_min,4.0d0*p1p_b_14**3)
-                    v_dc_a(ii) = v_dc_a(ii)
-     &              + e_iijj_ab*dp1p_a_14*Trenorm
-                    v_dc_b(ii) = v_dc_b(ii)
-     &              + e_iijj_ba*dp1p_b_14*Trenorm
-                    if (oTrenorm) then
-                      c_b_j = 0.0d0
-                      c_a_j = 0.0d0
-                      do kk = 1, ii-1
-                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
-                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
-                      enddo
-                      do kk = ii+1, nmo
-                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
-                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
-                      enddo
-                      v_dc_a(ii) = v_dc_a(ii)
-     &                + e_iijj_ab*p1p_a_14*(dp_a_12*p_b_12-p_b)/
-     &                  max(wfn1_param%denom_min,c2_ij)
-     &                - e_iijj_ab*p1p_a_14*Trenorm/
-     &                  max(wfn1_param%denom_min,c2_ij)*c_b_j*dp1p_a_12
-                      v_dc_b(ii) = v_dc_b(ii)
-     &                + e_iijj_ba*p1p_b_14*(p_a_12*dp_b_12-p_a)/
-     &                  max(wfn1_param%denom_min,c2_ij)
-     &                - e_iijj_ba*p1p_b_14*Trenorm/
-     &                  max(wfn1_param%denom_min,c2_ij)*c_a_j*dp1p_b_12
-                    endif
-                  enddo ! ii
-                  do ii = jjj+1, nmo
-                    e_iijj_ab = 0.0d0
-                    e_iijj_ba = 0.0d0
-                    do ib = ib_lo, ib_hi
-                      do ia = ia_lo, ia_hi
-                        e_iijj_ab = -e4_abj_ab(ia,ib,jjj)*
-     &                               N_ai_a(ia,ii)*N_bi_b(ib,ii)
-                        e_iijj_ba = -e4_abj_ba(ia,ib,jjj)*
-     &                               N_ai_b(ia,ii)*N_bi_a(ib,ii)
-                      enddo ! ia
-                    enddo ! ib
-                    p_a = occ_a(ii)
-                    p_b = occ_b(ii)
-                    p1p_a_12 = sqrt(p_a*(1.0d0-p_a))
-                    p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
-                    p1p_a_14 = sqrt(sqrt(p_a*(1.0d0-p_a)))
-                    p1p_b_14 = sqrt(sqrt(p_b*(1.0d0-p_b)))
-                    dp1p_a_12 = (1.0d0-2.0d0*p_a)/
-     &                     max(wfn1_param%denom_min,2.0d0*p1p_a_12)
-                    dp1p_b_12 = (1.0d0-2.0d0*p_b)/
-     &                     max(wfn1_param%denom_min,2.0d0*p1p_b_12)
-                    dp1p_a_14 = (1.0d0-2.0d0*p_a)/
-     &                     max(wfn1_param%denom_min,4.0d0*p1p_a_14**3)
-                    dp1p_b_14 = (1.0d0-2.0d0*p_b)/
-     &                     max(wfn1_param%denom_min,4.0d0*p1p_b_14**3)
-                    v_dc_a(ii) = v_dc_a(ii)
-     &              + e_iijj_ab*dp1p_a_14*Trenorm
-                    v_dc_b(ii) = v_dc_b(ii)
-     &              + e_iijj_ba*dp1p_b_14*Trenorm
-                    if (oTrenorm) then
-                      c_b_j = 0.0d0
-                      c_a_j = 0.0d0
-                      do kk = 1, ii-1
-                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
-                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
-                      enddo
-                      do kk = ii+1, nmo
-                        c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
-                        c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
-                      enddo
-                      v_dc_a(ii) = v_dc_a(ii)
-     &                + e_iijj_ab*p1p_a_14*(dp_a_12*p_b_12-p_b)/
-     &                  max(wfn1_param%denom_min,c2_ij)
-     &                - e_iijj_ab*p1p_a_14*Trenorm/
-     &                  max(wfn1_param%denom_min,c2_ij)*c_b_j*dp1p_a_12
-                      v_dc_b(ii) = v_dc_b(ii)
-     &                + e_iijj_ba*p1p_b_14*(p_a_12*dp_b_12-p_a)/
-     &                  max(wfn1_param%denom_min,c2_ij)
-     &                - e_iijj_ba*p1p_b_14*Trenorm/
-     &                  max(wfn1_param%denom_min,c2_ij)*c_a_j*dp1p_b_12
-                    endif
-                  enddo ! ii
-                enddo ! jjj
-              enddo ! jj
+!             do ii = 1, nmo
+!               e_iiii_ab = 0.0d0
+!               e_iiii_ba = 0.0d0
+!               do ic = ic_lo, ic_hi
+!                 do ia = ia_lo, ia_hi
+!                   e_iiii_ab = e_iiii_ab
+!    &              + e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+!                   e_iiii_ba = e_iiii_ba
+!    &              + e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+!                 enddo ! ia
+!               enddo ! ic
+!               p_a = occ_a(ii)
+!               p_b = occ_b(ii)
+!               p_a_12 = sqrt(p_a)
+!               p_b_12 = sqrt(p_b)
+!               dp_a_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_a_12)
+!               dp_b_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_b_12)
+!               v_dc_a(ii) = v_dc_a(ii)
+!    &          + e_iiii_ab*(dp_a_12*p_b_12-p_b)
+!               v_dc_b(ii) = v_dc_b(ii)
+!    &          + e_iiii_ba*(p_a_12*dp_b_12-p_a)
+!             enddo ! ii
+!
+!             - Second do the T2_ij terms
+!
+!             do ii = 1, nmo
+!               e_iijj_ab = 0.0d0
+!               e_iijj_ba = 0.0d0
+!               do jj = 1, ii-1
+!                 do ic = ic_lo, ic_hi
+!                   do ia = ia_lo, ia_hi
+!                     e_iijj_ab = e_iijj_ab
+!    &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+!                     e_iijj_ba = e_iijj_ba
+!    &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+!                   enddo ! ia
+!                 enddo ! ic
+!               enddo ! jj
+!               do jj = ii+1, nmo
+!                 do ic = ic_lo, ic_hi
+!                   do ia = ia_lo, ia_hi
+!                     e_iijj_ab = e_iijj_ab
+!    &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+!                     e_iijj_ba = e_iijj_ba
+!    &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+!                   enddo ! ia
+!                 enddo ! ic
+!               enddo ! jj
+!               p_a = occ_a(ii)
+!               p_b = occ_b(ii)
+!               p_a_12 = sqrt(p_a)
+!               p_b_12 = sqrt(p_b)
+!               p1p_a_12 = sqrt(p_a*(1.0d0-p_a))
+!               p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
+!               dp_a_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_a_12)
+!               dp_b_12 = 1.0d0/max(wfn1_param%denom_min,2.0d0*p_b_12)
+!               dp1p_a_12 = (1.0d0-2.0d0*p_a)/
+!    &                      max(wfn1_param%denom_min,2.0d0*p1p_a_12)
+!               dp1p_b_12 = (1.0d0-2.0d0*p_b)/
+!    &                      max(wfn1_param%denom_min,2.0d0*p1p_b_12)
+!               v_dc_a(ii) = v_dc_a(ii)
+!    &          + e_iijj_ab*dp1p_a_12*Trenorm
+!               v_dc_b(ii) = v_dc_b(ii)
+!    &          + e_iijj_ba*dp1p_b_12*Trenorm
+!               if (oTrenorm) then
+!                 c_b_j = 0.0d0
+!                 c_a_j = 0.0d0
+!                 do jj = 1, ii-1
+!                   c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
+!                   c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
+!                 enddo
+!                 do jj = ii+1, nmo
+!                   c_a_j = c_a_j + sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
+!                   c_b_j = c_b_j + sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
+!                 enddo
+!                 dbii_ab = p_b_12*dp_a_12-p_b
+!                 dbii_ba = p_a_12*dp_b_12-p_a
+!                 dbij_ab = dp1p_a_12*c_b_j
+!                 dbij_ba = dp1p_b_12*c_a_j
+!                 dk1_ab = dbii_ab/b_ij - b_ii/(b_ij**2)*dbij_ab
+!                 dk1_ba = dbii_ba/b_ij - b_ii/(b_ij**2)*dbij_ba
+!                 dk2_ab = 2.0d0*dbii_ab/(b_ii+b_ij)
+!    &                   - 2.0d0*b_ii/(b_ii+b_ij)**2*(dbii_ab+dbij_ab)
+!                 dk2_ba = 2.0d0*dbii_ba/(b_ii+b_ij)
+!    &                   - 2.0d0*b_ii/(b_ii+b_ij)**2*(dbii_ba+dbij_ba)
+!                 dT_ab = (1.0d0-f_a)*dk1_ab+f_a*dk2_ab
+!                 dT_ba = (1.0d0-f_a)*dk1_ba+f_a*dk2_ba
+!                 v_dc_a(ii) = v_dc_a(ii)
+!    &            + e_iijj_ab*p1p_a_12*dT_ab
+!                 v_dc_b(ii) = v_dc_b(ii)
+!    &            + e_iijj_ba*p1p_b_12*dT_ba
+!               endif
+!             enddo ! ii
+!
+!             - Third do the T4_ij terms
+!
+!             do jj = 1, nmo, nj
+!               do jjj = jj, min(nmo,jj+nj-1)
+!                 do ii = 1, jjj-1
+!                   e_iijj_ab = 0.0d0
+!                   e_iijj_ba = 0.0d0
+!                   do ib = ib_lo, ib_hi
+!                     do ia = ia_lo, ia_hi
+!                       e_iijj_ab = -e4_abj_ab(ia,ib,jjj)*
+!    &                               N_ai_a(ia,ii)*N_bi_b(ib,ii)
+!                       e_iijj_ba = -e4_abj_ba(ia,ib,jjj)*
+!    &                               N_ai_b(ia,ii)*N_bi_a(ib,ii)
+!                     enddo ! ia
+!                   enddo ! ib
+!                   p_a = occ_a(ii)
+!                   p_b = occ_b(ii)
+!                   p1p_a_12 = sqrt(p_a*(1.0d0-p_a))
+!                   p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
+!                   p1p_a_14 = sqrt(sqrt(p_a*(1.0d0-p_a)))
+!                   p1p_b_14 = sqrt(sqrt(p_b*(1.0d0-p_b)))
+!                   p1p_a_34 = p1p_a_14**3
+!                   p1p_b_34 = p1p_b_14**3
+!                   dp1p_a_12 = (1.0d0-2.0d0*p_a)/
+!    &                     max(wfn1_param%denom_min,2.0d0*p1p_a_12)
+!                   dp1p_b_12 = (1.0d0-2.0d0*p_b)/
+!    &                     max(wfn1_param%denom_min,2.0d0*p1p_b_12)
+!                   dp1p_a_14 = (1.0d0-2.0d0*p_a)/
+!    &                     max(wfn1_param%denom_min,4.0d0*p1p_a_34)
+!                   dp1p_b_14 = (1.0d0-2.0d0*p_b)/
+!    &                     max(wfn1_param%denom_min,4.0d0*p1p_b_34)
+!                   v_dc_a(ii) = v_dc_a(ii)
+!    &              + e_iijj_ab*dp1p_a_14*Trenorm
+!                   v_dc_b(ii) = v_dc_b(ii)
+!    &              + e_iijj_ba*dp1p_b_14*Trenorm
+!                   if (oTrenorm) then
+!                     c_b_j = 0.0d0
+!                     c_a_j = 0.0d0
+!                     do kk = 1, ii-1
+!                       c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+!                       c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+!                     enddo
+!                     do kk = ii+1, nmo
+!                       c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+!                       c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+!                     enddo
+!                     dbii_ab = p_b_12*dp_a_12-p_b
+!                     dbii_ba = p_a_12*dp_b_12-p_a
+!                     dbij_ab = dp1p_a_12*c_b_j
+!                     dbij_ba = dp1p_b_12*c_a_j
+!                     dk1_ab = dbii_ab/b_ij - b_ii/(b_ij**2)*dbij_ab
+!                     dk1_ba = dbii_ba/b_ij - b_ii/(b_ij**2)*dbij_ba
+!                     dk2_ab = 2.0d0*dbii_ab/(b_ii+b_ij)
+!    &                       - 2.0d0*b_ii/(b_ii+b_ij)**2
+!    &                              *(dbii_ab+dbij_ab)
+!                     dk2_ba = 2.0d0*dbii_ba/(b_ii+b_ij)
+!    &                       - 2.0d0*b_ii/(b_ii+b_ij)**2
+!    &                              *(dbii_ba+dbij_ba)
+!                     dT_ab = (1.0d0-f_a)*dk1_ab+f_a*dk2_ab
+!                     dT_ba = (1.0d0-f_a)*dk1_ba+f_a*dk2_ba
+!                     v_dc_a(ii) = v_dc_a(ii)
+!    &                + e_iijj_ab*p1p_a_14*dT_ab
+!                     v_dc_b(ii) = v_dc_b(ii)
+!    &                + e_iijj_ba*p1p_b_14*dT_ba
+!                   endif
+!                 enddo ! ii
+!                 do ii = jjj+1, nmo
+!                   e_iijj_ab = 0.0d0
+!                   e_iijj_ba = 0.0d0
+!                   do ib = ib_lo, ib_hi
+!                     do ia = ia_lo, ia_hi
+!                       e_iijj_ab = -e4_abj_ab(ia,ib,jjj)*
+!    &                               N_ai_a(ia,ii)*N_bi_b(ib,ii)
+!                       e_iijj_ba = -e4_abj_ba(ia,ib,jjj)*
+!    &                               N_ai_b(ia,ii)*N_bi_a(ib,ii)
+!                     enddo ! ia
+!                   enddo ! ib
+!                   p_a = occ_a(ii)
+!                   p_b = occ_b(ii)
+!                   p1p_a_12 = sqrt(p_a*(1.0d0-p_a))
+!                   p1p_b_12 = sqrt(p_b*(1.0d0-p_b))
+!                   p1p_a_14 = sqrt(sqrt(p_a*(1.0d0-p_a)))
+!                   p1p_b_14 = sqrt(sqrt(p_b*(1.0d0-p_b)))
+!                   dp1p_a_12 = (1.0d0-2.0d0*p_a)/
+!    &                     max(wfn1_param%denom_min,2.0d0*p1p_a_12)
+!                   dp1p_b_12 = (1.0d0-2.0d0*p_b)/
+!    &                     max(wfn1_param%denom_min,2.0d0*p1p_b_12)
+!                   dp1p_a_14 = (1.0d0-2.0d0*p_a)/
+!    &                     max(wfn1_param%denom_min,4.0d0*p1p_a_14**3)
+!                   dp1p_b_14 = (1.0d0-2.0d0*p_b)/
+!    &                     max(wfn1_param%denom_min,4.0d0*p1p_b_14**3)
+!                   v_dc_a(ii) = v_dc_a(ii)
+!    &              + e_iijj_ab*dp1p_a_14*Trenorm
+!                   v_dc_b(ii) = v_dc_b(ii)
+!    &              + e_iijj_ba*dp1p_b_14*Trenorm
+!                   if (oTrenorm) then
+!                     c_b_j = 0.0d0
+!                     c_a_j = 0.0d0
+!                     do kk = 1, ii-1
+!                       c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+!                       c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+!                     enddo
+!                     do kk = ii+1, nmo
+!                       c_a_j = c_a_j + sqrt(occ_a(kk)*(1.d0-occ_a(kk)))
+!                       c_b_j = c_b_j + sqrt(occ_b(kk)*(1.d0-occ_b(kk)))
+!                     enddo
+!                     dbii_ab = p_b_12*dp_a_12-p_b
+!                     dbii_ba = p_a_12*dp_b_12-p_a
+!                     dbij_ab = dp1p_a_12*c_b_j
+!                     dbij_ba = dp1p_b_12*c_a_j
+!                     dk1_ab = dbii_ab/b_ij - b_ii/(b_ij**2)*dbij_ab
+!                     dk1_ba = dbii_ba/b_ij - b_ii/(b_ij**2)*dbij_ba
+!                     dk2_ab = 2.0d0*dbii_ab/(b_ii+b_ij)
+!    &                       - 2.0d0*b_ii/(b_ii+b_ij)**2
+!    &                              *(dbii_ab+dbij_ab)
+!                     dk2_ba = 2.0d0*dbii_ba/(b_ii+b_ij)
+!    &                       - 2.0d0*b_ii/(b_ii+b_ij)**2
+!    &                              *(dbii_ba+dbij_ba)
+!                     dT_ab = (1.0d0-f_a)*dk1_ab+f_a*dk2_ab
+!                     dT_ba = (1.0d0-f_a)*dk1_ba+f_a*dk2_ba
+!                     v_dc_a(ii) = v_dc_a(ii)
+!    &                + e_iijj_ab*p1p_a_14*dT_ab
+!                     v_dc_b(ii) = v_dc_b(ii)
+!    &                + e_iijj_ba*p1p_b_14*dT_ba
+!                   endif
+!                 enddo ! ii
+!               enddo ! jjj
+!             enddo ! jj
 c
             enddo ! la
           enddo ! lc
@@ -967,9 +1023,9 @@ c
 c
       E_corr    = 0.5d0*E_corr
 cDEBUG
-      write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
-      write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
-      write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
+c     write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
+c     write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor
+c     write(*,*)'HVD: E4_ij_cor = ',0.5d0*E4_ij_cor
 cDEBUG
 c
       call ga_dgop(1300,E_corr,1,"+")
@@ -990,14 +1046,14 @@ c
       deallocate(buf_N_ci_a,buf_N_ci_b)
       deallocate(buf_N_di_a,buf_N_di_b)
 c
-      deallocate(buf_fn_ic_a,buf_fn_ic_b)
-      deallocate(buf_fn_ib_a,buf_fn_ib_b)
-      deallocate(buf_fn_ij_a,buf_fn_ij_b)
+!     deallocate(buf_fn_ic_a,buf_fn_ic_b)
+!     deallocate(buf_fn_ib_a,buf_fn_ib_b)
+!     deallocate(buf_fn_ij_a,buf_fn_ij_b)
 c
-      deallocate(buf_fc_ij_a)
-      deallocate(buf_fc_ij_b)
-      deallocate(buf_fc_ji_a)
-      deallocate(buf_fc_ji_b)
+!     deallocate(buf_fc_ij_a)
+!     deallocate(buf_fc_ij_b)
+!     deallocate(buf_fc_ji_a)
+!     deallocate(buf_fc_ji_b)
 c
       end
 !>

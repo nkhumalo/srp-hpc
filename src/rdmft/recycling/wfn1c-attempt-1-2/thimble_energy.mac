@@ -1,0 +1,33 @@
+optimprefix: t;
+
+fortran_block(l,e) := block( [n : 0],
+  for n:1 thru length(e) do
+    fortran(l[n] = l[n] + e[n])
+  );
+
+fortran_optimize(l,e) := block(
+  for p in rest(args(optimize(e))) do
+    if op(p)=":" then fortran(apply("=",args(p)))
+    else if listp(p) then fortran_block(l,p)
+    else fortran(p)
+  );
+
+/* d(r):=(r*(1.0-r)); */
+d(r):=(r*log(r)+(1.0-r)*log(1.0-r));
+f(r,de,x1,x2):=(d(r)/d(1.0/2.0))**x1;
+#g(ehf,e,y,z):=exp(-signum(z)*(abs(z)*abs(abs(ehf)-abs(e)))**y);
+g(e,y1,y2,y3,y4,y5,z1,z2,z3,z4,z5):=(1.0+signum(z1)*(abs(z1)*abs(e))**y1
+                                        +signum(z2)*(abs(z2)*abs(e))**y2
+                                        +signum(z3)*(abs(z3)*abs(e))**y3
+                                        +signum(z4)*(abs(z4)*abs(e))**y4
+                                        +signum(z5)*(abs(z5)*abs(e))**y5);
+h(r1,r2,de_hf,de,x1,x2,ye1,ye2,ye3,ye4,ye5,ze1,ze2,ze3,ze4,ze5,yh1,yh2,yh3,yh4,yh5,zh1,zh2,zh3,zh4,zh5):=
+f(r1,de,x1,x2)*f(r2,de,x1,x2)*g(de_hf,yh1,yh2,yh3,yh4,yh5,zh1,zh2,zh3,zh4,zh5)/g(de,ye1,ye2,ye3,ye4,ye5,ze1,ze2,ze3,ze4,ze5);
+
+dhdr1(r1,r2,de_hf,de,x1,x2,ye1,ye2,ye3,ye4,ye5,ze1,ze2,ze3,ze4,ze5,yh1,yh2,yh3,yh4,yh5,zh1,zh2,zh3,zh4,zh5):=
+    diff(h(r1,r2,de_hf,de,x1,x2,ye1,ye2,ye3,ye4,ye5,ze1,ze2,ze3,ze4,ze5,yh1,yh2,yh3,yh4,yh5,zh1,zh2,zh3,zh4,zh5),r1);
+dhdr2(r1,r2,de_hf,de,x1,x2,ye1,ye2,ye3,ye4,ye5,ze1,ze2,ze3,ze4,ze5,yh1,yh2,yh3,yh4,yh5,zh1,zh2,zh3,zh4,zh5):=
+    diff(h(r1,r2,de_hf,de,x1,x2,ye1,ye2,ye3,ye4,ye5,ze1,ze2,ze3,ze4,ze5,yh1,yh2,yh3,yh4,yh5,zh1,zh2,zh3,zh4,zh5),r2);
+with_stdout("thimble_energy.F",
+    fortran_optimize([h,dhdr1,dhdr2],[h(r1,r2,de_hf,de,x1,x2,ye1,ye2,ye3,ye4,ye5,ze1,ze2,ze3,ze4,ze5,yh1,yh2,yh3,yh4,yh5,zh1,zh2,zh3,zh4,zh5),dhdr1(r1,r2,de_hf,de,x1,x2,ye1,ye2,ye3,ye4,ye5,ze1,ze2,ze3,ze4,ze5,yh1,yh2,yh3,yh4,yh5,zh1,zh2,zh3,zh4,zh5),dhdr2(r1,r2,de_hf,de,x1,x2,ye1,ye2,ye3,ye4,ye5,ze1,ze2,ze3,ze4,ze5,yh1,yh2,yh3,yh4,yh5,zh1,zh2,zh3,zh4,zh5)]));
+

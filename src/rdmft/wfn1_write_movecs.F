@@ -11,11 +11,12 @@ c
 !> This routine is essentially implemented as a wrapper around the
 !> conventional `movecs_write` routine.
 !>
-      subroutine wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave,
-     &                             v_dna,v_dnb,v_dca,v_dcb)
+      subroutine wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave)
+!    &                             v_dna,v_dnb,v_dca,v_dcb)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
+#include "errquit.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
 !>    The parameters of the calculation
       type(wfn1_prm),     intent(in) :: wfn1_param
 !>    The parameter instances of the calculation
@@ -23,13 +24,13 @@ c
 !>    The wave function
       type(wfn1_wfn),     intent(in) :: wfn1_wave
 !>    The \f$\alpha\f$ natural orbital energies
-      double precision,   intent(in) :: v_dna(wfn1_param%nmo)
+!     double precision,   intent(in) :: v_dna(wfn1_param%nmo)
 !>    The \f$\beta\f$ natural orbital energies
-      double precision,   intent(in) :: v_dnb(wfn1_param%nmo)
+!     double precision,   intent(in) :: v_dnb(wfn1_param%nmo)
 !>    The \f$\alpha\f$ correlation function energies
-      double precision,   intent(in) :: v_dca(wfn1_param%nmo)
+!     double precision,   intent(in) :: v_dca(wfn1_param%nmo)
 !>    The \f$\beta\f$ correlation function energies
-      double precision,   intent(in) :: v_dcb(wfn1_param%nmo)
+!     double precision,   intent(in) :: v_dcb(wfn1_param%nmo)
 c
       double precision, allocatable :: ocn(:,:)
       double precision, allocatable :: occ(:,:)
@@ -65,10 +66,12 @@ c
 c
 c     Set the energies up
 c
-      evn(:,1) = v_dna(:)
-      evn(:,2) = v_dnb(:)
-      evc(:,1) = v_dca(:)
-      evc(:,2) = v_dcb(:)
+!     evn(:,1) = v_dna(:)
+!     evn(:,2) = v_dnb(:)
+!     evc(:,1) = v_dca(:)
+!     evc(:,2) = v_dcb(:)
+      evn = 0.0d0
+      evc = 0.0d0
 c
 c     Store the correlation functions
 c
@@ -81,19 +84,23 @@ c
       else
         covecs_out = covecs_out(1:ii)//".covecs"
       endif
-      call movecs_write(wfn1_inst%rtdb,wfn1_inst%basis,
-     &                  trim(covecs_out),
-     &                  "WFN1","",wfn1_param%nmo,2,nmo,
-     &                  occ,wfn1_param%nmo,evc,wfn1_param%nmo,g_vecs)
+      if (.not.wfn1_movecs_write(wfn1_inst%rtdb,wfn1_inst%basis,
+     &         trim(covecs_out),
+     &         "WFN1","",wfn1_param%nmo,2,nmo,
+     &         occ,wfn1_param%nmo,evc,wfn1_param%nmo,g_vecs)) then
+        call errquit("wfn1_write_movecs: i/o error",0,UERR)
+      endif
 c
 c     Store the natural orbitals
 c
       g_vecs(1) = wfn1_wave%g_na
       g_vecs(2) = wfn1_wave%g_nb
-      call movecs_write(wfn1_inst%rtdb,wfn1_inst%basis,
-     &                  trim(wfn1_param%movecs_out),
-     &                  "WFN1","",wfn1_param%nmo,2,nmo,
-     &                  ocn,wfn1_param%nmo,evn,wfn1_param%nmo,g_vecs)
+      if (.not.wfn1_movecs_write(wfn1_inst%rtdb,wfn1_inst%basis,
+     &         trim(wfn1_param%movecs_out),
+     &         "WFN1","",wfn1_param%nmo,2,nmo,
+     &         ocn,wfn1_param%nmo,evn,wfn1_param%nmo,g_vecs)) then
+        call errquit("wfn1_write_movecs: i/o error",0,UERR)
+      endif
 c
       deallocate(evn)
       deallocate(evc)

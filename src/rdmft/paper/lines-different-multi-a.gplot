@@ -1,0 +1,11 @@
+g(x,a,y)=((x+a)**y-a**y)/((1.0+a)**y-a**y)
+e(x,y,z,a)=(f(x,a,y)*log(f(x,a,y))+f(1.0-x,a,y)*log(f(1.0-x,a,y)))**z
+k(x,a,y)=g(x,a,y)
+l(x,a,y)=(g(x,a,y)+g(x,2.0*a,y))/(g(1.0,a,y)+g(1.0,2.0*a,y))
+m(x,a,y)=(g(x,a,y)+g(x,2.0*a,y)+g(x,4.0*a,y))/(g(1.0,a,y)+g(1.0,2.0*a,y)+g(1.0,4.0*a,y))
+set xrange [0:1]
+set isosamples 20
+plot k(x,0.1,0.5) with lines, l(x,0.1,0.5) with lines, m(x,0.1,0.5) with lines
+#plot e(x,0.5,1.0,10.0) with lines
+#plot f(x,2.0,0.5) with lines, f(1.0-x,2.0,0.5) with lines
+# inspiration: https://wattsupwiththat.com/2015/07/25/the-mathematics-of-carbon-dioxide-part-1/

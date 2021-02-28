@@ -1,0 +1,36 @@
+A11=1.0
+A22=2.0
+A12=0.1
+c2(dd)=(cos(0.5*atan(2.0*A12*dd/(A22-A11)))**2)
+s2(dd)=(sin(0.5*atan(2.0*A12*dd/(A22-A11)))**2)
+s3(dd,A12)=(sin(0.5*atan(2.0*A12*dd/(A22-A11)))**2)
+dc(c2)=((A22-A11)/(2.0*A12))*tan(2.0*acos(sqrt(c2)))
+ds(s2)=((A22-A11)/(2.0*A12))*tan(2.0*asin(sqrt(s2)))
+d1(c2)=sqrt(c2)
+d2(c2)=2.0*acos(sqrt(c2))
+d3(c2)=tan(2.0*acos(sqrt(c2)))
+set xrange [0:100]
+set yrange [0:1]
+set isosamples 20, 20
+#set terminal latex
+#set output "dij.tex"
+set xrange [0:100]
+plot c2(x) with lines, s2(x) with lines
+#splot s3(x,y) with lines
+pause -1
+#
+#
+#
+set yrange [0.0:100.0]
+set xrange [0.0:1.0]
+plot dc(x) with lines, ds(x) with lines
+pause -1
+#
+#
+#
+dd(d)=cos(atan(d)/2.0)*sin(atan(d)/2.0)/(d*d+1)
+set xrange [0.9:1.1]
+set xrange [0:5]
+unset yrange
+set yrange [0:10]
+plot dd(x) with lines, 1.0/dd(x) with lines

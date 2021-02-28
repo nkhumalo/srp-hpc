@@ -1,12 +1,15 @@
-c-----------------------------------------------------------------------
+!     submodule (wfn1) wfn1_conf
+!     implicit none
+!     contains
 c
-      subroutine wfn1_configuration(wfn1_param,wfn1_wave)
-      implicit none
+c-----------------------------------------------------------------------
 C>
 C> \brief Set the electron configuration up
 C>
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
+      subroutine wfn1_configuration(wfn1_param,wfn1_wave)
+      implicit none
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
       type(wfn1_prm), intent(in)    :: wfn1_param
       type(wfn1_wfn), intent(inout) :: wfn1_wave
 c
@@ -28,6 +31,8 @@ c
         wfn1_wave%dcntb(wfn1_param%neb) = wfn1_param%fracb
       endif
 c
-      end
+      end subroutine wfn1_configuration
 c
 c-----------------------------------------------------------------------
+c
+!     end submodule wfn1_conf

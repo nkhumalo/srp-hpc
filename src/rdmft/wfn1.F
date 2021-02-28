@@ -3,7 +3,7 @@
 !>
 !> \brief Read the input for the RDMFT calculations
 !>
-      integer rtdb !> [Input] The runtime database
+      integer, intent(inout) :: rtdb !> [Input] The runtime database
       end subroutine wfn1_input
 !>
 !>----------------------------------------------------------------------
@@ -32,15 +32,15 @@
 !>     arXiv: <a href="http://arxiv.org/abs/1512.06120">
 !>     http://arxiv.org/abs/1512.06120</a>
 !>
-      logical function wfn1_task_energy(rtdb)
+      function wfn1_task_energy(rtdb) result(wfn1_success)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_size.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_size.fh"
 #include "wfn1_trace.fh"
-#include "wfn1_en.fh"
+!include "wfn1_en.fh"
 #include "bas.fh"
 #include "errquit.fh"
 #include "geom.fh"
@@ -51,7 +51,8 @@
 #include "util.fh"
 ! For filesize and memsize
 #include "cfock.fh"
-      integer rtdb !> [Input] The runtime database
+      integer, intent(inout) :: rtdb !> [Input] The runtime database
+      logical :: wfn1_success
 c
 c     Local variables
 c
@@ -84,6 +85,9 @@ c
       integer g_momo2    ! nmo x nmo scratch global array
       integer g_momo3    ! nmo x nmo scratch global array
       integer g_momo4    ! nmo x nmo scratch global array
+      integer g_4t1      ! nbf x nbf x nbf x nbf scratch global array
+      integer g_4t2      ! nbf x nbf x nbf x nbf scratch global array
+      integer gz_momo1    ! nmo x nmo complex scratch global array
 c
       integer ndep_nmo          ! the number of linearly independent
                                 ! vectors set as a user parameter
@@ -96,41 +100,42 @@ c
       double precision conv_tol ! the convergence tolerance
 c
       double precision, allocatable :: eig(:)
-      double precision, allocatable :: v_dna(:)
-      double precision, allocatable :: v_dnb(:)
-      double precision, allocatable :: v_dca(:)
-      double precision, allocatable :: v_dcb(:)
-      double precision, allocatable :: v_dnna(:)
-      double precision, allocatable :: v_dnnb(:)
-      double precision, allocatable :: v_dcna(:)
-      double precision, allocatable :: v_dcnb(:)
+!     double precision, allocatable :: v_dna(:)
+!     double precision, allocatable :: v_dnb(:)
+!     double precision, allocatable :: v_dca(:)
+!     double precision, allocatable :: v_dcb(:)
+!     double precision, allocatable :: v_dnna(:)
+!     double precision, allocatable :: v_dnnb(:)
+!     double precision, allocatable :: v_dcna(:)
+!     double precision, allocatable :: v_dcnb(:)
       type(wfn1_error)              :: error
 c
       type(wfn1_prminst) :: wfn1_inst    ! paramater instances
       type(wfn1_prm)     :: wfn1_param   ! calculation parameters
       type(wfn1_matcnst) :: wfn1_mat     ! matrix constants
       type(wfn1_wfn)     :: wfn1_wave    ! the current wave function
-      type(wfn1_drv)     :: wfn1_deriv   ! the derivative of the current
-                                         ! wave function
+!     type(wfn1_drv)     :: wfn1_deriv   ! the derivative of the current
+!                                        ! wave function
       type(wfn1_en)      :: wfn1_energy  ! the energy terms
 c
       type(wfn1_wfn)     :: wfn1_trial_wv  ! the trial wave function
-      type(wfn1_drv)     :: wfn1_trial_drv ! the derivative wrt the trial
-                                           ! wave function
-      type(wfn1_drv)     :: wfn1_part_drv ! the non-correlation, non-
-                                          ! thermal part of derivative
-                                          ! wrt the wave function
+!     type(wfn1_drv)     :: wfn1_trial_drv ! the derivative wrt the trial
+!                                          ! wave function
+!     type(wfn1_drv)     :: wfn1_part_drv ! the non-correlation, non-
+!                                         ! thermal part of derivative
+!                                         ! wrt the wave function
       type(wfn1_en)      :: wfn1_trial_en  ! the trial energy
 c
       type(wfn1_wfn) :: wfn1_t_wv  ! temporary variable
-      type(wfn1_drv) :: wfn1_t_drv ! temporary variable
+!     type(wfn1_drv) :: wfn1_t_drv ! temporary variable
 c
       logical, external :: int_normalize
-      logical, external :: wfn1_solve_line
-      logical, external :: wfn1_solve_diag
+!     logical, external :: wfn1_solve_line
+!     logical, external :: wfn1_solve_diag
+!     logical, external :: wfn1_solve_mc
 c
       double precision aa_hl, ab_hl
-      double precision fac_redist
+!     double precision fac_redist
       double precision fac_aa,         pow_x1_aa, pow_x2_aa,
      +                                 pow_y1_aa, pow_z1_aa,
      +                                 pow_y2_aa, pow_z2_aa,
@@ -156,12 +161,23 @@ c
      +                                 powhf_y4_ab, powhf_z4_ab,
      +                                 powhf_y5_ab, powhf_z5_ab
 c
+      integer :: idims(4) ! To set up 4-D GAs
+      integer :: ichnk(4) ! To set up 4-D GAs
+      integer :: nseedsize
+      integer, allocatable :: nseed(:)
+c
       iproc = ga_nodeid()
       nproc = ga_nnodes()
+      call random_seed(size=nseedsize)
+      allocate(nseed(1:nseedsize))
+      call random_seed(get=nseed)
+      nseed = nseed + iproc
+      call random_seed(put=nseed)
+      deallocate(nseed)
 c
       wfn1_inst%rtdb = rtdb
       pname = "wfn1_energy:"
-      wfn1_task_energy = .false.
+      wfn1_success = .false.
       lstatus = rtdb_parallel(.true.)
       call util_print_push
       call util_print_rtdb_load(wfn1_inst%rtdb, 'wfn1') 
@@ -324,6 +340,15 @@ c
      &                   wfn1_param%corr_expr)) then
          wfn1_param%corr_expr="wfn1_mx"
       endif
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_a',MT_DBL,1,
+     &                   wfn1_param%fac_a))
+     &  wfn1_param%fac_a = 0.0d0
+      if (wfn1_param%fac_a.lt.0.0d0) then
+        call errquit(pname//" factor A less than 0", 0,INPUT_ERR)
+      endif
+      if (wfn1_param%fac_a.gt.1.0d0) then
+        call errquit(pname//" factor A greater than 1", 0,INPUT_ERR)
+      endif
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:aa',MT_DBL,1,
      &                   fac_aa))
      &  fac_aa = 0.0d0
@@ -339,9 +364,9 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_aa',MT_DBL,1,
      &                   fac_aa))
      &  fac_aa    = 0.0d0
-      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_redist',MT_DBL,1,
-     &                   fac_redist))
-     &  fac_redist= 0.0d0
+!     if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_redist',MT_DBL,1,
+!    &                   fac_redist))
+!    &  fac_redist= 0.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:pow_x1_aa',MT_DBL,1,
      &                   pow_x1_aa))
      &  pow_x1_aa  = 0.0d0
@@ -480,7 +505,7 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:powhf_z5_ab',MT_DBL,1,
      &                   powhf_z5_ab))
      &  powhf_z5_ab = 0.0d0
-      call wfn1_set_entropy_fac(fac_aa,fac_ab,fac_redist,del_ab,
+      call wfn1_set_entropy_fac(fac_aa,fac_ab,del_ab,
      &                          pow_x1_aa,pow_x2_aa,pow_x1_ab,pow_x2_ab,
      &                          pow_y1_aa,pow_y1_ab,pow_y2_aa,pow_y2_ab,
      &                          pow_y3_aa,pow_y3_ab,pow_y4_aa,pow_y4_ab,
@@ -502,7 +527,7 @@ c
       if (.not.rtdb_cget(wfn1_inst%rtdb,"wfn1:solver",
      &                   len(wfn1_param%solver),
      &                   wfn1_param%solver)) then
-         wfn1_param%solver="diagonalize"
+         wfn1_param%solver="monte-carlo"
       endif
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:conv_tol",MT_DBL,
      &                  1,conv_tol)) conv_tol = 1.0d-6
@@ -523,13 +548,20 @@ c
      &               0,INPUT_ERR)
       endif
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:damp_n",MT_DBL,
-     &                  1,wfn1_param%damp_n)) wfn1_param%damp_n = 1.0d-2
+     &                  1,wfn1_param%damp_n)) wfn1_param%damp_n = 1.0d-3
+c    &                  1,wfn1_param%damp_n)) wfn1_param%damp_n = 1.0d-2
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:damp_c",MT_DBL,
-     &                  1,wfn1_param%damp_c)) wfn1_param%damp_c = 2.0d-3
+     &                  1,wfn1_param%damp_c)) wfn1_param%damp_c = 1.0d-3
+c    &                  1,wfn1_param%damp_c)) wfn1_param%damp_c = 2.0d-3
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:denom_min",MT_DBL,
      &                  1,wfn1_param%denom_min)) 
-     &                                     wfn1_param%denom_min = 1.0d-8
+     &                                     wfn1_param%denom_min = 1.0d-2
+c    &                                     wfn1_param%denom_min = 1.0d-8
 c    &                                     wfn1_param%denom_min = 0.01d0
+      if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:pfac",MT_DBL,
+     &                  1,wfn1_param%pfac)) wfn1_param%pfac = 256.0d0
+      if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:rlim",MT_DBL,
+     &                  1,wfn1_param%rlim)) wfn1_param%rlim = 1.0d-2
       wfn1_param%convergence = conv_tol
       wfn1_param%maxiter     = maxit
 c
@@ -570,7 +602,7 @@ c
 c
 c     == Deal with 1-electron integrals ==
 c
-      call wfn1_allocate_mat(wfn1_inst,wfn1_mat)
+      call wfn1_allocate_mat(wfn1_param,wfn1_inst,wfn1_mat)
 c
 c     == Initialize the integral code ==
 c
@@ -656,6 +688,21 @@ c
         call errquit(pname//" allocate g_momo4 failed",
      &               wfn1_ibd_proc(wfn1_param%nmo**2,nproc),GA_ERR)
       endif
+      idims = wfn1_param%nbf
+      ichnk = -1
+      if (.not.nga_create(MT_DBL,4,idims,"g_4t1",ichnk,g_4t1)) then
+        call errquit(pname//" allocate g_4t1 failed",
+     &               wfn1_ibd_proc(wfn1_param%nbf**4,nproc),GA_ERR)
+      endif
+      if (.not.nga_create(MT_DBL,4,idims,"g_4t2",ichnk,g_4t2)) then
+        call errquit(pname//" allocate g_4t2 failed",
+     &               wfn1_ibd_proc(wfn1_param%nbf**4,nproc),GA_ERR)
+      endif
+      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+     &                   "gz_momo1",-1,-1,gz_momo1)) then
+        call errquit(pname//" allocate gz_momo1 failed",
+     &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
+      endif
 c
 c     == Load any DFT related variables ==
 c
@@ -673,27 +720,35 @@ c
 c
 c     == Allocate memory for the natural orbital energies
 c
-      allocate(v_dna(1:wfn1_param%nmo), v_dnb(1:wfn1_param%nmo))
-      allocate(v_dca(1:wfn1_param%nmo), v_dcb(1:wfn1_param%nmo))
-      allocate(v_dnna(1:wfn1_param%nmo),v_dnnb(1:wfn1_param%nmo))
-      allocate(v_dcna(1:wfn1_param%nmo),v_dcnb(1:wfn1_param%nmo))
+!     allocate(v_dna(1:wfn1_param%nmo), v_dnb(1:wfn1_param%nmo))
+!     allocate(v_dca(1:wfn1_param%nmo), v_dcb(1:wfn1_param%nmo))
+!     allocate(v_dnna(1:wfn1_param%nmo),v_dnnb(1:wfn1_param%nmo))
+!     allocate(v_dcna(1:wfn1_param%nmo),v_dcnb(1:wfn1_param%nmo))
+!     v_dna = 0.0d0
+!     v_dnb = 0.0d0
+!     v_dca = 0.0d0
+!     v_dcb = 0.0d0
+!     v_dnna = 0.0d0
+!     v_dnnb = 0.0d0
+!     v_dcna = 0.0d0
+!     v_dcnb = 0.0d0
 cDEBUG
-      if (wfn1_param%corr_expr.eq."wfn1s") then
-        read(70,*)v_dna(1:wfn1_param%nmo)
-        read(70,*)v_dnb(1:wfn1_param%nmo)
-        close(70)
-        call wfn1_set_entropy_eorb_hf(v_dna,v_dnb,wfn1_param%nmo)
-        call wfn1_set_entropy_eorb(v_dna,v_dnb,wfn1_param%nmo)
-        v_dna = 0.0d0
-        v_dnb = 0.0d0
-      endif
+!     if (wfn1_param%corr_expr.eq."wfn1s") then
+!       read(70,*)v_dna(1:wfn1_param%nmo)
+!       read(70,*)v_dnb(1:wfn1_param%nmo)
+!       close(70)
+!       call wfn1_set_entropy_eorb_hf(v_dna,v_dnb,wfn1_param%nmo)
+!       call wfn1_set_entropy_eorb(v_dna,v_dnb,wfn1_param%nmo)
+!       v_dna = 0.0d0
+!       v_dnb = 0.0d0
+!     endif
 cDEBUG
 c
 c     == Allocate memory for the derivatives wrt the wavefunctions ==
 c
-      call wfn1_allocate_drv(wfn1_param,wfn1_deriv)
-      call wfn1_allocate_drv(wfn1_param,wfn1_trial_drv)
-      call wfn1_allocate_drv(wfn1_param,wfn1_part_drv)
+!     call wfn1_allocate_drv(wfn1_param,wfn1_deriv)
+!     call wfn1_allocate_drv(wfn1_param,wfn1_trial_drv)
+!     call wfn1_allocate_drv(wfn1_param,wfn1_part_drv)
 c
 c     == Populate the natural orbitals with the eigenfunctions of ==
 c     == the S^{-1/2} matrix                                      == 
@@ -703,10 +758,16 @@ c
      &     wfn1_wave%g_na,1,wfn1_param%nbf,1,wfn1_param%nmo)
       call ga_copy(wfn1_wave%g_na,wfn1_wave%g_nb)
 c
+c     == Set up electron configuration ==
+c
+      call wfn1_configuration(wfn1_param,wfn1_wave)
+      call wfn1_configuration(wfn1_param,wfn1_trial_wv)
+c
 c     == Set up initial wave functions ==
 c
 cDEBUG
-      write(*,*)'HVD: wfn1: movecs_in = ',wfn1_param%movecs_in
+      write(*,*)'HVD: wfn1: movecs_in  = ',wfn1_param%movecs_in
+      write(*,*)'HVD: wfn1: movecs_out = ',wfn1_param%movecs_out
 cDEBUG
       if (wfn1_param%movecs_in == "atomic") then
 c
@@ -729,121 +790,60 @@ c
         call wfn1_guess_corr(wfn1_param,wfn1_wave,eig,wfn1_param%nmo)
         deallocate(eig)
 c
+c       call wfn1_rot_natorb(wfn1_param,wfn1_inst,wfn1_mat,
+c    &                       wfn1_wave,wfn1_deriv,wfn1_energy,
+c    &                       wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
+c    &                       g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+c    &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+c    &                       v_dna,v_dnb,v_dca,v_dcb,
+c    &                       v_dnna,v_dnnb,v_dcna,v_dcnb,
+c    &                       oprerr,curit)
+c
       else
         call wfn1_guess_movecs(wfn1_param,wfn1_wave)
       endif
-c
-c     == Set up electron configuration ==
-c
-      call wfn1_configuration(wfn1_param,wfn1_wave)
-      call wfn1_configuration(wfn1_param,wfn1_trial_wv)
+cDEBUG
+c     call wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
+c    &                         v_dna,v_dnb,v_dca,v_dcb,g_momo1,g_momo2)
+cDEBUG
 c
 c     == Initial wavefunction complete ==
 c
       call ga_sync() ! make sure wave function guesses are completed
-#ifdef JUNK
-      if (iproc.eq.0) then
-        if (.not.oprerr) then
-          write(luout,'(a10,a20,a16)')"iteration","energy","error"
-          write(luout,'(a10,a20,a16)')"---------","------","-----"
-        else
-          write(luout,'(a10,a20,a16,4a16)')"iteration","energy","error",
-     &          "err Na","err Nb","err Ca","err Cb"
-          write(luout,'(a10,a20,a16,4a16)')"---------","------","-----",
-     &          "------","------","------","------"
-        endif
-      endif
-      call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,wfn1_deriv,
-     &              wfn1_energy,g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
-     &              g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &              v_dna,v_dnb,v_dca,v_dcb,
-     &              v_dnna,v_dnnb,v_dcna,v_dcnb)
-      call wfn1_skew(wfn1_param,wfn1_deriv,v_dna,v_dnb,v_dca,v_dcb)
-c     call wfn1_zero_vv(wfn1_param,wfn1_wave,wfn1_deriv)
-      error = wfn1_trace(wfn1_deriv,wfn1_deriv)
-      oconverged = (error%total < conv_tol)
-      curit      = 0
-      do while ((.not.oconverged).and.(curit.lt.maxit))
-        curit = curit + 1
-c
-c       Alternating optimization of natural orbitals and correlation
-c       functions for better convergence.
-c
-        if (error%errna+error%errnb > 0.5d0*conv_tol .and.
-     &      error%errca+error%errcb > 0.5d0*conv_tol) then
-          if (mod(curit,2).eq.0) then
-            call ga_zero(wfn1_deriv%g_dca)
-            call ga_zero(wfn1_deriv%g_dcb)
-          else
-            call ga_zero(wfn1_deriv%g_dna)
-            call ga_zero(wfn1_deriv%g_dnb)
-          endif
-        else if (error%errna+error%errnb >
-     &           error%errca+error%errcb) then
-          call ga_zero(wfn1_deriv%g_dca)
-          call ga_zero(wfn1_deriv%g_dcb)
-        else
-          call ga_zero(wfn1_deriv%g_dna)
-          call ga_zero(wfn1_deriv%g_dnb)
-        endif
-c
-c       end of alternating optimization
-c
-        call wfn1_linesearch(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
-     &                       wfn1_deriv,wfn1_energy,
-     &                       wfn1_trial_wv,wfn1_trial_drv,wfn1_trial_en,
-     &                       g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
-     &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                       v_dna,v_dnb,v_dca,v_dcb,
-     &                       v_dnna,v_dnnb,v_dcna,v_dcnb)
-c
-        error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
-        oconverged = (error%total < conv_tol)
-c
-c       swap trial wavefunctions, derivatives and energies with the 
-c       regular ones.
-c
-        wfn1_t_wv      = wfn1_trial_wv
-        wfn1_trial_wv  = wfn1_wave
-        wfn1_wave      = wfn1_t_wv
-c
-        wfn1_t_drv     = wfn1_trial_drv
-        wfn1_trial_drv = wfn1_deriv
-        wfn1_deriv     = wfn1_t_drv
-c
-        wfn1_energy    = wfn1_trial_en
-
-        if (iproc.eq.0) then
-          if (.not.oprerr) then
-            write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
-     &                                      error%total
-          else
-            write(luout,'(i10,f20.8,5f16.6)')curit,wfn1_energy%E_tot,
-     &                                       error%total,
-     &                                       error%errna,error%errnb,
-     &                                       error%errca,error%errcb
-          endif
-        endif
-      enddo
-      wfn1_task_energy = oconverged
-#endif
       if (wfn1_param%solver.eq."linesearch") then
-        oconverged = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
-     &                    wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
-     &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
-     &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                    v_dna,v_dnb,v_dca,v_dcb,
-     &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
-     &                    oprerr,curit)
+        call errquit("wfn1_task_energy: no linesearch implemented",
+     &               0,UERR)
+c       oconverged = wfn1_solve_line(wfn1_param,wfn1_inst,wfn1_mat,
+c    &                    wfn1_wave,wfn1_deriv,wfn1_energy,
+c    &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
+c    &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+c    &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+c    &                    v_dna,v_dnb,v_dca,v_dcb,
+c    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
+c    &                    oprerr,curit)
       else if (wfn1_param%solver.eq."diagonalize") then
-        oconverged = wfn1_solve_diag(wfn1_param,wfn1_inst,wfn1_mat,
-     &                    wfn1_wave,wfn1_deriv,wfn1_energy,
-     &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
+        call errquit("wfn1_task_energy: no diagonalize implemented",
+     &               0,UERR)
+c       oconverged = wfn1_solve_diag(wfn1_param,wfn1_inst,wfn1_mat,
+c    &                    wfn1_wave,wfn1_deriv,wfn1_energy,
+c    &                    wfn1_trial_wv,wfn1_trial_drv,wfn1_part_drv,
+c    &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+c    &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+c    &                    v_dna,v_dnb,v_dca,v_dcb,
+c    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
+c    &                    oprerr,curit)
+      else if (wfn1_param%solver.eq."monte-carlo") then
+        oconverged = wfn1_solve_mc(wfn1_param,wfn1_inst,wfn1_mat,
+     &                    wfn1_wave,
+!    &                    wfn1_deriv,
+     &                    wfn1_energy,wfn1_trial_wv,
+!    &                    wfn1_trial_drv,wfn1_part_drv,
      &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
-     &                    v_dna,v_dnb,v_dca,v_dcb,
-     &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
+     &                    g_4t1,g_4t2,
+     &                    gz_momo1,
+!    &                    v_dna,v_dnb,v_dca,v_dcb,
+!    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                    oprerr,curit)
       else
         if (iproc.eq.0) then
@@ -851,10 +851,11 @@ c
           write(luout,*)pname//" valid options are:"
           write(luout,*)pname//" - linesearch"
           write(luout,*)pname//" - diagonalize"
+          write(luout,*)pname//" - monte-carlo"
         endif
         call errquit(pname//" invalid solver",0)
       endif
-      wfn1_task_energy = oconverged
+      wfn1_success = oconverged
       if (iproc.eq.0) then
         if (curit.eq.0) then
 c
@@ -880,20 +881,6 @@ c
         write(LuOut,*)
       endif
 c
-c     == Print results ==
-c
-      call ga_sync() ! for good measure
-      if (iproc.eq.0) then
-        call wfn1_print_energy(wfn1_energy)
-      endif
-      call wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
-     &                         v_dna,v_dnb,v_dca,v_dcb,g_momo1,g_momo2)
-cDEBUG
-      call wfn1_print_orb_energies(wfn1_param,
-     &     v_dna,v_dnb,v_dca,v_dcb,
-     &     v_dnna,v_dnnb,v_dcna,v_dcnb)
-cDEBUG
-c
 c     == Store results ==
 c
       if (.not.rtdb_put(rtdb,'wfn1:energy',MT_DBL,1,wfn1_energy%E_tot))
@@ -902,22 +889,37 @@ c
       if (.not.rtdb_put(rtdb,'wfn1:converged',MT_LOG,1,oconverged))
      &  call errquit(pname//' failed to store converged in rtdb', 
      &               0, RTDB_ERR)
-      call wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave,
-     &                       v_dna,v_dnb,v_dca,v_dcb)
+      call wfn1_write_movecs(wfn1_param,wfn1_inst,wfn1_wave)
+!    &                       v_dna,v_dnb,v_dca,v_dcb)
+c
+c     == Print results ==
+c
+      call ga_sync() ! for good measure
+      if (iproc.eq.0) then
+        call wfn1_print_energy(wfn1_energy)
+      endif
+      call wfn1_print_analysis(wfn1_param,wfn1_inst,wfn1_wave,
+!    &                         v_dna,v_dnb,v_dca,v_dcb,
+     &                         g_momo1,g_momo2)
+cDEBUG
+c     call wfn1_print_orb_energies(wfn1_param,
+c    &     v_dna,v_dnb,v_dca,v_dcb,
+c    &     v_dnna,v_dnnb,v_dcna,v_dcnb)
+cDEBUG
 c
 c     == Clean up ==
 c
 cDEBUG
-c     wfn1_task_energy = .true.
+c     wfn1_success = .true.
 cDEBUG
       call grid_cleanup(.false.)
-      call wfn1_deallocate_drv(wfn1_part_drv)
-      call wfn1_deallocate_drv(wfn1_trial_drv)
-      call wfn1_deallocate_drv(wfn1_deriv)
-      deallocate(v_dcna,v_dcnb)
-      deallocate(v_dnna,v_dnnb)
-      deallocate(v_dca, v_dcb)
-      deallocate(v_dna, v_dnb)
+!     call wfn1_deallocate_drv(wfn1_part_drv)
+!     call wfn1_deallocate_drv(wfn1_trial_drv)
+!     call wfn1_deallocate_drv(wfn1_deriv)
+!     deallocate(v_dcna,v_dcnb)
+!     deallocate(v_dnna,v_dnnb)
+!     deallocate(v_dca, v_dcb)
+!     deallocate(v_dna, v_dnb)
       deallocate(wfn1_t_wv%dcntb)
       deallocate(wfn1_t_wv%dcnta)
       deallocate(wfn1_t_wv%icnfb)
@@ -926,6 +928,15 @@ cDEBUG
       call wfn1_deallocate_wfn(wfn1_wave)
       call wfn1_deallocate_mat(wfn1_mat)
 c
+      if (.not.ga_destroy(gz_momo1)) then
+        call errquit(pname//" deallocate gz_momo1 failed",0,GA_ERR)
+      endif
+      if (.not.ga_destroy(g_4t2)) then
+        call errquit(pname//" deallocate g_4t2 failed",0,GA_ERR)
+      endif
+      if (.not.ga_destroy(g_4t1)) then
+        call errquit(pname//" deallocate g_4t1 failed",0,GA_ERR)
+      endif
       if (.not.ga_destroy(g_momo4)) then
         call errquit(pname//" deallocate g_momo4 failed",0,GA_ERR)
       endif

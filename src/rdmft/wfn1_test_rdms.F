@@ -100,7 +100,7 @@ c
 !>
       subroutine wfn1_test_rdm_trace2(wfn1_param,s,gaa,gab,gbb,tol)
       implicit none
-#include "wfn1_param.fh"
+!include "wfn1_param.fh"
       type(wfn1_prm),   intent(in) :: wfn1_param
 c
 c     Overlap matrix
@@ -771,8 +771,8 @@ c
      &                          gbb,tol)
 #include "global.fh"
 #include "errquit.fh"
-#include "wfn1_matcnst.fh"
-#include "wfn1_param.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_param.fh"
 c
       type(wfn1_prm),     intent(in) :: wfn1_param
       type(wfn1_matcnst), intent(in) :: wfn1_mat

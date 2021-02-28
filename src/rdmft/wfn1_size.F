@@ -1,7 +1,5 @@
 c-----------------------------------------------------------------------
 c
-      integer function wfn1_ibd_proc(ndouble,nproc)
-      implicit none
 C>
 C> \brief Return the number of bytes per processor needed to store the
 C> given number of doubles
@@ -10,6 +8,8 @@ C> This function assumes that the memory requirements are equally
 C> distributed. Hence the number may be inaccurate for highly 
 C> inhomogenous distributions.
 C>
+      integer function wfn1_ibd_proc(ndouble,nproc)
+      implicit none
 #include "mafdecls.fh"
 c
       integer, intent(in) :: ndouble ! the number of doubles
@@ -23,8 +23,6 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      integer function wfn1_ibi_proc(ninteger,nproc)
-      implicit none
 C>
 C> \brief Return the number of bytes per processor needed to store the
 C> given number of integers
@@ -33,6 +31,8 @@ C> This function assumes that the memory requirements are equally
 C> distributed. Hence the number may be inaccurate for highly 
 C> inhomogenous distributions.
 C>
+      integer function wfn1_ibi_proc(ninteger,nproc)
+      implicit none
 #include "mafdecls.fh"
 c
       integer, intent(in) :: ninteger ! the number of integers
@@ -46,12 +46,12 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      integer function wfn1_ibd(ndouble)
-      implicit none
 C>
 C> \brief Return the number of bytes needed to store the given number of
 C> doubles
 C>
+      integer function wfn1_ibd(ndouble)
+      implicit none
 #include "mafdecls.fh"
 c
       integer, intent(in) :: ndouble ! the number of doubles
@@ -63,12 +63,12 @@ c
 c
 c-----------------------------------------------------------------------
 c
-      integer function wfn1_ibi(ninteger)
-      implicit none
 C>
 C> \brief Return the number of bytes needed to store the given number of
 C> integers
 C>
+      integer function wfn1_ibi(ninteger)
+      implicit none
 #include "mafdecls.fh"
 c
       integer, intent(in) :: ninteger

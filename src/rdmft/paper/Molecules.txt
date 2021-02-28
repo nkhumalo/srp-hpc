@@ -1,0 +1,20 @@
+H2   sto3g
+     cc-pVTZ
+LiH  cc-pVTZ
+Li2  cc-pVTZ
+BeH2 cc-pVTZ  BeH2 -> Be+H2
+Be2  cc-pVTZ                DOI: 10.1126/science.1174326
+BeO
+BH   cc-pVTZ
+B2   cc-pVTZ
+CO
+CN
+CN-
+N2
+NO
+NO+
+OH
+OH-
+O2
+HF
+F2

@@ -26,15 +26,14 @@ C> 5. Add the data from 2. to the diagonal of the correlation function
 C>    Fock matrix in the natural orbital basis.
 C> 
       subroutine wfn1_e_g_dft(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
-     &                        wfn1_deriv,
-     &                        v_dca,v_dcb,
+!    &                        wfn1_deriv,v_dca,v_dcb,
      &                        g_bfbf_a,g_bfbf_b,g_bfbf_xa,g_bfbf_xb,
      &                        g_bfmo,g_momo,E_dft)
       implicit none
-#include "wfn1_matcnst.fh"
-#include "wfn1_param.fh"
-#include "wfn1_wfn.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_matcnst.fh"
+!include "wfn1_param.fh"
+!include "wfn1_wfn.fh"
+!include "wfn1_drv.fh"
 #include "global.fh"
 #include "mafdecls.fh"
       target :: dbl_mb
@@ -43,17 +42,17 @@ c
       type(wfn1_prminst), intent(in)    :: wfn1_inst
       type(wfn1_matcnst), intent(in)    :: wfn1_mat
       type(wfn1_wfn),     intent(in)    :: wfn1_wave
-      type(wfn1_drv),     intent(inout) :: wfn1_deriv
+!     type(wfn1_drv),     intent(inout) :: wfn1_deriv
 c
-      double precision, intent(inout) :: v_dca(1:wfn1_param%nmo)
-      double precision, intent(inout) :: v_dcb(1:wfn1_param%nmo)
+!     double precision, intent(inout) :: v_dca(1:wfn1_param%nmo)
+!     double precision, intent(inout) :: v_dcb(1:wfn1_param%nmo)
 c
-      integer, intent(inout) :: g_bfbf_a  ! nbf x nbf scratch GA
-      integer, intent(inout) :: g_bfbf_b  ! nbf x nbf scratch GA
-      integer, intent(inout) :: g_bfbf_xa ! nbf x nbf scratch GA
-      integer, intent(inout) :: g_bfbf_xb ! nbf x nbf scratch GA
-      integer, intent(inout) :: g_bfmo    ! nbf x nmo scratch GA
-      integer, intent(inout) :: g_momo    ! nmo x nmo scratch GA
+      integer, intent(in) :: g_bfbf_a  ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfbf_b  ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfbf_xa ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfbf_xb ! nbf x nbf scratch GA
+      integer, intent(in) :: g_bfmo    ! nbf x nmo scratch GA
+      integer, intent(in) :: g_momo    ! nmo x nmo scratch GA
 c
       double precision, intent(out) :: E_dft    ! the 1-electron energy
 c
@@ -61,10 +60,10 @@ c
                                                 ! numbers
       double precision, allocatable :: occb(:)  ! the beta-occupation 
                                                 ! numbers
-      double precision, allocatable :: e1a(:)   ! the alpha-1-electron
-                                                ! energies
-      double precision, allocatable :: e1b(:)   ! the beta-1-electron
-                                                ! energies
+!     double precision, allocatable :: e1a(:)   ! the alpha-1-electron
+!                                               ! energies
+!     double precision, allocatable :: e1b(:)   ! the beta-1-electron
+!                                               ! energies
 c
       double precision, allocatable :: buf (:,:) ! a local buffer
       double precision, allocatable :: bufi(:,:) ! a local buffer
@@ -114,12 +113,12 @@ c
       neb   = wfn1_param%neb
 c
       allocate(occa(1:nmo),occb(1:nmo))
-      allocate(e1a(1:nmo),e1b(1:nmo))
+!     allocate(e1a(1:nmo),e1b(1:nmo))
 c
       occa = 0.0d0
       occb = 0.0d0
-      e1a  = 0.0d0
-      e1b  = 0.0d0
+!     e1a  = 0.0d0
+!     e1b  = 0.0d0
 c
       call ga_zero(g_bfbf_a)
       call ga_zero(g_bfbf_b)
@@ -212,77 +211,77 @@ c     endif
 c
 c     Generate proper alpha-Fock matrix contributions
 c
-      call ga_dgemm('n','n',nbf,nmo,nbf,1.0d0,g_bfbf_xa,wfn1_wave%g_na,
-     &              0.0d0,g_bfmo)
-      call ga_dgemm('t','n',nmo,nmo,nbf,1.0d0,wfn1_wave%g_na,g_bfmo,
-     &              0.0d0,g_momo)
+!     call ga_dgemm('n','n',nbf,nmo,nbf,1.0d0,g_bfbf_xa,wfn1_wave%g_na,
+!    &              0.0d0,g_bfmo)
+!     call ga_dgemm('t','n',nmo,nmo,nbf,1.0d0,wfn1_wave%g_na,g_bfmo,
+!    &              0.0d0,g_momo)
 c
 c     Extract the diagonal elements for the alpha correlation function Fock
 c     matrix
 c
-      call ga_distribution(g_momo,iproc,imlo,imhi,jmlo,jmhi)
-      do ii = max(imlo,jmlo), min(imhi,jmhi)
-        call ga_get(g_momo,ii,ii,ii,ii,e1a(ii),1)
-      enddo
-      call ga_dgop(1406,e1a,nmo,"+")
+!     call ga_distribution(g_momo,iproc,imlo,imhi,jmlo,jmhi)
+!     do ii = max(imlo,jmlo), min(imhi,jmhi)
+!       call ga_get(g_momo,ii,ii,ii,ii,e1a(ii),1)
+!     enddo
+!     call ga_dgop(1406,e1a,nmo,"+")
 c
 c     Scale Fock matrix elements with occupation numbers for the
 c     alpha natural orbital Fock matrix
 c
-      call ga_access(g_momo,imlo,imhi,jmlo,jmhi,idx,ldx)
-      nn = (imhi-imlo-1)*(jmhi-jmlo-1)-1
-      dd(imlo:imhi,jmlo:jmhi) => dbl_mb(idx:idx+nn)
-      do jj = jmlo, jmhi
-        do ii = imlo, imhi
-          dd(ii,jj) = dd(ii,jj)*occa(ii)
-        enddo
-      enddo
-      call ga_sync()
-      call ga_add(1.0d0,wfn1_deriv%g_dna,
-     &            1.0d0,g_momo,wfn1_deriv%g_dna)
+!     call ga_access(g_momo,imlo,imhi,jmlo,jmhi,idx,ldx)
+!     nn = (imhi-imlo-1)*(jmhi-jmlo-1)-1
+!     dd(imlo:imhi,jmlo:jmhi) => dbl_mb(idx:idx+nn)
+!     do jj = jmlo, jmhi
+!       do ii = imlo, imhi
+!         dd(ii,jj) = dd(ii,jj)*occa(ii)
+!       enddo
+!     enddo
+!     call ga_sync()
+!     call ga_add(1.0d0,wfn1_deriv%g_dna,
+!    &            1.0d0,g_momo,wfn1_deriv%g_dna)
 c
 c     Add the alpha correlation function Fock matrix contributions
 c
-      v_dca = v_dca + e1a
+!     v_dca = v_dca + e1a
 c
 c     Generate proper beta-Fock matrix contributions
 c
-      call ga_dgemm('n','n',nbf,nmo,nbf,1.0d0,g_bfbf_xb,wfn1_wave%g_nb,
-     &              0.0d0,g_bfmo)
-      call ga_dgemm('t','n',nmo,nmo,nbf,1.0d0,wfn1_wave%g_nb,g_bfmo,
-     &              0.0d0,g_momo)
+!     call ga_dgemm('n','n',nbf,nmo,nbf,1.0d0,g_bfbf_xb,wfn1_wave%g_nb,
+!    &              0.0d0,g_bfmo)
+!     call ga_dgemm('t','n',nmo,nmo,nbf,1.0d0,wfn1_wave%g_nb,g_bfmo,
+!    &              0.0d0,g_momo)
 c
 c     Extract the diagonal elements for the beta correlation function Fock
 c     matrix
 c
-      call ga_distribution(g_momo,iproc,imlo,imhi,jmlo,jmhi)
-      do ii = max(imlo,jmlo), min(imhi,jmhi)
-        call ga_get(g_momo,ii,ii,ii,ii,e1b(ii),1)
-      enddo
-      call ga_dgop(1407,e1b,nmo,"+")
+!     call ga_distribution(g_momo,iproc,imlo,imhi,jmlo,jmhi)
+!     do ii = max(imlo,jmlo), min(imhi,jmhi)
+!       call ga_get(g_momo,ii,ii,ii,ii,e1b(ii),1)
+!     enddo
+!     call ga_dgop(1407,e1b,nmo,"+")
 c
 c     Scale Fock matrix elements with occupation numbers for the
 c     beta natural orbital Fock matrix
 c
-      call ga_access(g_momo,imlo,imhi,jmlo,jmhi,idx,ldx)
-      nn = (imhi-imlo-1)*(jmhi-jmlo-1)-1
-      dd(imlo:imhi,jmlo:jmhi) => dbl_mb(idx:idx+nn)
-      do jj = jmlo, jmhi
-        do ii = imlo, imhi
-          dd(ii,jj) = dd(ii,jj)*occb(ii)
-        enddo
-      enddo
-      call ga_sync()
-      call ga_add(1.0d0,wfn1_deriv%g_dnb,
-     &            1.0d0,g_momo,wfn1_deriv%g_dnb)
+!     call ga_access(g_momo,imlo,imhi,jmlo,jmhi,idx,ldx)
+!     nn = (imhi-imlo-1)*(jmhi-jmlo-1)-1
+!     dd(imlo:imhi,jmlo:jmhi) => dbl_mb(idx:idx+nn)
+!     do jj = jmlo, jmhi
+!       do ii = imlo, imhi
+!         dd(ii,jj) = dd(ii,jj)*occb(ii)
+!       enddo
+!     enddo
+!     call ga_sync()
+!     call ga_add(1.0d0,wfn1_deriv%g_dnb,
+!    &            1.0d0,g_momo,wfn1_deriv%g_dnb)
 c
 c     Add the beta correlation function Fock matrix contributions
 c
-      v_dcb = v_dcb + e1b
+!     v_dcb = v_dcb + e1b
 c
 c     Clean up
 c
-      deallocate(e1a,e1b)
+!     deallocate(e1a,e1b)
       deallocate(occa,occb)
       call ga_sync()
       end

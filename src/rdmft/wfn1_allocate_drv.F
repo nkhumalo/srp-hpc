@@ -1,9 +1,13 @@
+!     submodule (wfn1) wfn1_mem_drv
+!     implicit none
+!     contains
+c
 c-----------------------------------------------------------------------
 c
       subroutine wfn1_allocate_drv(wfn1_param,wfn1_deriv)
       implicit none
-#include "wfn1_param.fh"
-#include "wfn1_drv.fh"
+!include "wfn1_param.fh"
+!include "wfn1_drv.fh"
 #include "errquit.fh"
 #include "mafdecls.fh"
 #include "global.fh"
@@ -36,20 +40,20 @@ c
 c
 c     The correlation function components
 c
-      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
      &                         'dCa',-1,-1,wfn1_deriv%g_dca))
      &  call errquit(pname//" could not allocate g_dna",0,MA_ERR)
-      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
      &                         'dCb',-1,-1,wfn1_deriv%g_dcb))
      &  call errquit(pname//" could not allocate g_dnb",0,MA_ERR)
 c
-      end
+      end subroutine wfn1_allocate_drv
 c
 c-----------------------------------------------------------------------
 c
       subroutine wfn1_deallocate_drv(wfn1_deriv)
       implicit none
-#include "wfn1_drv.fh"
+!include "wfn1_drv.fh"
 #include "global.fh"
 #include "errquit.fh"
 !>
@@ -72,6 +76,8 @@ c
         call errquit(pname//" failed to dealloc g_dcb",0,GA_ERR)
       endif
 !>
-      end
+      end subroutine wfn1_deallocate_drv
 c
 c-----------------------------------------------------------------------
+c
+!     end submodule wfn1_mem_drv 

@@ -31,6 +31,7 @@ end
 task mcscf
 EOF
   $NWCHEM_EXE input-mc.nw 2>&1 > nwchem-mc-${R}.out
+  energy_mc=`grep "Total MCSCF energy" nwchem-mc-${R}.out | tail -n 1 | awk '{ print $5 }'`
   rm hf_dat.*
   cat << EOF > input-hf.nw
 echo
@@ -46,6 +47,7 @@ end
 task scf energy
 EOF
   $NWCHEM_EXE input-hf.nw 2>&1 > nwchem-hf-${R}.out
+  energy_hf=`grep "Total SCF energy" nwchem-hf-${R}.out | tail -n 1 | awk '{ print $5 }'`
   rm wfn1_dat.*
   cat << EOF > input-wf.nw
 echo
@@ -70,7 +72,7 @@ task wfn1 energy
 EOF
   $NWCHEM_EXE input-wf.nw 2>&1 > nwchem.out
   cp nwchem.out nwchem-wf-${R}.out
-  energy=`grep "Total WFN1 energy" nwchem.out | tail -n 1 | awk '{ print $5 }'`
+  energy_wf=`grep "Total WFN1 energy" nwchem.out | tail -n 1 | awk '{ print $5 }'`
   occs=`cat fort.80`
   orbe_hf=`sort -u fort.70`
   orbe_mc=`cat     fort.71`
@@ -96,8 +98,10 @@ EOF
   #echo $R $orbe_crca    >> orb_crca_energies.dat
   #echo $R $orbe_dea     >> orb_dea_energies.dat
   #echo $R $orbe_deb     >> orb_deb_energies.dat
-  echo $R $energy $occs >> results.dat
-  echo $R $energy $occs
+  echo $R $energy_wf $occs >> results_wf.dat
+  echo $R $energy_hf       >> results_hf.dat
+  echo $R $energy_mc       >> results_mc.dat
+  echo $R $energy_wf $occs
   check=`echo "$R > 11.2" | bc -l`
   if [ $check -eq 1 ]; then
     R=`echo "$R + 1000000.0" | bc -l`

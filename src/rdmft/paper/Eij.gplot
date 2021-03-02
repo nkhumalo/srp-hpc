@@ -1,0 +1,7 @@
+e2(di,dj)=sqrt(di*dj)-di*dj
+e4(di,dj)=sqrt(sqrt(di*(1-di)*dj*(1-dj)))
+set xrange [0:1]
+set yrange [0:1]
+set isosamples 20, 20
+splot e2(x,y) with lines, \
+      e4(x,y) with lines

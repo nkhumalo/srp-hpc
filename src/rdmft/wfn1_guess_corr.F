@@ -131,8 +131,8 @@ c
       call wfn1_guess_corr_spin(nmo,ncoreb,nvirtb,wfn1_wave%g_cb,
      &                          eig,neig,rndm,Tinitial)
 c
-      deallocate(rndm)
       call ga_sync()
+      deallocate(rndm)
 c
 c     Orthonormalize the vectors
 c

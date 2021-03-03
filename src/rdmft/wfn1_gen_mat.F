@@ -25,8 +25,11 @@ c
       integer max1e ! The integral buffer size.
       integer mem1  ! The scratch memory size for the integral code.
 c
-      integer l_buf, k_buf ! The buffer memory segment
-      integer l_scr, k_scr ! The scratch memory segment
+c     integer l_buf, k_buf ! The buffer memory segment
+c     integer l_scr, k_scr ! The scratch memory segment
+c
+      double precision, allocatable :: buf(:)
+      double precision, allocatable :: scr(:)
 c
       integer iproc   ! the processor rank
       integer nproc   ! the number of processors
@@ -55,10 +58,12 @@ c
      &   BASIS_ERR)
 c
       call int_mem_1e(max1e,mem1)
-      if (.not. MA_push_get(MT_DBL,max1e,pname//'buf',l_buf,k_buf))
-     &  call errquit(pname//' ma buf failed', max1e, MA_ERR)
-      if (.not. MA_push_get(MT_DBL,mem1,pname//'scr',l_scr,k_scr))
-     &  call errquit(pname//' ma scr failed', mem1, MA_ERR)
+c     if (.not. MA_push_get(MT_DBL,max1e,pname//'buf',l_buf,k_buf))
+c    &  call errquit(pname//' ma buf failed', max1e, MA_ERR)
+c     if (.not. MA_push_get(MT_DBL,mem1,pname//'scr',l_scr,k_scr))
+c    &  call errquit(pname//' ma scr failed', mem1, MA_ERR)
+      allocate(buf(1:max1e))
+      allocate(scr(1:mem1))
 c
       do jshell = 1, nshell
         if (.not.bas_cn2bfr(wfn1_inst%basis,jshell,jlo,jhi)) then
@@ -75,27 +80,27 @@ c             Overlap
 c
               call int_1eov(wfn1_inst%basis,jshell,
      &                      wfn1_inst%basis,ishell,
-     &                      mem1,dbl_mb(k_scr),
-     &                      max1e,dbl_mb(k_buf))
-              call ga_acc(wfn1_mat%g_s,ilo,ihi,jlo,jhi,dbl_mb(k_buf),
+     &                      mem1,scr,
+     &                      max1e,buf)
+              call ga_acc(wfn1_mat%g_s,ilo,ihi,jlo,jhi,buf,
      &                    ihi-ilo+1,1.0d0)
 c
 c             Kinetic energy
 c
               call int_1eke(wfn1_inst%basis,jshell,
      &                      wfn1_inst%basis,ishell,
-     &                      mem1,dbl_mb(k_scr),
-     &                      max1e,dbl_mb(k_buf))
-              call ga_acc(wfn1_mat%g_tv,ilo,ihi,jlo,jhi,dbl_mb(k_buf),
+     &                      mem1,scr,
+     &                      max1e,buf)
+              call ga_acc(wfn1_mat%g_tv,ilo,ihi,jlo,jhi,buf,
      &                    ihi-ilo+1,1.0d0)
 c
 c             Nuclear attraction integrals
 c
               call int_1epe(wfn1_inst%basis,jshell,
      &                      wfn1_inst%basis,ishell,
-     &                      mem1,dbl_mb(k_scr),
-     &                      max1e,dbl_mb(k_buf))
-              call ga_acc(wfn1_mat%g_tv,ilo,ihi,jlo,jhi,dbl_mb(k_buf),
+     &                      mem1,scr,
+     &                      max1e,buf)
+              call ga_acc(wfn1_mat%g_tv,ilo,ihi,jlo,jhi,buf,
      &                    ihi-ilo+1,1.0d0)
 c
 c             Cauchy-Schwarz integrals (skipped for now)
@@ -105,10 +110,16 @@ c
         endif
       enddo
 c
-      if (.not. MA_pop_stack(l_scr)) call errquit
-     &  (pname//' pop scr failed', 0, MA_ERR)
-      if (.not. MA_pop_stack(l_buf)) call errquit
-     &  (pname//' pop buf failed', 0, MA_ERR)
+      deallocate(scr)
+      deallocate(buf)
+c     if (.not. MA_pop_stack(l_scr)) call errquit
+c    &  (pname//' pop scr failed', 0, MA_ERR)
+c     if (.not. MA_pop_stack(l_buf)) call errquit
+c    &  (pname//' pop buf failed', 0, MA_ERR)
+c
+c     Calculate 2-electron integrals
+c
+      call wfn1_gen_ten2(wfn1_inst,wfn1_mat)
 c
       end subroutine wfn1_gen_mat
 c

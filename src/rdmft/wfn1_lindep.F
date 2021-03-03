@@ -32,7 +32,7 @@ c
       integer jlo,jhi   ! column limits on the local block
       integer islo,ishi ! row limits on the local block
       integer jslo,jshi ! column limits on the local block
-      integer k_v       ! memory location for the local block of v
+c     integer k_v       ! memory location for the local block of v
       integer ldv       ! leading dimension of the local block of v
 c
       double precision              :: dnrm
@@ -117,16 +117,20 @@ c     scale eigenvectors to obtain S^{-1/2}
 c
       call ga_distribution(g_v,iproc,ilo,ihi,jlo,jhi)
       if (ihi.ge.ilo.and.jhi.ge.jlo) then
-        call ga_access(g_v,ilo,ihi,jlo,jhi,k_v,ldv)
+        allocate(vi(ilo:ihi,jlo:jhi))
+        ldv = ihi-ilo+1
+        call ga_get(g_v,ilo,ihi,jlo,jhi,vi,ldv)
+        do jj = jlo, jhi
+          dnrm = 1.0d0/sqrt(eigval(jj))
+          do ii = ilo, ihi
+            vi(ii,jj) = vi(ii,jj)*dnrm
+          enddo
+        enddo
+        call ga_put(g_v,ilo,ihi,jlo,jhi,vi,ldv)
+        deallocate(vi)
       else
 c       This rank holds no part of g_v
       endif
-      do jj = 0, jhi-jlo
-        dnrm = 1.0d0/sqrt(eigval(jlo+jj))
-        do ii = 0, ihi-ilo
-          dbl_mb(k_v+jj*ldv+ii) = dbl_mb(k_v+jj*ldv+ii)*dnrm
-        enddo
-      enddo
 c
       deallocate(eigval)
 c

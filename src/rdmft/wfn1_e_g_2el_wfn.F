@@ -56,9 +56,9 @@ c
 c
       complex(kind=8), parameter :: zero = complex(0.0d0,0.0d0)
 c
-      complex(kind=8)          :: t_2el
-      complex(kind=8), pointer :: eri(:,:,:,:)
-      target :: dcpl_mb
+      complex(kind=8)           :: t_2el
+      double precision, pointer :: eri(:,:,:,:)
+      target :: dbl_mb
 c
 c     Code
 c
@@ -73,6 +73,13 @@ c     Do alpha-beta electron interaction
 c
       call wfn1_4index_ab(wfn1_param,wfn1_wave%g_na,wfn1_wave%g_nb,
      &                    wfn1_mat%g_2el,g_4mo,g_4t1,g_bfbf)
+cDEBUG
+c     call util_flush(6)
+c     call ga_print(wfn1_mat%g_2el)
+c     call ga_print(g_4mo)
+c     call util_flush(6)
+c     call errquit("stop here")
+cDEBUG
       call nga_distribution(g_4mo,iproc,ilo,ihi)
       il1 = ilo(1)
       il2 = ilo(2)
@@ -107,20 +114,26 @@ c
         enddo ! ij
       enddo ! ir
       do ir = 1, neb
-        do ik = il4, ih4
-          do il = il3, ih3
-            dbkl(ik,il) = dbkl(ik,il) + cbk(ik,ir)*conjg(cbk(il,ir))
+        do il = il4, ih4
+          do ik = il3, ih3
+            dbkl(ik,il) = dbkl(ik,il) + cbk(ik,ir)*conjg(cbl(il,ir))
           enddo ! il
         enddo ! ik
       enddo ! ir
       call nga_access(g_4mo,ilo,ihi,indxl,ild)
       indxh = indxl + ild(1)*ild(2)*ild(3)*ild(4)-1
-      eri(il1:ih1,il2:ih2,il3:ih3,il4:ih4) => dcpl_mb(indxl:indxh)
+      eri(il1:ih1,il2:ih2,il3:ih3,il4:ih4) => dbl_mb(indxl:indxh)
       do il = il4, ih4
         do ik = il3, ih3
           do ij = il2, ih2
             do ii = il1, ih1
-              t_2el = t_2el + eri(ii,ij,ik,il)*daij(ii,ij)*dbkl(ik,il)
+              if (ii.eq.ik.and.ij.eq.il) then
+                t_2el = t_2el + eri(ii,ij,ik,il)*daij(ii,ij)*dbkl(ik,il)
+cDEBUG
+!     write(*,'(4i4,f12.6,3(f10.6,SP,f8.6,"i "))')ii,ij,ik,il,
+!    &eri(ii,ij,ik,il),daij(ii,ij),dbkl(ik,il),daij(ii,ij)*dbkl(ik,il)
+cDEBUG
+              endif
             enddo ! ii
           enddo ! ij
         enddo ! ik
@@ -144,7 +157,10 @@ c
         write(*,*)"Energy = ",t_2el
         call errquit("wfn1_e_g_2el_wfn: energy not real",0,UERR)
       endif
-      E_2el = real(t_2el)
+cDEBUG
+c       call errquit("wfn1_e_g_2el_wfn: energy not real",0,UERR)
+cDEBUG
+      E_2el = 2.0d0*real(t_2el)
 c
       end subroutine wfn1_e_g_2el_wfn
 c

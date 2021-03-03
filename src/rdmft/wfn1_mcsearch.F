@@ -99,6 +99,7 @@ c
       double precision :: de        ! Change in energy
       double precision :: pfac      ! Probability scale factor
       double precision :: sfac      ! Dimensionality adjustment factor
+      double precision :: tfac      ! Dimensionality adjustment factor
 c
       iproc   = ga_nodeid()
       nproc   = ga_nnodes()
@@ -109,6 +110,7 @@ c
       Ewf     = wfn1_energy%E_tot
       sfac    = wfn1_param%nea*(nmo-wfn1_param%nea)
       sfac    = 1.0d0/sfac 
+      tfac    = 1.08d0**sfac
       sfac    = 0.5d0**sfac
       ntries  = 0
 !     call ga_distribution(g_momo1,iproc,ilo,ihi,jlo,jhi)
@@ -174,6 +176,7 @@ c         call ga_copy(wfn1_deriv%g_dcb,wfn1_trial_drv%g_dcb)
         endif
         if (ostop) then
 c         accept the trial wave function
+          wfn1_param%rlim = tfac*wfn1_param%rlim
 cDEBUG
 c         if (iproc.eq.0) then
 c         write(*,*)'HVD: mc: ',ntries,Ewf,Ewf_trial

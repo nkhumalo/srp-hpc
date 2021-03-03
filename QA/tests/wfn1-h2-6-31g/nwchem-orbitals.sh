@@ -1,8 +1,16 @@
 #!/bin/bash
 export NWCHEM_EXE=../../../bin/LINUX64/nwchem
-if [ -f results.dat ]
+if [ -f results_wf.dat ]
 then
-  rm results.dat
+  rm results_wf.dat
+fi
+if [ -f results_hf.dat ]
+then
+  rm results_hf.dat
+fi
+if [ -f results_mc.dat ]
+then
+  rm results_mc.dat
 fi
 
 R=1.188692

@@ -447,15 +447,15 @@ c       are 0.
 cDEBUG
       do ii = 1, nmo
         c_ii  = c_ii  + sqrt(occ_a(ii)*occ_b(ii))-occ_a(ii)*occ_b(ii)
-        c2_ii = c2_ii + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
-     &                       occ_b(ii)*(1.0d0-occ_b(ii)))
+        c2_ii = c2_ii + sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii))*
+     &                       occ_b(ii)*max(0.0d0,1.0d0-occ_b(ii)))
         do jj = 1, ii-1
-          c2_ij = c2_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
-     &                         occ_b(jj)*(1.0d0-occ_b(jj)))
+          c2_ij = c2_ij + sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii))*
+     &                         occ_b(jj)*max(0.0d0,1.0d0-occ_b(jj)))
         enddo
         do jj = ii+1, nmo
-          c2_ij = c2_ij + sqrt(occ_a(ii)*(1.0d0-occ_a(ii))*
-     &                         occ_b(jj)*(1.0d0-occ_b(jj)))
+          c2_ij = c2_ij + sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii))*
+     &                         occ_b(jj)*max(0.0d0,1.0d0-occ_b(jj)))
         enddo
       enddo
 c     write(*,'(" HVD: c_ii        = ",e22.8)')c_ii
@@ -572,9 +572,9 @@ c
                 do ia = ia_lo, ia_hi
                   do jj = 1, nmo
                     e2_acj_ab(ia,ic,jj) = e2_acj_ab(ia,ic,jj)
-     &              * sqrt(occ_b(jj)*(1.0d0-occ_b(jj)))
+     &              * sqrt(occ_b(jj)*max(0.0d0,1.0d0-occ_b(jj)))
                     e2_acj_ba(ia,ic,jj) = e2_acj_ba(ia,ic,jj)
-     &              * sqrt(occ_a(jj)*(1.0d0-occ_a(jj)))
+     &              * sqrt(occ_a(jj)*max(0.0d0,1.0d0-occ_a(jj)))
                   enddo ! jj
                 enddo ! ia
               enddo ! ic
@@ -582,15 +582,18 @@ c
                 do ia = ia_lo, ia_hi
                   do jj = 1, nmo
                     e4_abj_ab(ia,ib,jj) = e4_abj_ab(ia,ib,jj)
-     &              * sqrt(sqrt(occ_b(jj)*(1.0d0-occ_b(jj))))
+     &              * sqrt(sqrt(occ_b(jj)*max(0.0d0,1.0d0-occ_b(jj))))
                     e4_abj_ba(ia,ib,jj) = e4_abj_ba(ia,ib,jj)
-     &              * sqrt(sqrt(occ_a(jj)*(1.0d0-occ_a(jj))))
+     &              * sqrt(sqrt(occ_a(jj)*max(0.0d0,1.0d0-occ_a(jj))))
                   enddo ! jj
                 enddo ! ia
               enddo ! ib
 c
 c             Calculate the energy contributions
 c
+cDEBUG
+              Trenorm = 1.0d0
+cDEBUG
               do ic = ic_lo, ic_hi
                 do ia = ia_lo, ia_hi
                   do ii = 1, nmo
@@ -609,29 +612,37 @@ cDEBUG
                     do jj = 1, ii-1
                       E_corr = E_corr
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
+     &                * sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii)))
+     *                * Trenorm
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
+     &                * sqrt(occ_b(ii)*max(0.0d0,1.0d0-occ_b(ii)))
+     &                * Trenorm
 cDEBUG
                       E2_ij_cor = E2_ij_cor
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
+     &                * sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii)))
+     &                * Trenorm
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
+     &                * sqrt(occ_b(ii)*max(0.0d0,1.0d0-occ_b(ii)))
+     &                * Trenorm
 cDEBUG
                     enddo ! jj
                     do jj = ii+1, nmo
                       E_corr = E_corr
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
+     &                * sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii)))
+     &                * Trenorm
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
+     &                * sqrt(occ_b(ii)*max(0.0d0,1.0d0-occ_b(ii)))
+     &                * Trenorm
 cDEBUG
                       E2_ij_cor = E2_ij_cor
      &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * sqrt(occ_a(ii)*(1.0d0-occ_a(ii)))*Trenorm
+     &                * sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii)))
+     &                * Trenorm
      &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * sqrt(occ_b(ii)*(1.0d0-occ_b(ii)))*Trenorm
+     &                * sqrt(occ_b(ii)*max(0.0d0,1.0d0-occ_b(ii)))
+     &                * Trenorm
 cDEBUG
                     enddo ! jj
                   enddo ! ii
@@ -642,31 +653,53 @@ c
                 do ia = ia_lo, ia_hi
                   do ii = 1, nmo
                     do jj = 1, ii-1
+cDEBUG
+                      if (mod(ii+jj,2).eq.0) then
+                        Trenorm = -1.0d0
+                      else
+                        Trenorm =  1.0d0
+                      endif
+cDEBUG
                       E_corr = E_corr
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
+     &                * sqrt(sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii))))
+     &                * Trenorm
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
+     &                * sqrt(sqrt(occ_b(ii)*max(0.0d0,1.0d0-occ_b(ii))))
+     &                * Trenorm
 cDEBUG
                       E4_ij_cor = E4_ij_cor
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
+     &                * sqrt(sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii))))
+     &                * Trenorm
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
+     &                * sqrt(sqrt(occ_b(ii)*max(0.0d0,1.0d0-occ_b(ii))))
+     &                * Trenorm
 cDEBUG
                     enddo ! jj
                     do jj = ii+1, nmo
+cDEBUG
+                      if (mod(ii+jj,2).eq.0) then
+                        Trenorm = -1.0d0
+                      else
+                        Trenorm =  1.0d0
+                      endif
+cDEBUG
                       E_corr = E_corr
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
+     &                * sqrt(sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii))))
+     &                * Trenorm
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
+     &                * sqrt(sqrt(occ_b(ii)*max(0.0d0,1.0d0-occ_b(ii))))
+     &                * Trenorm
 cDEBUG
                       E4_ij_cor = E4_ij_cor
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * sqrt(sqrt(occ_a(ii)*(1.0d0-occ_a(ii))))*Trenorm
+     &                * sqrt(sqrt(occ_a(ii)*max(0.0d0,1.0d0-occ_a(ii))))
+     &                * Trenorm
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * sqrt(sqrt(occ_b(ii)*(1.0d0-occ_b(ii))))*Trenorm
+     &                * sqrt(sqrt(occ_b(ii)*max(0.0d0,1.0d0-occ_b(ii))))
+     &                * Trenorm
 cDEBUG
                     enddo ! jj
                   enddo ! ii
@@ -1021,7 +1054,7 @@ c
         enddo ! lb
       enddo ! ld
 c
-      E_corr    = 0.5d0*E_corr
+      E_corr    = 0.5d0*E_corr*(2.0d0/dble(nmo))
 cDEBUG
 c     write(*,*)'HVD: E_ii_cor  = ',0.5d0*E_ii_cor
 c     write(*,*)'HVD: E2_ij_cor = ',0.5d0*E2_ij_cor

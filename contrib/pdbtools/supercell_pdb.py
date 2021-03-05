@@ -28,24 +28,28 @@ def get_cell_dimensions(pdb):
     z = float(elements[3])
     return (x,y,z)
 
-def gen_translation(direction,pdb):
+def gen_translation(direction,number,pdb):
     '''
     Generate the translation vector based on the choice of direction (given as a string),
     and the cell dimension of the PDB file.
     Return this a tuple.
     '''
     (x,y,z) = get_cell_dimensions(pdb)
+    trans = []
     if direction == "x":
-        trans = (x,0.0,0.0)
+        for n in range(1,number+1):
+            trans.append((n*x,0.0,0.0))
     elif direction == "y":
-        trans = (0.0,y,0.0)
+        for n in range(1,number+1):
+            trans.append((0.0,n*y,0.0))
     elif direction == "z":
-        trans = (0.0,0.0,z)
+        for n in range(1,number+1):
+            trans.append((0.0,0.0,n*z))
     else:
         print("Interesting coordinate system you are using. Your choice of direction is %s\n"%direction)
     return trans
 
-def new_cell_dimensions(direction,pdb):
+def new_cell_dimensions(direction,number,pdb):
     '''
     Given the PDB data and the direction compute the new cell dimensions
     after extending the system in the given dimension. 
@@ -53,11 +57,11 @@ def new_cell_dimensions(direction,pdb):
     '''
     (x,y,z) = get_cell_dimensions(pdb)
     if direction == "x":
-        cell = (2*x,y,z)
+        cell = (number*x,y,z)
     elif direction == "y":
-        cell = (x,2*y,z)
+        cell = (x,number*y,z)
     elif direction == "z":
-        cell = (x,y,2*z)
+        cell = (x,y,number*z)
     else:
         print("Interesting coordinate system you are using. Your choice of direction is %s\n"%direction)
     return cell
@@ -86,27 +90,28 @@ def split_pdb(pdb):
             solute.append(line)
     return (cryst,solute,solvent)
 
-def translate_atoms(atomsin,translation):
+def translate_atoms(atomsin,translations):
     '''
     Take a given list of atoms and create a new list of atoms
     where all atoms are translated by the given translations.
     Return the new list of atoms. The input list remains unchanged.
     '''
-    (dx,dy,dz) = translation
     atomsout = []
-    for atom in atomsin:
-        elements = atom.split()
-        if elements[0] == "ATOM":
-            sx = atom[30:38]
-            sy = atom[38:46]
-            sz = atom[46:54]
-            x  = float(sx)+dx
-            y  = float(sy)+dy
-            z  = float(sz)+dz
-            new_atom = "%s%8.3f%8.3f%8.3f%s"%(atom[:30],x,y,z,atom[54:])
-        else:
-            new_atom = atom
-        atomsout.append(new_atom)
+    for translation in translations:
+        (dx,dy,dz) = translation
+        for atom in atomsin:
+            elements = atom.split()
+            if elements[0] == "ATOM":
+                sx = atom[30:38]
+                sy = atom[38:46]
+                sz = atom[46:54]
+                x  = float(sx)+dx
+                y  = float(sy)+dy
+                z  = float(sz)+dz
+                new_atom = "%s%8.3f%8.3f%8.3f%s"%(atom[:30],x,y,z,atom[54:])
+            else:
+                new_atom = atom
+            atomsout.append(new_atom)
     return atomsout
 
 def new_pdb(cryst,oldsolute,oldsolvent,newsolute,newsolvent):
@@ -151,6 +156,7 @@ def parse_arguments():
     prs.add_argument("input",help="the input PDF file")
     prs.add_argument("output",help="the output PDF file")
     prs.add_argument("direction",help="the direction to expand along")
+    prs.add_argument("number",help="the number of times to expand by")
     args = prs.parse_args()
     return args
 
@@ -158,9 +164,10 @@ def execute_with_arguments(args):
     inputfile  = args.input
     outputfile = args.output
     direction  = args.direction
+    number  = int(args.number)
     inputdata = read_pdb_file(inputfile)
-    trans = gen_translation(direction,inputdata)
-    newcell = new_cell_dimensions(direction,inputdata)
+    trans = gen_translation(direction,number,inputdata)
+    newcell = new_cell_dimensions(direction,number,inputdata)
     (cryst,solute,solvent) = split_pdb(inputdata)
     newcryst = new_cell(cryst,newcell)
     newsolute = translate_atoms(solute,trans)

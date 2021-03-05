@@ -1,0 +1,35 @@
+echo
+start nt-6-6-5-dat
+
+geometry noautoz units angstrom
+  load nt-6-6-5-opt.xyz
+end
+
+basis 
+  c  library 3-21g
+  h1 library 3-21g
+  o  library 6-31g*
+  h  library 6-31g*
+end
+
+set geometry:actlist 145:174
+
+dft
+  xc hfexch
+  direct
+end
+
+scf
+  direct
+end
+
+qmd
+  nstep_nucl 1000
+  targ_temp  328.15
+  thermostat svr
+  rand_seed  12345671
+  com_step   10000
+  print_xyz  1
+end
+
+task scf qmd

@@ -1,0 +1,15 @@
+echo
+start mcscf_dat
+geometry units au noautoz
+  Be 0 0  0
+  symmetry d2h
+end
+basis
+  Be library sto-3g
+end
+mcscf
+  active       5
+  actelec      4
+  multiplicity 1
+end
+task mcscf

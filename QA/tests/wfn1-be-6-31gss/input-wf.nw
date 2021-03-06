@@ -1,0 +1,18 @@
+echo
+start wfn1_dat
+geometry units au noautoz
+  Be 0 0  0
+  symmetry d2h
+end
+basis
+  Be library 6-31g**
+end
+set wfn1:input_vectors "atomic"
+set wfn1:solver "monte-carlo"
+set wfn1:print_error F
+set wfn1:t_initial 0.1
+#set wfn1:corr_expr "wfn1_mx"
+set wfn1:corr_expr "wfn1c"
+set wfn1:t_bath 0.0
+set wfn1:maxit  20000
+task wfn1 energy

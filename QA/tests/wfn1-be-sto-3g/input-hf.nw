@@ -1,0 +1,10 @@
+echo
+start hf_dat
+geometry units au noautoz
+  Be 0 0  0
+  symmetry d2h
+end
+basis
+  Be library sto-3g
+end
+task scf energy

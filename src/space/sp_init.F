@@ -3830,6 +3830,17 @@ cDEBUG
         if (me.eq.0) then
           write(lfnout,*)"ADIOS mode: ",adios_mode(1:amlen)
         endif
+      endif
+
+      if (adios_mode(1:inp_strlen(adios_mode)).eq."NULL".or.
+     +    adios_mode(1:inp_strlen(adios_mode)).eq."Null".or.
+     +    adios_mode(1:inp_strlen(adios_mode)).eq."null") then
+        if (me.eq.0) then
+          write(lfnout,*)"ADIOS MODE == NULL skipping all of ADIOS"
+        endif
+      else
+      if (mdstep.eq.minstep) then
+        amlen=inp_strlen(adios_mode)
         engine_type=adios_mode
         call io_init()
       endif
@@ -3841,6 +3852,7 @@ cDEBUG
       if (mdstep.eq.maxstep) then
         call io_finalize()
       endif
+      endif ! adios_mode
 
       call util_flush(lfntrj)
 

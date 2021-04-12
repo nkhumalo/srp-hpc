@@ -193,6 +193,17 @@ c-----------------------------------------------------------------------
 c
 C> \brief Generate a random orthogonal matrix
 C>
+C> We will use this matrix as a rotation matrix. For every 2x2 rotation
+C> we have that
+C>
+C>      (R_ii R_ij)
+C>  R = (         )
+C>      (R_ji R_jj)
+C>
+C>  where R_ij = -R_ji (see e.g.
+C>  https://en.wikipedia.org/wiki/Jacobi_rotation). We exploit this
+C>  skew symmetry here.
+C>
       subroutine wfn1_gen_random_orthog(g_rand,rlim)
       implicit none
 c
@@ -203,7 +214,9 @@ c
       double precision, intent(in)  :: rlim ! random number limits
 c
       double precision, allocatable :: buf(:,:,:)
+      double precision, allocatable :: buft(:,:,:)
       complex(kind=8),  allocatable :: zbuf(:,:)
+      complex(kind=8),  allocatable :: zbuft(:,:)
 c
       integer :: idum
       integer :: ii ! counter
@@ -215,31 +228,60 @@ c
       iproc = ga_nodeid()
       call ga_inquire(g_rand,itype,ii,jj)
       call ga_distribution(g_rand,iproc,ilo,ihi,jlo,jhi)
+      call ga_zero(g_rand)
       if (itype.eq.MT_DBL) then
-        allocate(buf(1:1,ilo:ihi,jlo:jhi))
-        call random_number(buf)
-        buf = (2.0d0*buf-1.0d0)*rlim
-        do ii = max(ilo,jlo),min(ihi,jhi)
-          buf(1,ii,ii) = 1.0d0
-        enddo
-        call ga_put(g_rand,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-        deallocate(buf)
-      else if (itype.eq.MT_DCPL) then
-        allocate(buf(1:2,ilo:ihi,jlo:jhi))
-        allocate(zbuf(ilo:ihi,jlo:jhi))
-        call random_number(buf)
-        buf = (2.0d0*buf-1.0d0)*rlim
-        do jj = jlo, jhi
-          do ii = ilo, ihi
-            zbuf(ii,jj) = complex(buf(1,ii,jj),buf(2,ii,jj))
+        if (ilo.ge.jlo) then
+          allocate(buf(1:1,ilo:ihi,jlo:jhi))
+          allocate(buft(1:1,jlo:jhi,ilo:ihi))
+          call random_number(buf)
+          do jj = jlo, jhi
+            do ii = ilo, ihi
+              if (ii.lt.jj) then
+                buf(1,ii,jj)  = (2.0d0*buf(1,ii,jj)-1.0d0)*rlim
+                buft(1,jj,ii) = -buf(1,ii,jj)
+              else if (ii.gt.jj) then
+                buf(1,ii,jj)  = 0.0d0
+                buft(1,jj,ii) = 0.0d0
+              else
+                buf(1,ii,jj)  = 1.0d0
+                buft(1,jj,ii) = 0.0d0
+              endif
+            enddo
           enddo
-        enddo
-        do ii = max(ilo,jlo),min(ihi,jhi)
-          zbuf(ii,ii) = complex(1.0d0,0.0d0)
-        enddo
-        call ga_put(g_rand,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
-        deallocate(zbuf)
-        deallocate(buf)
+          call ga_acc(g_rand,ilo,ihi,jlo,jhi,buf, ihi-ilo+1,1.0d0)
+          call ga_acc(g_rand,jlo,jhi,ilo,ihi,buft,jhi-jlo+1,1.0d0)
+          deallocate(buf)
+          deallocate(buft)
+        endif
+      else if (itype.eq.MT_DCPL) then
+        if (ilo.ge.jlo) then
+          allocate(buf(1:2,ilo:ihi,jlo:jhi))
+          allocate(zbuf(ilo:ihi,jlo:jhi))
+          allocate(zbuft(jlo:jhi,ilo:ihi))
+          call random_number(buf)
+          buf = (2.0d0*buf-1.0d0)*rlim
+          do jj = jlo, jhi
+            do ii = ilo, ihi
+              if (ii.lt.jj) then
+                zbuf(ii,jj)  = complex(buf(1,ii,jj),buf(2,ii,jj))
+                zbuft(jj,ii) = -zbuf(ii,jj)
+              else if (ii.gt.jj) then
+                zbuf(ii,jj)  = complex(0.0d0,0.0d0)
+                zbuft(jj,ii) = complex(0.0d0,0.0d0)
+              else
+                zbuf(ii,jj)  = complex(1.0d0,0.0d0)
+                zbuft(jj,ii) = complex(0.0d0,0.0d0)
+              endif
+            enddo
+          enddo
+          call ga_acc(g_rand,ilo,ihi,jlo,jhi,zbuf, ihi-ilo+1,
+     &                complex(1.0d0,0.0d0))
+          call ga_acc(g_rand,jlo,jhi,ilo,ihi,zbuft,jhi-jlo+1,
+     &                complex(1.0d0,0.0d0))
+          deallocate(zbuft)
+          deallocate(zbuf)
+          deallocate(buf)
+        endif
       endif
       call ga_sync()
       call wfn1_orthog(g_rand,idum,.false.)

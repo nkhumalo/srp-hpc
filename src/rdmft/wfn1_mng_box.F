@@ -44,12 +44,10 @@
 !>
 !> \brief Deallocate box global arrays
 !>
-      subroutine wfn1_deallocate_box(wfn1_param,wfn1_box)
+      subroutine wfn1_deallocate_box(wfn1_box)
       implicit none
 #include "global.fh"
 #include "errquit.fh"
-!>    The wavefunction parameters
-      type(wfn1_prm), intent(in)    :: wfn1_param
 !>    The Monte Carlo box
       type(wfn1_bx),  intent(inout) :: wfn1_box
 !>
@@ -384,5 +382,60 @@
         enddo
       enddo
       end subroutine wfn1_reshape_array
+!
+!-----------------------------------------------------------------------
+!
+!> \brief Change the Monte Carlo box shape towards square
+!>
+!> Because the energy is invariant to some rotations the box can be
+!> skewed to be exceedingly large in some dimensions and small in
+!> others. Resquaring the box might help.
+!>
+      subroutine wfn1_resquare_box(wfn1_param,wfn1_box)
+      implicit none
+#include "mafdecls.fh"
+#include "global.fh"
+#include "errquit.fh"
+!>    The wavefunction parameters
+      type(wfn1_prm), intent(in)    :: wfn1_param
+!>    The Monte Carlo box
+      type(wfn1_bx),  intent(inout) :: wfn1_box
+!
+      call wfn1_resquare_array(wfn1_box%g_na)
+      call wfn1_resquare_array(wfn1_box%g_nb)
+      call wfn1_resquare_array(wfn1_box%g_ca)
+      call wfn1_resquare_array(wfn1_box%g_cb)
+      call wfn1_normalize_box(wfn1_param,wfn1_box)
+!
+      end subroutine wfn1_resquare_box
+!
+!-----------------------------------------------------------------------
+!
+      subroutine wfn1_resquare_array(g_box)
+      implicit none
+#include "mafdecls.fh"
+#include "global.fh"
+#include "errquit.fh"
+      target :: dbl_mb
+!>    The Monte Carlo array
+      integer, intent(inout) :: g_box
+!
+      integer :: iproc
+      integer :: iblo, ibhi, jblo, jbhi
+      integer :: nsz, idb, ldb, idr, ldr, ida, lda
+      integer :: ii, jj
+      real(kind=8), pointer :: pb(:,:)
+!
+      iproc = ga_nodeid()
+      call ga_distribution(g_box,iproc,iblo,ibhi,jblo,jbhi)
+      nsz = (ibhi-iblo+1)*(jbhi-jblo+1)
+      call ga_access(g_box,iblo,ibhi,jblo,jbhi,idb,ldb)
+      pb(iblo:ibhi,jblo:jbhi) => dbl_mb(idb:idb+nsz-1)
+      do jj = jblo, jbhi
+        do ii = iblo, ibhi
+          pb(ii,jj) = sqrt(pb(ii,jj))
+        enddo
+      enddo
+      end subroutine wfn1_resquare_array
 !
 !-----------------------------------------------------------------------

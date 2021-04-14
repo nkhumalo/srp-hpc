@@ -85,9 +85,14 @@ c
       integer g_momo2    ! nmo x nmo scratch global array
       integer g_momo3    ! nmo x nmo scratch global array
       integer g_momo4    ! nmo x nmo scratch global array
+      integer g_momo5    ! nmo x nmo scratch global array
+      integer g_momo6    ! nmo x nmo scratch global array
       integer g_4t1      ! nbf x nbf x nbf x nbf scratch global array
       integer g_4t2      ! nbf x nbf x nbf x nbf scratch global array
       integer gz_momo1    ! nmo x nmo complex scratch global array
+      integer gz_momo2    ! nmo x nmo complex scratch global array
+      integer gz_momo3    ! nmo x nmo complex scratch global array
+      integer gz_momo4    ! nmo x nmo complex scratch global array
 c
       integer ndep_nmo          ! the number of linearly independent
                                 ! vectors set as a user parameter
@@ -165,6 +170,10 @@ c
       integer :: ichnk(4) ! To set up 4-D GAs
       integer :: nseedsize
       integer, allocatable :: nseed(:)
+c
+      type(wfn1_bx) :: wfn1_mcbox ! the Monte Carlo box
+      type(wfn1_bx) :: wfn1_rejct ! the Monte Carlo rejects box
+      type(wfn1_bx) :: wfn1_accpt ! the Monte Carlo accept box
 c
       iproc = ga_nodeid()
       nproc = ga_nnodes()
@@ -343,12 +352,27 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_a',MT_DBL,1,
      &                   wfn1_param%fac_a))
      &  wfn1_param%fac_a = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab2',MT_DBL,1,
+     &                   wfn1_param%fac_ab2))
+     &  wfn1_param%fac_ab2 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4',MT_DBL,1,
+     &                   wfn1_param%fac_ab4))
+     &  wfn1_param%fac_ab4 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4a',MT_DBL,1,
+     &                   wfn1_param%fac_ab4a))
+     &  wfn1_param%fac_ab4a = 0.0d0
       if (wfn1_param%fac_a.lt.0.0d0) then
         call errquit(pname//" factor A less than 0", 0,INPUT_ERR)
       endif
       if (wfn1_param%fac_a.gt.1.0d0) then
         call errquit(pname//" factor A greater than 1", 0,INPUT_ERR)
       endif
+c     if (wfn1_param%fac_ab4a.lt.0.0d0) then
+c       call errquit(pname//" factor A4 less than 0", 0,INPUT_ERR)
+c     endif
+c     if (wfn1_param%fac_ab4a.gt.1.0d0) then
+c       call errquit(pname//" factor A4 greater than 1", 0,INPUT_ERR)
+c     endif
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:aa',MT_DBL,1,
      &                   fac_aa))
      &  fac_aa = 0.0d0
@@ -688,6 +712,16 @@ c
         call errquit(pname//" allocate g_momo4 failed",
      &               wfn1_ibd_proc(wfn1_param%nmo**2,nproc),GA_ERR)
       endif
+      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,"g_momo5",
+     &                   -1,-1,g_momo5)) then
+        call errquit(pname//" allocate g_momo5 failed",
+     &               wfn1_ibd_proc(wfn1_param%nmo**2,nproc),GA_ERR)
+      endif
+      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,"g_momo6",
+     &                   -1,-1,g_momo6)) then
+        call errquit(pname//" allocate g_momo6 failed",
+     &               wfn1_ibd_proc(wfn1_param%nmo**2,nproc),GA_ERR)
+      endif
       idims = wfn1_param%nbf
       ichnk = -1
       if (.not.nga_create(MT_DBL,4,idims,"g_4t1",ichnk,g_4t1)) then
@@ -701,6 +735,21 @@ c
       if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
      &                   "gz_momo1",-1,-1,gz_momo1)) then
         call errquit(pname//" allocate gz_momo1 failed",
+     &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
+      endif
+      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+     &                   "gz_momo2",-1,-1,gz_momo2)) then
+        call errquit(pname//" allocate gz_momo2 failed",
+     &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
+      endif
+      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+     &                   "gz_momo3",-1,-1,gz_momo3)) then
+        call errquit(pname//" allocate gz_momo3 failed",
+     &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
+      endif
+      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+     &                   "gz_momo4",-1,-1,gz_momo4)) then
+        call errquit(pname//" allocate gz_momo4 failed",
      &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
       endif
 c
@@ -833,18 +882,27 @@ c    &                    v_dna,v_dnb,v_dca,v_dcb,
 c    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
 c    &                    oprerr,curit)
       else if (wfn1_param%solver.eq."monte-carlo") then
+        call wfn1_allocate_box(wfn1_param,wfn1_mcbox)
+        call wfn1_allocate_box(wfn1_param,wfn1_rejct)
+        call wfn1_allocate_box(wfn1_param,wfn1_accpt)
+        call wfn1_init_box(wfn1_mcbox,1.0d0)
         oconverged = wfn1_solve_mc(wfn1_param,wfn1_inst,wfn1_mat,
      &                    wfn1_wave,
 !    &                    wfn1_deriv,
      &                    wfn1_energy,wfn1_trial_wv,
 !    &                    wfn1_trial_drv,wfn1_part_drv,
+     &                    wfn1_mcbox,wfn1_rejct,wfn1_accpt,
      &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                    g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                    g_momo5,g_momo6,
      &                    g_4t1,g_4t2,
-     &                    gz_momo1,
+     &                    gz_momo1,gz_momo2,gz_momo3,gz_momo4,
 !    &                    v_dna,v_dnb,v_dca,v_dcb,
 !    &                    v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                    oprerr,curit)
+        call wfn1_deallocate_box(wfn1_accpt)
+        call wfn1_deallocate_box(wfn1_rejct)
+        call wfn1_deallocate_box(wfn1_mcbox)
       else
         if (iproc.eq.0) then
           write(luout,*)pname//" solver = ",wfn1_param%solver
@@ -928,6 +986,15 @@ cDEBUG
       call wfn1_deallocate_wfn(wfn1_wave)
       call wfn1_deallocate_mat(wfn1_mat)
 c
+      if (.not.ga_destroy(gz_momo4)) then
+        call errquit(pname//" deallocate gz_momo4 failed",0,GA_ERR)
+      endif
+      if (.not.ga_destroy(gz_momo3)) then
+        call errquit(pname//" deallocate gz_momo3 failed",0,GA_ERR)
+      endif
+      if (.not.ga_destroy(gz_momo2)) then
+        call errquit(pname//" deallocate gz_momo2 failed",0,GA_ERR)
+      endif
       if (.not.ga_destroy(gz_momo1)) then
         call errquit(pname//" deallocate gz_momo1 failed",0,GA_ERR)
       endif
@@ -936,6 +1003,12 @@ c
       endif
       if (.not.ga_destroy(g_4t1)) then
         call errquit(pname//" deallocate g_4t1 failed",0,GA_ERR)
+      endif
+      if (.not.ga_destroy(g_momo6)) then
+        call errquit(pname//" deallocate g_momo6 failed",0,GA_ERR)
+      endif
+      if (.not.ga_destroy(g_momo5)) then
+        call errquit(pname//" deallocate g_momo5 failed",0,GA_ERR)
       endif
       if (.not.ga_destroy(g_momo4)) then
         call errquit(pname//" deallocate g_momo4 failed",0,GA_ERR)

@@ -13,10 +13,12 @@ C>
 !    &                       wfn1_deriv,
      &                       wfn1_energy,wfn1_trial_wv,
 !    &                       wfn1_trial_drv,wfn1_part_drv,
+     &                       wfn1_mcbox,wfn1_rejct,wfn1_accpt,
      &                       g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &                       g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                       g_momo5,g_momo6,
      &                       g_4t1,g_4t2,
-     &                       gz_momo1,
+     &                       gz_momo1,gz_momo2,gz_momo3,gz_momo4,
 !    &                       v_dna,v_dnb,v_dca,v_dcb,
 !    &                       v_dnna,v_dnnb,v_dcna,v_dcnb,
      &                       oprerr,curit)
@@ -55,6 +57,12 @@ c
 !     type(wfn1_drv), intent(inout)  :: wfn1_part_drv
 !     The trial energy terms
       type(wfn1_en)      :: wfn1_trial_en  ! the trial energy
+!     Monte Carlo box
+      type(wfn1_bx)      :: wfn1_mcbox
+!     Monte Carlo rejects box
+      type(wfn1_bx)      :: wfn1_rejct
+!     Monte Carlo accept box
+      type(wfn1_bx)      :: wfn1_accpt
 !     GA dimensions nbf x nbf
       integer :: g_bfbf
 !     GA dimensions nbf x nbf
@@ -73,12 +81,22 @@ c
       integer :: g_momo3
 !     GA dimensions nmo x nmo
       integer :: g_momo4
+!     GA dimensions nmo x nmo
+      integer :: g_momo5
+!     GA dimensions nmo x nmo
+      integer :: g_momo6
 !     GA dimensions nbf x nbf x nbf x nbf
       integer :: g_4t1
 !     GA dimensions nbf x nbf x nbf x nbf
       integer :: g_4t2
 !     GA dimensions nmo x nmo complex
       integer :: gz_momo1
+!     GA dimensions nmo x nmo complex
+      integer :: gz_momo2
+!     GA dimensions nmo x nmo complex
+      integer :: gz_momo3
+!     GA dimensions nmo x nmo complex
+      integer :: gz_momo4
 c
 !     Print detailed errors or not
       logical :: oprerr
@@ -126,7 +144,7 @@ c
      &              wfn1_energy,
      &              g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &              g_bfmo,
-     &              g_momo1,g_momo2,g_momo3,g_momo4,
+     &              g_momo3,g_momo4,g_momo5,g_momo6,
      &              g_4t1,g_4t2)
 !    &              v_dna,v_dnb,v_dca,v_dcb,
 !    &              v_dnna,v_dnnb,v_dcna,v_dcnb)
@@ -137,7 +155,8 @@ c
 !     The estimate corresponds to the distance of the center to one
 !     of the corners of the hypercube.
 !
-      error%total = 2.0d0*rlimo*nmo
+c     error%total = 2.0d0*rlimo*nmo
+      error%total = 2.0d0*rlimo
       curit       = 0
       if (iproc.eq.0) then
         if (.not.oprerr) then
@@ -159,16 +178,19 @@ c
      &                     wfn1_energy,wfn1_trial_wv,
 !    &                     wfn1_trial_drv,wfn1_part_drv,
      &                     wfn1_trial_en,
+     &                     wfn1_mcbox,wfn1_rejct,wfn1_accpt,
      &                     g_bfbf,g_bfbf2,g_bfbf3,g_bfbf4,
      &                     g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                     g_momo5,g_momo6,
      &                     g_4t1,g_4t2,
-     &                     gz_momo1)
+     &                     gz_momo1,gz_momo2,gz_momo3,gz_momo4)
 !    &                     v_dna,v_dnb,v_dca,v_dcb,
 !    &                     v_dnna,v_dnnb,v_dcna,v_dcnb)
 c
 !       error = wfn1_trace(wfn1_trial_drv,wfn1_trial_drv)
         if (wfn1_param%rlim.lt.rlimo) then
-          error%total = 2.0d0*rlimo*nmo
+c         error%total = 2.0d0*rlimo*nmo
+          error%total = 2.0d0*rlimo
           rlimo       = wfn1_param%rlim
         endif
 c

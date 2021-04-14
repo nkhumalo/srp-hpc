@@ -185,8 +185,10 @@ c
           call wfn1_sgn_offdiag(g_momo2)
           call wfn1_skew_to_rot(g_momo1,g_momo3)
           call wfn1_skew_to_rot(g_momo2,g_momo4)
-          call wfn1_sgn_offdiag(gz_momo3)
-          call wfn1_sgn_offdiag(gz_momo4)
+          call wfn1_sgn_offdiag(gz_momo1)
+          call wfn1_sgn_offdiag(gz_momo2)
+          call wfn1_skew_to_rot(gz_momo1,gz_momo3)
+          call wfn1_skew_to_rot(gz_momo2,gz_momo4)
           call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,
      &                   g_momo3,0.0d0,wfn1_trial_wv%g_na)
           call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_nb,

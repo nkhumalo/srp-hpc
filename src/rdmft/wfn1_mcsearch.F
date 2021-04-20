@@ -22,10 +22,12 @@ C>
      &                         wfn1_energy,wfn1_trial_wv,
 !    &                         wfn1_trial_drv,wfn1_part_drv,
      &                         wfn1_trial_en,
+     &                         wfn1_mcbox,wfn1_rejct,wfn1_accpt,
      &                         g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                         g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                         g_momo5,g_momo6,
      &                         g_4t1,g_4t2,
-     &                         gz_momo1)
+     &                         gz_momo1,gz_momo2,gz_momo3,gz_momo4)
 !    &                         v_dna,v_dnb,v_dca,v_dcb,
 !    &                         v_dnna,v_dnnb,v_dcna,v_dcnb)
       implicit none
@@ -49,6 +51,9 @@ c
 !     type(wfn1_drv),     intent(inout) :: wfn1_trial_drv
 !     type(wfn1_drv),     intent(inout) :: wfn1_part_drv
       type(wfn1_en),      intent(inout) :: wfn1_trial_en
+      type(wfn1_bx),      intent(inout) :: wfn1_mcbox
+      type(wfn1_bx),      intent(inout) :: wfn1_rejct
+      type(wfn1_bx),      intent(inout) :: wfn1_accpt
 c
       integer, intent(inout) :: g_bfbf1 ! nbf x nbf scratch GA
       integer, intent(inout) :: g_bfbf2 ! nbf x nbf scratch GA
@@ -59,9 +64,14 @@ c
       integer, intent(inout) :: g_momo2 ! nmo x nmo scratch GA
       integer, intent(inout) :: g_momo3 ! nmo x nmo scratch GA
       integer, intent(inout) :: g_momo4 ! nmo x nmo scratch GA
+      integer, intent(inout) :: g_momo5 ! nmo x nmo scratch GA
+      integer, intent(inout) :: g_momo6 ! nmo x nmo scratch GA
       integer, intent(inout) :: g_4t1   ! nbf x nbf x nbf x nbf scratch GA
       integer, intent(inout) :: g_4t2   ! nbf x nbf x nbf x nbf scratch GA
       integer, intent(inout) :: gz_momo1 ! nmo x nmo complex scratch GA
+      integer, intent(inout) :: gz_momo2 ! nmo x nmo complex scratch GA
+      integer, intent(inout) :: gz_momo3 ! nmo x nmo complex scratch GA
+      integer, intent(inout) :: gz_momo4 ! nmo x nmo complex scratch GA
 c
 c     Natural orbital energies
 c
@@ -99,6 +109,7 @@ c
       double precision :: de        ! Change in energy
       double precision :: pfac      ! Probability scale factor
       double precision :: sfac      ! Dimensionality adjustment factor
+      double precision :: tfac      ! Dimensionality adjustment factor
 c
       iproc   = ga_nodeid()
       nproc   = ga_nnodes()
@@ -107,36 +118,47 @@ c
       rlim    = wfn1_param%rlim
       pfac    = wfn1_param%pfac
       Ewf     = wfn1_energy%E_tot
-      sfac    = wfn1_param%nea*(nmo-wfn1_param%nea)
+      sfac    = 4*(nmo*(nmo-1)/2)
       sfac    = 1.0d0/sfac 
+      tfac    = 1.08d0**sfac
       sfac    = 0.5d0**sfac
       ntries  = 0
 !     call ga_distribution(g_momo1,iproc,ilo,ihi,jlo,jhi)
 !     allocate(buf(ilo:ihi,jlo:jhi))
+      call wfn1_init_box(wfn1_rejct,0.0d0)
+      call wfn1_init_box(wfn1_accpt,0.0d0)
       do
         ntries = ntries + 1
 c
 c       Natural orbitals
 c
-        call wfn1_gen_random_orthog(g_momo1,rlim)
-        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,
-     &                 g_momo1,0.0d0,wfn1_trial_wv%g_na)
-        if (.not.oclosed) then
-          call wfn1_gen_random_orthog(g_momo1,rlim)
+        call wfn1_gen_random_skew(g_momo1,wfn1_mcbox%g_na,rlim)
+        if (oclosed) then
+          call ga_copy(g_momo1,g_momo2)
+        else
+          call wfn1_gen_random_skew(g_momo2,wfn1_mcbox%g_nb,rlim)
         endif
+        call wfn1_skew_to_rot(g_momo1,g_momo3)
+        call wfn1_skew_to_rot(g_momo2,g_momo4)
+        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,
+     &                 g_momo3,0.0d0,wfn1_trial_wv%g_na)
         call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_nb,
-     &                 g_momo1,0.0d0,wfn1_trial_wv%g_nb)
+     &                 g_momo4,0.0d0,wfn1_trial_wv%g_nb)
 c
 c       Correlation functions
 c
-        call wfn1_gen_random_orthog(gz_momo1,rlim)
-        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,
-     &                 gz_momo1,0.0d0,wfn1_trial_wv%g_ca)
-        if (.not.oclosed) then
-          call wfn1_gen_random_orthog(gz_momo1,rlim)
+        call wfn1_gen_random_skew(gz_momo1,wfn1_mcbox%g_ca,rlim)
+        if (oclosed) then
+          call ga_copy(gz_momo1,gz_momo2)
+        else
+          call wfn1_gen_random_skew(gz_momo2,wfn1_mcbox%g_cb,rlim)
         endif
+        call wfn1_skew_to_rot(gz_momo1,gz_momo3)
+        call wfn1_skew_to_rot(gz_momo2,gz_momo4)
+        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,
+     &                 gz_momo3,0.0d0,wfn1_trial_wv%g_ca)
         call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_cb,
-     &                 gz_momo1,0.0d0,wfn1_trial_wv%g_cb)
+     &                 gz_momo4,0.0d0,wfn1_trial_wv%g_cb)
 c
 c       Evaluate energy
 c
@@ -144,7 +166,7 @@ c
 !    &                wfn1_trial_drv,wfn1_part_drv,
      &                wfn1_trial_en,
      &                g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
-     &                g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
+     &                g_bfmo,g_momo3,g_momo4,g_momo5,g_momo6,
      &                g_4t1,g_4t2)
 !    &                v_dna,v_dnb,v_dca,v_dcb,
 !    &                v_dnna,v_dnnb,v_dcna,v_dcnb)
@@ -155,30 +177,64 @@ c
 c
 c         If the energy goes down we are going in the right direction
 c
-          ostop = de.le.0.0d0
+          ostop = de.lt.0.0d0
         endif
         call ga_brdcst(1200,ostop,ma_sizeof(MT_LOG,1,MT_BYTE),0)
+        if (.not.ostop) then
+          call wfn1_sgn_offdiag(g_momo1)
+          call wfn1_sgn_offdiag(g_momo2)
+          call wfn1_skew_to_rot(g_momo1,g_momo3)
+          call wfn1_skew_to_rot(g_momo2,g_momo4)
+          call wfn1_sgn_offdiag(gz_momo1)
+          call wfn1_sgn_offdiag(gz_momo2)
+          call wfn1_skew_to_rot(gz_momo1,gz_momo3)
+          call wfn1_skew_to_rot(gz_momo2,gz_momo4)
+          call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,
+     &                   g_momo3,0.0d0,wfn1_trial_wv%g_na)
+          call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_nb,
+     &                   g_momo4,0.0d0,wfn1_trial_wv%g_nb)
+          call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,
+     &                   gz_momo3,0.0d0,wfn1_trial_wv%g_ca)
+          call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_cb,
+     &                   gz_momo4,0.0d0,wfn1_trial_wv%g_cb)
+          call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
+     &                  wfn1_trial_en,
+     &                  g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+     &                  g_bfmo,g_momo3,g_momo4,g_momo5,g_momo6,
+     &                  g_4t1,g_4t2)
+          Ewf_trial = wfn1_trial_en%E_tot
+          de = Ewf_trial - Ewf
+          if (iproc.eq.0) then
+            ostop = de.lt.0.0d0
+          endif
+          call ga_brdcst(1300,ostop,ma_sizeof(MT_LOG,1,MT_BYTE),0)
+        endif
+        if (.not.ostop) then
+!
+!         The step was rejected so update the rejects box
+!
+          call wfn1_max_box(wfn1_rejct,g_momo1,g_momo2,
+     &                      gz_momo1,gz_momo2)
+        else
+!
+!         The step was accepted so update the accepts box
+!
+          call wfn1_max_box(wfn1_accpt,g_momo1,g_momo2,
+     &                      gz_momo1,gz_momo2)
+!
+!         Reshape the Monte Carlo box
+!
+          call wfn1_reshape_box(wfn1_param,wfn1_mcbox,wfn1_rejct,
+     &                          wfn1_accpt)
+        endif
         if (.not.ostop.and.(mod(ntries,20).eq.0)) then
-c         ostop = .true.
+          call wfn1_resquare_box(wfn1_param,wfn1_mcbox)
           wfn1_param%rlim = sfac*wfn1_param%rlim
           rlim = wfn1_param%rlim
-c         wfn1_trial_en = wfn1_energy
-c         call ga_copy(wfn1_wave%g_na,wfn1_trial_wv%g_na)
-c         call ga_copy(wfn1_wave%g_nb,wfn1_trial_wv%g_nb)
-c         call ga_copy(wfn1_wave%g_ca,wfn1_trial_wv%g_ca)
-c         call ga_copy(wfn1_wave%g_cb,wfn1_trial_wv%g_cb)
-c         call ga_copy(wfn1_deriv%g_dna,wfn1_trial_drv%g_dna)
-c         call ga_copy(wfn1_deriv%g_dnb,wfn1_trial_drv%g_dnb)
-c         call ga_copy(wfn1_deriv%g_dca,wfn1_trial_drv%g_dca)
-c         call ga_copy(wfn1_deriv%g_dcb,wfn1_trial_drv%g_dcb)
         endif
         if (ostop) then
 c         accept the trial wave function
-cDEBUG
-c         if (iproc.eq.0) then
-c         write(*,*)'HVD: mc: ',ntries,Ewf,Ewf_trial
-c         endif
-cDEBUG
+          wfn1_param%rlim = tfac*wfn1_param%rlim
           exit
         endif
       end do
@@ -188,19 +244,38 @@ c
 c
 c-----------------------------------------------------------------------
 c
-C> \brief Generate a random orthogonal matrix
+C> \brief Generate a random skew symmetric matrix
 C>
-      subroutine wfn1_gen_random_orthog(g_rand,rlim)
+C> We will use this matrix to set a rotation matrix up. For every 2x2
+C> rotation we have that
+C>
+C>      (R_ii R_ij)   ( c  -s )
+C>  R = (         ) = (       )
+C>      (R_ji R_jj)   ( s   c )
+C>
+C>  where R_ij = -R_ji (see e.g.
+C>  https://en.wikipedia.org/wiki/Jacobi_rotation). 
+C>  If we have a skew symmetric matrix T then we have
+C>  * R_ii = R_jj = 1/sqrt(T_ij**2+1)
+C>  * R_ij = T_ij/sqrt(T_ij**2+1)
+C>  * R_ji = T_ji/sqrt(T_ji**2+1)
+C>  For many 2x2 rotations R'_ii = \prod_j 1/sqrt(T_ij**2+1)
+C>
+      subroutine wfn1_gen_random_skew(g_rand,g_box,rlim)
       implicit none
 c
 #include "global.fh"
 #include "mafdecls.fh"
 c
       integer, intent(in) :: g_rand ! Global array
+      integer, intent(in) :: g_box  ! Global array
       double precision, intent(in)  :: rlim ! random number limits
 c
       double precision, allocatable :: buf(:,:,:)
+      double precision, allocatable :: buft(:,:,:)
       complex(kind=8),  allocatable :: zbuf(:,:)
+      complex(kind=8),  allocatable :: zbuft(:,:)
+      double precision, allocatable :: box(:,:)
 c
       integer :: idum
       integer :: ii ! counter
@@ -212,34 +287,142 @@ c
       iproc = ga_nodeid()
       call ga_inquire(g_rand,itype,ii,jj)
       call ga_distribution(g_rand,iproc,ilo,ihi,jlo,jhi)
+      call ga_zero(g_rand)
       if (itype.eq.MT_DBL) then
-        allocate(buf(1:1,ilo:ihi,jlo:jhi))
-        call random_number(buf)
-        buf = (2.0d0*buf-1.0d0)*rlim
-        do ii = max(ilo,jlo),min(ihi,jhi)
-          buf(1,ii,ii) = 1.0d0
-        enddo
-        call ga_put(g_rand,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
-        deallocate(buf)
-      else if (itype.eq.MT_DCPL) then
-        allocate(buf(1:2,ilo:ihi,jlo:jhi))
-        allocate(zbuf(ilo:ihi,jlo:jhi))
-        call random_number(buf)
-        buf = (2.0d0*buf-1.0d0)*rlim
-        do jj = jlo, jhi
-          do ii = ilo, ihi
-            zbuf(ii,jj) = complex(buf(1,ii,jj),buf(2,ii,jj))
+        if (ilo.ge.jlo) then
+          allocate(buf(1:1,ilo:ihi,jlo:jhi))
+          allocate(buft(1:1,jlo:jhi,ilo:ihi))
+          allocate(box(ilo:ihi,jlo:jhi))
+          call random_number(buf)
+          call ga_get(g_box,ilo,ihi,jlo,jhi,box,ihi-ilo+1)
+          do jj = jlo, jhi
+            do ii = ilo, ihi
+              if (ii.lt.jj) then
+                buf(1,ii,jj)  = (2.0d0*buf(1,ii,jj)-1.0d0)
+     &                        * rlim*box(ii,jj)
+                buft(1,jj,ii) = -buf(1,ii,jj)
+              else if (ii.gt.jj) then
+                buf(1,ii,jj)  = 0.0d0
+                buft(1,jj,ii) = 0.0d0
+              else
+                buf(1,ii,jj)  = 0.0d0
+                buft(1,jj,ii) = 0.0d0
+              endif
+            enddo
           enddo
-        enddo
-        do ii = max(ilo,jlo),min(ihi,jhi)
-          zbuf(ii,ii) = complex(1.0d0,0.0d0)
-        enddo
-        call ga_put(g_rand,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
-        deallocate(zbuf)
-        deallocate(buf)
+          call ga_acc(g_rand,ilo,ihi,jlo,jhi,buf, ihi-ilo+1,1.0d0)
+          call ga_acc(g_rand,jlo,jhi,ilo,ihi,buft,jhi-jlo+1,1.0d0)
+          deallocate(box)
+          deallocate(buft)
+          deallocate(buf)
+        endif
+      else if (itype.eq.MT_DCPL) then
+        if (ilo.ge.jlo) then
+          allocate(buf(1:2,ilo:ihi,jlo:jhi))
+          allocate(zbuf(ilo:ihi,jlo:jhi))
+          allocate(zbuft(jlo:jhi,ilo:ihi))
+          allocate(box(ilo:ihi,jlo:jhi))
+          call random_number(buf)
+          call ga_get(g_box,ilo,ihi,jlo,jhi,box,ihi-ilo+1)
+          buf = (2.0d0*buf-1.0d0)*rlim
+          do jj = jlo, jhi
+            do ii = ilo, ihi
+              if (ii.lt.jj) then
+                zbuf(ii,jj)  = complex(buf(1,ii,jj),buf(2,ii,jj))
+     &                       * box(ii,jj)
+                zbuft(jj,ii) = -zbuf(ii,jj)
+              else if (ii.gt.jj) then
+                zbuf(ii,jj)  = complex(0.0d0,0.0d0)
+                zbuft(jj,ii) = complex(0.0d0,0.0d0)
+              else
+                zbuf(ii,jj)  = complex(0.0d0,0.0d0)
+                zbuft(jj,ii) = complex(0.0d0,0.0d0)
+              endif
+            enddo
+          enddo
+          call ga_acc(g_rand,ilo,ihi,jlo,jhi,zbuf, ihi-ilo+1,
+     &                complex(1.0d0,0.0d0))
+          call ga_acc(g_rand,jlo,jhi,ilo,ihi,zbuft,jhi-jlo+1,
+     &                complex(1.0d0,0.0d0))
+          deallocate(box)
+          deallocate(zbuft)
+          deallocate(zbuf)
+          deallocate(buf)
+        endif
       endif
       call ga_sync()
-      call wfn1_orthog(g_rand,idum,.false.)
+c
+      end
+c
+c-----------------------------------------------------------------------
+c
+!> \brief form a rotation matrix from a skew symmetric matrix
+!>
+      subroutine wfn1_skew_to_rot(g_skew,g_rot)
+      implicit none
+c
+#include "global.fh"
+#include "mafdecls.fh"
+c
+      integer, intent(in) :: g_skew ! Global array
+      integer, intent(in) :: g_rot  ! Global array
+c
+      double precision, allocatable :: buf(:,:)
+      complex(kind=8),  allocatable :: zbuf(:,:)
+c
+      integer :: iidim, jjdim
+      integer :: ii ! counter
+      integer :: ilo, ihi, jlo, jhi
+      integer :: ncol
+      integer :: iproc
+      integer :: nproc
+      integer :: itype, jj
+      double precision :: cc
+      double precision :: ct
+c
+      iproc = ga_nodeid()
+      nproc = ga_nnodes()
+      call ga_inquire(g_skew,itype,iidim,jjdim)
+      ilo  = 1
+      ihi  = iidim
+      ncol = (jjdim+nproc-1)/nproc
+      jlo  = iproc*ncol+1
+      jhi  = min((iproc+1)*ncol,jjdim)
+      if (itype.eq.MT_DBL) then
+        if (jlo.le.jhi) then
+          allocate(buf(ilo:ihi,jlo:jhi))
+          call ga_get(g_skew,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+          do jj = jlo, jhi
+            ct = 1.0d0
+            do ii = ilo, ihi
+              cc = 1.0d0/sqrt(buf(ii,jj)*buf(ii,jj)+1.0d0)
+              ct = ct*cc
+              buf(ii,jj) = buf(ii,jj)*cc
+            enddo
+            buf(jj,jj) = ct
+          enddo
+          call ga_put(g_rot,ilo,ihi,jlo,jhi,buf,ihi-ilo+1)
+          deallocate(buf)
+        endif
+      else if (itype.eq.MT_DCPL) then
+        if (jlo.le.jhi) then
+          allocate(zbuf(ilo:ihi,jlo:jhi))
+          call ga_get(g_skew,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+          do jj = jlo, jhi
+            ct = 1.0d0
+            do ii = ilo, ihi
+              cc = 1.0d0/sqrt(abs(zbuf(ii,jj))**2+1.0d0)
+              ct = ct*cc
+              zbuf(ii,jj) = zbuf(ii,jj)*cc
+            enddo
+            zbuf(jj,jj) = complex(ct,0.0d0)
+          enddo
+          call ga_put(g_rot,ilo,ihi,jlo,jhi,zbuf,ihi-ilo+1)
+          deallocate(zbuf)
+        endif
+      endif
+      call ga_sync()
+      call wfn1_orthog(g_rot,iidim,.false.)
 c
       end
 c

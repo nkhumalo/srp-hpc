@@ -255,6 +255,9 @@ c
 c     
 c       If the vector norm changed a lot then repeat
 c     
+        if (si .eq. 0.0d0) then
+          call errquit('wfn1_orthog_dvecs: hard zero', i, GA_ERR)
+        endif
         if (i .gt. 1) then
           scale = si/s(i)
           if (scale .lt. 0.9d0) then
@@ -267,9 +270,6 @@ c
           end if
         end if
 c
-        if (si .eq. 0.0d0) then
-          call errquit('wfn1_orthog_dvecs: hard zero', i, GA_ERR)
-        endif
         if (si .lt. 0.0d0) then
           write(6,*) 'Negative value orthog: ',si
           call errquit('wfn1_orthog_dvecs: negative', i, 0)
@@ -351,6 +351,9 @@ c
 c     
 c       If the vector norm changed a lot then repeat
 c     
+        if (abs(si) .eq. 0.0d0) then
+          call errquit('wfn1_orthog_zvecs: hard zero', i, GA_ERR)
+        endif
         if (i .gt. 1) then
           scale = si/s(i)
           if (abs(scale) .lt. 0.9d0) then
@@ -363,9 +366,6 @@ c
           end if
         end if
 c
-        if (abs(si) .eq. 0.0d0) then
-          call errquit('wfn1_orthog_zvecs: hard zero', i, GA_ERR)
-        endif
         scale = one/sqrt(si)
         do u = ulo, uhi
           vecs(u,i) = vecs(u,i) * scale

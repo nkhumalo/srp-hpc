@@ -1,0 +1,15 @@
+!>
+!> \brief The random box data type
+!>
+!> For the Monte Carlo optimizer we need a hyper rhombus to draw "steps"
+!> in. As the "steps" are actually rotations only the off-diagonal
+!> elements matter and we store both the upper and lower triangle.
+!> The box is a set of 4 mo by mo matrices recording the dimensions
+!> of the hyper rhombus.
+!>
+      type wfn1_bx
+        integer g_na ! GA handle for the alpha natural orbital box
+        integer g_nb ! GA handle for the beta  natural orbital box
+        integer g_ca ! GA handle for the alpha correlation function box
+        integer g_cb ! GA handle for the beta  correlation function box
+      end type wfn1_bx

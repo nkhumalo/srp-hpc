@@ -1,0 +1,705 @@
+ argument  1 = input-mc.nw
+
+
+
+============================== echo of input deck ==============================
+echo
+start mcscf_dat
+geometry units au noautoz
+  H 0 0 -1.29434600000000000000
+  H 0 0  1.29434600000000000000
+  symmetry c1
+end
+basis
+  H library 6-31g
+end
+scf
+  nopen 2
+  rohf
+end
+task scf energy
+mcscf
+  active       4
+  actelec      2
+  multiplicity 3
+end
+task mcscf
+================================================================================
+
+
+                                         
+                                         
+
+
+              Northwest Computational Chemistry Package (NWChem) 6.8
+              ------------------------------------------------------
+
+
+                    Environmental Molecular Sciences Laboratory
+                       Pacific Northwest National Laboratory
+                                Richland, WA 99352
+
+                              Copyright (c) 1994-2015
+                       Pacific Northwest National Laboratory
+                            Battelle Memorial Institute
+
+             NWChem is an open-source computational chemistry package
+                        distributed under the terms of the
+                      Educational Community License (ECL) 2.0
+             A copy of the license is included with this distribution
+                              in the LICENSE.TXT file
+
+                                  ACKNOWLEDGMENT
+                                  --------------
+
+            This software and its documentation were developed at the
+            EMSL at Pacific Northwest National Laboratory, a multiprogram
+            national laboratory, operated for the U.S. Department of Energy
+            by Battelle under Contract Number DE-AC05-76RL01830. Support
+            for this work was provided by the Department of Energy Office
+            of Biological and Environmental Research, Office of Basic
+            Energy Sciences, and the Office of Advanced Scientific Computing.
+
+
+           Job information
+           ---------------
+
+    hostname        = erato
+    program         = ../../../bin/LINUX64/nwchem
+    date            = Sat Mar  6 01:21:51 2021
+
+    compiled        = Sat_Mar_06_01:07:04_2021
+    source          = /home/hvandam/nwchem-1-wfn1
+    nwchem branch   = Development
+    nwchem revision = nwchem_on_git-124-gad72d19fff205e319ffbbf2bca37a04ded6ad57b
+    ga revision     = nwchem_on_git-124-gad72d19
+    use scalapack   = F
+    input           = input-mc.nw
+    prefix          = mcscf_dat.
+    data base       = ./mcscf_dat.db
+    status          = startup
+    nproc           =        1
+    time left       =     -1s
+
+
+
+           Memory information
+           ------------------
+
+    heap     =   13107200 doubles =    100.0 Mbytes
+    stack    =   13107197 doubles =    100.0 Mbytes
+    global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
+    total    =   52428797 doubles =    400.0 Mbytes
+    verify   = yes
+    hardfail = no 
+
+
+           Directory information
+           ---------------------
+
+  0 permanent = .
+  0 scratch   = .
+
+
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Turning off AUTOSYM since
+ SYMMETRY directive was detected!
+
+
+
+                             Geometry "geometry" -> ""
+                             -------------------------
+
+ Output coordinates in a.u. (scale by  1.000000000 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 H                    1.0000     0.00000000     0.00000000    -1.29434600
+    2 H                    1.0000     0.00000000     0.00000000     1.29434600
+
+      Atomic Mass 
+      ----------- 
+
+      H                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)       0.3862954728
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     0.0000000000     0.0000000000     0.0000000000
+
+
+            XYZ format geometry
+            -------------------
+     2
+ geometry
+ H                     0.00000000     0.00000000    -0.68493846
+ H                     0.00000000     0.00000000     0.68493846
+
+                      Basis "ao basis" -> "" (cartesian)
+                      -----
+  H (Hydrogen)
+  ------------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  1.87311370E+01  0.033495
+  1 S  2.82539370E+00  0.234727
+  1 S  6.40121700E-01  0.813757
+
+  2 S  1.61277800E-01  1.000000
+
+
+
+ Summary of "ao basis" -> "" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ H                           6-31g                   2        2   2s
+
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+
+  ao basis        = "ao basis"
+  functions       =     4
+  atoms           =     2
+  closed shells   =     0
+  open shells     =     2
+  charge          =   0.00
+  wavefunction    = ROHF
+  input vectors   = atomic
+  output vectors  = ./mcscf_dat.movecs
+  use symmetry    = F
+  symmetry adapt  = F
+
+
+ Summary of "ao basis" -> "ao basis" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ H                           6-31g                   2        2   2s
+
+
+
+ Forming initial guess at       0.0s
+
+
+      Superposition of Atomic Density Guess
+      -------------------------------------
+
+ Sum of atomic energies:          -0.99646508
+
+      Non-variational initial energy
+      ------------------------------
+
+ Total energy =      -0.742054
+ 1-e energy   =      -1.755921
+ 2-e energy   =       0.627572
+ HOMO         =      -0.365133
+ LUMO         =       0.001916
+
+
+ Starting SCF solution at       0.0s
+
+
+
+ ----------------------------------------------
+         Quadratically convergent ROHF
+
+ Convergence threshold     :          1.000E-04
+ Maximum no. of iterations :           30
+ Final Fock-matrix accuracy:          1.000E-07
+ ----------------------------------------------
+
+
+ #quartets = 5.500D+01 #integrals = 5.500D+01 #direct =  0.0% #cached =100.0%
+
+
+ Integral file          = ./mcscf_dat.aoints.0
+ Record size in doubles =    65536    No. of integs per rec  =    43688
+ Max. records in memory =        2    Max. records in file   =  4850072
+ No. of bits per label  =        8    No. of bits per value  =       64
+
+
+              iter       energy          gnorm     gmax       time
+             ----- ------------------- --------- --------- --------
+                 1       -0.9279265158  2.40D-01  1.81D-01      0.0
+                 2       -0.9429276770  4.42D-04  3.90D-04      0.0
+                 3       -0.9429277294  1.42D-09  1.31D-09      0.0
+
+
+       Final ROHF results 
+       ------------------ 
+
+         Total SCF energy =     -0.942927729390
+      One-electron energy =     -1.647674849602
+      Two-electron energy =      0.318451647440
+ Nuclear repulsion energy =      0.386295472772
+
+        Time for solution =      0.0s
+
+
+             Final eigenvalues
+             -----------------
+
+              1      
+    1   -0.2988
+    2   -0.0537
+    3    1.0033
+    4    1.0217
+
+                       ROHF Final Molecular Orbital Analysis
+                       -------------------------------------
+
+ Vector    1  Occ=1.000000D+00  E=-2.987943D-01
+              MO Center=  0.0D+00,  0.0D+00, -4.2D-17, r^2= 1.1D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2      0.351697  1 H  s                  4      0.351697  2 H  s          
+     1      0.307627  1 H  s                  3      0.307627  2 H  s          
+
+ Vector    2  Occ=1.000000D+00  E=-5.366232D-02
+              MO Center=  0.0D+00,  0.0D+00, -4.4D-16, r^2= 1.6D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2      0.722929  1 H  s                  4     -0.722929  2 H  s          
+     1      0.328631  1 H  s                  3     -0.328631  2 H  s          
+
+ Vector    3  Occ=0.000000D+00  E= 1.003294D+00
+              MO Center=  0.0D+00,  0.0D+00,  5.4D-15, r^2= 2.1D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2      1.198785  1 H  s                  4     -1.198785  2 H  s          
+     1     -0.886994  1 H  s                  3      0.886994  2 H  s          
+
+ Vector    4  Occ=0.000000D+00  E= 1.021712D+00
+              MO Center=  0.0D+00,  0.0D+00, -5.0D-15, r^2= 1.7D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1      0.914054  1 H  s                  3      0.914054  2 H  s          
+     2     -0.717210  1 H  s                  4     -0.717210  2 H  s          
+
+
+ center of mass
+ --------------
+ x =   0.00000000 y =   0.00000000 z =   0.00000000
+
+ moments of inertia (a.u.)
+ ------------------
+           3.376882074467           0.000000000000           0.000000000000
+           0.000000000000           3.376882074467           0.000000000000
+           0.000000000000           0.000000000000           0.000000000000
+
+  Mulliken analysis of the total density
+  --------------------------------------
+
+    Atom       Charge   Shell Charges
+ -----------   ------   -------------------------------------------------------
+    1 H    1     1.00   0.39  0.61
+    2 H    1     1.00   0.39  0.61
+
+ Mulliken analysis of the open-shell density
+ -------------------------------------------
+
+    Atom       Charge   Shell Charges
+ -----------   ------   -------------------------------------------------------
+    1 H    1     1.00   0.39  0.61
+    2 H    1     1.00   0.39  0.61
+
+       Multipole analysis of the density wrt the origin
+       ------------------------------------------------
+
+     L   x y z        total         open         nuclear
+     -   - - -        -----         ----         -------
+     0   0 0 0     -0.000000     -2.000000      2.000000
+
+     1   1 0 0      0.000000      0.000000      0.000000
+     1   0 1 0      0.000000      0.000000      0.000000
+     1   0 0 1      0.000000      0.000000      0.000000
+
+     2   2 0 0     -1.843714     -1.843714      0.000000
+     2   1 1 0      0.000000      0.000000      0.000000
+     2   1 0 1      0.000000      0.000000      0.000000
+     2   0 2 0     -1.843714     -1.843714      0.000000
+     2   0 1 1      0.000000      0.000000      0.000000
+     2   0 0 2     -2.768028     -6.118691      3.350663
+
+
+ Parallel integral file used       1 records with       0 large values
+
+
+ Task  times  cpu:        0.0s     wall:        0.1s
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ HVD: aft getinfo: nbf  =                    4
+ HVD: aft getinfo: ncld =                    0
+ HVD: aft getinfo: nact =                    4
+
+                            NWChem Direct MCSCF Module
+                            --------------------------
+
+
+     -----------------------------------
+       Basis functions:              4
+       Inactive shells:              0
+       Active shells:                4
+       Active electrons:             2
+       Symmetry:                    a       
+       Multiplicity:                 3
+       Orbital rotations:            0
+     -----------------------------------
+
+     -----------------------------------
+       E2 extrapolation:             F
+       Conjugacy:                    T
+       Micro CI relax:               T
+       Canonical orbitals:           T
+       Maximum iterations:          20
+       Converge threshold:    1.00E-04
+       Conjugacy resets:            20
+       Initial levelshift:        0.10
+     -----------------------------------
+
+   input molecular orbitals = ./mcscf_dat.movecs
+  output molecular orbtials = ./mcscf_dat.movecs
+
+ HvD: mcscf_getmovecs
+
+ global array: MO vectors[1:4,1:4],  handle: -1000 
+
+            1           2           3           4  
+       ----------- ----------- ----------- -----------
+   1       0.30763     0.32863    -0.88699     0.91405
+   2       0.35170     0.72293     1.19879    -0.71721
+   3       0.30763    -0.32863     0.88699     0.91405
+   4       0.35170    -0.72293    -1.19879    -0.71721
+ HvD: sym_movecs_adapt
+
+ global array: MO vectors[1:4,1:4],  handle: -1000 
+
+            1           2           3           4  
+       ----------- ----------- ----------- -----------
+   1       0.30763     0.32863    -0.88699     0.91405
+   2       0.35170     0.72293     1.19879    -0.71721
+   3       0.30763    -0.32863     0.88699     0.91405
+   4       0.35170    -0.72293    -1.19879    -0.71721
+       No. of determinants:             6
+
+ HVD: 1: nclosed =                     0
+ HVD: 1: nact    =                     4
+
+  Starting Orbital Energies
+    -0.298794    -0.053662     1.003294     1.021712
+
+  Orbital Symmetry Irreps
+a    a    a    a   
+ HVD: 2: nact    =                     4
+
+ #quartets = 5.500D+01 #integrals = 5.500D+01 #direct =  0.0% #cached =100.0%
+
+
+ Integral file          = ./mcscf_dat.aoints.0
+ Record size in doubles =    65536    No. of integs per rec  =    43688
+ Max. records in memory =        2    Max. records in file   =  4850072
+ No. of bits per label  =        8    No. of bits per value  =       64
+
+
+
+
+          %%%%% MacroIteration   1 %%%%%
+
+ HVD: 3: nact    =                     4
+ HVD: 4: nact    =                     4
+ HVD: A: nact =                     4
+ HVD: B: nact =                     4
+ HVD: C: nact =                     4
+ HVD: D: nact =                     4
+
+          Number of sigma calls:        4
+                       o<<<<< (aa):             0.00
+                       o<<<<< (bb):             0.00
+                       o<<<<< (ab):             0.00
+                       o<<<<< (total)           0.00
+                       o<<<<< (aa) ff           0.00
+                       o<<<<< (aa) gop          0.00
+                       o<<<<< (aa) dot          0.00
+                       o<<<<< (ab) str          0.00
+                       o<<<<< (ab) gath         0.00
+                       o<<<<< (ab) dotab        0.00
+                       o<<<<< (ab) scat         0.00
+                       o<<<<< (ab) sync         0.00
+                       o<<<<< Density           0.00
+                       o<<<<< Density one       0.00
+                       o<<<<< Density two       0.00
+                       o<<<<< Density ab        0.00
+                       o<<<<< Spin adapt        0.00
+                       o<<<<< Symm adapt        0.00
+
+                       o<<<<< (ab) max sync:      0.00
+
+           >>>| Valence CI:             -1.329266103818
+ HVD: 5: nact    =                     4
+           >>>| MCSCF energy:           -0.942970631047
+           >>>| Gradient norm:          0.000000000D+00
+
+
+
+
+     ==============================
+            MCSCF Converged
+     ==============================
+
+
+
+          Canonical Eigenvalues
+
+              1      
+    1   -0.2988
+    2   -0.0537
+    3    1.0033
+    4    1.0217
+
+ HVD: 6: nact    =                     4
+ HVD: 7: nact    =                     4
+ HVD: A: nact =                     4
+ HVD: B: nact =                     4
+ HVD: C: nact =                     4
+ HVD: D: nact =                     4
+
+          Converged CI vector
+
+   Index           Coefficient          Config. Occupation
+         1         -0.99998903          1  2
+
+          Number of sigma calls:        1
+                       o<<<<< (aa):             0.00
+                       o<<<<< (bb):             0.00
+                       o<<<<< (ab):             0.00
+                       o<<<<< (total)           0.00
+                       o<<<<< (aa) ff           0.00
+                       o<<<<< (aa) gop          0.00
+                       o<<<<< (aa) dot          0.00
+                       o<<<<< (ab) str          0.00
+                       o<<<<< (ab) gath         0.00
+                       o<<<<< (ab) dotab        0.00
+                       o<<<<< (ab) scat         0.00
+                       o<<<<< (ab) sync         0.00
+                       o<<<<< Density           0.00
+                       o<<<<< Density one       0.00
+                       o<<<<< Density two       0.00
+                       o<<<<< Density ab        0.00
+                       o<<<<< Spin adapt        0.00
+                       o<<<<< Symm adapt        0.00
+
+                       o<<<<< (ab) max sync:      0.00
+
+
+
+          Natural orbital occupation numbers
+
+              1      
+    1    1.0000
+    2    1.0000
+    3    0.0000
+    4    0.0000
+
+ HVD: 8: nact    =                     4
+ HVD: A: nact =                     4
+ HVD: B: nact =                     4
+ HVD: C: nact =                     4
+ HVD: D: nact =                     4
+
+          Number of sigma calls:        4
+                       o<<<<< (aa):             0.00
+                       o<<<<< (bb):             0.00
+                       o<<<<< (ab):             0.00
+                       o<<<<< (total)           0.00
+                       o<<<<< (aa) ff           0.00
+                       o<<<<< (aa) gop          0.00
+                       o<<<<< (aa) dot          0.00
+                       o<<<<< (ab) str          0.00
+                       o<<<<< (ab) gath         0.00
+                       o<<<<< (ab) dotab        0.00
+                       o<<<<< (ab) scat         0.00
+                       o<<<<< (ab) sync         0.00
+                       o<<<<< Density           0.00
+                       o<<<<< Density one       0.00
+                       o<<<<< Density two       0.00
+                       o<<<<< Density ab        0.00
+                       o<<<<< Spin adapt        0.00
+                       o<<<<< Symm adapt        0.00
+
+                       o<<<<< (ab) max sync:      0.00
+
+
+       Final MCSCF results 
+       ------------------- 
+
+       Total MCSCF energy =     -0.942970631047
+            Gradient norm =      0.0D+00
+
+    CPU time for solution =      0.0s
+   Wall time for solution =      0.0s
+
+
+
+                        Analysis of MCSCF natural orbitals
+                        ----------------------------------
+
+ Vector    1  Occ=9.999781D-01  E=-2.987943D-01  Symmetry=a
+              MO Center=  0.0D+00,  0.0D+00, -2.4D-16, r^2= 1.1D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2      0.351730  1 H  s                  4      0.351730  2 H  s          
+     1      0.307584  1 H  s                  3      0.307584  2 H  s          
+
+ Vector    2  Occ=9.999781D-01  E=-5.366232D-02  Symmetry=a
+              MO Center=  0.0D+00,  0.0D+00,  2.2D-16, r^2= 1.6D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2      0.722954  1 H  s                  4     -0.722954  2 H  s          
+     1      0.328613  1 H  s                  3     -0.328613  2 H  s          
+
+ Vector    3  Occ=2.192981D-05  E= 1.003294D+00  Symmetry=a
+              MO Center=  0.0D+00,  0.0D+00,  4.7D-10, r^2= 2.1D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2      1.198770  1 H  s                  4     -1.198770  2 H  s          
+     1     -0.887001  1 H  s                  3      0.887001  2 H  s          
+
+ Vector    4  Occ=2.192981D-05  E= 1.021712D+00  Symmetry=a
+              MO Center=  0.0D+00,  0.0D+00, -4.7D-10, r^2= 1.7D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1      0.914068  1 H  s                  3      0.914068  2 H  s          
+     2     -0.717194  1 H  s                  4     -0.717194  2 H  s          
+
+
+ Wrote Lagrangian and 1- and 2-particle density matrices to ./mcscf_dat.mcpdm
+
+
+     Multipole analysis of the density
+     ---------------------------------
+
+     L   x y z        total        nuclear
+     -   - - -        -----        -------
+     0   0 0 0     -0.000000      2.000000
+
+     1   1 0 0      0.000000      0.000000
+     1   0 1 0      0.000000      0.000000
+     1   0 0 1      0.000000      0.000000
+
+     2   2 0 0     -1.843864      0.000000
+     2   1 1 0      0.000000      0.000000
+     2   1 0 1      0.000000      0.000000
+     2   0 2 0     -1.843864      0.000000
+     2   0 1 1      0.000000      0.000000
+     2   0 0 2     -2.768215      3.350663
+
+
+  Mulliken analysis of the total density
+  --------------------------------------
+
+    Atom       Charge   Shell Charges
+ -----------   ------   -------------------------------------------------------
+    1 H    1     1.00   0.39  0.61
+    2 H    1     1.00   0.39  0.61
+
+    Mulliken analysis of the active space density
+    ---------------------------------------------
+
+    Atom       Charge   Shell Charges
+ -----------   ------   -------------------------------------------------------
+    1 H    1     1.00   0.39  0.61
+    2 H    1     1.00   0.39  0.61
+
+ Parallel integral file used       1 records with       0 large values
+
+
+ Task  times  cpu:        0.0s     wall:        0.0s
+ Summary of allocated global arrays
+-----------------------------------
+  No active global arrays
+
+
+
+                         GA Statistics for process    0
+                         ------------------------------
+
+       create   destroy   get      put      acc     scatter   gather  read&inc
+calls:  352      352     1264      559     1295        5        0      229     
+number of processes/call 1.00e+00 1.00e+00 1.00e+00 0.00e+00 0.00e+00
+bytes total:             6.56e+04 3.48e+04 3.38e+04 3.20e+01 0.00e+00 1.83e+03
+bytes remote:            0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+Max memory consumed for GA by this process: 4272 bytes
+MA_summarize_allocated_blocks: starting scan ...
+MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
+MA usage statistics:
+
+	allocation statistics:
+					      heap	     stack
+					      ----	     -----
+	current number of blocks	         0	         0
+	maximum number of blocks	        18	        21
+	current total bytes		         0	         0
+	maximum total bytes		   1118312	  22509000
+	maximum total K-bytes		      1119	     22509
+	maximum total M-bytes		         2	        23
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+
+
+
+                                     CITATION
+                                     --------
+                Please cite the following reference when publishing
+                           results obtained with NWChem:
+
+                 M. Valiev, E.J. Bylaska, N. Govind, K. Kowalski,
+              T.P. Straatsma, H.J.J. van Dam, D. Wang, J. Nieplocha,
+                        E. Apra, T.L. Windus, W.A. de Jong
+                 "NWChem: a comprehensive and scalable open-source
+                  solution for large scale molecular simulations"
+                      Comput. Phys. Commun. 181, 1477 (2010)
+                           doi:10.1016/j.cpc.2010.04.018
+
+                                      AUTHORS
+                                      -------
+          E. Apra, E. J. Bylaska, W. A. de Jong, N. Govind, K. Kowalski,
+       T. P. Straatsma, M. Valiev, H. J. J. van Dam, D. Wang, T. L. Windus,
+        J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec, K. Lopata,
+    S. A. Fischer, S. Krishnamoorthy, M. Jacquelin, W. Ma, M. Klemm, O. Villa,
+      Y. Chen, V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler, V. Konjkov,
+      T. Risthaus, M. Malagoli, A. Marenich, A. Otero-de-la-Roza, J. Mullin,
+        P. Nichols, R. Peverati, J. Pittner, Y. Zhao, P.-D. Fan, A. Fonari,
+       M. Williamson, R. J. Harrison, J. R. Rehr, M. Dupuis, D. Silverstein,
+    D. M. A. Smith, J. Nieplocha, V. Tipparaju, M. Krishnan, B. E. Van Kuiken,
+        A. Vazquez-Mayagoitia, L. Jensen, M. Swart, Q. Wu, T. Van Voorhis,
+     A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown, G. Cisneros, G. I. Fann,
+   H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall, J. A. Nichols, K. Tsemekhman,
+    K. Wolinski, J. Anchell, D. E. Bernholdt, P. Borowski, T. Clark, D. Clerc,
+   H. Dachsel, M. J. O. Deegan, K. Dyall, D. Elwood, E. Glendening, M. Gutowski,
+   A. C. Hess, J. Jaffe, B. G. Johnson, J. Ju, R. Kobayashi, R. Kutteh, Z. Lin,
+   R. Littlefield, X. Long, B. Meng, T. Nakajima, S. Niu, L. Pollack, M. Rosing,
+   K. Glaesemann, G. Sandrone, M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe,
+                               A. T. Wong, Z. Zhang.
+
+ Total times  cpu:        0.0s     wall:        0.2s

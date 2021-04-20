@@ -1,0 +1,4 @@
+plot "results_mc.dat" using 1:2 with lines, \
+     "results_wf.dat" using 1:2 with lines, \
+     "results_hf.dat" using 1:2 with lines
+

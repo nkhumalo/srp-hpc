@@ -1,0 +1,635 @@
+ argument  1 = input-wf.nw
+
+
+
+============================== echo of input deck ==============================
+echo
+start wfn1_dat
+geometry units au noautoz
+  H 0 0 -3.94434600000000000000
+  H 0 0  3.94434600000000000000
+  symmetry cs
+end
+basis
+  H library 6-31g
+end
+set wfn1:input_vectors "atomic"
+set wfn1:solver "monte-carlo"
+set wfn1:print_error F
+set wfn1:t_initial 0.1
+#set wfn1:corr_expr "wfn1_mx"
+set wfn1:corr_expr "wfn1c"
+set wfn1:t_bath 0.0
+set wfn1:maxit  20000
+task wfn1 energy
+================================================================================
+
+
+                                         
+                                         
+
+
+              Northwest Computational Chemistry Package (NWChem) 6.8
+              ------------------------------------------------------
+
+
+                    Environmental Molecular Sciences Laboratory
+                       Pacific Northwest National Laboratory
+                                Richland, WA 99352
+
+                              Copyright (c) 1994-2015
+                       Pacific Northwest National Laboratory
+                            Battelle Memorial Institute
+
+             NWChem is an open-source computational chemistry package
+                        distributed under the terms of the
+                      Educational Community License (ECL) 2.0
+             A copy of the license is included with this distribution
+                              in the LICENSE.TXT file
+
+                                  ACKNOWLEDGMENT
+                                  --------------
+
+            This software and its documentation were developed at the
+            EMSL at Pacific Northwest National Laboratory, a multiprogram
+            national laboratory, operated for the U.S. Department of Energy
+            by Battelle under Contract Number DE-AC05-76RL01830. Support
+            for this work was provided by the Department of Energy Office
+            of Biological and Environmental Research, Office of Basic
+            Energy Sciences, and the Office of Advanced Scientific Computing.
+
+
+           Job information
+           ---------------
+
+    hostname        = erato
+    program         = ../../../bin/LINUX64/nwchem
+    date            = Mon Mar  1 01:48:27 2021
+
+    compiled        = Sun_Feb_28_18:02:42_2021
+    source          = /home/hvandam/nwchem-1-wfn1
+    nwchem branch   = Development
+    nwchem revision = nwchem_on_git-124-gad72d19fff205e319ffbbf2bca37a04ded6ad57b
+    ga revision     = nwchem_on_git-124-gad72d19
+    use scalapack   = F
+    input           = input-wf.nw
+    prefix          = wfn1_dat.
+    data base       = ./wfn1_dat.db
+    status          = startup
+    nproc           =        1
+    time left       =     -1s
+
+
+
+           Memory information
+           ------------------
+
+    heap     =   13107198 doubles =    100.0 Mbytes
+    stack    =   13107195 doubles =    100.0 Mbytes
+    global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
+    total    =   52428793 doubles =    400.0 Mbytes
+    verify   = yes
+    hardfail = no 
+
+
+           Directory information
+           ---------------------
+
+  0 permanent = .
+  0 scratch   = .
+
+
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Turning off AUTOSYM since
+ SYMMETRY directive was detected!
+
+
+
+                             Geometry "geometry" -> ""
+                             -------------------------
+
+ Output coordinates in a.u. (scale by  1.000000000 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 H                    1.0000     0.00000000     0.00000000    -3.94434600
+    2 H                    1.0000     0.00000000     0.00000000     3.94434600
+
+      Atomic Mass 
+      ----------- 
+
+      H                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)       0.1267637271
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     0.0000000000     0.0000000000     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     1
+
+      Symmetry unique atoms
+
+     1
+
+
+            XYZ format geometry
+            -------------------
+     2
+ geometry
+ H                     0.00000000     0.00000000    -2.08725817
+ H                     0.00000000     0.00000000     2.08725817
+
+                      Basis "ao basis" -> "" (cartesian)
+                      -----
+  H (Hydrogen)
+  ------------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  1.87311370E+01  0.033495
+  1 S  2.82539370E+00  0.234727
+  1 S  6.40121700E-01  0.813757
+
+  2 S  1.61277800E-01  1.000000
+
+
+
+ Summary of "ao basis" -> "" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ H                           6-31g                   2        2   2s
+
+
+
+                                NWChem WFN1 Module
+                                ------------------
+
+
+
+          No. of electrons :     2
+           Alpha electrons :     1
+            Beta electrons :     1
+          Charge           :     0
+          Spin multiplicity:     1
+
+ HvD: wfn1_inpdft
+ HvD: nquad_task =                     1
+ HvD: iangquad   =                     0
+ HvD: gridtype   = user      
+ HvD: leb        =  T
+ HvD: radgrid    = murakn    
+ HvD: trunc_neigh=  T
+ HvD: lssw       =  T
+ HvD: whichssw   = erf1    
+ HvD: mxnrad     =                     0
+ HvD: mxnang     =                     0
+ HVD: wfn1: movecs_in  = atomic                                                                                                                                                                                                                                                          
+ HVD: wfn1: movecs_out = ./wfn1_dat.movecs                                                                                                                                                                                                                                               
+
+      Superposition of Atomic Density Guess
+      -------------------------------------
+
+ Sum of atomic energies:          -0.99646508
+
+      Non-variational initial energy
+      ------------------------------
+
+ Total energy =      -0.682112
+ 1-e energy   =      -1.249993
+ 2-e energy   =       0.441117
+ HOMO         =      -0.193645
+ LUMO         =      -0.188723
+
+ iteration              energy           error
+ ---------              ------           -----
+         0         -0.87478495        0.080000
+         1         -0.88036188        0.080000
+         2         -0.88339925        0.080000
+         3         -0.88770561        0.080000
+         4         -0.89287544        0.080000
+         5         -0.89509027        0.080000
+         6         -0.90156210        0.080000
+         7         -0.90166246        0.080000
+         8         -0.90569923        0.080000
+         9         -0.91059090        0.080000
+        10         -0.91107769        0.080000
+        11         -0.91245886        0.080000
+        12         -0.91389029        0.080000
+        13         -0.91563450        0.080000
+        14         -0.91876083        0.080000
+        15         -0.91993679        0.080000
+        16         -0.92195419        0.080000
+        17         -0.92323782        0.080000
+        18         -0.92485066        0.080000
+        19         -0.92739620        0.080000
+        20         -0.92856101        0.080000
+        21         -0.92985537        0.080000
+        22         -0.92994900        0.080000
+        23         -0.93077184        0.080000
+        24         -0.93151969        0.080000
+        25         -0.93175222        0.080000
+        26         -0.93296523        0.080000
+        27         -0.93399335        0.080000
+        28         -0.93404572        0.080000
+        29         -0.93479273        0.080000
+        30         -0.93586375        0.080000
+        31         -0.93669918        0.080000
+        32         -0.93755942        0.080000
+        33         -0.93802551        0.080000
+        34         -0.93842403        0.080000
+        35         -0.93860858        0.080000
+        36         -0.93865405        0.080000
+        37         -0.93890240        0.080000
+        38         -0.93934039        0.080000
+        39         -0.93936305        0.080000
+        40         -0.93964097        0.080000
+        41         -0.93977935        0.080000
+        42         -0.93989452        0.080000
+        43         -0.94024850        0.080000
+        44         -0.94029501        0.080000
+        45         -0.94048047        0.080000
+        46         -0.94048132        0.080000
+        47         -0.94049542        0.080000
+        48         -0.94050884        0.080000
+        49         -0.94052863        0.080000
+        50         -0.94053325        0.080000
+        51         -0.94053953        0.050397
+        52         -0.94056273        0.050397
+        53         -0.94062885        0.050397
+        54         -0.94065605        0.050397
+        55         -0.94067064        0.040000
+        56         -0.94067657        0.040000
+        57         -0.94069665        0.031748
+        58         -0.94070847        0.031748
+        59         -0.94071267        0.031748
+        60         -0.94071954        0.031748
+        61         -0.94072125        0.031748
+        62         -0.94074305        0.031748
+        63         -0.94074457        0.025198
+        64         -0.94075024        0.025198
+        65         -0.94075076        0.020000
+        66         -0.94075134        0.020000
+        67         -0.94075364        0.020000
+        68         -0.94075485        0.020000
+        69         -0.94075507        0.020000
+        70         -0.94075671        0.020000
+        71         -0.94076073        0.020000
+        72         -0.94076081        0.010000
+        73         -0.94076095        0.010000
+        74         -0.94076230        0.010000
+        75         -0.94076264        0.007937
+        76         -0.94076327        0.007937
+        77         -0.94076593        0.007937
+        78         -0.94076744        0.007937
+        79         -0.94076796        0.007937
+        80         -0.94076907        0.007937
+        81         -0.94077006        0.007937
+        82         -0.94077156        0.007937
+        83         -0.94077195        0.006300
+        84         -0.94077207        0.006300
+        85         -0.94077263        0.006300
+        86         -0.94077267        0.006300
+        87         -0.94077274        0.006300
+        88         -0.94077302        0.005000
+        89         -0.94077307        0.002500
+        90         -0.94077320        0.002500
+        91         -0.94077322        0.002500
+        92         -0.94077327        0.002500
+        93         -0.94077336        0.001984
+        94         -0.94077345        0.001984
+        95         -0.94077353        0.001984
+        96         -0.94077356        0.001984
+        97         -0.94077358        0.001984
+        98         -0.94077371        0.001984
+        99         -0.94077383        0.001984
+       100         -0.94077387        0.001575
+       101         -0.94077390        0.001575
+       102         -0.94077392        0.001575
+       103         -0.94077393        0.001575
+       104         -0.94077397        0.001575
+       105         -0.94077398        0.001575
+       106         -0.94077399        0.001575
+       107         -0.94077401        0.001575
+       108         -0.94077402        0.001575
+       109         -0.94077405        0.001575
+       110         -0.94077410        0.001575
+       111         -0.94077414        0.001575
+       112         -0.94077415        0.001575
+       113         -0.94077418        0.001575
+       114         -0.94077422        0.001575
+       115         -0.94077425        0.001575
+       116         -0.94077428        0.001575
+       117         -0.94077430        0.001575
+       118         -0.94077436        0.001575
+       119         -0.94077437        0.001575
+       120         -0.94077437        0.001575
+       121         -0.94077438        0.001575
+       122         -0.94077438        0.001575
+       123         -0.94077441        0.001575
+       124         -0.94077441        0.001575
+       125         -0.94077442        0.001575
+       126         -0.94077444        0.001575
+       127         -0.94077445        0.001250
+       128         -0.94077446        0.000992
+       129         -0.94077447        0.000992
+       130         -0.94077447        0.000787
+       131         -0.94077447        0.000625
+       132         -0.94077448        0.000625
+       133         -0.94077448        0.000496
+       134         -0.94077449        0.000496
+       135         -0.94077449        0.000496
+       136         -0.94077449        0.000394
+       137         -0.94077449        0.000394
+       138         -0.94077449        0.000394
+       139         -0.94077449        0.000313
+       140         -0.94077449        0.000313
+       141         -0.94077449        0.000313
+       142         -0.94077449        0.000248
+       143         -0.94077449        0.000248
+       144         -0.94077449        0.000248
+       145         -0.94077449        0.000248
+       146         -0.94077449        0.000248
+       147         -0.94077449        0.000197
+       148         -0.94077450        0.000197
+       149         -0.94077450        0.000197
+       150         -0.94077450        0.000156
+       151         -0.94077450        0.000124
+       152         -0.94077450        0.000098
+       153         -0.94077450        0.000098
+       154         -0.94077450        0.000098
+       155         -0.94077450        0.000098
+       156         -0.94077450        0.000078
+       157         -0.94077450        0.000062
+       158         -0.94077450        0.000049
+       159         -0.94077450        0.000049
+       160         -0.94077450        0.000049
+       161         -0.94077450        0.000049
+       162         -0.94077450        0.000039
+       163         -0.94077450        0.000016
+       164         -0.94077450        0.000016
+       165         -0.94077450        0.000016
+       166         -0.94077450        0.000010
+       167         -0.94077450        0.000008
+       168         -0.94077450        0.000005
+       169         -0.94077450        0.000004
+       170         -0.94077450        0.000004
+       171         -0.94077450        0.000004
+       172         -0.94077450        0.000004
+       173         -0.94077450        0.000004
+       174         -0.94077450        0.000004
+       175         -0.94077450        0.000004
+       176         -0.94077450        0.000003
+       177         -0.94077450        0.000002
+       178         -0.94077450        0.000002
+       179         -0.94077450        0.000002
+       180         -0.94077450        0.000002
+       181         -0.94077450        0.000002
+       182         -0.94077450        0.000002
+       183         -0.94077450        0.000002
+       184         -0.94077450        0.000002
+       185         -0.94077450        0.000002
+       186         -0.94077450        0.000001
+       187         -0.94077450        0.000001
+       188         -0.94077450        0.000001
+
+ Reached Convergence
+
+ WFN1                     :
+ --------------------------
+ Total WFN1 energy  =          -0.9407744959
+ 1-Electron energy  =          -1.1819065726
+ 2-Electron energy  =           0.3589904632
+ Correlation energy =          -0.2446221137
+ DFT XC energy      =           0.0000000000
+ Entropy energy     =           0.0000000000
+ Nuclear energy     =           0.1267637271
+
+ conventional Hartree-Fock:
+ --------------------------
+ Total SCF energy  =          -0.8629847196
+ 2-Electron energy =           0.4367802396
+
+                WFN1 Final Natural orbital energies and occupations
+                ---------------------------------------------------
+
+              Alpha       Beta            Alpha       Beta  
+            --------    --------        --------    --------
+       1      0.0000      0.0000          0.4950      0.4950
+       2      0.0000      0.0000          0.4722      0.4722
+       3      0.0000      0.0000          0.0167      0.0167
+       4      0.0000      0.0000          0.0161      0.0161
+
+             WFN1 Final Correlation function energies and occupations
+             --------------------------------------------------------
+
+              Alpha       Beta            Alpha       Beta  
+            --------    --------        --------    --------
+       1      0.0000      0.0000          1.0000      1.0000
+       2      0.0000      0.0000          0.0000      0.0000
+       3      0.0000      0.0000          0.0000      0.0000
+       4      0.0000      0.0000          0.0000      0.0000
+
+                WFN1 Final alpha-alpha 2-matrix occupation numbers
+                --------------------------------------------------
+
+
+ global array: g_momo1[1:4,1:4],  handle: -990 
+
+            1           2           3           4  
+       ----------- ----------- ----------- -----------
+   1      -0.00000     0.00000    -0.00000     0.00000
+   2       0.00000     0.00000    -0.00000     0.00000
+   3       0.00000     0.00000    -0.00000    -0.00000
+   4       0.00000     0.00000    -0.00000     0.00000
+
+                 WFN1 Final beta-beta 2-matrix occupation numbers
+                 ------------------------------------------------
+
+
+ global array: g_momo2[1:4,1:4],  handle: -989 
+
+            1           2           3           4  
+       ----------- ----------- ----------- -----------
+   1      -0.00000     0.00000    -0.00000     0.00000
+   2       0.00000     0.00000    -0.00000     0.00000
+   3       0.00000     0.00000    -0.00000    -0.00000
+   4       0.00000     0.00000    -0.00000     0.00000
+
+                  WFN1 Final alpha Correlation Function Analysis
+                  ----------------------------------------------
+
+
+ global array: Ca[1:4,1:4],  handle: -981 
+
+                     1                       2                       3                       4  
+       ----------------------- ----------------------- ----------------------- -----------------------
+   1      -0.30615,    0.63345    -0.29350,    0.62523    -0.06361,   -0.14590     0.02249,    0.04592
+   2      -0.57658,   -0.37386     0.59028,    0.40087     0.09735,    0.08453     0.04410,    0.00964
+   3      -0.10164,    0.07995    -0.00708,   -0.06453    -0.38511,    0.59064    -0.37901,    0.58159
+   4      -0.06773,   -0.10712     0.02202,   -0.09550    -0.60259,   -0.31267     0.63775,    0.32669
+
+                   WFN1 Final beta Correlation Function Analysis
+                   ---------------------------------------------
+
+
+ global array: Cb[1:4,1:4],  handle: -980 
+
+                     1                       2                       3                       4  
+       ----------------------- ----------------------- ----------------------- -----------------------
+   1      -0.30615,    0.63345    -0.29350,    0.62523    -0.06361,   -0.14590     0.02249,    0.04592
+   2      -0.57658,   -0.37386     0.59028,    0.40087     0.09735,    0.08453     0.04410,    0.00964
+   3      -0.10164,    0.07995    -0.00708,   -0.06453    -0.38511,    0.59064    -0.37901,    0.58159
+   4      -0.06773,   -0.10712     0.02202,   -0.09550    -0.60259,   -0.31267     0.63775,    0.32669
+
+                     WFN1 Final Alpha Natural Orbital Analysis
+                     -----------------------------------------
+
+ Vector    1  Occ=4.949955D-01  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00, -1.7D-07, r^2= 5.2D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2     -0.515676  1 H  s                  4     -0.515676  2 H  s          
+     1     -0.250029  1 H  s                  3     -0.250030  2 H  s          
+
+ Vector    2  Occ=4.722188D-01  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00,  1.7D-07, r^2= 5.3D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2      0.512083  1 H  s                  4     -0.512083  2 H  s          
+     1      0.257202  1 H  s                  3     -0.257202  2 H  s          
+
+ Vector    3  Occ=1.672360D-02  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00,  2.1D-06, r^2= 5.4D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1     -0.903243  1 H  s                  3     -0.903244  2 H  s          
+     2      0.778889  1 H  s                  4      0.778890  2 H  s          
+
+ Vector    4  Occ=1.606203D-02  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00, -2.1D-06, r^2= 5.5D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1     -0.905720  1 H  s                  3      0.905719  2 H  s          
+     2      0.793824  1 H  s                  4     -0.793823  2 H  s          
+
+
+                     WFN1 Final Beta Natural Orbital Analysis
+                     ----------------------------------------
+
+ Vector    1  Occ=4.949955D-01  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00, -1.7D-07, r^2= 5.2D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2     -0.515676  1 H  s                  4     -0.515676  2 H  s          
+     1     -0.250029  1 H  s                  3     -0.250030  2 H  s          
+
+ Vector    2  Occ=4.722188D-01  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00,  1.7D-07, r^2= 5.3D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2      0.512083  1 H  s                  4     -0.512083  2 H  s          
+     1      0.257202  1 H  s                  3     -0.257202  2 H  s          
+
+ Vector    3  Occ=1.672360D-02  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00,  2.1D-06, r^2= 5.4D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1     -0.903243  1 H  s                  3     -0.903244  2 H  s          
+     2      0.778889  1 H  s                  4      0.778890  2 H  s          
+
+ Vector    4  Occ=1.606203D-02  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00, -2.1D-06, r^2= 5.5D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1     -0.905720  1 H  s                  3      0.905719  2 H  s          
+     2      0.793824  1 H  s                  4     -0.793823  2 H  s          
+
+
+ Task  times  cpu:        8.4s     wall:       11.4s
+ Summary of allocated global arrays
+-----------------------------------
+  No active global arrays
+
+
+
+                         GA Statistics for process    0
+                         ------------------------------
+
+       create   destroy   get      put      acc     scatter   gather  read&inc
+calls:   44       44     6.49e+06 1.37e+04 1.78e+04    0        0       11     
+number of processes/call 1.00e+00 1.00e+00 1.00e+00 0.00e+00 0.00e+00
+bytes total:             8.34e+08 2.28e+06 2.84e+06 0.00e+00 0.00e+00 8.80e+01
+bytes remote:            0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+Max memory consumed for GA by this process: 10624 bytes
+MA_summarize_allocated_blocks: starting scan ...
+MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
+MA usage statistics:
+
+	allocation statistics:
+					      heap	     stack
+					      ----	     -----
+	current number of blocks	         0	         0
+	maximum number of blocks	        19	        17
+	current total bytes		         0	         0
+	maximum total bytes		   3204344	  22508664
+	maximum total K-bytes		      3205	     22509
+	maximum total M-bytes		         4	        23
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+
+
+
+                                     CITATION
+                                     --------
+                Please cite the following reference when publishing
+                           results obtained with NWChem:
+
+                 M. Valiev, E.J. Bylaska, N. Govind, K. Kowalski,
+              T.P. Straatsma, H.J.J. van Dam, D. Wang, J. Nieplocha,
+                        E. Apra, T.L. Windus, W.A. de Jong
+                 "NWChem: a comprehensive and scalable open-source
+                  solution for large scale molecular simulations"
+                      Comput. Phys. Commun. 181, 1477 (2010)
+                           doi:10.1016/j.cpc.2010.04.018
+
+                                      AUTHORS
+                                      -------
+          E. Apra, E. J. Bylaska, W. A. de Jong, N. Govind, K. Kowalski,
+       T. P. Straatsma, M. Valiev, H. J. J. van Dam, D. Wang, T. L. Windus,
+        J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec, K. Lopata,
+    S. A. Fischer, S. Krishnamoorthy, M. Jacquelin, W. Ma, M. Klemm, O. Villa,
+      Y. Chen, V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler, V. Konjkov,
+      T. Risthaus, M. Malagoli, A. Marenich, A. Otero-de-la-Roza, J. Mullin,
+        P. Nichols, R. Peverati, J. Pittner, Y. Zhao, P.-D. Fan, A. Fonari,
+       M. Williamson, R. J. Harrison, J. R. Rehr, M. Dupuis, D. Silverstein,
+    D. M. A. Smith, J. Nieplocha, V. Tipparaju, M. Krishnan, B. E. Van Kuiken,
+        A. Vazquez-Mayagoitia, L. Jensen, M. Swart, Q. Wu, T. Van Voorhis,
+     A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown, G. Cisneros, G. I. Fann,
+   H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall, J. A. Nichols, K. Tsemekhman,
+    K. Wolinski, J. Anchell, D. E. Bernholdt, P. Borowski, T. Clark, D. Clerc,
+   H. Dachsel, M. J. O. Deegan, K. Dyall, D. Elwood, E. Glendening, M. Gutowski,
+   A. C. Hess, J. Jaffe, B. G. Johnson, J. Ju, R. Kobayashi, R. Kutteh, Z. Lin,
+   R. Littlefield, X. Long, B. Meng, T. Nakajima, S. Niu, L. Pollack, M. Rosing,
+   K. Glaesemann, G. Sandrone, M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe,
+                               A. T. Wong, Z. Zhang.
+
+ Total times  cpu:        8.4s     wall:       11.4s

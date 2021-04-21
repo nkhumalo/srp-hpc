@@ -21,6 +21,7 @@ c-----------------------------------------------------------------------
 #include "wfn1_configuration.F"
 #include "wfn1_e_g.F"
 #include "wfn1_e_g_2el_corr.F"
+#include "wfn1_e_g_2el_corr2.F"
 !include "wfn1_e_g_2el_hf.F"
 #include "wfn1_e_g_2el_mx.F"
 !include "wfn1_e_g_2el_vx.F"

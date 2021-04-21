@@ -361,6 +361,12 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4a',MT_DBL,1,
      &                   wfn1_param%fac_ab4a))
      &  wfn1_param%fac_ab4a = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4b',MT_DBL,1,
+     &                   wfn1_param%fac_ab4b))
+     &  wfn1_param%fac_ab4b = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4c',MT_DBL,1,
+     &                   wfn1_param%fac_ab4c))
+     &  wfn1_param%fac_ab4c = 0.0d0
       if (wfn1_param%fac_a.lt.0.0d0) then
         call errquit(pname//" factor A less than 0", 0,INPUT_ERR)
       endif

@@ -27,6 +27,9 @@ C>
                                          ! differentiating sqrt-s.
          double precision :: fac_a       ! factor A
          double precision :: fac_ab2     ! factor for pos corr sqrt term
+         double precision :: fac_ab2a    ! factor for pos corr sqrt term
+         double precision :: fac_ab2b    ! factor for pos corr sqrt term
+         double precision :: fac_ab2c    ! factor for pos corr sqrt term
          double precision :: fac_ab4     ! factor for pos corr 4-rt term
          double precision :: fac_ab4a    ! factor for pos corr 4-rt switch
          double precision :: fac_ab4b    ! factor for pos corr 4-rt switch

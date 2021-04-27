@@ -229,6 +229,14 @@ c
         endif
         if (.not.ostop.and.(mod(ntries,20).eq.0)) then
           call wfn1_resquare_box(wfn1_param,wfn1_mcbox)
+!
+!         Check whether we have reached the convergence criteria
+!         already. If so, quit the calculation (no matter what).
+!
+          ostop = 2.0d0*wfn1_param%rlim*tfac.lt.wfn1_param%convergence
+          if (ostop) then
+            call wfn1_copy_wfn(wfn1_wave,wfn1_trial_wv)
+          endif
           wfn1_param%rlim = sfac*wfn1_param%rlim
           rlim = wfn1_param%rlim
         endif

@@ -355,6 +355,15 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab2',MT_DBL,1,
      &                   wfn1_param%fac_ab2))
      &  wfn1_param%fac_ab2 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab2a',MT_DBL,1,
+     &                   wfn1_param%fac_ab2a))
+     &  wfn1_param%fac_ab2a = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab2b',MT_DBL,1,
+     &                   wfn1_param%fac_ab2b))
+     &  wfn1_param%fac_ab2b = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab2c',MT_DBL,1,
+     &                   wfn1_param%fac_ab2c))
+     &  wfn1_param%fac_ab2c = 0.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4',MT_DBL,1,
      &                   wfn1_param%fac_ab4))
      &  wfn1_param%fac_ab4 = 1.0d0

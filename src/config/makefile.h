@@ -256,9 +256,10 @@ endif
 # see https://bugzilla.redhat.com/show_bug.cgi?id=1195883  (RedHat backtracked)
 # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=798913                                                                     
 # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=798804 (Debian did not backtrack)                                          
-      USE_ARUR = $(shell rm -f aru.tmp;ar -U > aru.tmp 2>&1; head -1 aru.tmp| awk ' /no\ operation/ {print "Y";exit};{print "N"}'; rm -f aru.tmp)
+#      USE_ARUR = $(shell rm -f aru.tmp;ar -U > aru.tmp 2>&1; head -1 aru.tmp| awk ' /no\ operation/ {print "Y";exit};{print "N"}'; rm -f aru.tmp)
+  USE_ARUR = $(shell rm -f aru.tmp;ar --help  > aru.tmp 2>&1; grep U aru.tmp| awk ' /ctual\ timest/ {print "Y";exit};'; rm -f aru.tmp)
   
-      ifeq ($(USE_ARUR),$(findstring $(USE_ARUR),Y 1))
+      ifeq ($(USE_ARUR), Y)
         ARFLAGS = rU
       endif
 
@@ -930,12 +931,15 @@ endif
         ifeq ($(GNU_GE_4_8),true)
           FDEBUG += -fno-aggressive-loop-optimizations
           FOPTIMIZE +=-fno-aggressive-loop-optimizations
+          FOPTIONS +=-fno-aggressive-loop-optimizations
           FFLAGS_FORGA += -fno-aggressive-loop-optimizations
           
           FOPTIONS += -Warray-bounds
         endif
         ifeq ($(GNU_GE_6),true)
          FOPTIMIZE += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
+         FOPTIONS += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
+         FDEBUG += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
         endif
         ifdef USE_OPENMP
            FOPTIONS  += -fopenmp
@@ -1094,11 +1098,14 @@ endif
         ifeq ($(GNU_GE_4_8),true)
           FDEBUG += -fno-aggressive-loop-optimizations
           FOPTIMIZE +=-fno-aggressive-loop-optimizations
+          FOPTIONS +=-fno-aggressive-loop-optimizations
           FFLAGS_FORGA += -fno-aggressive-loop-optimizations
           FOPTIONS += -Warray-bounds
         endif # GNU_GE_4_8
         ifeq ($(GNU_GE_6),true)
          FOPTIMIZE += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
+         FOPTIONS += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
+         FDEBUG += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
         endif
         endif # GNUMAJOR
 
@@ -1276,6 +1283,8 @@ endif
         endif
         ifeq ($(GNU_GE_6),true)
          FOPTIMIZE += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
+         FOPTIONS += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
+         FDEBUG += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
         endif
          endif
        endif
@@ -1821,12 +1830,12 @@ endif
            endif
            CPP=fpp -P 
 	   ifeq ($(_IFCV15ORNEWER), Y)
-             FOPTIONS += -qopt-report-file=stderr
 # fpp seems to get lost with ifort 15 in the offload bit
 # only use EXPLICITF for offload because otherwise we want debugging to be easy
 #            FOPTIONS +=  -Qoption,fpp,-P -Qoption,fpp,-c_com=no  -allow nofpp_comments 
              ifdef USE_OPTREPORT
-	  FOPTIONS += -qopt-report=3 -qopt-report-phase=vec,cg,loop,ipo
+             FOPTIONS += -qopt-report-file=stderr
+ 	  FOPTIONS += -qopt-report=3 -qopt-report-phase=vec,cg,loop,ipo
                ifeq ($(_IFCV17), Y)
                  FOPTIONS += -qopt-report-annotate-position=both
                endif
@@ -2078,6 +2087,8 @@ $(error )
         FOPTIMIZE  += -mfpmath=sse # 
         ifeq ($(GNU_GE_6),true)
          FOPTIMIZE += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
+         FOPTIONS += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
+         FDEBUG += -fno-tree-dominator-opts # solvation/hnd_cosmo_lib breaks
         endif
 
         ifndef USE_FPE
@@ -2085,7 +2096,10 @@ $(error )
         endif
         FOPTIMIZE  += -fprefetch-loop-arrays #-ftree-loop-linear
         ifeq ($(GNU_GE_4_8),true)
-          FOPTIMIZE  += -ftree-vectorize   -fopt-info-vec
+          FOPTIMIZE  += -ftree-vectorize   
+             ifdef USE_OPTREPORT
+                FOPTIMIZE  += -fopt-info-vec
+             endif
         endif
 
         FDEBUG += -g -O 
@@ -2646,7 +2660,15 @@ MKDIR = mkdir
 #
 # Define known suffixes mostly so that .p files don\'t cause pc to be invoked
 #
-
+V = 0
+ACTUAL_FC := $(FC)
+NWFC_0 = @echo "Compiling $<..."; $(ACTUAL_FC)
+NWFC_1 = $(ACTUAL_FC)
+NWFC = $(NWFC_$(V))
+ACTUAL_CC := $(CC)
+NWCC_0 = @echo "Compiling $<..."; $(ACTUAL_CC)
+NWCC_1 = $(ACTUAL_CC)
+NWCC = $(NWCC_$(V))
 .SUFFIXES:	
 .SUFFIXES:	.o .s .F .f .c .cpp
 
@@ -2664,7 +2686,7 @@ ifdef EXPLICITF
 .F.o:	
 	@echo Converting $*.F '->' $*.f
 	@$(FCONVERT)
-	$(FC) -c $(FFLAGS) $*.f
+	$(NWFC) -c $(FFLAGS) $*.f
 	@$(RM) $*.f
 
 .F.f:
@@ -2691,15 +2713,15 @@ else
 ifeq ($(XLFMAC),y)
 	$(FC)  -c $(FFLAGS) $(INCLUDES) -WF,"$(DEFINES)" $(shell echo $(LIB_DEFINES) | sed -e "s/-D/-WF,-D/g" | sed -e 's/\"/\\"/g')  $<
 else
-	$(FC)  -c $(FFLAGS) $(CPPFLAGS)  $<
+	$(NWFC)  -c $(FFLAGS) $(CPPFLAGS)  $<
 endif
 endif
 
 (%.o):	%.f
-	$(FC) -c $(FFLAGS) $<
+	$(NWFC) -c $(FFLAGS) $<
 
 (%.o):	%.c
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -o $% $<
+	$(NWCC) -c $(CPPFLAGS) $(CFLAGS) -o $% $<
 
 ifdef GPU_ARCH
   CUDA_ARCH =  -arch=$(GPU_ARCH) 

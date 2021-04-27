@@ -33,7 +33,7 @@ my_gitversion=`which git`
 cd "$path"
 if [ -f "${my_gitversion}" ] ; then
   # gitversion exists, but is the code under git?
-WCBRANCH=`${my_gitversion}  describe  --always --abbrev=40  | wc -l`
+WCBRANCH=`${my_gitversion}  describe  --always   | wc -l`
 if [ ${WCBRANCH} -ne 0 ]; then
     revision=`${my_gitversion}  describe  --always --abbrev=40`
     echo "      subroutine util_nwchem_version(nr)" > util_nwchem_version.F

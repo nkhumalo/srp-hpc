@@ -1,0 +1,10 @@
+# Essentially ignore everything, all the stuff is included by the ADD command in the Dockerfile
+.git
+#bin
+#contrib
+examples
+#lib
+#src
+#travis
+#QA
+web

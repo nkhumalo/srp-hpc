@@ -1,0 +1,35 @@
+d(di)=di*(1-di)
+d2(di,dj)=sqrt(d(di)*d(dj))
+d4(di,dj)=sqrt(d2(di,dj))
+d1(di)=4*d(di)
+dm(di)=1-d1(di)
+d0_1(di,dj)=dm(di)*dm(dj)
+d0_5(di,dj)=(dm(di)*d1(dj)+d1(di)*dm(dj))
+d5_5(di,dj)=d1(di)*d1(dj)
+dt(di,dj)=d0_1(di,dj)+d0_5(di,dj)+d5_5(di,dj)
+#
+# Model for the off-diagonal terms
+#
+df(a,b,c,di,dj)=a*d0_1(di,dj)*d4(di,dj)+b*d0_5(di,dj)*d2(di,dj)+c*d5_5(di,dj)*d4(di,dj)
+#
+# Model for the diagonal terms
+#
+dd(di,dj)=sqrt(di*dj)-di*dj
+
+set xrange [0:1]
+set yrange [0:1]
+set isosamples 20, 20
+#set terminal latex
+#set output "dij.tex"
+splot d0_1(x,y) with lines
+pause -1
+splot d0_5(x,y) with lines
+pause -1
+splot d5_5(x,y) with lines
+pause -1
+splot dt(x,y) with lines
+pause -1
+splot df(1,1,1,x,y) with lines, \
+      d4(x,y) with lines
+pause -1
+splot dd(x,y) with lines

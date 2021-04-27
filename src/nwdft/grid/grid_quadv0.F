@@ -159,6 +159,7 @@ c
       integer i
       double precision rho_int_fde
       integer fde_option
+      integer g_s
 
 #ifdef SOLARIS
 c     needed for -stackvar option
@@ -844,8 +845,8 @@ c end Qin
 
       endif  ! grid_written
 
-      if(.not.xc_rep_close(rtdb, nbf_ao,ipol,g_vxc,.false.)) 
-     &   call errquit(pname//'xcrepclose failed ',0, DISK_ERR)
+      if(.not.xc_rep_close(rtdb, nbf_ao,ipol,g_vxc,g_dens,.false.)) 
+     &     call errquit(pname//'xcrepclose failed ',0, DISK_ERR)
 
 c     
 C AJL/Begin/FDE

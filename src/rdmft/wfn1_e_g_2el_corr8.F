@@ -3,7 +3,7 @@ c
 !> \ingroup wfn1
 !> @{
 !>
-!> \file wfn1_e_g_2el_corr7.F
+!> \file wfn1_e_g_2el_corr8.F
 !> The correlation energy based on $\mathrm{H}_2$.
 !>
 !> @}
@@ -106,7 +106,7 @@ c
 !>    on the diagonal having a different shape than the attractive
 !>    off-diagonal term.
 !>
-      subroutine wfn1_e_g_2el_corr7(wfn1_param,wfn1_inst,wfn1_mat,
+      subroutine wfn1_e_g_2el_corr8(wfn1_param,wfn1_inst,wfn1_mat,
      &                              wfn1_wave,g_x_aa,g_x_bb,E_corr)
       implicit none
 c
@@ -792,7 +792,7 @@ c
       double precision, intent(in) :: occ2
 c
       fac = a*wfn1_fac_occ1(occ1,occ2)*wfn1_root14(occ1,occ2)
-     &    + b*wfn1_fac_occ2(occ1,occ2)*wfn1_root12(occ1,occ2)
+     &    + b*wfn1_fac_occ2(occ1,occ2)*wfn1_root14(occ1,occ2)
      &    + c*wfn1_fac_occ3(occ1,occ2)*wfn1_root12(occ1,occ2)
 c
       return

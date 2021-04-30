@@ -4,12 +4,12 @@
 # using Monte Carlo.
 #
 declare -a splitter
-export FAB2A=0.1908
-export FAB2B=0.2041
-export FAB2C=0.0021
-export FAB4A=0.7262
-export FAB4B=0.3874
-export FAB4C=0.4686
+export FAB2A=0.0235
+export FAB2B=0.1839
+export FAB2C=0.0470
+export FAB4A=0.4490
+export FAB4B=0.2977
+export FAB4C=0.6121
 export RAB2A=0.05
 export RAB2B=0.05
 export RAB2C=0.05
@@ -23,6 +23,7 @@ parallel -a ./job_list.txt --colsep '\s+' -j ${PBS_NP} "./run_wf.sh {1} {2}"
 export AREA=`./compute_area.py`
 echo "HVD: $FAB2A $FAB2B $FAB2C $FAB4A $FAB4B $FAB4C $AREA"
 echo "HVD: $count $FAB2A $FAB2B $FAB2C $FAB4A $FAB4B $FAB4C $AREA" >> results_table.dat
+echo "HVD: $count $FAB2A $FAB2B $FAB2C $FAB4A $FAB4B $FAB4C $AREA" >  results_count.dat
 while true;
 do
   export NEWVAR=`./random.x $FAB2A $FAB2B $FAB2C $FAB4A $FAB4B $FAB4C $RAB2A $RAB2B $RAB2C $RAB4A $RAB4B $RAB4C`
@@ -32,6 +33,7 @@ do
   export AREA_T=`./compute_area.py`
   check=`echo "${AREA_T} < ${AREA}" | bc -l`
   count=`echo "$count + 1" | bc -l`
+  echo "HVD: $count $NEWVAR $AREA_T" >> results_count.dat
   if [ $check -eq 1 ];
   then
     splitter=($NEWVAR)

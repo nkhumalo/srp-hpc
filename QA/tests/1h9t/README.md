@@ -15,6 +15,7 @@ sub-scripts:
   - `1h9t_min_restrain.sh`
   - `1h9t_eq_restrain.sh`
   - `1h9t_md_restrain.sh`
+
 In more detail the `run_restrain.sh` script does:
 1. Run the prepare step
    - Inputs `start_md_neutral.pdb`
@@ -48,4 +49,5 @@ In more detail the `run_restrain.sh` script does:
    - Inputs `1h9t_md.pdb`
    - Inputs `1h9t_md_restrain.crd`
    - Outputs `1h9t_md_restrain.tgz`
+
 The final tar-file contains everything you need to visualize the process using VMD.

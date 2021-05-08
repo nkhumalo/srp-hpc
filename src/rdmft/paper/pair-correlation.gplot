@@ -1,16 +1,29 @@
 d(di)=di*(1-di)
-d2(di,dj)=sqrt(d(di)*d(dj))
+d1(di,dj)=16*d(di)*d(dj)
+d2(di,dj)=sqrt(d1(di,dj))
 d4(di,dj)=sqrt(d2(di,dj))
-d1(di)=4*d(di)
-dm(di)=1-d1(di)
+d6(di,dj)=(d1(di,dj))**(1.0/6.0)
+dp(di)=4*d(di)
+dm(di)=1-dp(di)
 d0_1(di,dj)=dm(di)*dm(dj)
-d0_5(di,dj)=(dm(di)*d1(dj)+d1(di)*dm(dj))
-d5_5(di,dj)=d1(di)*d1(dj)
+d0_5(di,dj)=(dm(di)*dp(dj)+dp(di)*dm(dj))
+d5_5(di,dj)=dp(di)*dp(dj)
+d11(di,dj)=di*di*dj*dj
+d01(di,dj)=di*di*(1-dj)*(1-dj)+(1-di)*(1-di)*dj*dj
+d00(di,dj)=(1-di)*(1-di)*(1-dj)*(1-dj)
+d05(di,dj)=((1-di)*(1-di)*dp(dj)+dp(di)*(1-dj)*(1-dj))*0.5
+d51(di,dj)=(di*di*dp(dj)+dp(di)*dj*dj)*0.5
+d55(di,dj)=(dp(di)*dp(dj))*0.25
 dt(di,dj)=d0_1(di,dj)+d0_5(di,dj)+d5_5(di,dj)
 #
 # Model for the off-diagonal terms
 #
-df(a,b,c,di,dj)=a*d0_1(di,dj)*d4(di,dj)+b*d0_5(di,dj)*d2(di,dj)+c*d5_5(di,dj)*d4(di,dj)
+#df422(a,b,c,di,dj)=a*d0_1(di,dj)*d4(di,dj)+b*d0_5(di,dj)*d2(di,dj)+c*d5_5(di,dj)*d2(di,dj)
+#df414(a,b,c,di,dj)=a*d0_1(di,dj)*d4(di,dj)+b*d0_5(di,dj)*d1(di,dj)+c*d5_5(di,dj)*d4(di,dj)
+#df424(a,b,c,di,dj)=a*d0_1(di,dj)*d4(di,dj)+b*d0_5(di,dj)*d2(di,dj)+c*d5_5(di,dj)*d4(di,dj)
+#df444(a,b,c,di,dj)=a*d0_1(di,dj)*d4(di,dj)+b*d0_5(di,dj)*d4(di,dj)+c*d5_5(di,dj)*d4(di,dj)
+#df4442(a,b,c,di,dj)=(a*d0_1(di,dj)*d0_1(di,dj)+2*b*d0_1(di,dj)*d5_5(di,dj)+c*d5_5(di,dj)*d5_5(di,dj))*d4(di,dj)
+#df464(a,b,c,di,dj)=a*d0_1(di,dj)*d4(di,dj)+b*d0_5(di,dj)*d0_5(di,dj)*d6(di,dj)+c*d5_5(di,dj)*d4(di,dj)
 #
 # Model for the diagonal terms
 #
@@ -18,18 +31,39 @@ dd(di,dj)=sqrt(di*dj)-di*dj
 
 set xrange [0:1]
 set yrange [0:1]
+set zrange [0:1.25]
 set isosamples 20, 20
 #set terminal latex
 #set output "dij.tex"
-splot d0_1(x,y) with lines
+#splot d0_1(x,y) with lines
+#pause -1
+#splot d0_5(x,y) with lines
+#pause -1
+#splot d5_5(x,y) with lines
+#pause -1
+#splot dt(x,y) with lines
+#pause -1
+#splot df424(1.0,1.00,1.0,x,y) with lines, \
+#      df444(1.0,1.00,1.0,x,y) with lines, \
+#      df4442(1.0,2.00,1.0,x,y) with lines, \
+#      d4(x,y) with lines
+#splot df444(0.8269,0.3993,0.4967,x,y) with lines, \
+#      df422(0.0696,0.2423,0.0023,x,y) with lines, \
+#      d4(x,y) with lines
+#pause -1
+#splot dd(x,y) with lines
+#pause -1
+#splot d0_1(x,y)*d4(x,y) with lines, \
+#      d0_5(x,y)*d4(x,y) with lines, \
+#      d5_5(x,y)*d4(x,y) with lines
+splot d00(x,y) with lines, \
+      d01(x,y) with lines, \
+      d11(x,y) with lines, \
+      d05(x,y) with lines, \
+      d51(x,y) with lines, \
+      d55(x,y) with lines
 pause -1
-splot d0_5(x,y) with lines
+splot d00(x,y)+d01(x,y)+d11(x,y) with lines, \
+      d05(x,y)+d51(x,y)+d55(x,y) with lines
 pause -1
-splot d5_5(x,y) with lines
-pause -1
-splot dt(x,y) with lines
-pause -1
-splot df(1,1,1,x,y) with lines, \
-      d4(x,y) with lines
-pause -1
-splot dd(x,y) with lines
+splot d00(x,y)+d01(x,y)+d11(x,y)+d05(x,y)+d51(x,y)+d55(x,y) with lines

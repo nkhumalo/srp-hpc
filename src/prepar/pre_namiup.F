@@ -1414,7 +1414,8 @@ c
       do 23 i=1,natm
       if(cseq(1,latm(1,i))(1:3).eq.'DA '.or.
      +   cseq(1,latm(1,i))(1:3).eq.'DA3'.or.
-     +   cseq(1,latm(1,i))(1:3).eq.'DA5') then
+     +   cseq(1,latm(1,i))(1:3).eq.'DA5'.or.
+     +   cseq(1,latm(1,i))(1:3).eq.'DA_') then
       if(catm(2,i)(1:4).eq." O3'") then
       catm(2,i)(1:4)=' O3*'
       if(util_print('sequence',print_high)) then
@@ -1572,7 +1573,8 @@ c
       do 24 i=1,natm
       if(cseq(1,latm(1,i))(1:3).eq.'DT '.or.
      +   cseq(1,latm(1,i))(1:3).eq.'DT3'.or.
-     +   cseq(1,latm(1,i))(1:3).eq.'DT5') then
+     +   cseq(1,latm(1,i))(1:3).eq.'DT5'.or.
+     +   cseq(1,latm(1,i))(1:3).eq.'DT_') then
       if(catm(2,i)(1:4).eq." O3'") then
       catm(2,i)(1:4)=' O3*'
       if(util_print('sequence',print_high)) then
@@ -1740,7 +1742,8 @@ c
       do 25 i=1,natm
       if(cseq(1,latm(1,i))(1:3).eq.'DC '.or.
      +   cseq(1,latm(1,i))(1:3).eq.'DC3'.or.
-     +   cseq(1,latm(1,i))(1:3).eq.'DC5') then
+     +   cseq(1,latm(1,i))(1:3).eq.'DC5'.or.
+     +   cseq(1,latm(1,i))(1:3).eq.'DC_') then
       if(catm(2,i)(1:4).eq." O3'") then
       catm(2,i)(1:4)=' O3*'
       if(util_print('sequence',print_high)) then
@@ -1896,7 +1899,8 @@ c
       do 26 i=1,natm
       if(cseq(1,latm(1,i))(1:3).eq.'DG '.or.
      +   cseq(1,latm(1,i))(1:3).eq.'DG3'.or.
-     +   cseq(1,latm(1,i))(1:3).eq.'DG5') then
+     +   cseq(1,latm(1,i))(1:3).eq.'DG5'.or.
+     +   cseq(1,latm(1,i))(1:3).eq.'DG_') then
       if(catm(2,i)(1:4).eq." O3'") then
       catm(2,i)(1:4)=' O3*'
       if(util_print('sequence',print_high)) then

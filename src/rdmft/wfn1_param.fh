@@ -34,6 +34,30 @@ C>
          double precision :: fac_ab4a    ! factor for pos corr 4-rt switch
          double precision :: fac_ab4b    ! factor for pos corr 4-rt switch
          double precision :: fac_ab4c    ! factor for pos corr 4-rt switch
+         double precision :: fcd00       ! factor ab correlation diagonal 00
+         double precision :: fcd01       ! factor ab correlation diagonal 01
+         double precision :: fcd11       ! factor ab correlation diagonal 11
+         double precision :: fcd05       ! factor ab correlation diagonal 05
+         double precision :: fcd51       ! factor ab correlation diagonal 51
+         double precision :: fcd55       ! factor ab correlation diagonal 55
+         double precision :: fco00       ! factor ab correlation off-diagonal 00
+         double precision :: fco01       ! factor ab correlation off-diagonal 01
+         double precision :: fco11       ! factor ab correlation off-diagonal 11
+         double precision :: fco05       ! factor ab correlation off-diagonal 05
+         double precision :: fco51       ! factor ab correlation off-diagonal 51
+         double precision :: fco55       ! factor ab correlation off-diagonal 55
+         double precision :: rcd00       ! root ab correlation diagonal 00
+         double precision :: rcd01       ! root ab correlation diagonal 01
+         double precision :: rcd11       ! root ab correlation diagonal 11
+         double precision :: rcd05       ! root ab correlation diagonal 05
+         double precision :: rcd51       ! root ab correlation diagonal 51
+         double precision :: rcd55       ! root ab correlation diagonal 55
+         double precision :: rco00       ! root ab correlation off-diagonal 00
+         double precision :: rco01       ! root ab correlation off-diagonal 01
+         double precision :: rco11       ! root ab correlation off-diagonal 11
+         double precision :: rco05       ! root ab correlation off-diagonal 05
+         double precision :: rco51       ! root ab correlation off-diagonal 51
+         double precision :: rco55       ! root ab correlation off-diagonal 55
          double precision :: pfac        ! Monte-Carlo exponent
          double precision :: rlim        ! Monte-Carlo random # limit
          integer          :: maxiter     ! maximum number of iterations

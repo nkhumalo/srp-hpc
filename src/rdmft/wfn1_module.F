@@ -32,6 +32,7 @@ c-----------------------------------------------------------------------
 #include "wfn1_e_g_2el_corr9.F"
 #include "wfn1_e_g_2el_corr10.F"
 #include "wfn1_e_g_2el_corr11.F"
+#include "wfn1_e_g_2el_corr12.F"
 !include "wfn1_e_g_2el_hf.F"
 #include "wfn1_e_g_2el_mx.F"
 !include "wfn1_e_g_2el_vx.F"

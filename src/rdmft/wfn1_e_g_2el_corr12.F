@@ -3,7 +3,7 @@ c
 !> \ingroup wfn1
 !> @{
 !>
-!> \file wfn1_e_g_2el_corr11.F
+!> \file wfn1_e_g_2el_corr12.F
 !> The correlation energy based on $\mathrm{H}_2$.
 !>
 !> @}
@@ -106,8 +106,8 @@ c
 !>    on the diagonal having a different shape than the attractive
 !>    off-diagonal term.
 !>
-      subroutine wfn1_e_g_2el_corr11(wfn1_param,wfn1_inst,wfn1_mat,
-     &                              wfn1_wave,g_x_aa,g_x_bb,E_corr)
+      subroutine wfn1_e_g_2el_corr12(wfn1_param,wfn1_inst,wfn1_mat,
+     &                               wfn1_wave,g_x_aa,g_x_bb,E_corr)
       implicit none
 c
 !include "wfn1_param.fh"
@@ -537,53 +537,53 @@ c
                   do ii = 1, nmo
                     E_corr = E_corr
      &              + e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &              * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &              * wfn1_diag(wfn1_param,
      &                          occ_a(ii),occ_b(ii))
      &              + e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &              * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &              * wfn1_diag(wfn1_param,
      &                          occ_b(ii),occ_a(ii))
 cDEBUG
                     E_ii_cor = E_ii_cor
      &              + e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &              * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &              * wfn1_diag(wfn1_param,
      &                          occ_a(ii),occ_b(ii))
      &              + e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &              * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &              * wfn1_diag(wfn1_param,
      &                          occ_b(ii),occ_a(ii))
 cDEBUG
                     do jj = 1, ii-1
                       E_corr = E_corr
      &                + e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &                * wfn1_diag(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
      &                + e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &                * wfn1_diag(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                       E2_ij_cor = E2_ij_cor
      &                + e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &                * wfn1_diag(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
      &                + e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &                * wfn1_diag(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                     enddo ! jj
                     do jj = ii+1, nmo
                       E_corr = E_corr
      &                + e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &                * wfn1_diag(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
      &                + e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &                * wfn1_diag(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                       E2_ij_cor = E2_ij_cor
      &                + e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
-     &                * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &                * wfn1_diag(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
      &                + e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
-     &                * wfn1_diag(f_ab2a,f_ab2b,f_ab2c,
+     &                * wfn1_diag(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                     enddo ! jj
@@ -597,36 +597,36 @@ c
                     do jj = 1, ii-1
                       E_corr = E_corr
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * wfn1_ofdg(f_ab4a,f_ab4b,f_ab4c,
+     &                * wfn1_ofdg(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * wfn1_ofdg(f_ab4a,f_ab4b,f_ab4c,
+     &                * wfn1_ofdg(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                       E4_ij_cor = E4_ij_cor
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * wfn1_ofdg(f_ab4a,f_ab4b,f_ab4c,
+     &                * wfn1_ofdg(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * wfn1_ofdg(f_ab4a,f_ab4b,f_ab4c,
+     &                * wfn1_ofdg(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                     enddo ! jj
                     do jj = ii+1, nmo
                       E_corr = E_corr
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * wfn1_ofdg(f_ab4a,f_ab4b,f_ab4c,
+     &                * wfn1_ofdg(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * wfn1_ofdg(f_ab4a,f_ab4b,f_ab4c,
+     &                * wfn1_ofdg(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                       E4_ij_cor = E4_ij_cor
      &                - e4_abj_ab(ia,ib,jj)*N_ai_a(ia,ii)*N_bi_b(ib,ii)
-     &                * wfn1_ofdg(f_ab4a,f_ab4b,f_ab4c,
+     &                * wfn1_ofdg(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
      &                - e4_abj_ba(ia,ib,jj)*N_ai_b(ia,ii)*N_bi_a(ib,ii)
-     &                * wfn1_ofdg(f_ab4a,f_ab4b,f_ab4c,
+     &                * wfn1_ofdg(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
                     enddo ! jj
                   enddo ! ii
@@ -677,96 +677,137 @@ c
 c
 c-----------------------------------------------------------------------
 c
-!> \brief Scale factor for first 4th root term
+!> \brief Scale factor for low occ - low occ interactions
 !>
-!> This scale factor is 1 if occ1 is 0 or 1 and occ2 is 0 or 1. It is 0 
-!> when either occ1 or occ2 are 0.5
+!> This scale factor is high if both orbitals have occupations close
+!> to zero.
 !>
-      double precision function wfn1_fac_occ1(occ1,occ2) result(fac)
+      double precision function wfn1_fac_occ00(occ1,occ2) result(fac)
       implicit none
 !>    Occupation number 1
       double precision, intent(in) :: occ1
 !>    Occupation number 2
       double precision, intent(in) :: occ2
 c
-      fac = (1.0d0-4.0d0*(occ1*(1.0-occ1)))
-     &    * (1.0d0-4.0d0*(occ2*(1.0-occ2)))
+      fac = (1.0d0-occ1)*(1.0-occ1)
+     &    * (1.0d0-occ2)*(1.0-occ2)
 c
       return
       end
 c
 c-----------------------------------------------------------------------
 c
-!> \brief Scale factor for second 4th root term
+!> \brief Scale factor for high occ - high occ interactions
 !>
-!> This scale is factor 1 if occ1 is 1/2 and occ2 is 0 or 1, or
-!> if occ1 is 0 or 1 and occ2 is 1/2. 
+!> This scale is high is both orbitals have occupations close to one.
 !>
-      double precision function wfn1_fac_occ2(occ1,occ2) result(fac)
+      double precision function wfn1_fac_occ11(occ1,occ2) result(fac)
       implicit none
 !>    Occupation number 1
       double precision, intent(in) :: occ1
 !>    Occupation number 2
       double precision, intent(in) :: occ2
 c
-      fac = (      4.0d0*(occ1*(1.0-occ1)))
-     &    * (1.0d0-4.0d0*(occ2*(1.0-occ2)))
-     &    + (1.0d0-4.0d0*(occ1*(1.0-occ1)))
-     &    * (      4.0d0*(occ2*(1.0-occ2)))
+      fac = (occ1*occ1*occ2*occ2)
 c
       return
       end
 c
 c-----------------------------------------------------------------------
 c
-!> \brief Scale factor for third 4th root term
+!> \brief Scale factor for low occ - high occ interactions
 !>
-!> This scale is factor 1 if occ1 is 1/2 and occ2 is 1/2. It is 0
-!> if occ1 is 0 or 1, or if occ2 is 0 or 1.
+!> This scale factor is high if one of the orbitals has an occupation 
+!> number close to zero and the other an occupation number close to one.
 !>
-      double precision function wfn1_fac_occ3(occ1,occ2) result(fac)
+      double precision function wfn1_fac_occ01(occ1,occ2) result(fac)
       implicit none
 !>    Occupation number 1
       double precision, intent(in) :: occ1
 !>    Occupation number 2
       double precision, intent(in) :: occ2
 c
-      fac = (      4.0d0*(occ1*(1.0-occ1)))
-     &    * (      4.0d0*(occ2*(1.0-occ2)))
+      fac = (occ1*occ1*(1.0d0-occ2)*(1.0d0-occ2))
+     &    + ((1.0d0-occ1)*(1.0d0-occ1)*occ2*occ2)
 c
       return
       end
 c
 c-----------------------------------------------------------------------
 c
-!> \brief 2nd root factor
+!> \brief Scale factor for low occ - half occ interactions
 !>
-      double precision function wfn1_root12(occ1,occ2) result(fac)
+!> This scale factor is high if one of the orbitals has and occupation 
+!> number close to zero and the other an occupation number close to 
+!> half.
+!>
+      double precision function wfn1_fac_occ05(occ1,occ2) result(fac)
       implicit none
 !>    Occupation number 1
       double precision, intent(in) :: occ1
 !>    Occupation number 2
       double precision, intent(in) :: occ2
 c
-      fac = sqrt((4.0d0*(occ1*max(0.0d0,1.0-occ1)))
-     &    *      (4.0d0*(occ2*max(0.0d0,1.0-occ2))))
+      fac = 2.0d0*(1.0d0-occ1)*(1.0d0-occ1)*occ2*(1.0d0-occ2)
+     &    + 2.0d0*occ1*(1.0d0-occ1)*(1.0d0-occ2)*(1.0d0-occ2)
 c
       return
       end
 c
 c-----------------------------------------------------------------------
 c
-!> \brief 4th root factor
+!> \brief Scale factor for half occ - high occ interactions
 !>
-      double precision function wfn1_root14(occ1,occ2) result(fac)
+!> This scale factor is high if one of the orbitals has and occupation 
+!> number close to one and the other an occupation number close to 
+!> half.
+!>
+      double precision function wfn1_fac_occ51(occ1,occ2) result(fac)
       implicit none
 !>    Occupation number 1
       double precision, intent(in) :: occ1
 !>    Occupation number 2
       double precision, intent(in) :: occ2
 c
-      fac = sqrt(sqrt((4.0d0*(occ1*max(0.0d0,1.0-occ1)))
-     &    *           (4.0d0*(occ2*max(0.0d0,1.0-occ2)))))
+      fac = 2.0d0*occ1*occ1*occ2*(1.0d0-occ2)
+     &    + 2.0d0*occ1*(1.0d0-occ1)*occ2*occ2
+c
+      return
+      end
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Scale factor for half occ - half occ interactions
+!>
+!> This scale factor is high if both orbitals are half occupied.
+!>
+      double precision function wfn1_fac_occ55(occ1,occ2) result(fac)
+      implicit none
+!>    Occupation number 1
+      double precision, intent(in) :: occ1
+!>    Occupation number 2
+      double precision, intent(in) :: occ2
+c
+      fac = 4.0d0*occ1*(1.0d0-occ1)*occ2*(1.0d0-occ2)
+c
+      return
+      end
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Root factor
+!>
+      double precision function wfn1_root(rt,occ1,occ2) result(fac)
+      implicit none
+!>    Root 
+      double precision, intent(in) :: rt
+!>    Occupation number 1
+      double precision, intent(in) :: occ1
+!>    Occupation number 2
+      double precision, intent(in) :: occ2
+c
+      fac = ((4.0d0*(occ1*max(0.0d0,1.0d0-occ1)))
+     &    *  (4.0d0*(occ2*max(0.0d0,1.0d0-occ2))))**rt
 c
       return
       end
@@ -778,22 +819,38 @@ c
 !> The old diagonal terms led to weird dissociation limit results.
 !> Making the shape similar to the off-diagonal terms might help.
 !>
-      double precision function wfn1_diag(a,b,c,occ1,occ2) result(fac)
+      double precision function wfn1_diag(wfn1_param,occ1,occ2)
+     &                 result(fac)
       implicit none
-!>    Factor a
-      double precision, intent(in) :: a
-!>    Factor b
-      double precision, intent(in) :: b
-!>    Factor c
-      double precision, intent(in) :: c
+!>    Calculation parameters
+      type(wfn1_prm),   intent(in) :: wfn1_param
 !>    Occupation number 1
       double precision, intent(in) :: occ1
 !>    Occupation number 2
       double precision, intent(in) :: occ2
-c
-      fac = a*wfn1_fac_occ1(occ1,occ2)*wfn1_root14(occ1,occ2)
-     &    + b*wfn1_fac_occ2(occ1,occ2)*wfn1_root12(occ1,occ2)
-     &    + c*wfn1_fac_occ3(occ1,occ2)*wfn1_root12(occ1,occ2)
+!>
+      double precision :: f00, f01, f11, f05, f51, f55
+      double precision :: r00, r01, r11, r05, r51, r55
+!>
+      f00 = wfn1_param%fcd00
+      f01 = wfn1_param%fcd01
+      f11 = wfn1_param%fcd11
+      f05 = wfn1_param%fcd05
+      f51 = wfn1_param%fcd51
+      f55 = wfn1_param%fcd55
+      r00 = wfn1_param%rcd00
+      r01 = wfn1_param%rcd01
+      r11 = wfn1_param%rcd11
+      r05 = wfn1_param%rcd05
+      r51 = wfn1_param%rcd51
+      r55 = wfn1_param%rcd55
+!>
+      fac = f00*wfn1_fac_occ00(occ1,occ2)*wfn1_root(r00,occ1,occ2)
+     &    + f01*wfn1_fac_occ01(occ1,occ2)*wfn1_root(r01,occ1,occ2)
+     &    + f11*wfn1_fac_occ11(occ1,occ2)*wfn1_root(r11,occ1,occ2)
+     &    + f05*wfn1_fac_occ05(occ1,occ2)*wfn1_root(r05,occ1,occ2)
+     &    + f51*wfn1_fac_occ51(occ1,occ2)*wfn1_root(r51,occ1,occ2)
+     &    + f55*wfn1_fac_occ55(occ1,occ2)*wfn1_root(r55,occ1,occ2)
 c
       return
       end
@@ -802,23 +859,39 @@ c-----------------------------------------------------------------------
 c
 !> \brief off-diagonal factor
 !>
-      double precision function wfn1_ofdg(a,b,c,occ1,occ2) result(fac)
+!>
+      double precision function wfn1_ofdg(wfn1_param,occ1,occ2)
+     &                 result(fac)
       implicit none
-!>    Factor a
-      double precision, intent(in) :: a
-!>    Factor b
-      double precision, intent(in) :: b
-!>    Factor c
-      double precision, intent(in) :: c
+!>    Calculation parameters
+      type(wfn1_prm),   intent(in) :: wfn1_param
 !>    Occupation number 1
       double precision, intent(in) :: occ1
 !>    Occupation number 2
       double precision, intent(in) :: occ2
-c
-      fac = (a*wfn1_fac_occ1(occ1,occ2)
-     &    +  b*wfn1_fac_occ2(occ1,occ2)
-     &    +  c*wfn1_fac_occ3(occ1,occ2))
-     &    *  wfn1_root14(occ1,occ2)
+!>
+      double precision :: f00, f01, f11, f05, f51, f55
+      double precision :: r00, r01, r11, r05, r51, r55
+!>
+      f00 = wfn1_param%fco00
+      f01 = wfn1_param%fco01
+      f11 = wfn1_param%fco11
+      f05 = wfn1_param%fco05
+      f51 = wfn1_param%fco51
+      f55 = wfn1_param%fco55
+      r00 = wfn1_param%rco00
+      r01 = wfn1_param%rco01
+      r11 = wfn1_param%rco11
+      r05 = wfn1_param%rco05
+      r51 = wfn1_param%rco51
+      r55 = wfn1_param%rco55
+!>
+      fac = f00*wfn1_fac_occ00(occ1,occ2)*wfn1_root(r00,occ1,occ2)
+     &    + f01*wfn1_fac_occ01(occ1,occ2)*wfn1_root(r01,occ1,occ2)
+     &    + f11*wfn1_fac_occ11(occ1,occ2)*wfn1_root(r11,occ1,occ2)
+     &    + f05*wfn1_fac_occ05(occ1,occ2)*wfn1_root(r05,occ1,occ2)
+     &    + f51*wfn1_fac_occ51(occ1,occ2)*wfn1_root(r51,occ1,occ2)
+     &    + f55*wfn1_fac_occ55(occ1,occ2)*wfn1_root(r55,occ1,occ2)
 c
       return
       end

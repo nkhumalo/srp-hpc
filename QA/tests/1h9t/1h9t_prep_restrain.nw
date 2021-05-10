@@ -7,7 +7,7 @@ prepare
   system 1h9t-restrain_md
   new_rst
   new_top new_seq
-  source start_md_neutral.pdb
+  source start_md_neutral_nw.pdb
   #solvent name HOH model spce
   #solvate 
   vacuo

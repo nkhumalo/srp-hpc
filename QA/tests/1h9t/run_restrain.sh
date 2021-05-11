@@ -38,7 +38,7 @@ echo "$n"
 echo "Done Equilibration"
 #
 mpirun -np 2 ../../../bin/LINUX64/nwchem 1h9t_eq_restrain_ana.nw 2>&1 > 1h9t_eq_restrain_ana.out
-tar -zcf 1h9t_eq_restrain.tgz 1h9t_md.pdb 1h9t_eq_restrain.crd
+tar -zcf 1h9t_eq_restrain.tgz 1h9t_md.pdb 1h9t_eq_restrain.crd 1h9t-restrain_md.rst 1h9t-restrain.top
 #
 echo "Done Equilibration Analysis"
 #

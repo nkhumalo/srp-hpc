@@ -38,7 +38,7 @@ if [ -f results_mc_sto_3g.dat ]
 then
   rm results_mc_sto_3g.dat
 fi
-#
+#echo "$@" > called_nwchem_orbitals.txt
 splitter=($1)
 export FCD00=${splitter[0]}
 export FCD01=${splitter[1]}

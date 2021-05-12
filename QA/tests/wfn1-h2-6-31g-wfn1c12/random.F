@@ -5,7 +5,7 @@
 !>
       program random
       implicit none
-      integer :: nargs, nnum, ii
+      integer :: nargs, ii
       character(len=32), allocatable :: argc(:)
       real(kind=8),      allocatable :: rrange(:)
       real(kind=8),      allocatable :: rrand(:)
@@ -16,11 +16,11 @@
       do ii = 1, nargs
         call get_command_argument(ii,argc(ii))
       enddo
-      do ii = 1, nnum
+      do ii = 1, nargs
         read(argc(ii),*)rrange(ii)
       enddo
       call random_number(rrand)
-      do ii = 1, nnum
+      do ii = 1, nargs
         rrand(ii) = (2.0d0*rrand(ii)-1.0d0)*rrange(ii)
       enddo
       write(*,*)rrand

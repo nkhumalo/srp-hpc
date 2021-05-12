@@ -61,11 +61,11 @@ factor_old=1.0
 shrink=0.5
 count=0
 misses=0
+export NEWRNG=`./scale.x 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0  1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 $shrink`
+splitter=($NEWRNG)
+export shrink1=${splitter[0]}
 #
 ./nwchem-orbitals.sh "$FCD00 $FCD01 $FCD11 $FCD05 $FCD51 $FCD55 $RCD00 $RCD01 $RCD11 $RCD05 $RCD51 $RCD55  $FCO00 $FCO01 $FCO11 $FCO05 $FCO51 $FCO55 $RCO00 $RCO01 $RCO11 $RCO05 $RCO51 $RCO55"
-#DEBUG
-exit
-#DEBUG
 parallel -a ./job_list.txt --colsep '\s+' -j ${PBS_NP} "./run_wf.sh {1} {2}"
 ./gather_results.sh
 export AREA=`./compute_area.py`
@@ -85,6 +85,7 @@ do
   echo "HVD p: $count $NEWVAR $AREA_T" >> results_count.dat
   if [ $check -eq 1 ];
   then
+    misses=0
     splitter=($NEWVAR)
     export AREA=$AREA_T
     export FCD00=${splitter[0]}
@@ -123,6 +124,7 @@ do
     echo "HVD m: $count $NEWVAR $AREA_T" >> results_count.dat
     if [ $check -eq 1 ];
     then
+      misses=0
       splitter=($NEWVAR)
       export AREA=$AREA_T
       export FCD00=${splitter[0]}
@@ -186,9 +188,9 @@ do
     export DRCO51=${splitter[22]}
     export DRCO55=${splitter[23]}
     export factor_old=$factor_new
-    export factor_new=`echo "$factor_new * $shrink" | bc -l`
+    export factor_new=`echo "$factor_new * $shrink1" | bc -l`
   fi
-  check_factor=`echo "$factor_old < 0.0000001" | bc -l`
+  check_factor=`echo "$factor_old < 0.00001" | bc -l`
   if [ $check_factor -eq 1 ];
   then
     exit

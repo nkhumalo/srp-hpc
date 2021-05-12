@@ -5,7 +5,7 @@
 !>
       program add
       implicit none
-      integer :: nargs, nnum, ii
+      integer :: nargs, ii
       character(len=32), allocatable :: argc(:)
       real(kind=8),      allocatable :: rinp(:)
       real(kind=8),      allocatable :: rout(:)
@@ -17,14 +17,14 @@
       do ii = 1, nargs
         call get_command_argument(ii,argc(ii))
       enddo
-      do ii = 1, nnum
+      do ii = 1, nargs
         read(argc(ii),*)rinp(ii)
       enddo
-      fscale=rinp(nnum)**(1.0d0/dble(nnum-1))
-      do ii = 1, nnum-1
+      fscale=rinp(nargs)**(1.0d0/dble(nargs-1))
+      do ii = 1, nargs-1
         rout(ii) = rinp(ii)*fscale
       enddo
-      write(*,*)rout(1:nnum-1)
+      write(*,*)rout(1:nargs-1)
       deallocate(argc)
       deallocate(rinp)
       deallocate(rout)

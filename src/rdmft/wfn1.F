@@ -388,6 +388,24 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco55',MT_DBL,1,
      &                   wfn1_param%fco55))
      &  wfn1_param%fco55 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx00',MT_DBL,1,
+     &                   wfn1_param%fx00))
+     &  wfn1_param%fx00 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx01',MT_DBL,1,
+     &                   wfn1_param%fx01))
+     &  wfn1_param%fx01 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx11',MT_DBL,1,
+     &                   wfn1_param%fx11))
+     &  wfn1_param%fx11 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx05',MT_DBL,1,
+     &                   wfn1_param%fx05))
+     &  wfn1_param%fx05 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx51',MT_DBL,1,
+     &                   wfn1_param%fx51))
+     &  wfn1_param%fx51 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx55',MT_DBL,1,
+     &                   wfn1_param%fx55))
+     &  wfn1_param%fx55 = 0.0d0
 c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd00',MT_DBL,1,
      &                   wfn1_param%rcd00))
@@ -425,6 +443,24 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco55',MT_DBL,1,
      &                   wfn1_param%rco55))
      &  wfn1_param%rco55 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx00',MT_DBL,1,
+     &                   wfn1_param%rx00))
+     &  wfn1_param%rx00 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx01',MT_DBL,1,
+     &                   wfn1_param%rx01))
+     &  wfn1_param%rx01 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx11',MT_DBL,1,
+     &                   wfn1_param%rx11))
+     &  wfn1_param%rx11 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx05',MT_DBL,1,
+     &                   wfn1_param%rx05))
+     &  wfn1_param%rx05 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx51',MT_DBL,1,
+     &                   wfn1_param%rx51))
+     &  wfn1_param%rx51 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx55',MT_DBL,1,
+     &                   wfn1_param%rx55))
+     &  wfn1_param%rx55 = 1.0d0
 c
 c     others
 c

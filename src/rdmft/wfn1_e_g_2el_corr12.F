@@ -814,6 +814,22 @@ c
 c
 c-----------------------------------------------------------------------
 c
+!> \brief Exchange root factor
+!>
+      double precision function wfn1_exch_root(rt,occ12) result(fac)
+      implicit none
+!>    Root 
+      double precision, intent(in) :: rt
+!>    2-electron occupation number for orbital pair 1,2
+      double precision, intent(in) :: occ12
+c
+      fac = (4.0d0*(occ12*max(0.0d0,1.0d0-occ12)))**rt
+c
+      return
+      end
+c
+c-----------------------------------------------------------------------
+c
 !> \brief diagonal factor
 !>
 !> The old diagonal terms led to weird dissociation limit results.
@@ -892,6 +908,49 @@ c
      &    + f05*wfn1_fac_occ05(occ1,occ2)*wfn1_root(r05,occ1,occ2)
      &    + f51*wfn1_fac_occ51(occ1,occ2)*wfn1_root(r51,occ1,occ2)
      &    + f55*wfn1_fac_occ55(occ1,occ2)*wfn1_root(r55,occ1,occ2)
+c
+      return
+      end
+c
+c-----------------------------------------------------------------------
+c
+!> \brief exchange off-diagonal factor
+!>
+!>
+      double precision function wfn1_exch(wfn1_param,occ1,occ2,occ12)
+     &                 result(fac)
+      implicit none
+!>    Calculation parameters
+      type(wfn1_prm),   intent(in) :: wfn1_param
+!>    1-electron occupation number for orbital 1
+      double precision, intent(in) :: occ1
+!>    1-electron occupation number for orbital 2
+      double precision, intent(in) :: occ2
+!>    2-electron occupation number for orbital pair 1,2
+      double precision, intent(in) :: occ12
+!>
+      double precision :: f00, f01, f11, f05, f51, f55
+      double precision :: r00, r01, r11, r05, r51, r55
+!>
+      f00 = wfn1_param%fx00
+      f01 = wfn1_param%fx01
+      f11 = wfn1_param%fx11
+      f05 = wfn1_param%fx05
+      f51 = wfn1_param%fx51
+      f55 = wfn1_param%fx55
+      r00 = wfn1_param%rx00
+      r01 = wfn1_param%rx01
+      r11 = wfn1_param%rx11
+      r05 = wfn1_param%rx05
+      r51 = wfn1_param%rx51
+      r55 = wfn1_param%rx55
+!>
+      fac = f00*wfn1_fac_occ00(occ1,occ2)*wfn1_exch_root(r00,occ12)
+     &    + f01*wfn1_fac_occ01(occ1,occ2)*wfn1_exch_root(r01,occ12)
+     &    + f11*wfn1_fac_occ11(occ1,occ2)*wfn1_exch_root(r11,occ12)
+     &    + f05*wfn1_fac_occ05(occ1,occ2)*wfn1_exch_root(r05,occ12)
+     &    + f51*wfn1_fac_occ51(occ1,occ2)*wfn1_exch_root(r51,occ12)
+     &    + f55*wfn1_fac_occ55(occ1,occ2)*wfn1_exch_root(r55,occ12)
 c
       return
       end

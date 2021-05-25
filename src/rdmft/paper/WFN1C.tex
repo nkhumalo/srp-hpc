@@ -1387,6 +1387,7 @@ with the Hartree-Fock state and hence $C_{14}$ and $C_{32}$ are zero.
 Because the wave function must be normalized we have
 \begin{eqnarray}
   1 &=& C_{12}^2 + C_{34}^2
+  \dlabel{eq:fci:3h2:normalization}
 \end{eqnarray}
 Like in the previous section the 2-electron repulsion matrix can be given as
 \begin{eqnarray}
@@ -1441,13 +1442,46 @@ The corresponding 2-electron density matrix becomes
 \begin{eqnarray}
   \Gamma &=&
   \begin{pmatrix}
-  \left.c_{11}^\sigma\right.^2 \left.c_{22}^\sigma\right.^2 + \left.c_{12}^\sigma\right.^2\left.c_{21}^\sigma\right.^2
-  -c_{11}^\sigma c_{12}^\sigma c_{22}^\sigma c_{21}^\sigma - c_{12}^\sigma c_{11}^\sigma c_{21}^\sigma c_{22}^\sigma
-   & 0 & 0 & 0 \\
-  0 & p_{1}^\alpha p_{2}^\beta & 0 & 0 \\
-  0 & 0 & p_{2}^\alpha p_{1}^\beta & 0 \\
-  0 & 0 & 0 & p_{2}^\alpha p_{2}^\beta
-  \end{pmatrix}
+  \begin{matrix}
+   \left.c_{11}^\sigma\right.^2\left.c_{22}^\sigma\right.^2 
+  +\left.c_{12}^\sigma\right.^2\left.c_{21}^\sigma\right.^2 \\
+  -2c_{11}^\sigma c_{12}^\sigma c_{22}^\sigma c_{21}^\sigma
+  \end{matrix}
+    & 0 & 0 & 0 \\
+  0 &
+  \begin{matrix}
+   \left.c_{11}^\sigma\right.^2\left.c_{42}^\sigma\right.^2 
+  +\left.c_{12}^\sigma\right.^2\left.c_{41}^\sigma\right.^2 \\
+  -2c_{11}^\sigma c_{42}^\sigma c_{12}^\sigma c_{41}^\sigma
+  \end{matrix}
+    & 0 & 0 \\
+  0 & 0 &
+  \begin{matrix}
+   \left.c_{31}^\sigma\right.^2\left.c_{22}^\sigma\right.^2 
+  +\left.c_{32}^\sigma\right.^2\left.c_{21}^\sigma\right.^2 \\
+  -2c_{31}^\sigma c_{22}^\sigma c_{32}^\sigma c_{21}^\sigma
+  \end{matrix}
+    & 0 \\
+  0 & 0 & 0 & 
+  \begin{matrix}
+   \left.c_{31}^\sigma\right.^2\left.c_{42}^\sigma\right.^2 
+  +\left.c_{32}^\sigma\right.^2\left.c_{41}^\sigma\right.^2 \\
+  -2c_{31}^\sigma c_{42}^\sigma c_{32}^\sigma c_{41}^\sigma
+  \end{matrix}
+  \end{pmatrix} \\
+  &=&
+  \begin{pmatrix}
+  ( c_{11}^\sigma c_{22}^\sigma - c_{12}^\sigma c_{21}^\sigma)^2
+    & 0 & 0 & 0 \\
+  0 &
+  ( c_{11}^\sigma c_{42}^\sigma - c_{12}^\sigma c_{41}^\sigma)^2
+    & 0 & 0 \\
+  0 & 0 &
+  ( c_{31}^\sigma c_{22}^\sigma - c_{32}^\sigma c_{21}^\sigma)^2
+    & 0 \\
+  0 & 0 & 0 & 
+  ( c_{31}^\sigma c_{42}^\sigma - c_{32}^\sigma c_{41}^\sigma)^2
+  \end{pmatrix} \dlabel{eq:wfn1:3h2}
 \end{eqnarray}
 Comparing the 2-electron interaction as
 \begin{eqnarray}
@@ -1460,8 +1494,59 @@ Then we have
                  \erib{3}{4}{1}{2}C_{34}C_{12}^* +
                  \erib{3}{4}{3}{4}C_{34}^2 \\
   E_{WFN1}
-  &=& 
+  &=& \erib{1}{2}{1}{2}
+      (c_{11}^\sigma c_{22}^\sigma - c_{12}^\sigma c_{21}^\sigma)^2 +
+      \erib{1}{4}{1}{4}
+      (c_{11}^\sigma c_{42}^\sigma - c_{12}^\sigma c_{41}^\sigma)^2 + \\
+  &&  \erib{3}{2}{3}{2}
+      (c_{31}^\sigma c_{22}^\sigma - c_{32}^\sigma c_{21}^\sigma)^2 +
+      \erib{3}{4}{3}{4}
+      (c_{31}^\sigma c_{42}^\sigma - c_{32}^\sigma c_{41}^\sigma)^2
 \end{eqnarray}
+From the equations above it is clear that the CI coefficients are
+proportional to square root of the 2-electron density matrix occupation
+numbers, i.e.
+\begin{eqnarray}
+   C_{12}^2 &=& (c_{11}^\sigma c_{22}^\sigma - c_{12}^\sigma c_{21}^\sigma)^2 \\
+   C_{34}^2 &=& (c_{31}^\sigma c_{42}^\sigma - c_{32}^\sigma c_{41}^\sigma)^2
+\end{eqnarray}
+or equivalently
+\begin{eqnarray}
+   C_{12} &=& \pm(c_{11}^\sigma c_{22}^\sigma - c_{12}^\sigma c_{21}^\sigma) \\
+          &=& \pm \sqrt{\rho^{\sigma\sigma}_{12}} \\
+   C_{34} &=& \pm(c_{31}^\sigma c_{42}^\sigma - c_{32}^\sigma c_{41}^\sigma) \\
+          &=& \pm \sqrt{\rho^{\sigma\sigma}_{34}} 
+\end{eqnarray}
+Choosing the signs of $C_{12}$ and $C_{34}$ such that their product is 
+negative the correlation energy becomes
+\begin{eqnarray}
+   T &=& -\erib{1}{2}{3}{4}\sqrt{\rho_{12}\rho_{34}}
+         -\erib{3}{4}{1}{2}\sqrt{\rho_{12}\rho_{34}}
+         -\erib{1}{4}{1}{4}\rho_{14}
+         -\erib{3}{2}{3}{2}\rho_{32}
+\end{eqnarray}
+Because of Eq.\ref{eq:fci:3h2:normalization} we also have that
+\begin{eqnarray}
+   \rho_{12} &=& 1-\rho_{34} \\
+   \rho_{34} &=& 1-\rho_{12}
+\end{eqnarray}
+This can be exploited to ensure that the CI part of the correlation energy
+goes to zero if either an orbital pair is empty or fully occupied as in
+\begin{eqnarray}
+   T &=& -\erib{1}{2}{3}{4}\sqrt[4]{\rho_{12}^2\rho_{34}^2}
+         -\erib{3}{4}{1}{2}\sqrt[4]{\rho_{12}^2\rho_{34}^2}
+         -\erib{1}{4}{1}{4}\rho_{14}
+         -\erib{3}{2}{3}{2}\rho_{32} \\
+     &=& -\erib{1}{2}{3}{4}\sqrt[4]{\rho_{12}(1-\rho_{34})\rho_{34}(1-\rho_{12})}
+         -\erib{3}{4}{1}{2}\sqrt[4]{\rho_{12}(1-\rho_{34})\rho_{34}(1-\rho_{12})} \\
+     &&  -\erib{1}{4}{1}{4}\rho_{14}
+         -\erib{3}{2}{3}{2}\rho_{32} \\
+     &=& -\erib{1}{2}{3}{4}\sqrt[4]{\rho_{12}(1-\rho_{12})\rho_{34}(1-\rho_{34})}
+         -\erib{3}{4}{1}{2}\sqrt[4]{\rho_{12}(1-\rho_{12})\rho_{34}(1-\rho_{34})} \\
+     &&  -\erib{1}{4}{1}{4}\rho_{14}
+         -\erib{3}{2}{3}{2}\rho_{32}
+\end{eqnarray}
+
 
 \subsection{Electron correlation by comparing the Full-CI and WFN1 energy expressions for \ce{H4}}
 

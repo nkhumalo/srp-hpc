@@ -1,0 +1,6 @@
+plot "results_mc_6_31g.dat"  using 1:2 with lines, \
+     "results_wf_6_31g.dat"  using 1:2 with lines, \
+     "results_hf_6_31g.dat"  using 1:2 with lines, \
+     "results_mc_sto_3g.dat" using 1:2 with lines, \
+     "results_wf_sto_3g.dat" using 1:2 with lines, \
+     "results_hf_sto_3g.dat" using 1:2 with lines

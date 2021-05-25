@@ -35,11 +35,11 @@ if [ -f "${my_gitversion}" ] ; then
   # gitversion exists, but is the code under git?
 WCBRANCH=`${my_gitversion}  describe  --always   | wc -l`
 if [ ${WCBRANCH} -ne 0 ]; then
-    revision=`${my_gitversion}  describe  --always`
-    echo "      subroutine util_nwchem_version(nwrev)" > util_nwchem_version.F
+    revision=`${my_gitversion}  describe  --always --abbrev=40`
+    echo "      subroutine util_nwchem_version(nr)" > util_nwchem_version.F
     echo "      implicit none" >> util_nwchem_version.F
-    echo "      character*(*) nwrev" >> util_nwchem_version.F
-    echo "      nwrev=\"${revision}\"" >> util_nwchem_version.F
+    echo "      character*(*) nr" >> util_nwchem_version.F
+    echo "      nr=\"${revision}\"" >> util_nwchem_version.F
     echo "      end" >> util_nwchem_version.F
   else
     if [ ! -f util_nwchem_version.F ] ; then

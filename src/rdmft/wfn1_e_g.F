@@ -149,7 +149,7 @@ c
      &                      g_momo,g_momo2,
 !    &                      g_momo3,g_momo4,
      &                      wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
-      else if (wfn1_param%corr_expr == "wfn1c") then
+      else if (wfn1_param%corr_expr == "wfn1c1") then
         call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
 !    &                       wfn1_part_drv,v_dpa,v_dpb,
      &                       g_momo,g_momo2,
@@ -160,6 +160,118 @@ c
      &                         g_momo,g_momo2,
 !    &                         g_momo3,g_momo4,
      &                         wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c2") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                       wfn1_part_drv,v_dpa,v_dpb,
+     &                       g_momo,g_momo2,
+!    &                       g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr2(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                          wfn1_part_drv,v_dpa,v_dpb,
+     &                          g_momo,g_momo2,
+!    &                          g_momo3,g_momo4,
+     &                          wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c3") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                       wfn1_part_drv,v_dpa,v_dpb,
+     &                       g_momo,g_momo2,
+!    &                       g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr3(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                          wfn1_part_drv,v_dpa,v_dpb,
+     &                          g_momo,g_momo2,
+!    &                          g_momo3,g_momo4,
+     &                          wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c4") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                       wfn1_part_drv,v_dpa,v_dpb,
+     &                       g_momo,g_momo2,
+!    &                       g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr4(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                          wfn1_part_drv,v_dpa,v_dpb,
+     &                          g_momo,g_momo2,
+!    &                          g_momo3,g_momo4,
+     &                          wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c5") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                       wfn1_part_drv,v_dpa,v_dpb,
+     &                       g_momo,g_momo2,
+!    &                       g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr5(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                          wfn1_part_drv,v_dpa,v_dpb,
+     &                          g_momo,g_momo2,
+!    &                          g_momo3,g_momo4,
+     &                          wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c6") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                       wfn1_part_drv,v_dpa,v_dpb,
+     &                       g_momo,g_momo2,
+!    &                       g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr6(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                          wfn1_part_drv,v_dpa,v_dpb,
+     &                          g_momo,g_momo2,
+!    &                          g_momo3,g_momo4,
+     &                          wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c7") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                       wfn1_part_drv,v_dpa,v_dpb,
+     &                       g_momo,g_momo2,
+!    &                       g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr7(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                          wfn1_part_drv,v_dpa,v_dpb,
+     &                          g_momo,g_momo2,
+!    &                          g_momo3,g_momo4,
+     &                          wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c8") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                       wfn1_part_drv,v_dpa,v_dpb,
+     &                       g_momo,g_momo2,
+!    &                       g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr8(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                          wfn1_part_drv,v_dpa,v_dpb,
+     &                          g_momo,g_momo2,
+!    &                          g_momo3,g_momo4,
+     &                          wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c9") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                       wfn1_part_drv,v_dpa,v_dpb,
+     &                       g_momo,g_momo2,
+!    &                       g_momo3,g_momo4,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr9(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+!    &                          wfn1_part_drv,v_dpa,v_dpb,
+     &                          g_momo,g_momo2,
+!    &                          g_momo3,g_momo4,
+     &                          wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c10") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       g_momo,g_momo2,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr10(wfn1_param,wfn1_inst,wfn1_mat,
+     &                           wfn1_wave,
+     &                           g_momo,g_momo2,
+     &                           wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c11") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       g_momo,g_momo2,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr11(wfn1_param,wfn1_inst,wfn1_mat,
+     &                           wfn1_wave,
+     &                           g_momo,g_momo2,
+     &                           wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c12") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       g_momo,g_momo2,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr12(wfn1_param,wfn1_inst,wfn1_mat,
+     &                           wfn1_wave,
+     &                           g_momo,g_momo2,
+     &                           wfn1_energy%E_corr)
       else if (wfn1_param%corr_expr == "wfn1w") then
         call wfn1_e_g_2el_wfn(wfn1_param,wfn1_mat,wfn1_wave,
      &                        g_bfbf,g_4t1,g_4t2,

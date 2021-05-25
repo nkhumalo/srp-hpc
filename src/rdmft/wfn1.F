@@ -349,18 +349,148 @@ c
      &                   wfn1_param%corr_expr)) then
          wfn1_param%corr_expr="wfn1_mx"
       endif
+c
+c     corr12
+c
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd00',MT_DBL,1,
+     &                   wfn1_param%fcd00))
+     &  wfn1_param%fcd00 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd01',MT_DBL,1,
+     &                   wfn1_param%fcd01))
+     &  wfn1_param%fcd01 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd11',MT_DBL,1,
+     &                   wfn1_param%fcd11))
+     &  wfn1_param%fcd11 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd05',MT_DBL,1,
+     &                   wfn1_param%fcd05))
+     &  wfn1_param%fcd05 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd51',MT_DBL,1,
+     &                   wfn1_param%fcd51))
+     &  wfn1_param%fcd51 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd55',MT_DBL,1,
+     &                   wfn1_param%fcd55))
+     &  wfn1_param%fcd55 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco00',MT_DBL,1,
+     &                   wfn1_param%fco00))
+     &  wfn1_param%fco00 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco01',MT_DBL,1,
+     &                   wfn1_param%fco01))
+     &  wfn1_param%fco01 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco11',MT_DBL,1,
+     &                   wfn1_param%fco11))
+     &  wfn1_param%fco11 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco05',MT_DBL,1,
+     &                   wfn1_param%fco05))
+     &  wfn1_param%fco05 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco51',MT_DBL,1,
+     &                   wfn1_param%fco51))
+     &  wfn1_param%fco51 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco55',MT_DBL,1,
+     &                   wfn1_param%fco55))
+     &  wfn1_param%fco55 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx00',MT_DBL,1,
+     &                   wfn1_param%fx00))
+     &  wfn1_param%fx00 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx01',MT_DBL,1,
+     &                   wfn1_param%fx01))
+     &  wfn1_param%fx01 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx11',MT_DBL,1,
+     &                   wfn1_param%fx11))
+     &  wfn1_param%fx11 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx05',MT_DBL,1,
+     &                   wfn1_param%fx05))
+     &  wfn1_param%fx05 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx51',MT_DBL,1,
+     &                   wfn1_param%fx51))
+     &  wfn1_param%fx51 = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx55',MT_DBL,1,
+     &                   wfn1_param%fx55))
+     &  wfn1_param%fx55 = 0.0d0
+c
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd00',MT_DBL,1,
+     &                   wfn1_param%rcd00))
+     &  wfn1_param%rcd00 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd01',MT_DBL,1,
+     &                   wfn1_param%rcd01))
+     &  wfn1_param%rcd01 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd11',MT_DBL,1,
+     &                   wfn1_param%rcd11))
+     &  wfn1_param%rcd11 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd05',MT_DBL,1,
+     &                   wfn1_param%rcd05))
+     &  wfn1_param%rcd05 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd51',MT_DBL,1,
+     &                   wfn1_param%rcd51))
+     &  wfn1_param%rcd51 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd55',MT_DBL,1,
+     &                   wfn1_param%rcd55))
+     &  wfn1_param%rcd55 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco00',MT_DBL,1,
+     &                   wfn1_param%rco00))
+     &  wfn1_param%rco00 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco01',MT_DBL,1,
+     &                   wfn1_param%rco01))
+     &  wfn1_param%rco01 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco11',MT_DBL,1,
+     &                   wfn1_param%rco11))
+     &  wfn1_param%rco11 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco05',MT_DBL,1,
+     &                   wfn1_param%rco05))
+     &  wfn1_param%rco05 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco51',MT_DBL,1,
+     &                   wfn1_param%rco51))
+     &  wfn1_param%rco51 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco55',MT_DBL,1,
+     &                   wfn1_param%rco55))
+     &  wfn1_param%rco55 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx00',MT_DBL,1,
+     &                   wfn1_param%rx00))
+     &  wfn1_param%rx00 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx01',MT_DBL,1,
+     &                   wfn1_param%rx01))
+     &  wfn1_param%rx01 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx11',MT_DBL,1,
+     &                   wfn1_param%rx11))
+     &  wfn1_param%rx11 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx05',MT_DBL,1,
+     &                   wfn1_param%rx05))
+     &  wfn1_param%rx05 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx51',MT_DBL,1,
+     &                   wfn1_param%rx51))
+     &  wfn1_param%rx51 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx55',MT_DBL,1,
+     &                   wfn1_param%rx55))
+     &  wfn1_param%rx55 = 1.0d0
+c
+c     others
+c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_a',MT_DBL,1,
      &                   wfn1_param%fac_a))
      &  wfn1_param%fac_a = 0.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab2',MT_DBL,1,
      &                   wfn1_param%fac_ab2))
      &  wfn1_param%fac_ab2 = 1.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab2a',MT_DBL,1,
+     &                   wfn1_param%fac_ab2a))
+     &  wfn1_param%fac_ab2a = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab2b',MT_DBL,1,
+     &                   wfn1_param%fac_ab2b))
+     &  wfn1_param%fac_ab2b = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab2c',MT_DBL,1,
+     &                   wfn1_param%fac_ab2c))
+     &  wfn1_param%fac_ab2c = 0.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4',MT_DBL,1,
      &                   wfn1_param%fac_ab4))
      &  wfn1_param%fac_ab4 = 1.0d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4a',MT_DBL,1,
      &                   wfn1_param%fac_ab4a))
      &  wfn1_param%fac_ab4a = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4b',MT_DBL,1,
+     &                   wfn1_param%fac_ab4b))
+     &  wfn1_param%fac_ab4b = 0.0d0
+      if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fac_ab4c',MT_DBL,1,
+     &                   wfn1_param%fac_ab4c))
+     &  wfn1_param%fac_ab4c = 0.0d0
       if (wfn1_param%fac_a.lt.0.0d0) then
         call errquit(pname//" factor A less than 0", 0,INPUT_ERR)
       endif

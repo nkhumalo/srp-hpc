@@ -62,6 +62,8 @@ export shrink=0.5
 count=0
 misses=0
 misses_many=0
+export REJECT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+export ACCEPT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
 export NEWRNG=`./scale.x 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0  1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 $shrink`
 splitter=($NEWRNG)
 export shrink1=${splitter[0]}
@@ -114,6 +116,35 @@ do
     export RCO05=${splitter[21]}
     export RCO51=${splitter[22]}
     export RCO55=${splitter[23]}
+    export ACCEPT=`max.x $ACCEPT $NEWSTEP`
+    export NEWRNG=`./reshape.x $DFCD00 $DFCD01 $DFCD11 $DFCD05 $DFCD51 $DFCD55 $DRCD00 $DRCD01 $DRCD11 $DRCD05 $DRCD51 $DRCD55 $DFCO00 $DFCO01 $DFCO11 $DFCO05 $DFCO51 $DFCO55 $DRCO00 $DRCO01 $DRCO11 $DRCO05 $DRCO51 $DRCO55 $REJECT $ACCEPT`
+    export REJECT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+    export ACCEPT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+    splitter=($NEWRNG)
+    export DFCD00=${splitter[0]}
+    export DFCD01=${splitter[1]}
+    export DFCD11=${splitter[2]}
+    export DFCD05=${splitter[3]}
+    export DFCD51=${splitter[4]}
+    export DFCD55=${splitter[5]}
+    export DRCD00=${splitter[6]}
+    export DRCD01=${splitter[7]}
+    export DRCD11=${splitter[8]}
+    export DRCD05=${splitter[9]}
+    export DRCD51=${splitter[10]}
+    export DRCD55=${splitter[11]}
+    export DFCO00=${splitter[12]}
+    export DFCO01=${splitter[13]}
+    export DFCO11=${splitter[14]}
+    export DFCO05=${splitter[15]}
+    export DFCO51=${splitter[16]}
+    export DFCO55=${splitter[17]}
+    export DRCO00=${splitter[18]}
+    export DRCO01=${splitter[19]}
+    export DRCO11=${splitter[20]}
+    export DRCO05=${splitter[21]}
+    export DRCO51=${splitter[22]}
+    export DRCO55=${splitter[23]}
     echo "HVD: $count  $NEWVAR  $AREA"
     echo "HVD: $count  $factor_old   $NEWVAR  $AREA" >> results_table.dat
   else
@@ -154,11 +185,41 @@ do
       export RCO05=${splitter[21]}
       export RCO51=${splitter[22]}
       export RCO55=${splitter[23]}
-      echo "HVD: $count  $factor_old  $NEWVAR  $AREA"
+      export ACCEPT=`max.x $ACCEPT $NEWSTEP`
+      export NEWRNG=`./reshape.x $DFCD00 $DFCD01 $DFCD11 $DFCD05 $DFCD51 $DFCD55 $DRCD00 $DRCD01 $DRCD11 $DRCD05 $DRCD51 $DRCD55 $DFCO00 $DFCO01 $DFCO11 $DFCO05 $DFCO51 $DFCO55 $DRCO00 $DRCO01 $DRCO11 $DRCO05 $DRCO51 $DRCO55 $REJECT $ACCEPT`
+      export REJECT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+      export ACCEPT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+      splitter=($NEWRNG)
+      export DFCD00=${splitter[0]}
+      export DFCD01=${splitter[1]}
+      export DFCD11=${splitter[2]}
+      export DFCD05=${splitter[3]}
+      export DFCD51=${splitter[4]}
+      export DFCD55=${splitter[5]}
+      export DRCD00=${splitter[6]}
+      export DRCD01=${splitter[7]}
+      export DRCD11=${splitter[8]}
+      export DRCD05=${splitter[9]}
+      export DRCD51=${splitter[10]}
+      export DRCD55=${splitter[11]}
+      export DFCO00=${splitter[12]}
+      export DFCO01=${splitter[13]}
+      export DFCO11=${splitter[14]}
+      export DFCO05=${splitter[15]}
+      export DFCO51=${splitter[16]}
+      export DFCO55=${splitter[17]}
+      export DRCO00=${splitter[18]}
+      export DRCO01=${splitter[19]}
+      export DRCO11=${splitter[20]}
+      export DRCO05=${splitter[21]}
+      export DRCO51=${splitter[22]}
+      export DRCO55=${splitter[23]}
+      echo "HVD: $count  $factor_old   $NEWVAR  $AREA"
       echo "HVD: $count  $factor_old   $NEWVAR  $AREA" >> results_table.dat
     else
       misses=`echo "$misses + 1" | bc -l`
       misses_many=`echo "$misses_many + 1" | bc -l`
+      export REJECT=`max.x $REJECT $NEWSTEP`
     fi
   fi
   check_misses=`echo "$misses >= 20" | bc -l`
@@ -169,10 +230,10 @@ do
     # Still many misses even after shrinking the box previously so shrink the box harder in future
     #
     misses_many=0
-    export shrink=`echo "0.5 * $shrink" | bc -l`
+    #export shrink=`echo "0.5 * $shrink" | bc -l`
     export NEWRNG=`./scale.x 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0  1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 $shrink`
     splitter=($NEWRNG)
-    export shrink1=${splitter[0]}
+    #export shrink1=${splitter[0]}
   fi
   if [ $check_misses -eq 1 ];
   then
@@ -207,7 +268,7 @@ do
     export DRCO51=${splitter[22]}
     export DRCO55=${splitter[23]}
     export factor_old=$factor_new
-    export factor_new=`echo "$factor_new * $shrink1" | bc -l`
+    export factor_new=`echo "$factor_new * $shrink" | bc -l`
   fi
   check_factor=`echo "$factor_old < 0.00001" | bc -l`
   if [ $check_factor -eq 1 ];

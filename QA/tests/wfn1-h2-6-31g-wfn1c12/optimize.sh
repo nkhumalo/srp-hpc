@@ -61,12 +61,8 @@ export factor_old=1.0
 export shrink=0.5
 count=0
 misses=0
-misses_many=0
 export REJECT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
 export ACCEPT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
-export NEWRNG=`./scale.x 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0  1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 $shrink`
-splitter=($NEWRNG)
-export shrink1=${splitter[0]}
 #
 ./nwchem-orbitals.sh "$FCD00 $FCD01 $FCD11 $FCD05 $FCD51 $FCD55 $RCD00 $RCD01 $RCD11 $RCD05 $RCD51 $RCD55  $FCO00 $FCO01 $FCO11 $FCO05 $FCO51 $FCO55 $RCO00 $RCO01 $RCO11 $RCO05 $RCO51 $RCO55"
 parallel -a ./job_list.txt --colsep '\s+' -j ${PBS_NP} "./run_wf.sh {1} {2}"
@@ -89,7 +85,6 @@ do
   if [ $check -eq 1 ];
   then
     misses=0
-    misses_many=0
     splitter=($NEWVAR)
     export AREA=$AREA_T
     export FCD00=${splitter[0]}
@@ -116,7 +111,7 @@ do
     export RCO05=${splitter[21]}
     export RCO51=${splitter[22]}
     export RCO55=${splitter[23]}
-    export ACCEPT=`max.x $ACCEPT $NEWSTEP`
+    export ACCEPT=`./max.x $ACCEPT $NEWSTEP`
     export NEWRNG=`./reshape.x $DFCD00 $DFCD01 $DFCD11 $DFCD05 $DFCD51 $DFCD55 $DRCD00 $DRCD01 $DRCD11 $DRCD05 $DRCD51 $DRCD55 $DFCO00 $DFCO01 $DFCO11 $DFCO05 $DFCO51 $DFCO55 $DRCO00 $DRCO01 $DRCO11 $DRCO05 $DRCO51 $DRCO55 $REJECT $ACCEPT`
     export REJECT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
     export ACCEPT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
@@ -158,7 +153,6 @@ do
     if [ $check -eq 1 ];
     then
       misses=0
-      misses_many=0
       splitter=($NEWVAR)
       export AREA=$AREA_T
       export FCD00=${splitter[0]}
@@ -185,7 +179,7 @@ do
       export RCO05=${splitter[21]}
       export RCO51=${splitter[22]}
       export RCO55=${splitter[23]}
-      export ACCEPT=`max.x $ACCEPT $NEWSTEP`
+      export ACCEPT=`./max.x $ACCEPT $NEWSTEP`
       export NEWRNG=`./reshape.x $DFCD00 $DFCD01 $DFCD11 $DFCD05 $DFCD51 $DFCD55 $DRCD00 $DRCD01 $DRCD11 $DRCD05 $DRCD51 $DRCD55 $DFCO00 $DFCO01 $DFCO11 $DFCO05 $DFCO51 $DFCO55 $DRCO00 $DRCO01 $DRCO11 $DRCO05 $DRCO51 $DRCO55 $REJECT $ACCEPT`
       export REJECT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
       export ACCEPT="0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
@@ -218,23 +212,10 @@ do
       echo "HVD: $count  $factor_old   $NEWVAR  $AREA" >> results_table.dat
     else
       misses=`echo "$misses + 1" | bc -l`
-      misses_many=`echo "$misses_many + 1" | bc -l`
-      export REJECT=`max.x $REJECT $NEWSTEP`
+      export REJECT=`./max.x $REJECT $NEWSTEP`
     fi
   fi
   check_misses=`echo "$misses >= 20" | bc -l`
-  check_misses_many=`echo "$misses_many >= 37" | bc -l`
-  if [ $check_misses_many -eq 1 ];
-  then
-    #
-    # Still many misses even after shrinking the box previously so shrink the box harder in future
-    #
-    misses_many=0
-    #export shrink=`echo "0.5 * $shrink" | bc -l`
-    export NEWRNG=`./scale.x 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0  1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 $shrink`
-    splitter=($NEWRNG)
-    #export shrink1=${splitter[0]}
-  fi
   if [ $check_misses -eq 1 ];
   then
     #

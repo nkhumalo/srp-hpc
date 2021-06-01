@@ -10,6 +10,10 @@
       real(kind=8),      allocatable :: rrange(:)
       real(kind=8),      allocatable :: rrand(:)
       nargs = command_argument_count()
+      if (nargs.ne.24) then
+        write(*,*)"random.x nargs = ",nargs
+        stop
+      endif
       allocate(argc(0:nargs))
       allocate(rrange(1:nargs))
       allocate(rrand(1:nargs))

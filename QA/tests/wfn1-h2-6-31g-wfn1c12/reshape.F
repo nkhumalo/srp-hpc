@@ -4,7 +4,7 @@
 !> accept dimensions, at constant volume adapt the box dimensions
 !> towards the accept dimensions, output the new dimensions.
 !>
-      program add
+      program reshape_box
       implicit none
       integer :: nargs, nnum, ii
       character(len=32), allocatable :: argc(:)
@@ -12,9 +12,13 @@
       real(kind=8),      allocatable :: rjct(:)
       real(kind=8),      allocatable :: acpt(:)
       real(kind=8),      allocatable :: rout(:)
-      real(kind=8) :: volume, scale
+      real(kind=8) :: volume, rescale
       nargs = command_argument_count()
       nnum  = nargs/3
+      if (nargs.ne.24*3) then
+        write(*,*)'reshape.x nargs = ',nargs
+        stop
+      endif
       allocate(argc(0:nargs))
       allocate(rbox(1:nnum))
       allocate(rjct(1:nnum))
@@ -33,19 +37,19 @@
         volume = volume*rbox(ii)
       enddo
       do ii = 1, nnum
-        if (rjct(ii).gt.acpt(ii)) then
+        if (rjct(ii).gt.acpt(ii).and.acpt(ii).gt.0.0d0) then
           rout(ii) = rbox(ii)*sqrt(acpt(ii)/rjct(ii))
         else
           rout(ii) = rbox(ii)
         endif
       enddo
-      scale = volume
+      rescale = volume
       do ii = 1, nnum
-        scale = scale/rout(ii)
+        rescale = rescale/rout(ii)
       enddo
-      scale = scale**(1.0d0/dble(nnum))
+      rescale = rescale**(1.0d0/dble(nnum))
       do ii = 1, nnum
-        rout(ii) = rout(ii)*scale
+        rout(ii) = rout(ii)*rescale
       enddo
       write(*,*)rout
       deallocate(argc)

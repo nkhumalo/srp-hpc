@@ -1,0 +1,26 @@
+echo
+start dehydrogenation_dat
+
+geometry noautoz units angstrom
+#  load "2-propanol.xyz"
+  load "2-propanol-oh-h.xyz"
+end
+
+basis
+  * library 6-31g*
+end
+
+qmd
+  nstep_nucl 1000
+  targ_temp  298.15
+  thermostat svr
+  rand_seed  12345671
+  com_step   10000
+  print_xyz  1
+end
+
+scf
+  maxiter 200
+end
+
+task scf qmd

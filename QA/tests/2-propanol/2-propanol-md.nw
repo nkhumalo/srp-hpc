@@ -1,0 +1,26 @@
+echo
+start 2propanol_dat
+
+geometry noautoz units angstrom
+  symmetry c1
+  load "2-propanol.xyz"
+end
+
+basis
+  * library 6-31g*
+end
+
+qmd
+  nstep_nucl 10000
+  targ_temp  298.15
+  thermostat svr
+  rand_seed  12345671
+  com_step   10000
+  print_xyz  1
+end
+
+scf
+  maxiter 200
+end
+
+task scf qmd

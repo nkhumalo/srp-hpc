@@ -1,0 +1,21 @@
+echo
+start 2propanol_hess_dat
+
+geometry noautoz units angstrom
+  symmetry c1
+  load "2-propanol.xyz"
+end
+
+basis
+  * library 6-31g*
+end
+
+scf
+  maxiter 200
+end
+
+freq
+  animate
+end
+
+task scf freq

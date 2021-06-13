@@ -8,12 +8,155 @@ dm(di)=1-dp(di)
 d0_1(di,dj)=dm(di)*dm(dj)
 d0_5(di,dj)=(dm(di)*dp(dj)+dp(di)*dm(dj))
 d5_5(di,dj)=dp(di)*dp(dj)
-d11(di,dj)=di*di*dj*dj
-d01(di,dj)=di*di*(1-dj)*(1-dj)+(1-di)*(1-di)*dj*dj
+#
+# 6-terms adding up to 1
+#
 d00(di,dj)=(1-di)*(1-di)*(1-dj)*(1-dj)
+d01(di,dj)=di*di*(1-dj)*(1-dj)+(1-di)*(1-di)*dj*dj
+d11(di,dj)=di*di*dj*dj
 d05(di,dj)=((1-di)*(1-di)*dp(dj)+dp(di)*(1-dj)*(1-dj))*0.5
 d51(di,dj)=(di*di*dp(dj)+dp(di)*dj*dj)*0.5
 d55(di,dj)=(dp(di)*dp(dj))*0.25
+#
+# 36-terms generated from squaring 6-terms
+#
+d00_00(di,dj)=d00(di,dj)*d00(di,dj)
+d00_01(di,dj)=d00(di,dj)*d01(di,dj)
+d00_11(di,dj)=d00(di,dj)*d11(di,dj)
+d00_05(di,dj)=d00(di,dj)*d05(di,dj)
+d00_51(di,dj)=d00(di,dj)*d51(di,dj)
+d00_55(di,dj)=d00(di,dj)*d55(di,dj)
+d01_00(di,dj)=d01(di,dj)*d00(di,dj)
+d01_01(di,dj)=d01(di,dj)*d01(di,dj)
+d01_11(di,dj)=d01(di,dj)*d11(di,dj)
+d01_05(di,dj)=d01(di,dj)*d05(di,dj)
+d01_51(di,dj)=d01(di,dj)*d51(di,dj)
+d01_55(di,dj)=d01(di,dj)*d55(di,dj)
+d11_00(di,dj)=d11(di,dj)*d00(di,dj)
+d11_01(di,dj)=d11(di,dj)*d01(di,dj)
+d11_11(di,dj)=d11(di,dj)*d11(di,dj)
+d11_05(di,dj)=d11(di,dj)*d05(di,dj)
+d11_51(di,dj)=d11(di,dj)*d51(di,dj)
+d11_55(di,dj)=d11(di,dj)*d55(di,dj)
+d05_00(di,dj)=d05(di,dj)*d00(di,dj)
+d05_01(di,dj)=d05(di,dj)*d01(di,dj)
+d05_11(di,dj)=d05(di,dj)*d11(di,dj)
+d05_05(di,dj)=d05(di,dj)*d05(di,dj)
+d05_51(di,dj)=d05(di,dj)*d51(di,dj)
+d05_55(di,dj)=d05(di,dj)*d55(di,dj)
+d51_00(di,dj)=d51(di,dj)*d00(di,dj)
+d51_01(di,dj)=d51(di,dj)*d01(di,dj)
+d51_11(di,dj)=d51(di,dj)*d11(di,dj)
+d51_05(di,dj)=d51(di,dj)*d05(di,dj)
+d51_51(di,dj)=d51(di,dj)*d51(di,dj)
+d51_55(di,dj)=d51(di,dj)*d55(di,dj)
+d55_00(di,dj)=d55(di,dj)*d00(di,dj)
+d55_01(di,dj)=d55(di,dj)*d01(di,dj)
+d55_11(di,dj)=d55(di,dj)*d11(di,dj)
+d55_05(di,dj)=d55(di,dj)*d05(di,dj)
+d55_51(di,dj)=d55(di,dj)*d51(di,dj)
+d55_55(di,dj)=d55(di,dj)*d55(di,dj)
+#
+# Some of the 36 terms are the same, the 21 unique ones are:
+#
+e00_00(x,y)=d00_00(x,y)
+e00_01(x,y)=d00_01(x,y)+d01_00(x,y)
+e00_11(x,y)=d00_11(x,y)+d11_00(x,y)
+e00_05(x,y)=d00_05(x,y)+d05_00(x,y)
+e00_51(x,y)=d00_51(x,y)+d51_00(x,y)
+e00_55(x,y)=d00_55(x,y)+d55_00(x,y)
+e01_01(x,y)=d01_01(x,y)
+e01_11(x,y)=d01_11(x,y)+d11_01(x,y)
+e01_05(x,y)=d01_05(x,y)+d05_01(x,y)
+e01_51(x,y)=d01_51(x,y)+d51_01(x,y)
+e01_55(x,y)=d01_55(x,y)+d55_01(x,y)
+e11_11(x,y)=d11_11(x,y)
+e11_05(x,y)=d11_05(x,y)+d05_11(x,y)
+e11_51(x,y)=d11_51(x,y)+d51_11(x,y)
+e11_55(x,y)=d11_55(x,y)+d55_11(x,y)
+e05_05(x,y)=d05_05(x,y)
+e05_51(x,y)=d51_05(x,y)+d05_51(x,y)
+e05_55(x,y)=d05_55(x,y)+d55_05(x,y)
+e51_51(x,y)=d51_51(x,y)
+e51_55(x,y)=d51_55(x,y)+d55_51(x,y)
+e55_55(x,y)=d55_55(x,y)
+#
+set xrange [0:1]
+set yrange [0:1]
+#set zrange [0:1.25]
+splot e00_00(x,y) with lines
+pause -1
+splot e01_01(x,y) with lines
+pause -1
+splot e11_11(x,y) with lines
+pause -1
+splot e05_05(x,y) with lines
+pause -1
+splot e51_51(x,y) with lines
+pause -1
+splot e55_55(x,y) with lines
+pause -1
+splot e00_01(x,y) with lines, \
+      d00_01(x,y) with lines, \
+      d01_00(x,y) with lines
+pause -1
+splot e00_11(x,y) with lines, \
+      d00_11(x,y) with lines, \
+      d11_00(x,y) with lines
+pause -1
+splot e00_05(x,y) with lines, \
+      d00_05(x,y) with lines, \
+      d05_00(x,y) with lines
+pause -1
+splot e00_51(x,y) with lines, \
+      d00_51(x,y) with lines, \
+      d51_00(x,y) with lines
+pause -1
+splot e00_55(x,y) with lines, \
+      d00_55(x,y) with lines, \
+      d55_00(x,y) with lines
+pause -1
+splot e01_11(x,y) with lines, \
+      d01_11(x,y) with lines, \
+      d11_01(x,y) with lines
+pause -1
+splot e01_05(x,y) with lines, \
+      d01_05(x,y) with lines, \
+      d05_01(x,y) with lines
+pause -1
+splot e01_51(x,y) with lines, \
+      d01_51(x,y) with lines, \
+      d51_01(x,y) with lines
+pause -1
+splot e01_55(x,y) with lines, \
+      d01_55(x,y) with lines, \
+      d55_01(x,y) with lines
+pause -1
+splot e11_05(x,y) with lines, \
+      d11_05(x,y) with lines, \
+      d05_11(x,y) with lines
+pause -1
+splot e11_51(x,y) with lines, \
+      d11_51(x,y) with lines, \
+      d51_11(x,y) with lines
+pause -1
+splot e11_55(x,y) with lines, \
+      d11_55(x,y) with lines, \
+      d55_11(x,y) with lines
+pause -1
+splot e05_51(x,y) with lines, \
+      d05_51(x,y) with lines, \
+      d51_05(x,y) with lines
+pause -1
+splot e05_55(x,y) with lines, \
+      d05_55(x,y) with lines, \
+      d55_05(x,y) with lines
+pause -1
+splot e51_55(x,y) with lines, \
+      d51_55(x,y) with lines, \
+      d55_51(x,y) with lines
+pause -1
+#
 dt(di,dj)=d0_1(di,dj)+d0_5(di,dj)+d5_5(di,dj)
 #
 # Model for the off-diagonal terms
@@ -63,7 +206,90 @@ splot d00(x,y) with lines, \
       d51(x,y) with lines, \
       d55(x,y) with lines
 pause -1
+splot d00_00(x,y) with lines, \
+      d00_01(x,y) with lines, \
+      d00_11(x,y) with lines, \
+      d00_05(x,y) with lines, \
+      d00_51(x,y) with lines, \
+      d00_55(x,y) with lines, \
+      d01_00(x,y) with lines, \
+      d01_01(x,y) with lines, \
+      d01_11(x,y) with lines, \
+      d01_05(x,y) with lines, \
+      d01_51(x,y) with lines, \
+      d01_55(x,y) with lines, \
+      d11_00(x,y) with lines, \
+      d11_01(x,y) with lines, \
+      d11_11(x,y) with lines, \
+      d11_05(x,y) with lines, \
+      d11_51(x,y) with lines, \
+      d11_55(x,y) with lines, \
+      d05_00(x,y) with lines, \
+      d05_01(x,y) with lines, \
+      d05_11(x,y) with lines, \
+      d05_05(x,y) with lines, \
+      d05_51(x,y) with lines, \
+      d05_55(x,y) with lines, \
+      d51_00(x,y) with lines, \
+      d51_01(x,y) with lines, \
+      d51_11(x,y) with lines, \
+      d51_05(x,y) with lines, \
+      d51_51(x,y) with lines, \
+      d51_55(x,y) with lines, \
+      d55_00(x,y) with lines, \
+      d55_01(x,y) with lines, \
+      d55_11(x,y) with lines, \
+      d55_05(x,y) with lines, \
+      d55_51(x,y) with lines, \
+      d55_55(x,y) with lines
+pause -1
 splot d00(x,y)+d01(x,y)+d11(x,y) with lines, \
       d05(x,y)+d51(x,y)+d55(x,y) with lines
 pause -1
 splot d00(x,y)+d01(x,y)+d11(x,y)+d05(x,y)+d51(x,y)+d55(x,y) with lines
+pause -1
+unset yrange
+unset zrange
+plot d00(x,x) with lines, \
+     d01(x,x) with lines, \
+     d11(x,x) with lines, \
+     d05(x,x) with lines, \
+     d51(x,x) with lines, \
+     d55(x,x) with lines
+pause -1
+plot d00_00(x,x) with lines, \
+     d00_01(x,x) with lines, \
+     d00_11(x,x) with lines, \
+     d00_05(x,x) with lines, \
+     d00_51(x,x) with lines, \
+     d00_55(x,x) with lines, \
+     d01_00(x,x) with lines, \
+     d01_01(x,x) with lines, \
+     d01_11(x,x) with lines, \
+     d01_05(x,x) with lines, \
+     d01_51(x,x) with lines, \
+     d01_55(x,x) with lines, \
+     d11_00(x,x) with lines, \
+     d11_01(x,x) with lines, \
+     d11_11(x,x) with lines, \
+     d11_05(x,x) with lines, \
+     d11_51(x,x) with lines, \
+     d11_55(x,x) with lines, \
+     d05_00(x,x) with lines, \
+     d05_01(x,x) with lines, \
+     d05_11(x,x) with lines, \
+     d05_05(x,x) with lines, \
+     d05_51(x,x) with lines, \
+     d05_55(x,x) with lines, \
+     d51_00(x,x) with lines, \
+     d51_01(x,x) with lines, \
+     d51_11(x,x) with lines, \
+     d51_05(x,x) with lines, \
+     d51_51(x,x) with lines, \
+     d51_55(x,x) with lines, \
+     d55_00(x,x) with lines, \
+     d55_01(x,x) with lines, \
+     d55_11(x,x) with lines, \
+     d55_05(x,x) with lines, \
+     d55_51(x,x) with lines, \
+     d55_55(x,x) with lines

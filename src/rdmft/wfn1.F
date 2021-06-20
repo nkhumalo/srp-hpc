@@ -350,44 +350,44 @@ c
          wfn1_param%corr_expr="wfn1_mx"
       endif
 c
-c     corr12
+c     corr14
 c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd00',MT_DBL,1,
      &                   wfn1_param%fcd00))
-     &  wfn1_param%fcd00 = 0.0d0
+     &  wfn1_param%fcd00 =  0.198826d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd01',MT_DBL,1,
      &                   wfn1_param%fcd01))
-     &  wfn1_param%fcd01 = 0.0d0
+     &  wfn1_param%fcd01 =  0.294438d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd11',MT_DBL,1,
      &                   wfn1_param%fcd11))
-     &  wfn1_param%fcd11 = 0.0d0
+     &  wfn1_param%fcd11 =  0.247007d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd05',MT_DBL,1,
      &                   wfn1_param%fcd05))
-     &  wfn1_param%fcd05 = 0.0d0
+     &  wfn1_param%fcd05 =  0.020225d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd51',MT_DBL,1,
      &                   wfn1_param%fcd51))
-     &  wfn1_param%fcd51 = 0.0d0
+     &  wfn1_param%fcd51 = -0.098842d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fcd55',MT_DBL,1,
      &                   wfn1_param%fcd55))
-     &  wfn1_param%fcd55 = 0.0d0
+     &  wfn1_param%fcd55 = -0.201236d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco00',MT_DBL,1,
      &                   wfn1_param%fco00))
-     &  wfn1_param%fco00 = 0.0d0
+     &  wfn1_param%fco00 = -0.005884d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco01',MT_DBL,1,
      &                   wfn1_param%fco01))
-     &  wfn1_param%fco01 = 0.0d0
+     &  wfn1_param%fco01 =  0.063203d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco11',MT_DBL,1,
      &                   wfn1_param%fco11))
-     &  wfn1_param%fco11 = 0.0d0
+     &  wfn1_param%fco11 =  0.357171d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco05',MT_DBL,1,
      &                   wfn1_param%fco05))
-     &  wfn1_param%fco05 = 0.0d0
+     &  wfn1_param%fco05 =  0.019518d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco51',MT_DBL,1,
      &                   wfn1_param%fco51))
-     &  wfn1_param%fco51 = 0.0d0
+     &  wfn1_param%fco51 =  0.871725d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fco55',MT_DBL,1,
      &                   wfn1_param%fco55))
-     &  wfn1_param%fco55 = 0.0d0
+     &  wfn1_param%fco55 =  1.051801d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:fx00',MT_DBL,1,
      &                   wfn1_param%fx00))
      &  wfn1_param%fx00 = 0.0d0
@@ -409,40 +409,40 @@ c
 c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd00',MT_DBL,1,
      &                   wfn1_param%rcd00))
-     &  wfn1_param%rcd00 = 1.0d0
+     &  wfn1_param%rcd00 =  0.884548d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd01',MT_DBL,1,
      &                   wfn1_param%rcd01))
-     &  wfn1_param%rcd01 = 1.0d0
+     &  wfn1_param%rcd01 =  1.211432d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd11',MT_DBL,1,
      &                   wfn1_param%rcd11))
-     &  wfn1_param%rcd11 = 1.0d0
+     &  wfn1_param%rcd11 =  0.255064d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd05',MT_DBL,1,
      &                   wfn1_param%rcd05))
-     &  wfn1_param%rcd05 = 1.0d0
+     &  wfn1_param%rcd05 =  0.988291d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd51',MT_DBL,1,
      &                   wfn1_param%rcd51))
-     &  wfn1_param%rcd51 = 1.0d0
+     &  wfn1_param%rcd51 =  0.535281d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rcd55',MT_DBL,1,
      &                   wfn1_param%rcd55))
-     &  wfn1_param%rcd55 = 1.0d0
+     &  wfn1_param%rcd55 =  0.701049d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco00',MT_DBL,1,
      &                   wfn1_param%rco00))
-     &  wfn1_param%rco00 = 1.0d0
+     &  wfn1_param%rco00 =  1.033050d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco01',MT_DBL,1,
      &                   wfn1_param%rco01))
-     &  wfn1_param%rco01 = 1.0d0
+     &  wfn1_param%rco01 =  0.850461d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco11',MT_DBL,1,
      &                   wfn1_param%rco11))
-     &  wfn1_param%rco11 = 1.0d0
+     &  wfn1_param%rco11 =  0.110139d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco05',MT_DBL,1,
      &                   wfn1_param%rco05))
-     &  wfn1_param%rco05 = 1.0d0
+     &  wfn1_param%rco05 =  0.985630d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco51',MT_DBL,1,
      &                   wfn1_param%rco51))
-     &  wfn1_param%rco51 = 1.0d0
+     &  wfn1_param%rco51 =  0.139729d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rco55',MT_DBL,1,
      &                   wfn1_param%rco55))
-     &  wfn1_param%rco55 = 1.0d0
+     &  wfn1_param%rco55 =  0.918333d0
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx00',MT_DBL,1,
      &                   wfn1_param%rx00))
      &  wfn1_param%rx00 = 1.0d0
@@ -461,6 +461,29 @@ c
       if (.not. rtdb_get(wfn1_inst%rtdb,'wfn1:rx55',MT_DBL,1,
      &                   wfn1_param%rx55))
      &  wfn1_param%rx55 = 1.0d0
+c
+c     Below are the powers y on the correlation functional factors
+c     (x*(1-x))**y. These powers have to be positive as x*(1-x) can
+c     be zero.
+c
+      wfn1_param%rcd00 = abs(wfn1_param%rcd00)
+      wfn1_param%rcd01 = abs(wfn1_param%rcd01)
+      wfn1_param%rcd11 = abs(wfn1_param%rcd11)
+      wfn1_param%rcd05 = abs(wfn1_param%rcd05)
+      wfn1_param%rcd51 = abs(wfn1_param%rcd51)
+      wfn1_param%rcd55 = abs(wfn1_param%rcd55)
+      wfn1_param%rco00 = abs(wfn1_param%rco00)
+      wfn1_param%rco01 = abs(wfn1_param%rco01)
+      wfn1_param%rco11 = abs(wfn1_param%rco11)
+      wfn1_param%rco05 = abs(wfn1_param%rco05)
+      wfn1_param%rco51 = abs(wfn1_param%rco51)
+      wfn1_param%rco55 = abs(wfn1_param%rco55)
+      wfn1_param%rx00  = abs(wfn1_param%rx00)
+      wfn1_param%rx01  = abs(wfn1_param%rx01)
+      wfn1_param%rx11  = abs(wfn1_param%rx11)
+      wfn1_param%rx05  = abs(wfn1_param%rx05)
+      wfn1_param%rx51  = abs(wfn1_param%rx51)
+      wfn1_param%rx55  = abs(wfn1_param%rx55)
 c
 c     others
 c

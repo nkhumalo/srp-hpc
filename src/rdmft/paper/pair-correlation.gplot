@@ -3,6 +3,7 @@ d1(di,dj)=16*d(di)*d(dj)
 d2(di,dj)=sqrt(d1(di,dj))
 d4(di,dj)=sqrt(d2(di,dj))
 d6(di,dj)=(d1(di,dj))**(1.0/6.0)
+dy(di,dj,y)=(d1(di,dj))**y
 dp(di)=4*d(di)
 dm(di)=1-dp(di)
 d0_1(di,dj)=dm(di)*dm(dj)
@@ -28,6 +29,46 @@ dt(di,dj)=d0_1(di,dj)+d0_5(di,dj)+d5_5(di,dj)
 # Model for the diagonal terms
 #
 dd(di,dj)=sqrt(di*dj)-di*dj
+
+fd(di,dj)= 0.198826*d00(di,dj)*dy(di,dj,0.884548) + \
+           0.294438*d01(di,dj)*dy(di,dj,1.211432) + \
+           0.247007*d11(di,dj)*dy(di,dj,0.255064) + \
+           0.020225*d05(di,dj)*dy(di,dj,0.988291) + \
+          -0.098842*d51(di,dj)*dy(di,dj,0.535281) + \
+          -0.201236*d55(di,dj)*dy(di,dj,0.701049)
+fo(di,dj)=-0.005884*d00(di,dj)*dy(di,dj,1.033050) + \
+           0.063203*d01(di,dj)*dy(di,dj,0.850461) + \
+           0.357171*d11(di,dj)*dy(di,dj,0.110139) + \
+           0.019518*d05(di,dj)*dy(di,dj,0.985630) + \
+           0.871725*d51(di,dj)*dy(di,dj,0.139729) + \
+           1.051801*d55(di,dj)*dy(di,dj,0.918333)
+set xrange [0:1]
+set yrange [0:1]
+unset zrange
+set isosamples 20, 20
+set terminal latex
+set output "functional_diag.tex"
+splot fd(x,y) with lines
+#pause -1
+set output "functional_offdiag.tex"
+splot fo(x,y) with lines
+#pause -1
+set zrange [0:1.1]
+set output "functional_w00.tex"
+splot d00(x,y) with lines
+set output "functional_w01.tex"
+splot d01(x,y) with lines
+set output "functional_w11.tex"
+splot d11(x,y) with lines
+set output "functional_w05.tex"
+splot d05(x,y) with lines
+set output "functional_w51.tex"
+splot d51(x,y) with lines
+set output "functional_w55.tex"
+splot d55(x,y) with lines
+set output "functional_sw.tex"
+splot d00(x,y)+d01(x,y)+d11(x,y)+d05(x,y)+d51(x,y)+d55(x,y) with lines
+set terminal x11
 
 set xrange [0:1]
 set yrange [0:1]
@@ -63,7 +104,7 @@ splot d00(x,y) with lines, \
       d51(x,y) with lines, \
       d55(x,y) with lines
 pause -1
-splot d00(x,y)+d01(x,y)+d11(x,y) with lines, \
-      d05(x,y)+d51(x,y)+d55(x,y) with lines
-pause -1
+#splot d00(x,y)+d01(x,y)+d11(x,y) with lines, \
+#      d05(x,y)+d51(x,y)+d55(x,y) with lines
+#pause -1
 splot d00(x,y)+d01(x,y)+d11(x,y)+d05(x,y)+d51(x,y)+d55(x,y) with lines

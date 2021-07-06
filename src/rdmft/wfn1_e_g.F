@@ -272,6 +272,22 @@ c
      &                           wfn1_wave,
      &                           g_momo,g_momo2,
      &                           wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c13") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       g_momo,g_momo2,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr13(wfn1_param,wfn1_inst,wfn1_mat,
+     &                           wfn1_wave,
+     &                           g_momo,g_momo2,
+     &                           wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c14") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       g_momo,g_momo2,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr14(wfn1_param,wfn1_inst,wfn1_mat,
+     &                           wfn1_wave,
+     &                           g_momo,g_momo2,
+     &                           wfn1_energy%E_corr)
       else if (wfn1_param%corr_expr == "wfn1w") then
         call wfn1_e_g_2el_wfn(wfn1_param,wfn1_mat,wfn1_wave,
      &                        g_bfbf,g_4t1,g_4t2,

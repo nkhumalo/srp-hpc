@@ -3,7 +3,7 @@ c
 !> \ingroup wfn1
 !> @{
 !>
-!> \file wfn1_e_g_2el_corr12.F
+!> \file wfn1_e_g_2el_corr13.F
 !> The correlation energy based on $\mathrm{H}_2$.
 !>
 !> @}
@@ -106,7 +106,7 @@ c
 !>    on the diagonal having a different shape than the attractive
 !>    off-diagonal term.
 !>
-      subroutine wfn1_e_g_2el_corr12(wfn1_param,wfn1_inst,wfn1_mat,
+      subroutine wfn1_e_g_2el_corr13(wfn1_param,wfn1_inst,wfn1_mat,
      &                               wfn1_wave,g_x_aa,g_x_bb,E_corr)
       implicit none
 c
@@ -847,6 +847,9 @@ c
 !>
       double precision :: f00, f01, f11, f05, f51, f55
       double precision :: r00, r01, r11, r05, r51, r55
+      double precision :: s00 ! factor to rebalance diagonal vs
+                              ! off-diagonal terms
+      integer :: nvirta, nvirtb
 !>
       f00 = wfn1_param%fcd00
       f01 = wfn1_param%fcd01
@@ -860,8 +863,12 @@ c
       r05 = wfn1_param%rcd05
       r51 = wfn1_param%rcd51
       r55 = wfn1_param%rcd55
+      nvirta = wfn1_param%nvirta
+      nvirtb = wfn1_param%nvirtb
+      s00 = sqrt(max(0.0d0,dble((nvirta-1)*(nvirtb-1)))/
+     &           max(1.0d0,dble(nvirta*nvirtb)))
 !>
-      fac = f00*wfn1_fac_occ00(occ1,occ2)*wfn1_root(r00,occ1,occ2)
+      fac = f00*wfn1_fac_occ00(occ1,occ2)*wfn1_root(r00,occ1,occ2)*s00
      &    + f01*wfn1_fac_occ01(occ1,occ2)*wfn1_root(r01,occ1,occ2)
      &    + f11*wfn1_fac_occ11(occ1,occ2)*wfn1_root(r11,occ1,occ2)
      &    + f05*wfn1_fac_occ05(occ1,occ2)*wfn1_root(r05,occ1,occ2)

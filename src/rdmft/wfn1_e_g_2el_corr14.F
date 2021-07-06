@@ -3,7 +3,7 @@ c
 !> \ingroup wfn1
 !> @{
 !>
-!> \file wfn1_e_g_2el_corr12.F
+!> \file wfn1_e_g_2el_corr14.F
 !> The correlation energy based on $\mathrm{H}_2$.
 !>
 !> @}
@@ -106,7 +106,7 @@ c
 !>    on the diagonal having a different shape than the attractive
 !>    off-diagonal term.
 !>
-      subroutine wfn1_e_g_2el_corr12(wfn1_param,wfn1_inst,wfn1_mat,
+      subroutine wfn1_e_g_2el_corr14(wfn1_param,wfn1_inst,wfn1_mat,
      &                               wfn1_wave,g_x_aa,g_x_bb,E_corr)
       implicit none
 c
@@ -536,53 +536,53 @@ c
                 do ia = ia_lo, ia_hi
                   do ii = 1, nmo
                     E_corr = E_corr
-     &              + e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+     &              - e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
      &              * wfn1_diag(wfn1_param,
      &                          occ_a(ii),occ_b(ii))
-     &              + e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+     &              - e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
      &              * wfn1_diag(wfn1_param,
      &                          occ_b(ii),occ_a(ii))
 cDEBUG
                     E_ii_cor = E_ii_cor
-     &              + e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+     &              - e_aci_ab(ia,ic,ii)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
      &              * wfn1_diag(wfn1_param,
      &                          occ_a(ii),occ_b(ii))
-     &              + e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+     &              - e_aci_ba(ia,ic,ii)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
      &              * wfn1_diag(wfn1_param,
      &                          occ_b(ii),occ_a(ii))
 cDEBUG
                     do jj = 1, ii-1
                       E_corr = E_corr
-     &                + e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+     &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
      &                * wfn1_diag(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
-     &                + e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+     &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
      &                * wfn1_diag(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                       E2_ij_cor = E2_ij_cor
-     &                + e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+     &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
      &                * wfn1_diag(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
-     &                + e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+     &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
      &                * wfn1_diag(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                     enddo ! jj
                     do jj = ii+1, nmo
                       E_corr = E_corr
-     &                + e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+     &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
      &                * wfn1_diag(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
-     &                + e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+     &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
      &                * wfn1_diag(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG
                       E2_ij_cor = E2_ij_cor
-     &                + e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
+     &                - e2_acj_ab(ia,ic,jj)*N_ai_a(ia,ii)*N_ci_a(ic,ii)
      &                * wfn1_diag(wfn1_param,
      &                            occ_a(ii),occ_b(jj))
-     &                + e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
+     &                - e2_acj_ba(ia,ic,jj)*N_ai_b(ia,ii)*N_ci_b(ic,ii)
      &                * wfn1_diag(wfn1_param,
      &                            occ_a(jj),occ_b(ii))
 cDEBUG

@@ -148,8 +148,8 @@ def parse_arguments():
     '''
     from argparse import ArgumentParser
     prs = ArgumentParser()
-    prs.add_argument("input",help="the input PDF file")
-    prs.add_argument("output",help="the output PDF file")
+    prs.add_argument("input",help="the input PDB file")
+    prs.add_argument("output",help="the output PDB file")
     prs.add_argument("direction",help="the direction to expand along")
     args = prs.parse_args()
     return args

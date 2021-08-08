@@ -16,6 +16,34 @@ C> 1-particle functions in the updated wave function. After we have
 C> filled this matrix we use modified Gramm-Schmidt to orthonormalize
 C> the columns.
 C>
+C> The Monte Carlo approach involves guessing a step. First the
+C> forward step is tried, if that does not lower the energy then
+C> the backward step is tried, if that also does not lower the 
+C> energy one has enough information to try a step that corresponds to
+C> the minimum of a quadratic approximation. If that also fails then
+C> simply try a new random step.
+C>
+C> Assume that the energy is a quadratic function
+C> \f{eqnarray*}{
+C>   E &=& ax^2 + bx + c
+C> \f}
+C> then with the three points calculated we have
+C> \f{eqnarray*}{
+C>   E_{-1} &=& a - b + c \\
+C>   E_{ 0} &=& c \\
+C>   E_{ 1} &=& a + b + c \\
+C>   E_{1} + E_{-1} &=& 2a + 2c \\
+C>   E_{1} - E_{-1} &=& 2b \\
+C>   c &=& E_{0} \\
+C>   b &=& (E_{1} - E_{-1})/2 \\
+C>   a &=& (E_{1} + E_{-1} - 2E_{0})/2
+C> \f}
+C> Minimizing the energy gives
+C> \f{eqnarray*}{
+C>   \frac{\partial E}{\partial x} &=& 2ax + b = 0 \\
+C>   x &=& -\frac{b}{2a}
+C> \f}
+C>
       subroutine wfn1_mcsearch(wfn1_param,wfn1_inst,wfn1_mat,
      &                         wfn1_wave,
 !    &                         wfn1_deriv,
@@ -27,7 +55,8 @@ C>
      &                         g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                         g_momo5,g_momo6,
      &                         g_4t1,g_4t2,
-     &                         gz_momo1,gz_momo2,gz_momo3,gz_momo4)
+     &                         gz_momo1,gz_momo2,gz_momo3,gz_momo4,
+     &                         fock_count)
 !    &                         v_dna,v_dnb,v_dca,v_dcb,
 !    &                         v_dnna,v_dnnb,v_dcna,v_dcnb)
       implicit none
@@ -73,6 +102,8 @@ c
       integer, intent(inout) :: gz_momo3 ! nmo x nmo complex scratch GA
       integer, intent(inout) :: gz_momo4 ! nmo x nmo complex scratch GA
 c
+      integer, intent(inout) :: fock_count ! # energy evaluations
+c
 c     Natural orbital energies
 c
 !     double precision, intent(out) :: v_dna(1:wfn1_param%nmo)
@@ -103,6 +134,7 @@ c
       double precision :: rlim ! random number limits
       logical :: oclosed  ! is this a closed shell calculation?
       logical :: ostop    ! do we stop iterating?
+      logical :: okeep    ! do we keep the quadratic approximation
       double precision :: Ewf       ! Current wave function energy
       double precision :: Ewf_trial ! Trial wave function energy
       double precision :: random    ! One random number
@@ -110,6 +142,14 @@ c
       double precision :: pfac      ! Probability scale factor
       double precision :: sfac      ! Dimensionality adjustment factor
       double precision :: tfac      ! Dimensionality adjustment factor
+      double precision :: Em1       ! \f$E_{-1}\f$
+      double precision :: E0        ! \f$E_{ 0}\f$
+      double precision :: Emin      ! \f$E_{min}\f$ predicted minimum
+      double precision :: Ep1       ! \f$E_{+1}\f$
+      double precision :: aa
+      double precision :: bb
+      double precision :: cc
+      double precision :: xx
 c
       iproc   = ga_nodeid()
       nproc   = ga_nnodes()
@@ -118,10 +158,20 @@ c
       rlim    = wfn1_param%rlim
       pfac    = wfn1_param%pfac
       Ewf     = wfn1_energy%E_tot
-      sfac    = 4*(nmo*(nmo-1)/2)
-      sfac    = 1.0d0/sfac 
-      tfac    = 1.08d0**sfac
-      sfac    = 0.5d0**sfac
+      E0      = Ewf
+c     sfac    = 4*(nmo*(nmo-1)/2)
+c     sfac    = 1.0d0/sfac 
+c     tfac    = 1.08d0**sfac
+c     sfac    = 0.5d0**sfac
+!
+!     sfac = shrink factor which we choose independent of the number
+!            of dimensions in the problem
+!     tfac = was the growth factor that was used to accelerate the 
+!            calculation upon successful steps
+!
+      sfac = 0.5d0
+      tfac = 1.08d0
+!
       ntries  = 0
 !     call ga_distribution(g_momo1,iproc,ilo,ihi,jlo,jhi)
 !     allocate(buf(ilo:ihi,jlo:jhi))
@@ -129,6 +179,9 @@ c
       call wfn1_init_box(wfn1_accpt,0.0d0)
       do
         ntries = ntries + 1
+cDEBUG
+c       write(*,*)ntries,fock_count,E0,rlim
+cDEBUG
 c
 c       Natural orbitals
 c
@@ -170,8 +223,10 @@ c
      &                g_4t1,g_4t2)
 !    &                v_dna,v_dnb,v_dca,v_dcb,
 !    &                v_dnna,v_dnnb,v_dcna,v_dcnb)
+        fock_count = fock_count + 1
 
         Ewf_trial = wfn1_trial_en%E_tot
+        Em1       = Ewf_trial
         de = Ewf_trial - Ewf
         if (iproc.eq.0) then
 c
@@ -181,6 +236,9 @@ c
         endif
         call ga_brdcst(1200,ostop,ma_sizeof(MT_LOG,1,MT_BYTE),0)
         if (.not.ostop) then
+cDEBUG
+c         write(*,*)"reject 1"
+cDEBUG
           call wfn1_sgn_offdiag(g_momo1)
           call wfn1_sgn_offdiag(g_momo2)
           call wfn1_skew_to_rot(g_momo1,g_momo3)
@@ -202,7 +260,9 @@ c
      &                  g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
      &                  g_bfmo,g_momo3,g_momo4,g_momo5,g_momo6,
      &                  g_4t1,g_4t2)
-          Ewf_trial = wfn1_trial_en%E_tot
+          fock_count = fock_count + 1
+          Ewf_trial  = wfn1_trial_en%E_tot
+          Ep1        = Ewf_trial
           de = Ewf_trial - Ewf
           if (iproc.eq.0) then
             ostop = de.lt.0.0d0
@@ -210,11 +270,76 @@ c
           call ga_brdcst(1300,ostop,ma_sizeof(MT_LOG,1,MT_BYTE),0)
         endif
         if (.not.ostop) then
+cDEBUG
+c         write(*,*)"reject 2", Em1,E0,Ep1
+cDEBUG
+c         The raw step was rejected so update the reject box
+          call wfn1_max_box(wfn1_rejct,g_momo1,g_momo2,
+     &                      gz_momo1,gz_momo2)
+          cc   = E0
+          bb   = (Ep1-Em1)/2.0d0
+          aa   = (Ep1+Em1-2.0d0*E0)/2.0d0
+          xx   = -bb/(2.0d0*aa)
+          Emin = aa*xx*xx+bb*xx+cc
+          if (abs(xx).gt.1.0d-5) then
+            call ga_scale(g_momo1,xx)
+            call ga_scale(g_momo2,xx)
+            call wfn1_skew_to_rot(g_momo1,g_momo3)
+            call wfn1_skew_to_rot(g_momo2,g_momo4)
+            call ga_scale(gz_momo1,xx)
+            call ga_scale(gz_momo2,xx)
+            call wfn1_skew_to_rot(gz_momo1,gz_momo3)
+            call wfn1_skew_to_rot(gz_momo2,gz_momo4)
+            call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,
+     &                     g_momo3,0.0d0,wfn1_trial_wv%g_na)
+            call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_nb,
+     &                     g_momo4,0.0d0,wfn1_trial_wv%g_nb)
+            call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,
+     &                     gz_momo3,0.0d0,wfn1_trial_wv%g_ca)
+            call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_cb,
+     &                     gz_momo4,0.0d0,wfn1_trial_wv%g_cb)
+            call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_trial_wv,
+     &                    wfn1_trial_en,
+     &                    g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+     &                    g_bfmo,g_momo3,g_momo4,g_momo5,g_momo6,
+     &                    g_4t1,g_4t2)
+            fock_count = fock_count + 1
+            Ewf_trial  = wfn1_trial_en%E_tot
+            de = Ewf_trial - Ewf
+            if (iproc.eq.0) then
+              okeep = de.lt.0.0d0
+cDEBUG
+c             write(*,*)'HVD 0',fock_count,Em1,E0,Ep1
+c             write(*,*)'HVD 1',fock_count,Emin,Ewf_trial,Ewf_trial-Emin
+cDEBUG
+            endif
+            call ga_brdcst(1300,okeep,ma_sizeof(MT_LOG,1,MT_BYTE),0)
+            if (okeep) then
+              call wfn1_copy_wfn(wfn1_trial_wv,wfn1_wave)
+              Ewf = wfn1_trial_en%E_tot
+              E0  = Ewf
+              call wfn1_max_box(wfn1_accpt,g_momo1,g_momo2,
+     &                          gz_momo1,gz_momo2)
+              call wfn1_write_random("direction",fock_count,g_momo1,
+     &                               g_momo2,gz_momo1,gz_momo2)
+            endif
+cDEBUG
+c           if (okeep) then
+c             write(*,*)'accept 3',xx
+c           else
+c             write(*,*)'reject 3',xx
+c           endif
+cDEBUG
+          endif
+        endif
+        if (.not.ostop) then
 !
 !         The step was rejected so update the rejects box
 !
-          call wfn1_max_box(wfn1_rejct,g_momo1,g_momo2,
-     &                      gz_momo1,gz_momo2)
+!         This is now recorded before the quadratic update step.
+!
+c         call wfn1_max_box(wfn1_rejct,g_momo1,g_momo2,
+c    &                      gz_momo1,gz_momo2)
         else
 !
 !         The step was accepted so update the accepts box
@@ -228,7 +353,7 @@ c
      &                          wfn1_accpt)
         endif
         if (.not.ostop.and.(mod(ntries,20).eq.0)) then
-          call wfn1_resquare_box(wfn1_param,wfn1_mcbox)
+c         call wfn1_resquare_box(wfn1_param,wfn1_mcbox)
 !
 !         Check whether we have reached the convergence criteria
 !         already. If so, quit the calculation (no matter what).

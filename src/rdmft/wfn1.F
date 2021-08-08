@@ -1,11 +1,3 @@
-      subroutine wfn1_input(rtdb)
-      implicit none
-!>
-!> \brief Read the input for the RDMFT calculations
-!>
-      integer, intent(inout) :: rtdb !> [Input] The runtime database
-      end subroutine wfn1_input
-!>
 !>----------------------------------------------------------------------
 !>
 !> \brief Minimize the free energy
@@ -32,7 +24,7 @@
 !>     arXiv: <a href="http://arxiv.org/abs/1512.06120">
 !>     http://arxiv.org/abs/1512.06120</a>
 !>
-      function wfn1_task_energy(rtdb) result(wfn1_success)
+      function wfn1_task_energy_doit(rtdb) result(wfn1_success)
       implicit none
 !include "wfn1_param.fh"
 !include "wfn1_wfn.fh"
@@ -738,7 +730,7 @@ c    &                                     wfn1_param%denom_min = 0.01d0
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:pfac",MT_DBL,
      &                  1,wfn1_param%pfac)) wfn1_param%pfac = 256.0d0
       if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:rlim",MT_DBL,
-     &                  1,wfn1_param%rlim)) wfn1_param%rlim = 1.0d-2
+     &                  1,wfn1_param%rlim)) wfn1_param%rlim = 0.05d0
       wfn1_param%convergence = conv_tol
       wfn1_param%maxiter     = maxit
 c
@@ -1201,4 +1193,4 @@ c
       if (.not.geom_destroy(wfn1_inst%geom))
      &  call errquit(pname//' Failed to destroy geometry',0,GEOM_ERR)
 c
-      end function wfn1_task_energy
+      end function wfn1_task_energy_doit

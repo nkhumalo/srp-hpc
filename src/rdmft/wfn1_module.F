@@ -65,5 +65,6 @@ c-----------------------------------------------------------------------
 #include "wfn1_transform.F"
 #include "wfn1_vectors.F"
 #include "wfn1_write_movecs.F"
+#include "wfn1_write_random.F"
       end module wfn1
 c-----------------------------------------------------------------------

@@ -877,25 +877,25 @@ c
         call errquit(pname//" allocate g_4t2 failed",
      &               wfn1_ibd_proc(wfn1_param%nbf**4,nproc),GA_ERR)
       endif
-      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
      &                   "gz_momo1",-1,-1,gz_momo1)) then
         call errquit(pname//" allocate gz_momo1 failed",
-     &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
+     &               wfn1_ibd_proc(1*(wfn1_param%nmo**2),nproc),GA_ERR)
       endif
-      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
      &                   "gz_momo2",-1,-1,gz_momo2)) then
         call errquit(pname//" allocate gz_momo2 failed",
-     &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
+     &               wfn1_ibd_proc(1*(wfn1_param%nmo**2),nproc),GA_ERR)
       endif
-      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
      &                   "gz_momo3",-1,-1,gz_momo3)) then
         call errquit(pname//" allocate gz_momo3 failed",
-     &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
+     &               wfn1_ibd_proc(1*(wfn1_param%nmo**2),nproc),GA_ERR)
       endif
-      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
      &                   "gz_momo4",-1,-1,gz_momo4)) then
         call errquit(pname//" allocate gz_momo4 failed",
-     &               wfn1_ibd_proc(2*(wfn1_param%nmo**2),nproc),GA_ERR)
+     &               wfn1_ibd_proc(1*(wfn1_param%nmo**2),nproc),GA_ERR)
       endif
 c
 c     == Load any DFT related variables ==

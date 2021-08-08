@@ -40,10 +40,10 @@ c
 c
 c     The correlation function components
 c
-      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
      &                         'dCa',-1,-1,wfn1_deriv%g_dca))
      &  call errquit(pname//" could not allocate g_dna",0,MA_ERR)
-      if (.not.ga_create(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
      &                         'dCb',-1,-1,wfn1_deriv%g_dcb))
      &  call errquit(pname//" could not allocate g_dnb",0,MA_ERR)
 c

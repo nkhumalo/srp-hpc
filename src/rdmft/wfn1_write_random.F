@@ -33,7 +33,8 @@
       integer :: iunit
 !
       real(kind=8),     allocatable :: dvec(:)
-      complex(kind=8),  allocatable :: zvec(:)
+c     complex(kind=8),  allocatable :: zvec(:)
+      real   (kind=8),  allocatable :: zvec(:)
       character(len=:), allocatable :: fname
 !
       iunit = 10
@@ -48,10 +49,10 @@
       if (itp_g2.ne.MT_DBL) then
         call errquit("wfn1_write_random: g_momo2 not double",0,UERR)
       endif
-      if (itp_gz1.ne.MT_DCPL) then
+      if (itp_gz1.ne.MT_DBL) then
         call errquit("wfn1_write_random: gz_momo1 not complex",0,UERR)
       endif
-      if (itp_gz2.ne.MT_DCPL) then
+      if (itp_gz2.ne.MT_DBL) then
         call errquit("wfn1_write_random: gz_momo2 not complex",0,UERR)
       endif
       if (idm_g1.eq.idm_g2.and.idm_g1.eq.idm_gz1.and.idm_g1.eq.idm_gz2)

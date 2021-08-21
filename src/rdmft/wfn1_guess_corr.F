@@ -138,8 +138,8 @@ c
 c
 c     Orthonormalize the vectors
 c
-      call wfn1_orthog(wfn1_wave%g_ca,ii,.false.)
-      call wfn1_orthog(wfn1_wave%g_cb,ii,.false.)
+      call wfn1_orthog_vecs(wfn1_wave%g_ca,ii,.false.)
+      call wfn1_orthog_vecs(wfn1_wave%g_cb,ii,.false.)
 c
       end subroutine
 c

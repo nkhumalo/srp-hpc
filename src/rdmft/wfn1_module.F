@@ -5,6 +5,7 @@ c-----------------------------------------------------------------------
 #include "wfn1_param.fh"
 #include "wfn1_wfn.fh"
 #include "wfn1_box.fh"
+#include "wfn1_directions.fh"
 #include "wfn1_error.fh"
 #include "wfn1_matcnst.fh"
 #include "wfn1_en.fh"

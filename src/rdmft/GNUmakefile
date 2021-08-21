@@ -2,6 +2,7 @@
 # makefile,v 1.8 1994/12/05 20:37:08 og845 Exp
 
    OBJ = wfn1_module.o \
+	 wfn1_directions.o \
 	 wfn1_api.o \
          wfn1_gsl_wrap.o 
 

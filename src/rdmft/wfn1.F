@@ -898,6 +898,12 @@ c
      &               wfn1_ibd_proc(1*(wfn1_param%nmo**2),nproc),GA_ERR)
       endif
 c
+c     == Number of stored search directions
+c
+      if (.not.rtdb_get(wfn1_inst%rtdb,"wfn1:ndir",MT_INT,
+     &                  1,wfn1_param%ndir)) wfn1_param%ndir = 1
+      call wfn1_dir_init(wfn1_param)
+c
 c     == Load any DFT related variables ==
 c
       call wfn1_inpdft(wfn1_param,wfn1_inst)
@@ -1130,6 +1136,8 @@ cDEBUG
       call wfn1_deallocate_wfn(wfn1_trial_wv)
       call wfn1_deallocate_wfn(wfn1_wave)
       call wfn1_deallocate_mat(wfn1_mat)
+c
+      call wfn1_dir_final()
 c
       if (.not.ga_destroy(gz_momo4)) then
         call errquit(pname//" deallocate gz_momo4 failed",0,GA_ERR)

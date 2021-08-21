@@ -183,7 +183,7 @@ cDEBUG
 c       write(*,*)ntries,fock_count,E0,rlim
 cDEBUG
 c
-c       Natural orbitals
+c       Natural orbitals random
 c
         call wfn1_gen_random_skew(g_momo1,wfn1_mcbox%g_na,rlim)
         if (oclosed) then
@@ -191,14 +191,8 @@ c
         else
           call wfn1_gen_random_skew(g_momo2,wfn1_mcbox%g_nb,rlim)
         endif
-        call wfn1_skew_to_rot(g_momo1,g_momo3)
-        call wfn1_skew_to_rot(g_momo2,g_momo4)
-        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,
-     &                 g_momo3,0.0d0,wfn1_trial_wv%g_na)
-        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_nb,
-     &                 g_momo4,0.0d0,wfn1_trial_wv%g_nb)
 c
-c       Correlation functions
+c       Correlation functions random
 c
         call wfn1_gen_random_skew(gz_momo1,wfn1_mcbox%g_ca,rlim)
         if (oclosed) then
@@ -206,6 +200,20 @@ c
         else
           call wfn1_gen_random_skew(gz_momo2,wfn1_mcbox%g_cb,rlim)
         endif
+c
+c       Select an direction orthogonal to previously minimized ones
+c
+        call wfn1_dir_orthog_vec(g_momo1,g_momo2,gz_momo1,gz_momo2)
+c
+c       Create rotations
+c
+        call wfn1_skew_to_rot(g_momo1,g_momo3)
+        call wfn1_skew_to_rot(g_momo2,g_momo4)
+        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_na,
+     &                 g_momo3,0.0d0,wfn1_trial_wv%g_na)
+        call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_nb,
+     &                 g_momo4,0.0d0,wfn1_trial_wv%g_nb)
+c
         call wfn1_skew_to_rot(gz_momo1,gz_momo3)
         call wfn1_skew_to_rot(gz_momo2,gz_momo4)
         call wfn1_gemm('n','n',nmo,nmo,nmo,1.0d0,wfn1_wave%g_ca,
@@ -279,7 +287,11 @@ c         The raw step was rejected so update the reject box
           cc   = E0
           bb   = (Ep1-Em1)/2.0d0
           aa   = (Ep1+Em1-2.0d0*E0)/2.0d0
-          xx   = -bb/(2.0d0*aa)
+          if (abs(aa).gt.1.0d-10) then
+            xx = -bb/(2.0d0*aa)
+          else
+            xx = 0.0d0
+          endif
           Emin = aa*xx*xx+bb*xx+cc
           if (abs(xx).gt.1.0d-5) then
             call ga_scale(g_momo1,xx)
@@ -320,8 +332,9 @@ cDEBUG
               E0  = Ewf
               call wfn1_max_box(wfn1_accpt,g_momo1,g_momo2,
      &                          gz_momo1,gz_momo2)
-              call wfn1_write_random("direction",fock_count,g_momo1,
-     &                               g_momo2,gz_momo1,gz_momo2)
+              call wfn1_dir_store_vec()
+c             call wfn1_write_random("direction",fock_count,g_momo1,
+c    &                               g_momo2,gz_momo1,gz_momo2)
             endif
 cDEBUG
 c           if (okeep) then
@@ -555,7 +568,7 @@ c
         endif
       endif
       call ga_sync()
-      call wfn1_orthog(g_rot,iidim,.false.)
+      call wfn1_orthog_vecs(g_rot,iidim,.false.)
 c
       end
 c

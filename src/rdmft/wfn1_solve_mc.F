@@ -142,6 +142,7 @@ c
           write(luout,'(2a10,a20,a16,4a16)')"---------","----","------",
      &          "-----","------","------","------","------"
         endif
+        call util_flush(luout)
       endif
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
 !    &              wfn1_deriv,wfn1_part_drv,
@@ -176,6 +177,7 @@ c     error%total = 2.0d0*rlimo*nmo
      &                                      abs(error%errca),
      &                                      abs(error%errcb)
         endif
+        call util_flush(luout)
       endif
       do while (curit.lt.maxit.and.
      &          error%total.gt.wfn1_param%convergence)
@@ -223,6 +225,7 @@ c
      &            error%errna,error%errnb,
      &            abs(error%errca),abs(error%errcb)
           endif
+          call util_flush(luout)
         endif
       enddo
       wfn1_solve_mc = .true.

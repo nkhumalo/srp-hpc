@@ -1,0 +1,20 @@
+echo
+
+start h2_sto3g_dat
+
+geometry units au noautoz nocenter noautosym
+  symmetry c1
+  H1  0.0  0.0  0.0
+  H2  0.0  0.0  1.6818473865225443
+end
+
+basis
+  * library sto-3g
+end
+
+scf
+  thresh 1.0e-10
+  tol2e 1.0e-25
+end
+
+task scf gradient

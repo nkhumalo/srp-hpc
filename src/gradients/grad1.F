@@ -75,6 +75,11 @@ cc AJL/Begin/SPIN ECPs
       integer iecp
       double precision H_beta (lbuf)
       double precision dens_beta (max_at_bf,max_at_bf)
+cDEBUG
+      integer nao, iat
+      real(kind=8), allocatable :: dS(:,:,:,:)
+      real(kind=8), allocatable :: dH1(:,:,:,:)
+cDEBUG
 #ifdef NO_BQGEM
 #include "inp.fh"
       character*2 bqchar
@@ -102,6 +107,19 @@ c        call ga_print(g_dens(1))
 c        call ga_print(g_dens(2))
 c      end if   
 cc AJL/End
+cDEBUG
+      nao = 0
+      do iat1 = 1, nat
+        status = bas_ce2bfr(basis,iat1,iab1f,iab1l)
+        nao = max(nao,iab1l)
+        write(*,*)"HVD: ",iat1,iab1f,iab1l
+      enddo
+      write(*,*)"HVD: nao: ",nao
+      allocate(dS(1:nao,1:nao,1:3,1:nat))
+      allocate(dH1(1:nao,1:nao,1:3,1:nat))
+      dS = 0.0d0
+      dH1 = 0.0d0
+cDEBUG
 
       task_size = 1
       status = rtdb_parallel(.true.) ! Broadcast reads to all processes
@@ -185,6 +203,26 @@ C               idatom(1).ge.0 <=> idatom(2).ge.0 (no check necessary)
                     do 22, ip1 = if1, il1
                       do 20, ip2 = if2, il2
                         dE = dE + wdens(ip1,ip2) * H(ic)
+cDEBUG
+                        if (icart.eq.1) then
+                          write(*,'(a10,3i2,2x,3i2)')
+     &                              "HVD: dS: ",
+     &                              idatom(1),ish1,iab1f-1+ip1,
+     &                              idatom(2),ish2,iab2f-1+ip2
+                        endif
+                        dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1)) 
+     &                  = dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1))
+     &                  - H(ic)
+                        dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1)) 
+     &                  = dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1))
+     &                  - H(ic)
+                        dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2)) 
+     &                  = dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2))
+     &                  + H(ic)
+                        dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2)) 
+     &                  = dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2))
+     &                  + H(ic)
+cDEBUG
                         ic = ic + 1
  20                   continue
  22                 continue
@@ -230,6 +268,16 @@ C     D x H
                     do 31, ip1 = if1, il1
                       do 30, ip2 = if2, il2
                         dE = dE + dens(ip1,ip2) * H(ic)
+cDEBUG
+                        dH1(iab1f-1+ip1,iab2f-1+ip2,icart,iat3) 
+     &                  = dH1(iab1f-1+ip1,iab2f-1+ip2,icart,iat3)
+     &                  + H(ic)
+                        if ( iat1.ne.iat2 .or. ish1.ne.ish2 ) then
+                          dH1(iab2f-1+ip2,iab1f-1+ip1,icart,iat3) 
+     &                    = dH1(iab2f-1+ip2,iab1f-1+ip1,icart,iat3)
+     &                    + H(ic)
+                        endif
+cDEBUG
 cc AJL/Begin/SPIN ECPs
                         if (ecp_channels.gt.1) then
                           dE = dE + dens_beta(ip1,ip2) * H_beta(ic)
@@ -278,6 +326,78 @@ C               no forces between point charges (for John Nicholas)
  80     continue
  90   continue
       next = nxtask(-nproc,task_size)
+cDEBUG
+      write(*,'("tensor_t overlap_nuc(TA::World& world) {")')
+      write(*,'("    TA::detail::tensor3_il<double> il{")')
+      do ip1 = 1, nao
+        write(*,'("      {")')
+        do iat = 1, nat
+          do icart = 1, 3
+            write(*,'("        {")')
+            do ip2 = 1, nao
+              if (ip2.ne.nao) then
+                write(*,'(f30.16,", // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dS(ip1,ip2,icart,iat),ip1,ip2,icart,iat
+              else
+                write(*,'(f30.16,"  // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dS(ip1,ip2,icart,iat),ip1,ip2,icart,iat
+              endif
+            enddo ! ip2
+            if ((iat-1)*3+icart.ne.3*nat) then
+              write(*,'("        },")')
+            else
+              write(*,'("        }")')
+            endif
+          enddo ! icart
+        enddo ! iat
+        if (ip1.ne.nao) then
+          write(*,'("      },")')
+        else
+          write(*,'("      }")')
+        endif
+      enddo ! ip1
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("}")')
+      write(*,'("}")')
+      write(*,*)
+      write(*,*)
+      write(*,'("tensor_t hcore_nuc(TA::World& world) {")')
+      write(*,'("    TA::detail::tensor3_il<double> il{")')
+      do ip1 = 1, nao
+        write(*,'("      {")')
+        do iat = 1, nat
+          do icart = 1, 3
+            write(*,'("        {")')
+            do ip2 = 1, nao
+              if (ip2.ne.nao) then
+                write(*,'(f30.16,", // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dH1(ip1,ip2,icart,iat),ip1,ip2,icart,iat
+              else
+                write(*,'(f30.16,"  // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dH1(ip1,ip2,icart,iat),ip1,ip2,icart,iat
+              endif
+            enddo ! ip2
+            if ((iat-1)*3+icart.ne.3*nat) then
+              write(*,'("        },")')
+            else
+              write(*,'("        }")')
+            endif
+          enddo ! icart
+        enddo ! iat
+        if (ip1.ne.nao) then
+          write(*,'("      },")')
+        else
+          write(*,'("      }")')
+        endif
+      enddo ! ip1
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("}")')
+      write(*,'("}")')
+      deallocate(dS)
+      deallocate(dH1)
+cDEBUG
 
 c     
 c     continue with forces if there are external charges (MV)

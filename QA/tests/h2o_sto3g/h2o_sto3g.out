@@ -1,0 +1,1744 @@
+ argument  1 = h2o_sto3g.nw
+
+
+
+============================== echo of input deck ==============================
+echo
+
+start h2o_sto3g_dat
+
+geometry units au noautoz nocenter noautosym
+  symmetry cs
+  O   0.0               -0.143222342980786  0.0
+  H1  1.638033502034240  1.136556880358410  0.0
+  H2 -1.638033502034240  1.136556880358410  0.0
+end
+
+basis
+  * library sto-3g
+end
+
+scf
+  thresh 1.0e-10
+  tol2e 1.0e-25
+end
+
+task scf gradient
+================================================================================
+
+
+                                         
+                                         
+
+
+             Northwest Computational Chemistry Package (NWChem) 7.0.1
+             --------------------------------------------------------
+
+
+                    Environmental Molecular Sciences Laboratory
+                       Pacific Northwest National Laboratory
+                                Richland, WA 99352
+
+                              Copyright (c) 1994-2020
+                       Pacific Northwest National Laboratory
+                            Battelle Memorial Institute
+
+             NWChem is an open-source computational chemistry package
+                        distributed under the terms of the
+                      Educational Community License (ECL) 2.0
+             A copy of the license is included with this distribution
+                              in the LICENSE.TXT file
+
+                                  ACKNOWLEDGMENT
+                                  --------------
+
+            This software and its documentation were developed at the
+            EMSL at Pacific Northwest National Laboratory, a multiprogram
+            national laboratory, operated for the U.S. Department of Energy
+            by Battelle under Contract Number DE-AC05-76RL01830. Support
+            for this work was provided by the Department of Energy Office
+            of Biological and Environmental Research, Office of Basic
+            Energy Sciences, and the Office of Advanced Scientific Computing.
+
+
+           Job information
+           ---------------
+
+    hostname        = erato
+    program         = ../../../bin/LINUX64/nwchem
+    date            = Fri Sep 17 21:52:39 2021
+
+    compiled        = Fri_Sep_17_21:41:00_2021
+    source          = /home/hvandam/nwchem-1-mokup
+    nwchem branch   = 7.0.0
+    nwchem revision = nwchem_on_git-2028-gf3ab5e5fb5
+    ga revision     = 5.7.2
+    use scalapack   = F
+    input           = h2o_sto3g.nw
+    prefix          = h2o_sto3g_dat.
+    data base       = ./h2o_sto3g_dat.db
+    status          = startup
+    nproc           =        1
+    time left       =     -1s
+
+
+
+           Memory information
+           ------------------
+
+    heap     =   13107200 doubles =    100.0 Mbytes
+    stack    =   13107197 doubles =    100.0 Mbytes
+    global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
+    total    =   52428797 doubles =    400.0 Mbytes
+    verify   = yes
+    hardfail = no 
+
+
+           Directory information
+           ---------------------
+
+  0 permanent = .
+  0 scratch   = .
+
+
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+
+
+                             Geometry "geometry" -> ""
+                             -------------------------
+
+ Output coordinates in a.u. (scale by  1.000000000 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 O                    8.0000     0.00000000    -0.14322234     0.00000000
+    2 H1                   1.0000     1.63803350     1.13655688     0.00000000
+    3 H2                   1.0000    -1.63803350     1.13655688     0.00000000
+
+      Atomic Mass 
+      ----------- 
+
+      O                 15.994910
+      H1                 1.007825
+      H2                 1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)       8.0023669742
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     0.0000000000     1.1273350169     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     3
+
+      Symmetry unique atoms
+
+     1    2    3
+
+
+            XYZ format geometry
+            -------------------
+     3
+ geometry
+ O                     0.00000000    -0.07579001     0.00000000
+ H1                    0.86681006     0.60144004     0.00000000
+ H2                   -0.86681006     0.60144004     0.00000000
+
+
+
+ Summary of "ao basis" -> "" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ *                           sto-3g                   on all atoms 
+
+
+                      Basis "ao basis" -> "ao basis" (cartesian)
+                      -----
+  O (Oxygen)
+  ----------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  1.30709320E+02  0.154329
+  1 S  2.38088610E+01  0.535328
+  1 S  6.44360830E+00  0.444635
+
+  2 S  5.03315130E+00 -0.099967
+  2 S  1.16959610E+00  0.399513
+  2 S  3.80389000E-01  0.700115
+
+  3 P  5.03315130E+00  0.155916
+  3 P  1.16959610E+00  0.607684
+  3 P  3.80389000E-01  0.391957
+
+  H1 (Hydrogen)
+  -------------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  3.42525091E+00  0.154329
+  1 S  6.23913730E-01  0.535328
+  1 S  1.68855400E-01  0.444635
+
+  H2 (Hydrogen)
+  -------------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  3.42525091E+00  0.154329
+  1 S  6.23913730E-01  0.535328
+  1 S  1.68855400E-01  0.444635
+
+
+
+ Summary of "ao basis" -> "ao basis" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ O                           sto-3g                  3        5   2s1p
+ H1                          sto-3g                  1        1   1s
+ H2                          sto-3g                  1        1   1s
+
+
+                                 NWChem SCF Module
+                                 -----------------
+
+
+
+  ao basis        = "ao basis"
+  functions       =     7
+  atoms           =     3
+  closed shells   =     5
+  open shells     =     0
+  charge          =   0.00
+  wavefunction    = RHF 
+  input vectors   = atomic
+  output vectors  = ./h2o_sto3g_dat.movecs
+  use symmetry    = T
+  symmetry adapt  = T
+
+
+ Summary of "ao basis" -> "ao basis" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ O                           sto-3g                  3        5   2s1p
+ H1                          sto-3g                  1        1   1s
+ H2                          sto-3g                  1        1   1s
+
+
+      Symmetry analysis of basis
+      --------------------------
+
+        a'          6
+        a"          1
+
+
+ Forming initial guess at       0.0s
+
+
+      Superposition of Atomic Density Guess
+      -------------------------------------
+
+ Sum of atomic energies:         -74.71095592
+
+      Non-variational initial energy
+      ------------------------------
+
+ Total energy =     -74.363237
+ 1-e energy   =    -119.623165
+ 2-e energy   =      37.257562
+ HOMO         =      -0.230976
+ LUMO         =       0.355438
+
+
+      Symmetry analysis of molecular orbitals - initial
+      -------------------------------------------------
+
+  Numbering of irreducible representations: 
+
+     1 a'          2 a"      
+
+  Orbital symmetries:
+
+     1 a'          2 a'          3 a'          4 a'          5 a"      
+     6 a'          7 a'      
+
+
+ Starting SCF solution at       0.0s
+
+
+
+ ----------------------------------------------
+         Quadratically convergent ROHF
+
+ Convergence threshold     :          1.000E-10
+ Maximum no. of iterations :           30
+ Final Fock-matrix accuracy:          1.000E-25
+ ----------------------------------------------
+
+ Warning: symmetry breaking in RHF:    4.4972335206657440E-017
+
+ #quartets = 1.200D+02 #integrals = 2.770D+02 #direct =  0.0% #cached =100.0%
+
+
+ Integral file          = ./h2o_sto3g_dat.aoints.0
+ Record size in doubles =    65536    No. of integs per rec  =    43688
+ Max. records in memory =        2    Max. records in file   =  4026709
+ No. of bits per label  =        8    No. of bits per value  =       64
+
+
+              iter       energy          gnorm     gmax       time
+             ----- ------------------- --------- --------- --------
+                 1      -74.8897019630  7.16D-01  5.83D-01      0.0
+ Warning: symmetry breaking in RHF:    5.6706707360250125E-017
+ Warning: symmetry breaking in RHF:    1.1036183763070306E-016
+                 2      -74.9409903790  1.35D-01  9.79D-02      0.0
+ Warning: symmetry breaking in RHF:    1.1897550866453238E-016
+                 3      -74.9420771806  4.28D-03  3.96D-03      0.0
+ Warning: symmetry breaking in RHF:    1.1937838879665873E-016
+                 4      -74.9420800579  1.22D-06  7.48D-07      0.0
+ Warning: symmetry breaking in RHF:    1.1937863637656487E-016
+                 5      -74.9420800579  1.68D-13  1.54D-13      0.0
+
+
+       Final RHF  results 
+       ------------------ 
+
+         Total SCF energy =    -74.942080057879
+      One-electron energy =   -120.199556718470
+      Two-electron energy =     37.255109686425
+ Nuclear repulsion energy =      8.002366974166
+
+        Time for solution =      0.0s
+
+
+
+       Symmetry analysis of molecular orbitals - final
+       -----------------------------------------------
+
+  Numbering of irreducible representations: 
+
+     1 a'          2 a"      
+
+  Orbital symmetries:
+
+     1 a'          2 a'          3 a'          4 a'          5 a"      
+     6 a'          7 a'      
+
+             Final eigenvalues
+             -----------------
+
+              1      
+    1  -20.2629
+    2   -1.2097
+    3   -0.5480
+    4   -0.4365
+    5   -0.3876
+    6    0.4776
+    7    0.5881
+
+                       ROHF Final Molecular Orbital Analysis
+                       -------------------------------------
+
+ Vector    2  Occ=2.000000D+00  E=-1.209698D+00  Symmetry=a'
+              MO Center= -1.5D-15,  7.3D-02, -1.7D-17, r^2= 5.5D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     2      0.885736  1 O  s                  1     -0.239159  1 O  s          
+
+ Vector    3  Occ=2.000000D+00  E=-5.479642D-01  Symmetry=a'
+              MO Center=  8.3D-16,  2.4D-01, -4.5D-31, r^2= 9.5D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     3      0.607285  1 O  px                 6      0.452998  2 H  s          
+     7     -0.452998  3 H  s          
+
+ Vector    4  Occ=2.000000D+00  E=-4.365279D-01  Symmetry=a'
+              MO Center=  3.2D-15, -2.0D-02,  9.3D-17, r^2= 7.7D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     4      0.747430  1 O  py                 2     -0.479586  1 O  s          
+     6      0.329471  2 H  s                  7      0.329471  3 H  s          
+
+ Vector    5  Occ=2.000000D+00  E=-3.875869D-01  Symmetry=a"
+              MO Center=  5.5D-32, -7.6D-02, -7.4D-17, r^2= 4.2D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     5      1.000000  1 O  pz         
+
+ Vector    6  Occ=0.000000D+00  E= 4.776192D-01  Symmetry=a'
+              MO Center= -3.4D-15,  4.5D-01, -3.0D-18, r^2= 1.2D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     4      0.738490  1 O  py                 6     -0.709849  2 H  s          
+     7     -0.709849  3 H  s                  2      0.669578  1 O  s          
+
+ Vector    7  Occ=0.000000D+00  E= 5.881384D-01  Symmetry=a'
+              MO Center=  9.4D-16,  3.1D-01,  1.7D-32, r^2= 1.1D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     3      0.919233  1 O  px                 6     -0.732461  2 H  s          
+     7      0.732461  3 H  s          
+
+
+ center of mass
+ --------------
+ x =   0.00000000 y =   0.00000402 z =   0.00000000
+
+ moments of inertia (a.u.)
+ ------------------
+           2.931836975553           0.000000000000           0.000000000000
+           0.000000000000           5.408298863820           0.000000000000
+           0.000000000000           0.000000000000           8.340135839373
+
+  Mulliken analysis of the total density
+  --------------------------------------
+
+    Atom       Charge   Shell Charges
+ -----------   ------   -------------------------------------------------------
+    1 O    8     8.25   2.00  1.87  4.38
+    2 H    1     0.87   0.87
+    3 H    1     0.87   0.87
+
+       Multipole analysis of the density wrt the origin
+       ------------------------------------------------
+
+     L   x y z        total         open         nuclear
+     -   - - -        -----         ----         -------
+     0   0 0 0     -0.000000      0.000000     10.000000
+
+     1   1 0 0     -0.000000      0.000000      0.000000
+     1   0 1 0      0.603522      0.000000      1.127335
+     1   0 0 1     -0.000000      0.000000      0.000000
+
+     2   2 0 0     -3.209445      0.000000      5.366308
+     2   1 1 0     -0.000000      0.000000      0.000000
+     2   1 0 1     -0.000000      0.000000      0.000000
+     2   0 2 0     -3.870094      0.000000      2.747624
+     2   0 1 1     -0.000000      0.000000      0.000000
+     2   0 0 2     -4.615179      0.000000      0.000000
+
+
+ Parallel integral file used       1 records with       0 large values
+
+                              NWChem Gradients Module
+                              -----------------------
+
+
+
+  wavefunction    =   RHF     
+
+  Using symmetry
+ HVD:                     1                    1                    5
+ HVD:                     2                    6                    6
+ HVD:                     3                    7                    7
+ HVD: nao:                     7
+ HVD: dS:  2 4 6   1 1 1
+ HVD: dS:  2 4 6   1 2 2
+ HVD: dS:  2 4 6   1 3 3
+ HVD: dS:  2 4 6   1 3 4
+ HVD: dS:  2 4 6   1 3 5
+ HVD: dS:  3 5 7   1 1 1
+ HVD: dS:  3 5 7   1 2 2
+ HVD: dS:  3 5 7   1 3 3
+ HVD: dS:  3 5 7   1 3 4
+ HVD: dS:  3 5 7   1 3 5
+ HVD: dS:  3 5 7   2 4 6
+tensor_t overlap_nuc(TA::World& world) {
+    TA::detail::tensor3_il<double> il{
+      {
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  1
+           -0.0381198221642141, // iao,jao,icrd,iat=  1  6 1  1
+            0.0381198221642141  // iao,jao,icrd,iat=  1  7 1  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  1
+           -0.0297826365227336, // iao,jao,icrd,iat=  1  6 2  1
+           -0.0297826365227336  // iao,jao,icrd,iat=  1  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  1  7 3  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  2
+            0.0381198221642141, // iao,jao,icrd,iat=  1  6 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  1  7 1  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  2
+            0.0297826365227336, // iao,jao,icrd,iat=  1  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  1  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  1  7 3  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 1  3
+           -0.0381198221642141  // iao,jao,icrd,iat=  1  7 1  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 2  3
+            0.0297826365227336  // iao,jao,icrd,iat=  1  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  1  7 3  3
+        }
+      },
+      {
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  1
+           -0.2431653159521778, // iao,jao,icrd,iat=  2  6 1  1
+            0.2431653159521778  // iao,jao,icrd,iat=  2  7 1  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  1
+           -0.1899826339362645, // iao,jao,icrd,iat=  2  6 2  1
+           -0.1899826339362645  // iao,jao,icrd,iat=  2  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  2  7 3  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  2
+            0.2431653159521778, // iao,jao,icrd,iat=  2  6 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  2  7 1  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  2
+            0.1899826339362645, // iao,jao,icrd,iat=  2  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  2  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  2  7 3  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 1  3
+           -0.2431653159521778  // iao,jao,icrd,iat=  2  7 1  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 2  3
+            0.1899826339362645  // iao,jao,icrd,iat=  2  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  2  7 3  3
+        }
+      },
+      {
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  1
+           -0.0637270069214003, // iao,jao,icrd,iat=  3  6 1  1
+           -0.0637270069214003  // iao,jao,icrd,iat=  3  7 1  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  1
+           -0.1778255136323591, // iao,jao,icrd,iat=  3  6 2  1
+            0.1778255136323591  // iao,jao,icrd,iat=  3  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  3  7 3  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  2
+            0.0637270069214003, // iao,jao,icrd,iat=  3  6 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  3  7 1  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  2
+            0.1778255136323591, // iao,jao,icrd,iat=  3  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  3  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  3  7 3  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 1  3
+            0.0637270069214003  // iao,jao,icrd,iat=  3  7 1  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 2  3
+           -0.1778255136323591  // iao,jao,icrd,iat=  3  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  3  7 3  3
+        }
+      },
+      {
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  1
+           -0.1778255136323591, // iao,jao,icrd,iat=  4  6 1  1
+            0.1778255136323591  // iao,jao,icrd,iat=  4  7 1  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  1
+            0.0249446934333873, // iao,jao,icrd,iat=  4  6 2  1
+            0.0249446934333873  // iao,jao,icrd,iat=  4  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  4  7 3  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  2
+            0.1778255136323591, // iao,jao,icrd,iat=  4  6 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  4  7 1  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  2
+           -0.0249446934333873, // iao,jao,icrd,iat=  4  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  4  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  4  7 3  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 1  3
+           -0.1778255136323591  // iao,jao,icrd,iat=  4  7 1  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 2  3
+           -0.0249446934333873  // iao,jao,icrd,iat=  4  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  4  7 3  3
+        }
+      },
+      {
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 1  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  1
+            0.1638779920769684, // iao,jao,icrd,iat=  5  6 3  1
+            0.1638779920769684  // iao,jao,icrd,iat=  5  7 3  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 1  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  2
+           -0.1638779920769684, // iao,jao,icrd,iat=  5  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 3  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  3
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 1  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 3  3
+           -0.1638779920769684  // iao,jao,icrd,iat=  5  7 3  3
+        }
+      },
+      {
+        {
+           -0.0381198221642141, // iao,jao,icrd,iat=  6  1 1  1
+           -0.2431653159521778, // iao,jao,icrd,iat=  6  2 1  1
+           -0.0637270069214003, // iao,jao,icrd,iat=  6  3 1  1
+           -0.1778255136323591, // iao,jao,icrd,iat=  6  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 1  1
+        },
+        {
+           -0.0297826365227336, // iao,jao,icrd,iat=  6  1 2  1
+           -0.1899826339362645, // iao,jao,icrd,iat=  6  2 2  1
+           -0.1778255136323591, // iao,jao,icrd,iat=  6  3 2  1
+            0.0249446934333873, // iao,jao,icrd,iat=  6  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  1
+            0.1638779920769684, // iao,jao,icrd,iat=  6  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 3  1
+        },
+        {
+            0.0381198221642141, // iao,jao,icrd,iat=  6  1 1  2
+            0.2431653159521778, // iao,jao,icrd,iat=  6  2 1  2
+            0.0637270069214003, // iao,jao,icrd,iat=  6  3 1  2
+            0.1778255136323591, // iao,jao,icrd,iat=  6  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 1  2
+            0.1468568647577873  // iao,jao,icrd,iat=  6  7 1  2
+        },
+        {
+            0.0297826365227336, // iao,jao,icrd,iat=  6  1 2  2
+            0.1899826339362645, // iao,jao,icrd,iat=  6  2 2  2
+            0.1778255136323591, // iao,jao,icrd,iat=  6  3 2  2
+           -0.0249446934333873, // iao,jao,icrd,iat=  6  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  2
+           -0.1638779920769684, // iao,jao,icrd,iat=  6  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 3  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 1  3
+           -0.1468568647577873  // iao,jao,icrd,iat=  6  7 1  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 3  3
+        }
+      },
+      {
+        {
+            0.0381198221642141, // iao,jao,icrd,iat=  7  1 1  1
+            0.2431653159521778, // iao,jao,icrd,iat=  7  2 1  1
+           -0.0637270069214003, // iao,jao,icrd,iat=  7  3 1  1
+            0.1778255136323591, // iao,jao,icrd,iat=  7  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 1  1
+        },
+        {
+           -0.0297826365227336, // iao,jao,icrd,iat=  7  1 2  1
+           -0.1899826339362645, // iao,jao,icrd,iat=  7  2 2  1
+            0.1778255136323591, // iao,jao,icrd,iat=  7  3 2  1
+            0.0249446934333873, // iao,jao,icrd,iat=  7  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  7  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  4 3  1
+            0.1638779920769684, // iao,jao,icrd,iat=  7  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  7  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 1  2
+            0.1468568647577873, // iao,jao,icrd,iat=  7  6 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 1  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  7  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  7  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  2
+        },
+        {
+           -0.0381198221642141, // iao,jao,icrd,iat=  7  1 1  3
+           -0.2431653159521778, // iao,jao,icrd,iat=  7  2 1  3
+            0.0637270069214003, // iao,jao,icrd,iat=  7  3 1  3
+           -0.1778255136323591, // iao,jao,icrd,iat=  7  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 1  3
+           -0.1468568647577873, // iao,jao,icrd,iat=  7  6 1  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 1  3
+        },
+        {
+            0.0297826365227336, // iao,jao,icrd,iat=  7  1 2  3
+            0.1899826339362645, // iao,jao,icrd,iat=  7  2 2  3
+           -0.1778255136323591, // iao,jao,icrd,iat=  7  3 2  3
+           -0.0249446934333873, // iao,jao,icrd,iat=  7  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  7  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  4 3  3
+           -0.1638779920769684, // iao,jao,icrd,iat=  7  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  3
+        }
+      }
+    };
+    return tensor_t(TA::TSpArrayD(world, il));
+}
+}
+
+
+tensor_t hcore_nuc(TA::World& world) {
+    TA::detail::tensor3_il<double> il{
+      {
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  1
+           -0.0097588325062343, // iao,jao,icrd,iat=  1  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  1
+           -1.2290908909810114, // iao,jao,icrd,iat=  1  6 1  1
+            1.2290908909810114  // iao,jao,icrd,iat=  1  7 1  1
+        },
+        {
+           -0.2849642426102228, // iao,jao,icrd,iat=  1  1 2  1
+           -0.0674521579906719, // iao,jao,icrd,iat=  1  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  1
+           -0.0015508398822721, // iao,jao,icrd,iat=  1  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  1
+           -0.9705480472675295, // iao,jao,icrd,iat=  1  6 2  1
+           -0.9705480472675295  // iao,jao,icrd,iat=  1  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  1
+            0.0113096723885651, // iao,jao,icrd,iat=  1  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  1  7 3  1
+        },
+        {
+            0.1823677739741057, // iao,jao,icrd,iat=  1  1 1  2
+            0.0431671699923913, // iao,jao,icrd,iat=  1  2 1  2
+            0.0048794162531166, // iao,jao,icrd,iat=  1  3 1  2
+            0.0082303062781386, // iao,jao,icrd,iat=  1  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  2
+            1.2361368680264222, // iao,jao,icrd,iat=  1  6 1  2
+            0.0070459770454109  // iao,jao,icrd,iat=  1  7 1  2
+        },
+        {
+            0.1424821213051114, // iao,jao,icrd,iat=  1  1 2  2
+            0.0337260789953360, // iao,jao,icrd,iat=  1  2 2  2
+            0.0082303062781386, // iao,jao,icrd,iat=  1  3 2  2
+            0.0007754199411361, // iao,jao,icrd,iat=  1  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  2
+            0.9654122454465440, // iao,jao,icrd,iat=  1  6 2  2
+            0.0051358018209855  // iao,jao,icrd,iat=  1  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  2
+           -0.0056548361942843, // iao,jao,icrd,iat=  1  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  1  7 3  2
+        },
+        {
+           -0.1823677739741057, // iao,jao,icrd,iat=  1  1 1  3
+           -0.0431671699923913, // iao,jao,icrd,iat=  1  2 1  3
+            0.0048794162531166, // iao,jao,icrd,iat=  1  3 1  3
+           -0.0082303062781386, // iao,jao,icrd,iat=  1  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  3
+           -0.0070459770454109, // iao,jao,icrd,iat=  1  6 1  3
+           -1.2361368680264222  // iao,jao,icrd,iat=  1  7 1  3
+        },
+        {
+            0.1424821213051114, // iao,jao,icrd,iat=  1  1 2  3
+            0.0337260789953360, // iao,jao,icrd,iat=  1  2 2  3
+           -0.0082303062781386, // iao,jao,icrd,iat=  1  3 2  3
+            0.0007754199411361, // iao,jao,icrd,iat=  1  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  3
+            0.0051358018209855, // iao,jao,icrd,iat=  1  6 2  3
+            0.9654122454465440  // iao,jao,icrd,iat=  1  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  3
+           -0.0056548361942843, // iao,jao,icrd,iat=  1  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  1  7 3  3
+        }
+      },
+      {
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  1
+           -0.1018516185328595, // iao,jao,icrd,iat=  2  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  1
+           -2.1036848243534050, // iao,jao,icrd,iat=  2  6 1  1
+            2.1036848243534045  // iao,jao,icrd,iat=  2  7 1  1
+        },
+        {
+           -0.0674521579906719, // iao,jao,icrd,iat=  2  1 2  1
+           -0.2723472117634180, // iao,jao,icrd,iat=  2  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  1
+           -0.0083231748349233, // iao,jao,icrd,iat=  2  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  1
+           -1.6848043071028886, // iao,jao,icrd,iat=  2  6 2  1
+           -1.6848043071028886  // iao,jao,icrd,iat=  2  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  1
+            0.1382198050330929, // iao,jao,icrd,iat=  2  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  2  7 3  1
+        },
+        {
+            0.0431671699923913, // iao,jao,icrd,iat=  2  1 1  2
+            0.1742932878258852, // iao,jao,icrd,iat=  2  2 1  2
+            0.0509258092664295, // iao,jao,icrd,iat=  2  3 1  2
+            0.0937827033499671, // iao,jao,icrd,iat=  2  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  2
+            2.1614196859481529, // iao,jao,icrd,iat=  2  6 1  2
+            0.0577348615947480  // iao,jao,icrd,iat=  2  7 1  2
+        },
+        {
+            0.0337260789953360, // iao,jao,icrd,iat=  2  1 2  2
+            0.1361736058817090, // iao,jao,icrd,iat=  2  2 2  2
+            0.0937827033499671, // iao,jao,icrd,iat=  2  3 2  2
+            0.0041615874174622, // iao,jao,icrd,iat=  2  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  2
+            1.6641961300842811, // iao,jao,icrd,iat=  2  6 2  2
+            0.0206081770186076  // iao,jao,icrd,iat=  2  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  2
+           -0.0691099025165466, // iao,jao,icrd,iat=  2  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  2  7 3  2
+        },
+        {
+           -0.0431671699923913, // iao,jao,icrd,iat=  2  1 1  3
+           -0.1742932878258852, // iao,jao,icrd,iat=  2  2 1  3
+            0.0509258092664295, // iao,jao,icrd,iat=  2  3 1  3
+           -0.0937827033499671, // iao,jao,icrd,iat=  2  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  3
+           -0.0577348615947480, // iao,jao,icrd,iat=  2  6 1  3
+           -2.1614196859481529  // iao,jao,icrd,iat=  2  7 1  3
+        },
+        {
+            0.0337260789953360, // iao,jao,icrd,iat=  2  1 2  3
+            0.1361736058817090, // iao,jao,icrd,iat=  2  2 2  3
+           -0.0937827033499671, // iao,jao,icrd,iat=  2  3 2  3
+            0.0041615874174622, // iao,jao,icrd,iat=  2  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  3
+            0.0206081770186076, // iao,jao,icrd,iat=  2  6 2  3
+            1.6641961300842811  // iao,jao,icrd,iat=  2  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  3
+           -0.0691099025165466, // iao,jao,icrd,iat=  2  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  2  7 3  3
+        }
+      },
+      {
+        {
+           -0.0097588325062343, // iao,jao,icrd,iat=  3  1 1  1
+           -0.1018516185328595, // iao,jao,icrd,iat=  3  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  1
+           -0.0954633265346905, // iao,jao,icrd,iat=  3  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  1
+           -0.5761914344389333, // iao,jao,icrd,iat=  3  6 1  1
+           -0.5761914344389333  // iao,jao,icrd,iat=  3  7 1  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  1
+           -0.3762532196569564, // iao,jao,icrd,iat=  3  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  1
+           -1.2707159148263736, // iao,jao,icrd,iat=  3  6 2  1
+            1.2707159148263736  // iao,jao,icrd,iat=  3  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  3  7 3  1
+        },
+        {
+            0.0048794162531166, // iao,jao,icrd,iat=  3  1 1  2
+            0.0509258092664295, // iao,jao,icrd,iat=  3  2 1  2
+            0.1726141126277088, // iao,jao,icrd,iat=  3  3 1  2
+            0.0477316632673453, // iao,jao,icrd,iat=  3  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  2
+            0.5938729316648257, // iao,jao,icrd,iat=  3  6 1  2
+           -0.0176814972258924  // iao,jao,icrd,iat=  3  7 1  2
+        },
+        {
+            0.0082303062781386, // iao,jao,icrd,iat=  3  1 2  2
+            0.0937827033499671, // iao,jao,icrd,iat=  3  2 2  2
+            0.1881266098284782, // iao,jao,icrd,iat=  3  3 2  2
+            0.0240121427315024, // iao,jao,icrd,iat=  3  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  2
+            1.2746216789198137, // iao,jao,icrd,iat=  3  6 2  2
+            0.0039057640934403  // iao,jao,icrd,iat=  3  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  2
+           -0.0340878070748194, // iao,jao,icrd,iat=  3  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  3  7 3  2
+        },
+        {
+            0.0048794162531166, // iao,jao,icrd,iat=  3  1 1  3
+            0.0509258092664295, // iao,jao,icrd,iat=  3  2 1  3
+           -0.1726141126277088, // iao,jao,icrd,iat=  3  3 1  3
+            0.0477316632673453, // iao,jao,icrd,iat=  3  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  3
+           -0.0176814972258924, // iao,jao,icrd,iat=  3  6 1  3
+            0.5938729316648257  // iao,jao,icrd,iat=  3  7 1  3
+        },
+        {
+           -0.0082303062781386, // iao,jao,icrd,iat=  3  1 2  3
+           -0.0937827033499671, // iao,jao,icrd,iat=  3  2 2  3
+            0.1881266098284782, // iao,jao,icrd,iat=  3  3 2  3
+           -0.0240121427315024, // iao,jao,icrd,iat=  3  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  3
+           -0.0039057640934403, // iao,jao,icrd,iat=  3  6 2  3
+           -1.2746216789198137  // iao,jao,icrd,iat=  3  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  3
+            0.0340878070748194, // iao,jao,icrd,iat=  3  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  3  7 3  3
+        }
+      },
+      {
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  1
+           -0.0954633265346905, // iao,jao,icrd,iat=  4  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  1
+           -1.2707159148263736, // iao,jao,icrd,iat=  4  6 1  1
+            1.2707159148263736  // iao,jao,icrd,iat=  4  7 1  1
+        },
+        {
+           -0.0015508398822721, // iao,jao,icrd,iat=  4  1 2  1
+           -0.0083231748349233, // iao,jao,icrd,iat=  4  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  1
+           -0.2117809344150415, // iao,jao,icrd,iat=  4  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  1
+            0.0268600470179569, // iao,jao,icrd,iat=  4  6 2  1
+            0.0268600470179569  // iao,jao,icrd,iat=  4  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  1
+            0.0532649267666039, // iao,jao,icrd,iat=  4  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  4  7 3  1
+        },
+        {
+            0.0082303062781386, // iao,jao,icrd,iat=  4  1 1  2
+            0.0937827033499671, // iao,jao,icrd,iat=  4  2 1  2
+            0.0477316632673453, // iao,jao,icrd,iat=  4  3 1  2
+            0.2037084698709611, // iao,jao,icrd,iat=  4  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  2
+            1.3209239684388636, // iao,jao,icrd,iat=  4  6 1  2
+            0.0502080536124901  // iao,jao,icrd,iat=  4  7 1  2
+        },
+        {
+            0.0007754199411361, // iao,jao,icrd,iat=  4  1 2  2
+            0.0041615874174622, // iao,jao,icrd,iat=  4  2 2  2
+            0.0240121427315024, // iao,jao,icrd,iat=  4  3 2  2
+            0.1058904672075208, // iao,jao,icrd,iat=  4  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  2
+           -0.0283596737423090, // iao,jao,icrd,iat=  4  6 2  2
+            0.0014996267243520  // iao,jao,icrd,iat=  4  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  2
+           -0.0266324633833020, // iao,jao,icrd,iat=  4  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  4  7 3  2
+        },
+        {
+           -0.0082303062781386, // iao,jao,icrd,iat=  4  1 1  3
+           -0.0937827033499671, // iao,jao,icrd,iat=  4  2 1  3
+            0.0477316632673453, // iao,jao,icrd,iat=  4  3 1  3
+           -0.2037084698709611, // iao,jao,icrd,iat=  4  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  3
+           -0.0502080536124901, // iao,jao,icrd,iat=  4  6 1  3
+           -1.3209239684388636  // iao,jao,icrd,iat=  4  7 1  3
+        },
+        {
+            0.0007754199411361, // iao,jao,icrd,iat=  4  1 2  3
+            0.0041615874174622, // iao,jao,icrd,iat=  4  2 2  3
+           -0.0240121427315024, // iao,jao,icrd,iat=  4  3 2  3
+            0.1058904672075208, // iao,jao,icrd,iat=  4  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  3
+            0.0014996267243520, // iao,jao,icrd,iat=  4  6 2  3
+           -0.0283596737423091  // iao,jao,icrd,iat=  4  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  3
+           -0.0266324633833020, // iao,jao,icrd,iat=  4  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  4  7 3  3
+        }
+      },
+      {
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 1  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  1
+           -0.2275249663556619, // iao,jao,icrd,iat=  5  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 2  1
+        },
+        {
+            0.0113096723885651, // iao,jao,icrd,iat=  5  1 3  1
+            0.1382198050330929, // iao,jao,icrd,iat=  5  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  1
+            0.0532649267666039, // iao,jao,icrd,iat=  5  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  1
+            1.0602398708463003, // iao,jao,icrd,iat=  5  6 3  1
+            1.0602398708463003  // iao,jao,icrd,iat=  5  7 3  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  2
+            0.1456085200646393, // iao,jao,icrd,iat=  5  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 1  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  2
+            0.1137624831778309, // iao,jao,icrd,iat=  5  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 2  2
+        },
+        {
+           -0.0056548361942843, // iao,jao,icrd,iat=  5  1 3  2
+           -0.0691099025165466, // iao,jao,icrd,iat=  5  2 3  2
+           -0.0340878070748194, // iao,jao,icrd,iat=  5  3 3  2
+           -0.0266324633833020, // iao,jao,icrd,iat=  5  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  2
+           -1.0414484152718897, // iao,jao,icrd,iat=  5  6 3  2
+           -0.0187914555744109  // iao,jao,icrd,iat=  5  7 3  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  3
+           -0.1456085200646393, // iao,jao,icrd,iat=  5  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  3
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 1  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  3
+            0.1137624831778309, // iao,jao,icrd,iat=  5  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  5  7 2  3
+        },
+        {
+           -0.0056548361942843, // iao,jao,icrd,iat=  5  1 3  3
+           -0.0691099025165466, // iao,jao,icrd,iat=  5  2 3  3
+            0.0340878070748194, // iao,jao,icrd,iat=  5  3 3  3
+           -0.0266324633833020, // iao,jao,icrd,iat=  5  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  3
+           -0.0187914555744109, // iao,jao,icrd,iat=  5  6 3  3
+           -1.0414484152718897  // iao,jao,icrd,iat=  5  7 3  3
+        }
+      },
+      {
+        {
+           -1.2290908909810114, // iao,jao,icrd,iat=  6  1 1  1
+           -2.1036848243534050, // iao,jao,icrd,iat=  6  2 1  1
+           -0.5761914344389333, // iao,jao,icrd,iat=  6  3 1  1
+           -1.2707159148263736, // iao,jao,icrd,iat=  6  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  1
+           -1.2973710254121318, // iao,jao,icrd,iat=  6  6 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 1  1
+        },
+        {
+           -0.9705480472675295, // iao,jao,icrd,iat=  6  1 2  1
+           -1.6848043071028886, // iao,jao,icrd,iat=  6  2 2  1
+           -1.2707159148263736, // iao,jao,icrd,iat=  6  3 2  1
+            0.0268600470179569, // iao,jao,icrd,iat=  6  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  1
+           -1.0136230310447021, // iao,jao,icrd,iat=  6  6 2  1
+           -0.2941681489045423  // iao,jao,icrd,iat=  6  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  1
+            1.0602398708463003, // iao,jao,icrd,iat=  6  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 3  1
+        },
+        {
+            1.2361368680264222, // iao,jao,icrd,iat=  6  1 1  2
+            2.1614196859481529, // iao,jao,icrd,iat=  6  2 1  2
+            0.5938729316648257, // iao,jao,icrd,iat=  6  3 1  2
+            1.3209239684388636, // iao,jao,icrd,iat=  6  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  2
+            1.3893360256759231, // iao,jao,icrd,iat=  6  6 1  2
+            0.9409412535352530  // iao,jao,icrd,iat=  6  7 1  2
+        },
+        {
+            0.9654122454465440, // iao,jao,icrd,iat=  6  1 2  2
+            1.6641961300842811, // iao,jao,icrd,iat=  6  2 2  2
+            1.2746216789198137, // iao,jao,icrd,iat=  6  3 2  2
+           -0.0283596737423090, // iao,jao,icrd,iat=  6  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  2
+            1.0136230310447021, // iao,jao,icrd,iat=  6  6 2  2
+            0.1470840744522711  // iao,jao,icrd,iat=  6  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  2
+           -1.0414484152718897, // iao,jao,icrd,iat=  6  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 3  2
+        },
+        {
+           -0.0070459770454109, // iao,jao,icrd,iat=  6  1 1  3
+           -0.0577348615947480, // iao,jao,icrd,iat=  6  2 1  3
+           -0.0176814972258924, // iao,jao,icrd,iat=  6  3 1  3
+           -0.0502080536124901, // iao,jao,icrd,iat=  6  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  3
+           -0.0919650002637910, // iao,jao,icrd,iat=  6  6 1  3
+           -0.9409412535352530  // iao,jao,icrd,iat=  6  7 1  3
+        },
+        {
+            0.0051358018209855, // iao,jao,icrd,iat=  6  1 2  3
+            0.0206081770186076, // iao,jao,icrd,iat=  6  2 2  3
+           -0.0039057640934403, // iao,jao,icrd,iat=  6  3 2  3
+            0.0014996267243520, // iao,jao,icrd,iat=  6  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  3
+            0.1470840744522712  // iao,jao,icrd,iat=  6  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  3
+           -0.0187914555744109, // iao,jao,icrd,iat=  6  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  6  7 3  3
+        }
+      },
+      {
+        {
+            1.2290908909810114, // iao,jao,icrd,iat=  7  1 1  1
+            2.1036848243534045, // iao,jao,icrd,iat=  7  2 1  1
+           -0.5761914344389333, // iao,jao,icrd,iat=  7  3 1  1
+            1.2707159148263736, // iao,jao,icrd,iat=  7  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 1  1
+            1.2973710254121318  // iao,jao,icrd,iat=  7  7 1  1
+        },
+        {
+           -0.9705480472675295, // iao,jao,icrd,iat=  7  1 2  1
+           -1.6848043071028886, // iao,jao,icrd,iat=  7  2 2  1
+            1.2707159148263736, // iao,jao,icrd,iat=  7  3 2  1
+            0.0268600470179569, // iao,jao,icrd,iat=  7  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 2  1
+           -0.2941681489045423, // iao,jao,icrd,iat=  7  6 2  1
+           -1.0136230310447021  // iao,jao,icrd,iat=  7  7 2  1
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  7  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  4 3  1
+            1.0602398708463003, // iao,jao,icrd,iat=  7  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  1
+        },
+        {
+            0.0070459770454109, // iao,jao,icrd,iat=  7  1 1  2
+            0.0577348615947480, // iao,jao,icrd,iat=  7  2 1  2
+           -0.0176814972258924, // iao,jao,icrd,iat=  7  3 1  2
+            0.0502080536124901, // iao,jao,icrd,iat=  7  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 1  2
+            0.9409412535352530, // iao,jao,icrd,iat=  7  6 1  2
+            0.0919650002637910  // iao,jao,icrd,iat=  7  7 1  2
+        },
+        {
+            0.0051358018209855, // iao,jao,icrd,iat=  7  1 2  2
+            0.0206081770186076, // iao,jao,icrd,iat=  7  2 2  2
+            0.0039057640934403, // iao,jao,icrd,iat=  7  3 2  2
+            0.0014996267243520, // iao,jao,icrd,iat=  7  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 2  2
+            0.1470840744522711, // iao,jao,icrd,iat=  7  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  2
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  7  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  4 3  2
+           -0.0187914555744109, // iao,jao,icrd,iat=  7  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  2
+        },
+        {
+           -1.2361368680264222, // iao,jao,icrd,iat=  7  1 1  3
+           -2.1614196859481529, // iao,jao,icrd,iat=  7  2 1  3
+            0.5938729316648257, // iao,jao,icrd,iat=  7  3 1  3
+           -1.3209239684388636, // iao,jao,icrd,iat=  7  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 1  3
+           -0.9409412535352530, // iao,jao,icrd,iat=  7  6 1  3
+           -1.3893360256759231  // iao,jao,icrd,iat=  7  7 1  3
+        },
+        {
+            0.9654122454465440, // iao,jao,icrd,iat=  7  1 2  3
+            1.6641961300842811, // iao,jao,icrd,iat=  7  2 2  3
+           -1.2746216789198137, // iao,jao,icrd,iat=  7  3 2  3
+           -0.0283596737423091, // iao,jao,icrd,iat=  7  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  5 2  3
+            0.1470840744522712, // iao,jao,icrd,iat=  7  6 2  3
+            1.0136230310447021  // iao,jao,icrd,iat=  7  7 2  3
+        },
+        {
+            0.0000000000000000, // iao,jao,icrd,iat=  7  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  4 3  3
+           -1.0414484152718897, // iao,jao,icrd,iat=  7  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  7  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  3
+        }
+      }
+    };
+    return tensor_t(TA::TSpArrayD(world, il));
+}
+}
+
+
+                         RHF ENERGY GRADIENTS
+
+    atom               coordinates                        gradient
+                 x          y          z           x          y          z
+   1 O       0.000000  -0.143222   0.000000   -0.000000  -0.097443   0.000000
+   2 H1      1.638034   1.136557   0.000000    0.086299   0.048721   0.000000
+   3 H2     -1.638034   1.136557   0.000000   -0.086299   0.048721   0.000000
+
+                 ----------------------------------------
+                 |  Time  |  1-e(secs)   |  2-e(secs)   |
+                 ----------------------------------------
+                 |  CPU   |       0.00   |       0.01   |
+                 ----------------------------------------
+                 |  WALL  |       0.00   |       0.01   |
+                 ----------------------------------------
+
+ Task  times  cpu:        0.0s     wall:        0.1s
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Summary of allocated global arrays
+-----------------------------------
+  No active global arrays
+
+
+
+                         GA Statistics for process    0
+                         ------------------------------
+
+       create   destroy   get      put      acc     scatter   gather  read&inc
+calls:  370      370     1980      843      965        0        0      312     
+number of processes/call 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+bytes total:             1.79e+05 1.11e+05 4.83e+04 0.00e+00 0.00e+00 2.50e+03
+bytes remote:            0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+Max memory consumed for GA by this process: 5448 bytes
+
+MA_summarize_allocated_blocks: starting scan ...
+MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
+MA usage statistics:
+
+	allocation statistics:
+					      heap	     stack
+					      ----	     -----
+	current number of blocks	         0	         0
+	maximum number of blocks	        19	        29
+	current total bytes		         0	         0
+	maximum total bytes		   1054120	  22509256
+	maximum total K-bytes		      1055	     22510
+	maximum total M-bytes		         2	        23
+
+
+                                     CITATION
+                                     --------
+                Please cite the following reference when publishing
+                           results obtained with NWChem:
+
+          E. Aprà, E. J. Bylaska, W. A. de Jong, N. Govind, K. Kowalski,
+       T. P. Straatsma, M. Valiev, H. J. J. van Dam, Y. Alexeev, J. Anchell,
+       V. Anisimov, F. W. Aquino, R. Atta-Fynn, J. Autschbach, N. P. Bauman,
+     J. C. Becca, D. E. Bernholdt, K. Bhaskaran-Nair, S. Bogatko, P. Borowski,
+        J. Boschen, J. Brabec, A. Bruner, E. Cauët, Y. Chen, G. N. Chuev,
+      C. J. Cramer, J. Daily, M. J. O. Deegan, T. H. Dunning Jr., M. Dupuis,
+   K. G. Dyall, G. I. Fann, S. A. Fischer, A. Fonari, H. Früchtl, L. Gagliardi,
+      J. Garza, N. Gawande, S. Ghosh, K. Glaesemann, A. W. Götz, J. Hammond,
+       V. Helms, E. D. Hermes, K. Hirao, S. Hirata, M. Jacquelin, L. Jensen,
+   B. G. Johnson, H. Jónsson, R. A. Kendall, M. Klemm, R. Kobayashi, V. Konkov,
+      S. Krishnamoorthy, M. Krishnan, Z. Lin, R. D. Lins, R. J. Littlefield,
+      A. J. Logsdail, K. Lopata, W. Ma, A. V. Marenich, J. Martin del Campo,
+   D. Mejia-Rodriguez, J. E. Moore, J. M. Mullin, T. Nakajima, D. R. Nascimento,
+    J. A. Nichols, P. J. Nichols, J. Nieplocha, A. Otero-de-la-Roza, B. Palmer,
+    A. Panyala, T. Pirojsirikul, B. Peng, R. Peverati, J. Pittner, L. Pollack,
+   R. M. Richard, P. Sadayappan, G. C. Schatz, W. A. Shelton, D. W. Silverstein,
+   D. M. A. Smith, T. A. Soares, D. Song, M. Swart, H. L. Taylor, G. S. Thomas,
+            V. Tipparaju, D. G. Truhlar, K. Tsemekhman, T. Van Voorhis,
+     Á. Vázquez-Mayagoitia, P. Verma, O. Villa, A. Vishnu, K. D. Vogiatzis,
+        D. Wang, J. H. Weare, M. J. Williamson, T. L. Windus, K. Woliński,
+        A. T. Wong, Q. Wu, C. Yang, Q. Yu, M. Zacharias, Z. Zhang, Y. Zhao,
+                                and R. J. Harrison
+                        "NWChem: Past, present, and future
+                         J. Chem. Phys. 152, 184102 (2020)
+                               doi:10.1063/5.0004997
+
+                                      AUTHORS
+                                      -------
+     E. Apra, E. J. Bylaska, N. Govind, K. Kowalski, M. Valiev, W. A. de Jong,
+      T. P. Straatsma, H. J. J. van Dam, D. Wang, T. L. Windus, N. P. Bauman,
+       A. Panyala, J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec,
+    K. Lopata, S. A. Fischer, S. Krishnamoorthy, M. Jacquelin, W. Ma, M. Klemm,
+       O. Villa, Y. Chen, V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler,
+           Eric Hermes, L. Jensen, J. E. Moore, J. C. Becca, V. Konjkov,
+            D. Mejia-Rodriguez, T. Risthaus, M. Malagoli, A. Marenich,
+   A. Otero-de-la-Roza, J. Mullin, P. Nichols, R. Peverati, J. Pittner, Y. Zhao,
+        P.-D. Fan, A. Fonari, M. J. Williamson, R. J. Harrison, J. R. Rehr,
+      M. Dupuis, D. Silverstein, D. M. A. Smith, J. Nieplocha, V. Tipparaju,
+      M. Krishnan, B. E. Van Kuiken, A. Vazquez-Mayagoitia, M. Swart, Q. Wu,
+   T. Van Voorhis, A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown, G. Cisneros,
+     G. I. Fann, H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall, J. A. Nichols,
+       K. Tsemekhman, K. Wolinski, J. Anchell, D. E. Bernholdt, P. Borowski,
+       T. Clark, D. Clerc, H. Dachsel, M. J. O. Deegan, K. Dyall, D. Elwood,
+      E. Glendening, M. Gutowski, A. C. Hess, J. Jaffe, B. G. Johnson, J. Ju,
+        R. Kobayashi, R. Kutteh, Z. Lin, R. Littlefield, X. Long, B. Meng,
+      T. Nakajima, S. Niu, L. Pollack, M. Rosing, K. Glaesemann, G. Sandrone,
+      M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe, A. T. Wong, Z. Zhang.
+
+ Total times  cpu:        0.0s     wall:        0.1s

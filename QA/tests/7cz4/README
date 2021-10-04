@@ -1,0 +1,26 @@
+NSP3 Macrodomain structure
+==========================
+
+09/24/2021:
+   The original structure is 7CZ4 (stored in 7cz4.pdb).
+10/01/2021: 
+   Hydrogen atoms were added with Molprobity (http://molprobity.biochem.duke.edu/)
+   the result is stored in 7cz4FH.pdb
+10/03/2021:
+   Turns out that the original structure has missing heavy atoms.
+   Generated 7cz4_fixed.pdb by running 7cz4.pdb through pdbfixer with
+   the command:
+   pdbfixer 7cz4.pdb --add-atoms=heavy
+   Feeding the result through Molprobity generated 7cz4_fixedFH.pdb
+   The run:
+   pdbfixer 7cz4_fixedFH.pdb --add-atoms=hydrogen
+   to add the Hydrogen at the N-termini (which Molprobity ignores for some reason)
+   to generate 7cz4_fixedFH_allH.pdb
+   Finally the fact that the two APR residues had the same residue id caused
+   problems. Because the two residues appeared in succession with the same name
+   and the same residue id NWChem was not able to detect they were two different
+   instances of the same residue (the code seems to ignore the chain id). 
+   Renumbering the second instance fixed this issue (7cz4_fixedFH_allH_nwc.pdb).
+   Finally, the active protein is in monomer form (https://dx.doi.org/10.1021/acsinfecdis.0c00441)
+   hence we removed chain B to get a structure that is close to the solution
+   structure. This structure is stored in 7cz4_fixedFH_allH_nwc_small.pdb

@@ -1,0 +1,16 @@
+echo
+start md_dat
+
+prepare
+  #print sequence atomtypes where
+  #print sequence 
+  system 7cz4_md
+  new_rst
+  new_top new_seq
+  source 7cz4_fixedFH_allH_nwc_small.pdb
+  #solvent name HOH model spce
+  #solvate 
+  vacuo
+end
+
+task prepare

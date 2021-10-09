@@ -1,0 +1,19 @@
+echo
+start md_dat
+
+set sp:adios_mode Null
+
+md
+  msa 10000
+  system 7cz4_md
+  leapfrog
+  step 0.001 equil 0 data 100000
+  isotherm 310.00 trelax 0.1
+  isobar
+  noshake
+  print step 100 extra out6
+  record coord 100 veloc 100 force 100 ascii
+  #veladj 7715 8958 0.0  0.03125 0.0
+end
+
+task md dynamics

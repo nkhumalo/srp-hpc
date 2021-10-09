@@ -1,0 +1,23 @@
+echo
+start md_dat
+
+memory stack 1024 mb heap 100 mb global 512 mb
+
+set sp:adios_mode Null
+
+md
+  msa 10000
+  system 7cz4_md
+  leapfrog
+  step 0.0001 equil 0 data 100000
+  isotherm 310.00 trelax 0.1
+  isobar
+  noshake
+  print step 100 out6
+  record rest 100 coord 100
+  vreass 1 310.00 fraction 0.1 max
+  #veladj 7715 8958 0.0  0.125 0.0
+end
+
+task md dynamics
+

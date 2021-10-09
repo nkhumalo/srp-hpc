@@ -1,0 +1,25 @@
+echo
+start md_dat
+
+prepare
+  system 7cz4_md
+  new_rst
+  new_top new_seq
+  source start_md_neutral.pdb
+  #solvent name HOH model spce
+  #solvate
+  vacuo
+end
+
+#task prepare
+
+analysis
+  system 7cz4_md
+  reference 7cz4_md.rst
+  file 7cz4_md.trj
+  write 1 solute 7cz4_md.pdb
+  frames 1 15000 1
+  copy solute 7cz4_md.crd
+end
+
+task analysis

@@ -455,7 +455,7 @@
       double precision, pointer :: gca(:,:)
       double precision, pointer :: gcb(:,:)
 !
-      capfactor = 100.0d0
+      capfactor = 10000.0d0
       nproc = ga_nnodes()
       iproc = ga_nodeid()
 !

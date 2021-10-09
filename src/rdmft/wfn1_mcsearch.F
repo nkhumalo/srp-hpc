@@ -246,6 +246,7 @@ c
         if (.not.ostop) then
 cDEBUG
 c         write(*,*)"reject 1"
+c         call util_flush(6)
 cDEBUG
           call wfn1_sgn_offdiag(g_momo1)
           call wfn1_sgn_offdiag(g_momo2)
@@ -280,6 +281,7 @@ cDEBUG
         if (.not.ostop) then
 cDEBUG
 c         write(*,*)"reject 2", Em1,E0,Ep1
+c         call util_flush(6)
 cDEBUG
 c         The raw step was rejected so update the reject box
           call wfn1_max_box(wfn1_rejct,g_momo1,g_momo2,
@@ -294,6 +296,14 @@ c         The raw step was rejected so update the reject box
           endif
           Emin = aa*xx*xx+bb*xx+cc
           if (abs(xx).gt.1.0d-5) then
+c           call wfn1_write_parabola("parabole",fock_count,aa,bb,cc)
+c           call wfn1_write_line("line",fock_count+1,
+c    &           wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+c    &           wfn1_trial_wv,wfn1_trial_en,
+c    &           g_bfbf1,g_bfbf2,g_bfbf3,g_bfbf4,
+c    &           g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,g_momo5,g_momo6,
+c    &           gz_momo1,gz_momo2,gz_momo3,gz_momo4,
+c    &           g_4t1,g_4t2)
             call ga_scale(g_momo1,xx)
             call ga_scale(g_momo2,xx)
             call wfn1_skew_to_rot(g_momo1,g_momo3)
@@ -329,12 +339,15 @@ cDEBUG
             if (okeep) then
               call wfn1_copy_wfn(wfn1_trial_wv,wfn1_wave)
               Ewf = wfn1_trial_en%E_tot
-              E0  = Ewf
               call wfn1_max_box(wfn1_accpt,g_momo1,g_momo2,
      &                          gz_momo1,gz_momo2)
               call wfn1_dir_store_vec()
 c             call wfn1_write_random("direction",fock_count,g_momo1,
 c    &                               g_momo2,gz_momo1,gz_momo2)
+c             call wfn1_write_points("points",fock_count,
+c    &                               -1.0d0,0.0d0,1.0d0,xx,
+c    &                               Em1,E0,Ep1,Emin,Ewf)
+              E0  = Ewf
             endif
 cDEBUG
 c           if (okeep) then
@@ -342,6 +355,7 @@ c             write(*,*)'accept 3',xx
 c           else
 c             write(*,*)'reject 3',xx
 c           endif
+c           call util_flush(6)
 cDEBUG
           endif
         endif
@@ -512,6 +526,9 @@ c
 c
       integer, intent(in) :: g_skew ! Global array
       integer, intent(in) :: g_rot  ! Global array
+      integer             :: ioption ! choose the transformation:
+                                     ! 1. tangens based
+                                     ! 2. angle based
 c
       double precision, allocatable :: buf(:,:)
       complex(kind=8),  allocatable :: zbuf(:,:)
@@ -525,6 +542,8 @@ c
       integer :: itype, jj
       double precision :: cc
       double precision :: ct
+c
+      ioption = 2
 c
       iproc = ga_nodeid()
       nproc = ga_nnodes()
@@ -541,9 +560,17 @@ c
           do jj = jlo, jhi
             ct = 1.0d0
             do ii = ilo, ihi
-              cc = 1.0d0/sqrt(buf(ii,jj)*buf(ii,jj)+1.0d0)
+              if (ioption.eq.1) then
+                cc = 1.0d0/sqrt(buf(ii,jj)*buf(ii,jj)+1.0d0)
+              elseif (ioption.eq.2) then
+                cc = cos(buf(ii,jj))
+              endif
               ct = ct*cc
-              buf(ii,jj) = buf(ii,jj)*cc
+              if (ioption.eq.1) then
+                buf(ii,jj) = buf(ii,jj)*cc
+              elseif (ioption.eq.2) then
+                buf(ii,jj) = sin(buf(ii,jj))
+              endif
             enddo
             buf(jj,jj) = ct
           enddo
@@ -557,9 +584,17 @@ c
           do jj = jlo, jhi
             ct = 1.0d0
             do ii = ilo, ihi
-              cc = 1.0d0/sqrt(abs(zbuf(ii,jj))**2+1.0d0)
+              if (ioption.eq.1) then
+                cc = 1.0d0/sqrt(abs(zbuf(ii,jj))**2+1.0d0)
+              elseif (ioption.eq.2) then
+                cc = cos(abs(zbuf(ii,jj)))
+              endif
               ct = ct*cc
-              zbuf(ii,jj) = zbuf(ii,jj)*cc
+              if (ioption.eq.1) then
+                zbuf(ii,jj) = zbuf(ii,jj)*cc
+              elseif (ioption.eq.2) then
+                zbuf(ii,jj) = sin(zbuf(ii,jj))
+              endif
             enddo
             zbuf(jj,jj) = complex(ct,0.0d0)
           enddo

@@ -7,7 +7,7 @@
      $     d_ik6, d_jl6, d_il6, d_jk6,
      $     d_ik7, d_jl7, d_il7, d_jk7,
      $     d_ik8, d_jl8, d_il8, d_jk8,
-     $     frc, g_dens, g_force, blen, geom, basis, 
+     $     frc, g_dens, g_force, blen, geom, basin, basin2,
      $     nproc, nat, lscr, scr, leri, eri, labels,    
      $     maxq, list, q4, tol2e,
      $     nsh, oactive, oskel, scftype, omp2,
@@ -46,7 +46,8 @@ c
       double precision frc(3, nat) ! [input/output] 2-e piece of gradient
       integer g_dens(*)         ! [input] array of global density handles
       integer g_force           ! [input] handle to total gradients (global)
-      integer basis, geom       ! [input] familiar handles
+      integer basin, geom       ! [input] familiar handles
+      integer basin2
       integer nproc             ! [input] No. of processors
       integer lscr              ! [input] Size of scratch for integrals
       double precision scr(lscr) ![scratch] Scratch space for integrals
@@ -109,7 +110,11 @@ C-------------------------local variables-----------------------------
       logical oij, okl, oikjl, ouhf, orohf, omcscf, omore, exso
       logical intbd_init4c, intbd_2e4c
       external intbd_init4c, intbd_2e4c
+c
+      integer  basis
 c     
+      basis = basin
+c
       smax  = schwarz_max()
       q4max = 8.0d0*(sym_number_ops(geom) + 1)*10000.0d0 ! 10000 for max(psum)
 c

@@ -21,7 +21,7 @@ c
       external int_normalize
 
       integer rtdb              ! [input] database handle
-      integer geom, basis       ! handles
+      integer geom, basis, basis2 ! handles
       logical status
       character*255 title
 c      double precision charge
@@ -43,12 +43,27 @@ c
      $     call errquit('gradients: geom_create?', 0, GEOM_ERR)
       if (.not. geom_rtdb_load(rtdb, geom, 'geometry'))
      $     call errquit('gradients: no geometry ', 0, GEOM_ERR)
+
+      if (.not. bas_create(basis2, 'sql'))
+     $     call errquit('gradients: bas_create?', 0, BASIS_ERR)
+      if (.not. rtdb_cput(rtdb,"ao basis", 1, "qsl"))
+     $     call errquit('gradient: sql',0,UERR)
+      if (.not. bas_rtdb_load(rtdb, geom, basis2, 'ao basis'))
+     $     call errquit('gradients: no sql basis ', 0, BASIS_ERR)
+      if(.not. int_normalize(rtdb,basis2))
+     $     call errquit('gradients: normalization failed',911, INT_ERR)
+
       if (.not. bas_create(basis, 'ao basis'))
      $     call errquit('gradients: bas_create?', 0, BASIS_ERR)
+      if (.not. rtdb_cput(rtdb,"ao basis", 1, "noqsl"))
+     $     call errquit('gradient: nosql',0,UERR)
       if (.not. bas_rtdb_load(rtdb, geom, basis, 'ao basis'))
      $     call errquit('gradients: no ao basis ', 0, BASIS_ERR)
       if(.not. int_normalize(rtdb,basis))
      $     call errquit('gradients: normalization failed',911, INT_ERR)
+
+      if (.not. rtdb_cput(rtdb,"ao basis", 1, "qsl"))
+     $     call errquit('gradient: sql',0,UERR)
 c
 c     Figure out the numer of electrons from the required total
 c     charge and the sum of nuclear charges
@@ -78,6 +93,8 @@ c
          endif
          if (util_print('basis',print_high)) then
             if (.not. bas_print(basis)) 
+     $           call errquit('gradients: bas_print ?',0, BASIS_ERR)
+            if (.not. bas_print(basis2)) 
      $           call errquit('gradients: bas_print ?',0, BASIS_ERR)
             call util_flush(luout)
          endif
@@ -118,12 +135,14 @@ c
 c
 c     go for it ... finally ...
 c
-      call grad_force ( rtdb, basis, geom )
+      call grad_force ( rtdb, basis, basis2, geom )
 c
 c gradients is done destroy basis and geometry handles  
 c (e.g., preserve the memory available to other modules!!)
 c
       if (.not.(
+     &    (bas_destroy(basis2))
+     &    .and.
      &    (bas_destroy(basis))
      &    .and.
      &    (geom_destroy(geom))

@@ -1,7 +1,7 @@
 #define NO_BQGEM 1
       subroutine grad1 ( H, lbuf, scr, lscr, dens, wdens, frc_nuc,
      $                   frc_kin, frc_wgh, g_force,
-     $                   g_dens, g_wdens, basis, geom, nproc, nat, 
+     $                   g_dens, g_wdens, basin,basin2,geom, nproc, nat, 
      $                   max_at_bf, rtdb, oskel, ndens )
 c$Id$
 
@@ -23,7 +23,7 @@ C-------------------------parameters--------------------------------
      $     g_dens,        ! density matrix (summed if ROHF, UHF)
      $     g_wdens,       ! weighted density (Lagrangian)
      $     g_force,       ! global force array
-     $     basis, geom, nproc, nat, max_at_bf, rtdb,
+     $     basin, basin2, geom, nproc, nat, max_at_bf, rtdb,
 cc AJL/Begin/SPIN ECPs
      $     ndens          ! Number of density matrices in g_dens
 cc AJL/End
@@ -66,6 +66,7 @@ C-------------------------local variables--------------------------
       integer bq_ncent
       integer i_qbq,i_cbq
       double precision r12
+      integer basis
 c
       integer nxtask, task_size
       external nxtask
@@ -102,6 +103,9 @@ c        call ga_print(g_dens(1))
 c        call ga_print(g_dens(2))
 c      end if   
 cc AJL/End
+      write(*,*)'HVD: basin  = ',basin
+      write(*,*)'HVD: basin2 = ',basin2
+      basis = basin
 
       task_size = 1
       status = rtdb_parallel(.true.) ! Broadcast reads to all processes

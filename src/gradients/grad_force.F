@@ -1,4 +1,4 @@
-      subroutine grad_force(rtdb, basis, geom)
+      subroutine grad_force(rtdb, basis, basis2, geom)
 c     $Id$
 C     calculate energy gradients with respect to nuclear coordinates
 C------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ C------------------------------------------------------------------------------
 c
       logical use_nwxc
 c
-      integer rtdb, basis, geom
+      integer rtdb, basis, basis2, geom
       double precision cpu_tim(2), wall_tim(2)
 c
       integer ga_create_atom_blocked
@@ -645,7 +645,7 @@ c
       call grad1( dbl_mb(k_buf), lbuf, dbl_mb(k_scr), lscratch,
      $     dbl_mb(k_dens), dbl_mb(k_wdens), dbl_mb(k_frc_nuc),
      $     dbl_mb(k_frc_kin), dbl_mb(k_frc_wgh), g_force,
-     $     g_dens, g_wdens, basis, geom, nproc, nat, max_at_bf,
+     $     g_dens, g_wdens, basis, basis2, geom, nproc, nat, max_at_bf,
      $     rtdb, oskel, ndens)
 
 cc Recombine g_dens, as it is not used again
@@ -975,7 +975,7 @@ c
      $     dbl_mb(ld_ik8),dbl_mb(ld_jl8),dbl_mb(ld_il8),
      .     dbl_mb(ld_jk8),
      $     dbl_mb(k_frc_2el), g_dens, g_force, blen,
-     $     geom, basis, nproc, nat, 
+     $     geom, basis, basis2, nproc, nat, 
      $     lscratch, dbl_mb(k_scr), lbuf/12, dbl_mb(k_buf), 
      $     int_mb(k_labels), maxq, int_mb(k_list), dbl_mb(k_q4),
      $     tol2e, nsh, 

@@ -154,17 +154,25 @@ def parse_arguments():
     Parse command line arguments.
     '''
     from argparse import ArgumentParser
-    prs = ArgumentParser()
-    prs.add_argument("input",help="the input PDB file")
-    prs.add_argument("output",help="the output PDB file")
-    prs.add_argument("vector",help="the translation vector")
-    prs.add_argument("atoms",help="the range of atom numbers to translate")
+    prs = ArgumentParser(description='''
+    A script to translate some atoms in a PDB file.
+
+    You can provide a range of atom numbers following the usual
+    Python convention (i.e. "10,16" produces a range including
+    atoms 10, 11, 12, 13, 14, and 15). The script will iterate
+    over all atoms in the PDB file and translate the atoms with
+    serial numbers within the specified range.
+    ''')
+    prs.add_argument("infile",help="the input PDB file")
+    prs.add_argument("outfile",help="the output PDB file")
+    prs.add_argument("vector",help="the translation vector, e.g. \"1.0,0.5,0.3\"")
+    prs.add_argument("atoms",help="the range of atom numbers to translate, e.g. \"5118,5175\"")
     args = prs.parse_args()
     return args
 
 def execute_with_arguments(args):
-    inputfile  = args.input
-    outputfile = args.output
+    inputfile  = args.infile
+    outputfile = args.outfile
     vec1 = args.vector.split(",")
     vector  = (float(vec1[0]),float(vec1[1]),float(vec1[2]))
     atm1 = args.atoms.split(",")

@@ -94,9 +94,6 @@ def translate_atoms(atomsin,target_atoms,translation):
     Return the new list of atoms. The input list remains unchanged.
     '''
     atomsout = []
-    #DEBUG
-    print(target_atoms)
-    #DEBUG
     (dx,dy,dz) = translation
     for atom in atomsin:
         elements = atom.split()

@@ -79,6 +79,8 @@ cDEBUG
       integer nao, iat
       real(kind=8), allocatable :: dS(:,:,:,:)
       real(kind=8), allocatable :: dH1(:,:,:,:)
+      real(kind=8), allocatable :: dT(:,:,:,:)
+      real(kind=8), allocatable :: dV(:,:,:,:)
 cDEBUG
 #ifdef NO_BQGEM
 #include "inp.fh"
@@ -117,8 +119,12 @@ cDEBUG
       write(*,*)"HVD: nao: ",nao
       allocate(dS(1:nao,1:nao,1:3,1:nat))
       allocate(dH1(1:nao,1:nao,1:3,1:nat))
+      allocate(dT(1:nao,1:nao,1:3,1:nat))
+      allocate(dV(1:nao,1:nao,1:3,1:nat))
       dS = 0.0d0
       dH1 = 0.0d0
+      dT = 0.0d0
+      dV = 0.0d0
 cDEBUG
 
       task_size = 1
@@ -234,6 +240,53 @@ cDEBUG
  28               continue
                 endif
 
+cDEBUG Kinetic energy integrals
+                call intd_1et(basis,ish1,basis,ish2,lscr,scr,
+     &                 lbuf,H)
+                ic=1
+                do iat3 = 1, nat
+                  do icart = 1, 3
+                    dE = 0.D0
+                    do ip1 = if1, il1
+                      do ip2 = if2, il2
+                        dT(iab1f-1+ip1,iab2f-1+ip2,icart,iat3) 
+     &                  = dT(iab1f-1+ip1,iab2f-1+ip2,icart,iat3)
+     &                  + H(ic)
+                        if ( iat1.ne.iat2 .or. ish1.ne.ish2 ) then
+                          dT(iab2f-1+ip2,iab1f-1+ip1,icart,iat3) 
+     &                    = dT(iab2f-1+ip2,iab1f-1+ip1,icart,iat3)
+     &                    + H(ic)
+                        endif
+                        ic = ic + 1
+                      enddo ! ip2
+                    enddo ! ip1
+                  enddo ! icart
+                enddo ! iat3
+cDEBUG End
+cDEBUG Nuclear attraction energy integrals
+                call intd_1ev(basis,ish1,basis,ish2,lscr,scr,
+     &                 lbuf,H)
+                ic=1
+                do iat3 = 1, nat
+                  do icart = 1, 3
+                    dE = 0.D0
+                    do ip1 = if1, il1
+                      do ip2 = if2, il2
+                        dV(iab1f-1+ip1,iab2f-1+ip2,icart,iat3) 
+     &                  = dV(iab1f-1+ip1,iab2f-1+ip2,icart,iat3)
+     &                  + H(ic)
+                        if ( iat1.ne.iat2 .or. ish1.ne.ish2 ) then
+                          dV(iab2f-1+ip2,iab1f-1+ip1,icart,iat3) 
+     &                    = dV(iab2f-1+ip2,iab1f-1+ip1,icart,iat3)
+     &                    + H(ic)
+                        endif
+                        ic = ic + 1
+                      enddo ! ip2
+                    enddo ! ip1
+                  enddo ! icart
+                enddo ! iat3
+cDEBUG End
+
 C               1el. derivatives
                 if(.not.dobq) then
                   call intd_1eh1(basis,ish1,basis,ish2,lscr,scr,
@@ -331,25 +384,97 @@ cDEBUG
       write(*,'("    TA::detail::tensor3_il<double> il{")')
       do ip1 = 1, nao
         write(*,'("      {")')
-        do iat = 1, nat
-          do icart = 1, 3
-            write(*,'("        {")')
-            do ip2 = 1, nao
-              if (ip2.ne.nao) then
+        do ip2 = 1, nao
+          write(*,'("        {")')
+          do iat = 1, nat
+            do icart = 1, 3
+              if ((iat-1)*3+icart.ne.3*nat) then
                 write(*,'(f30.16,", // iao,jao,icrd,iat=",i3,i3,i2,i3)')
      &                dS(ip1,ip2,icart,iat),ip1,ip2,icart,iat
               else
                 write(*,'(f30.16,"  // iao,jao,icrd,iat=",i3,i3,i2,i3)')
      &                dS(ip1,ip2,icart,iat),ip1,ip2,icart,iat
               endif
-            enddo ! ip2
-            if ((iat-1)*3+icart.ne.3*nat) then
-              write(*,'("        },")')
-            else
-              write(*,'("        }")')
-            endif
-          enddo ! icart
-        enddo ! iat
+            enddo ! icart
+          enddo ! iat
+          if (ip2.ne.nao) then
+            write(*,'("        },")')
+          else
+            write(*,'("        }")')
+          endif
+        enddo ! ip2
+        if (ip1.ne.nao) then
+          write(*,'("      },")')
+        else
+          write(*,'("      }")')
+        endif
+      enddo ! ip1
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("}")')
+      write(*,'("}")')
+      write(*,*)
+      write(*,*)
+      write(*,'("tensor_t kinetic_nuc(TA::World& world) {")')
+      write(*,'("    TA::detail::tensor3_il<double> il{")')
+      do ip1 = 1, nao
+        write(*,'("      {")')
+        do ip2 = 1, nao
+          write(*,'("        {")')
+          do iat = 1, nat
+            do icart = 1, 3
+              if ((iat-1)*3+icart.ne.3*nat) then
+                write(*,'(f30.16,", // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dT(ip1,ip2,icart,iat),ip1,ip2,icart,iat
+              else
+                write(*,'(f30.16,"  // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dT(ip1,ip2,icart,iat),ip1,ip2,icart,iat
+              endif
+            enddo ! icart
+          enddo ! iat
+          if (ip2.ne.nao) then
+            write(*,'("        },")')
+          else
+            write(*,'("        }")')
+          endif
+        enddo ! ip2
+        if (ip1.ne.nao) then
+          write(*,'("      },")')
+        else
+          write(*,'("      }")')
+        endif
+      enddo ! ip1
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("}")')
+      write(*,'("}")')
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,'("tensor_t nuclear_nuc(TA::World& world) {")')
+      write(*,'("    TA::detail::tensor3_il<double> il{")')
+      do ip1 = 1, nao
+        write(*,'("      {")')
+        do ip2 = 1, nao
+          write(*,'("        {")')
+          do iat = 1, nat
+            do icart = 1, 3
+              if ((iat-1)*3+icart.ne.3*nat) then
+                write(*,'(f30.16,", // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dV(ip1,ip2,icart,iat),ip1,ip2,icart,iat
+              else
+                write(*,'(f30.16,"  // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dV(ip1,ip2,icart,iat),ip1,ip2,icart,iat
+              endif
+            enddo ! icart
+          enddo ! iat
+          if (ip2.ne.nao) then
+            write(*,'("        },")')
+          else
+            write(*,'("        }")')
+          endif
+        enddo ! ip2
         if (ip1.ne.nao) then
           write(*,'("      },")')
         else
@@ -366,25 +491,25 @@ cDEBUG
       write(*,'("    TA::detail::tensor3_il<double> il{")')
       do ip1 = 1, nao
         write(*,'("      {")')
-        do iat = 1, nat
-          do icart = 1, 3
-            write(*,'("        {")')
-            do ip2 = 1, nao
-              if (ip2.ne.nao) then
+        do ip2 = 1, nao
+          write(*,'("        {")')
+          do iat = 1, nat
+            do icart = 1, 3
+              if ((iat-1)*3+icart.ne.3*nat) then
                 write(*,'(f30.16,", // iao,jao,icrd,iat=",i3,i3,i2,i3)')
      &                dH1(ip1,ip2,icart,iat),ip1,ip2,icart,iat
               else
                 write(*,'(f30.16,"  // iao,jao,icrd,iat=",i3,i3,i2,i3)')
      &                dH1(ip1,ip2,icart,iat),ip1,ip2,icart,iat
               endif
-            enddo ! ip2
-            if ((iat-1)*3+icart.ne.3*nat) then
-              write(*,'("        },")')
-            else
-              write(*,'("        }")')
-            endif
-          enddo ! icart
-        enddo ! iat
+            enddo ! icart
+          enddo ! iat
+          if (ip2.ne.nao) then
+            write(*,'("        },")')
+          else
+            write(*,'("        }")')
+          endif
+        enddo ! ip2
         if (ip1.ne.nao) then
           write(*,'("      },")')
         else
@@ -397,6 +522,8 @@ cDEBUG
       write(*,'("}")')
       deallocate(dS)
       deallocate(dH1)
+      deallocate(dT)
+      deallocate(dV)
 cDEBUG
 
 c     

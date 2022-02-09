@@ -1,0 +1,17 @@
+echo
+start md_dat
+
+prepare
+  #print sequence atomtypes where
+  #print sequence 
+  system 1nt5_md
+  new_rst
+  new_top new_seq
+  source 1nt5_mod5.pdb
+  #counter 2 K
+  solvent name HOH model spce
+  #solvate 
+  vacuo
+end
+
+task prepare

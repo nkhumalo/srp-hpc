@@ -1,0 +1,22 @@
+echo
+start md_dat
+
+memory stack 1024 mb heap 100 mb global 512 mb
+
+set sp:adios_mode Null
+
+md
+  msa 10000
+  system 1nt5_md
+  leapfrog
+  step 0.0001 equil 0 data 10000
+  isotherm 298.15 trelax 0.03
+  isobar
+  noshake
+  print step 10 out6
+  record rest 100 coord 1
+  vreass 1 298.15 fraction 0.1 max
+end
+
+task md dynamics
+

@@ -15,3 +15,28 @@ The digit represented by "?" is replaced by the separation distance.
 
 In solution only the structures with the proteins separated by 1 or 2 nm recombine.
 In vacuo all structure recombine, and do so quickly.
+
+## Results
+
+Upon executing:
+
+- run.sh
+- run_vacuo.sh
+
+the resulting trajectories and initial structure will be labeled:
+
+- in solution:
+
+  - 1nt5_md1.crd  1nt5_md1.pdb
+  - 1nt5_md2.crd  1nt5_md2.pdb
+  - 1nt5_md3.crd  1nt5_md3.pdb
+  - 1nt5_md4.crd  1nt5_md4.pdb
+  - 1nt5_md5.crd  1nt5_md5.pdb
+
+- in vacuo:
+
+  - 1nt5_md11.crd 1nt5_md11.pdb
+  - 1nt5_md12.crd 1nt5_md12.pdb
+  - 1nt5_md13.crd 1nt5_md13.pdb
+  - 1nt5_md14.crd 1nt5_md14.pdb
+  - 1nt5_md15.crd 1nt5_md15.pdb

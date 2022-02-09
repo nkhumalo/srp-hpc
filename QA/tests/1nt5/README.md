@@ -1,4 +1,4 @@
-# (1NT5)[https://www.rcsb.org/structure/1NT5]
+# [1NT5](https://www.rcsb.org/structure/1NT5)
 
 This protein forms a transmembrane Sodium channel. It consists of two proteins that bind 
 through Hydrogen bonds to make the channel. In this directory two sets of calculations

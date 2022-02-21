@@ -80,8 +80,8 @@ c
       double precision :: Tinitial
 c
 !     complex(kind=8), allocatable :: buf(:,:)  ! buffer 
-      complex(kind=8), allocatable :: rndm(:)   ! random numbers of norm 1.0
-      real(kind=8),    allocatable :: rrndm(:,:)   ! random numbers of norm 1.0
+!     complex(kind=8), allocatable :: rndm(:)   ! random numbers of norm 1.0
+      real(kind=8),    allocatable :: rndm(:)   ! random numbers of norm 1.0
 !     complex(kind=8), allocatable :: dnrm(:)   ! vector norms
 !     double precision :: pi
 !     double precision :: delta
@@ -109,16 +109,18 @@ c     Set up random numbers of norm 1.0
 c
       allocate(rndm(1:nmo))
       if (ga_nodeid().eq.0) then
-        allocate(rrndm(1:2,1:nmo))
-        call random_number(rrndm)
+c       allocate(rrndm(1:2,1:nmo))
+        call random_number(rndm)
         do ii = 1, nmo
-          rndm(ii) = complex(2.0d0*rrndm(1,ii)-1.0d0,
-     &                       2.0d0*rrndm(2,ii)-1.0d0)
+c         rndm(ii) = complex(2.0d0*rrndm(1,ii)-1.0d0,
+c    &                       2.0d0*rrndm(2,ii)-1.0d0)
+c         rndm(ii) = rndm(ii)/abs(rndm(ii))
+          rndm(ii) = 2.0d0*rndm(ii)-1.0d0
           rndm(ii) = rndm(ii)/abs(rndm(ii))
         enddo
-        deallocate(rrndm)
+c       deallocate(rrndm)
       endif
-      call ga_brdcst(100,rndm,ma_sizeof(MT_DCPL,nmo,MT_BYTE),0)
+      call ga_brdcst(100,rndm,ma_sizeof(MT_DBL,nmo,MT_BYTE),0)
       call ga_sync()
 c
 c     Setup the alpha correlation functions
@@ -136,8 +138,8 @@ c
 c
 c     Orthonormalize the vectors
 c
-      call wfn1_orthog(wfn1_wave%g_ca,ii,.false.)
-      call wfn1_orthog(wfn1_wave%g_cb,ii,.false.)
+      call wfn1_orthog_vecs(wfn1_wave%g_ca,ii,.false.)
+      call wfn1_orthog_vecs(wfn1_wave%g_cb,ii,.false.)
 c
       end subroutine
 c
@@ -153,7 +155,8 @@ c
       integer,          intent(in) :: g_c
       integer,          intent(in) :: neig
       double precision, intent(in) :: eig(neig)
-      complex(kind=8),  intent(in) :: rndm(:)
+!     complex(kind=8),  intent(in) :: rndm(:)
+      real   (kind=8),  intent(in) :: rndm(:)
       double precision, intent(in) :: Tt      ! temperature
 c
 c     Local variables
@@ -170,7 +173,8 @@ c
       double precision :: pi
       double precision :: x
 c
-      complex(kind=8), allocatable :: buf(:,:)  ! buffer 
+c     complex(kind=8), allocatable :: buf(:,:)  ! buffer 
+      real   (kind=8), allocatable :: buf(:,:)  ! buffer 
       real(kind=8),    allocatable :: dnrm(:)   ! vector norms
 c
 c     Setup the alpha correlation functions
@@ -184,29 +188,35 @@ c     Put initial values in (just weights, no phases)
 c
       delta = 0.0d0
       pi = acos(-1.0d0)
-      buf = complex(0.0d0,0.0d0)
+c     buf = complex(0.0d0,0.0d0)
+      buf = 0.0d0
       do jj = jlo, jhi
         if (jj.le.ncore) then
           if (jj.ge.ilo.and.jj.le.ihi) then
-            buf(jj,jj) = complex(1.0d0,0.0d0)
+c           buf(jj,jj) = complex(1.0d0,0.0d0)
+            buf(jj,jj) = 1.0d0
           endif
         else if (jj.gt.nmo-nvirt) then
           if (jj.ge.ilo.and.jj.le.ihi) then
-            buf(jj,jj) = complex(1.0d0,0.0d0)
+c           buf(jj,jj) = complex(1.0d0,0.0d0)
+            buf(jj,jj) = 1.0d0
           endif
         else
           if (Tt.lt.1.0d-10) then
             do ii = max(ncore+1,ilo), min(ihi,nmo-nvirt)
               if (ii.eq.jj) then
-                buf(ii,jj) = complex(1.0d0,0.0d0)
+c               buf(ii,jj) = complex(1.0d0,0.0d0)
+                buf(ii,jj) = 1.0d0
               else
-                buf(ii,jj) = complex(0.0d0,0.0d0)
+c               buf(ii,jj) = complex(0.0d0,0.0d0)
+                buf(ii,jj) = 1.0d0
               endif
             enddo
           else
             do ii = max(ncore+1,ilo), min(ihi,nmo-nvirt)
-              buf(ii,jj) = complex(exp(-abs(eig(ii)-eig(jj))/
-     &                             (2*Tt)),0.0d0)
+c             buf(ii,jj) = complex(exp(-abs(eig(ii)-eig(jj))/
+c    &                             (2*Tt)),0.0d0)
+              buf(ii,jj) = exp(-abs(eig(ii)-eig(jj))/(2*Tt))
             enddo
           endif
         endif
@@ -251,7 +261,8 @@ c
       dnrm = 0.0d0
       do jj = jlo, jhi
         do ii = ilo, ihi
-          dnrm(jj) = dnrm(jj) + buf(ii,jj)*conjg(buf(ii,jj))
+c         dnrm(jj) = dnrm(jj) + buf(ii,jj)*conjg(buf(ii,jj))
+          dnrm(jj) = dnrm(jj) + buf(ii,jj)*buf(ii,jj)
         enddo
       enddo
       call ga_dgop(1600,dnrm,nmo,"+")

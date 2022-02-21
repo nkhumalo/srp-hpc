@@ -1,0 +1,25 @@
+!-----------------------------------------------------------------------
+!
+      interface
+!
+      module subroutine wfn1_dir_init(wfn1_param)
+      type(wfn1_prm), intent(in) :: wfn1_param
+      end subroutine wfn1_dir_init
+!
+      module subroutine wfn1_dir_orthog_vec(g_momo1,g_momo2,
+     &                                      g_momo3,g_momo4)
+      integer, intent(in) :: g_momo1
+      integer, intent(in) :: g_momo2
+      integer, intent(in) :: g_momo3
+      integer, intent(in) :: g_momo4
+      end subroutine wfn1_dir_orthog_vec
+!
+      module subroutine wfn1_dir_store_vec()
+      end subroutine wfn1_dir_store_vec
+!
+      module subroutine wfn1_dir_final()
+      end subroutine wfn1_dir_final
+!
+      end interface
+!
+!-----------------------------------------------------------------------

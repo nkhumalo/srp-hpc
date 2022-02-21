@@ -3,7 +3,7 @@ C>
 C> \brief Calculate occupation numbers from a set of correlation
 C> functions
 C>
-C> Note that now the correlation functions are complex valued
+C> Note that now the correlation functions are real valued
 C> but the occupation numbers are still real because we are
 C> taking the norm.
 C>
@@ -29,13 +29,13 @@ c
       integer ii, ir             ! counters
       integer ityp               ! type of g_c
 c
-      complex(kind=8), allocatable :: buf(:,:)
+      real(kind=8), allocatable :: buf(:,:)
 c
       iproc = ga_nodeid()
       nproc = ga_nnodes()
       call ga_inquire(g_c,ityp,ii,ir)
-      if (ityp.ne.MT_DCPL) then
-        call errquit("wfn1_calc_occ: g_c not complex",0,UERR)
+      if (ityp.ne.MT_DBL) then
+        call errquit("wfn1_calc_occ: g_c not real",0,UERR)
       endif
 c
       occ = 0.0d0
@@ -51,7 +51,7 @@ c       This process does not hold any part of g_c
      &  then
           do ii = ilo, ihi
             occ(ii) = occ(ii)
-     &              + buf(ii,icnf(ir)) * conjg(buf(ii,icnf(ir))) *
+     &              + buf(ii,icnf(ir)) * buf(ii,icnf(ir)) *
      &                dcnt(ir)
           enddo
         endif
@@ -173,9 +173,9 @@ c
                                                  ! occupation numbers
       complex(kind=8), allocatable :: boccz(:,:) ! buffer for 
                                                  ! occupation numbers
-      complex(kind=8), allocatable :: bcori(:,:) ! buffer for 
+      real   (kind=8), allocatable :: bcori(:,:) ! buffer for 
                                                  ! correlation function
-      complex(kind=8), allocatable :: bcorj(:,:) ! buffer for 
+      real   (kind=8), allocatable :: bcorj(:,:) ! buffer for 
                                                  ! correlation function
 c
       integer iproc ! the current processor rank
@@ -188,7 +188,7 @@ c
       nproc = ga_nnodes()
       iproc = ga_nodeid()
       call ga_inquire(g_c,ityp,ii,ij)
-      if (ityp.ne.MT_DCPL) then
+      if (ityp.ne.MT_DBL) then
         call errquit("wfn1_calc_ocx: wrong type of g_c",ityp,UERR)
       endif
       call ga_inquire(g_ocx,ityp,ii,ij)
@@ -198,46 +198,46 @@ c
 c
       call ga_distribution(g_ocx,iproc,iolo,iohi,jolo,johi)
       allocate(bocc(iolo:iohi,jolo:johi))
-      allocate(boccz(iolo:iohi,jolo:johi))
+c     allocate(boccz(iolo:iohi,jolo:johi))
       allocate(bcori(iolo:iohi,1:nmo))
       allocate(bcorj(jolo:johi,1:nmo))
       bocc = 0.0d0
-      boccz = complex(0.0d0,0.0d0)
+c     boccz = complex(0.0d0,0.0d0)
       call ga_get(g_c,iolo,iohi,1,nmo,bcori,iohi-iolo+1)
       call ga_get(g_c,jolo,johi,1,nmo,bcorj,johi-jolo+1)
       do ij = jolo, johi
         do ii = iolo, iohi
           do is = 1, ne
             do it = 1, ne
-              boccz(ii,ij)
-     +        = boccz(ii,ij) 
-     +        - bcori(ii,icnf(is))*conjg(bcori(ii,icnf(it)))
-     +        * bcorj(ij,icnf(it))*conjg(bcorj(ij,icnf(is)))
+              bocc(ii,ij)
+     +        = bocc(ii,ij) 
+     +        - bcori(ii,icnf(is))*bcori(ii,icnf(it))
+     +        * bcorj(ij,icnf(it))*bcorj(ij,icnf(is))
      +        * dcnt(is)*dcnt(it)
             enddo
           enddo
         enddo ! ii
       enddo ! ij
-      do ij = jolo, johi
-        do ii = iolo, iohi
-          if (abs(aimag(boccz(ii,ij))).gt.1.0d-10) then
-            write(*,*)'offending entry:',ii,ij
-            do it = jolo, johi
-              do is = iolo, iohi
-                write(*,*)is,it,boccz(is,it)
-              enddo
-            enddo
-            call errquit("wfn1_calc_ocx: result should be REAL "//
-     +                   "instead of COMPLEX",0,UERR)
-          endif
-          bocc(ii,ij) = real(boccz(ii,ij))
-        enddo ! ii
-      enddo ! ij
+c     do ij = jolo, johi
+c       do ii = iolo, iohi
+c         if (abs(aimag(boccz(ii,ij))).gt.1.0d-10) then
+c           write(*,*)'offending entry:',ii,ij
+c           do it = jolo, johi
+c             do is = iolo, iohi
+c               write(*,*)is,it,boccz(is,it)
+c             enddo
+c           enddo
+c           call errquit("wfn1_calc_ocx: result should be REAL "//
+c    +                   "instead of COMPLEX",0,UERR)
+c         endif
+c         bocc(ii,ij) = real(boccz(ii,ij))
+c       enddo ! ii
+c     enddo ! ij
       call ga_put(g_ocx,iolo,iohi,jolo,johi,bocc,iohi-iolo+1)
 c
       deallocate(bcorj)
       deallocate(bcori)
-      deallocate(boccz)
+c     deallocate(boccz)
       deallocate(bocc)
 c
       end subroutine wfn1_calc_ocx

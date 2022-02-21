@@ -1,0 +1,10 @@
+plot "results_h2_mc_6_31g.dat"  using 1:2 with lines, \
+     "results_h2_wf_6_31g.dat"  using 1:2 with lines, \
+     "results_h2_hf_6_31g.dat"  using 1:2 with lines, \
+     "results_h2_mc_sto_3g.dat" using 1:2 with lines, \
+     "results_h2_wf_sto_3g.dat" using 1:2 with lines, \
+     "results_h2_hf_sto_3g.dat" using 1:2 with lines
+pause -1
+plot "results_lih_mc_sto_3g.dat" using 1:2 with lines, \
+     "results_lih_wf_sto_3g.dat" using 1:2 with lines, \
+     "results_lih_hf_sto_3g.dat" using 1:2 with lines

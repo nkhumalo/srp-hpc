@@ -271,6 +271,92 @@
 !
 !-----------------------------------------------------------------------
 !
+!> \brief calculate the root of the volume of an array 
+!>        of the Monte Carlo box
+!>
+!> Calculating the volume of the box and then taking the root to arrive
+!> at a scale factor for each dimension tends to fail because of 
+!> underflows. Hence this routine takes the root of every number first
+!> and then multiplies those roots to arrive at the scale factor.
+!>
+      function wfn1_volroot_array(g_a) result(volume)
+      implicit none
+#include "mafdecls.fh"
+#include "global.fh"
+#include "errquit.fh"
+      target :: dbl_mb
+!>    The Monte Carlo box
+      integer, intent(in) :: g_a
+!>    The box volume
+      real(kind=8) :: volume
+!
+      character(len=20), parameter :: pname = "wfn1_volroot_array:"
+!
+      integer :: nproc
+      integer :: iproc
+      integer :: ilo, ihi, jlo, jhi, idx, ldx
+      integer :: nsz, ii, jj
+!
+      real(kind=8)              :: pwr
+      real(kind=8), allocatable :: buf(:)
+      real(kind=8), pointer     :: ptr(:,:)
+!
+      nproc = ga_nnodes()
+      iproc = ga_nodeid()
+      allocate(buf(0:nproc-1))
+!
+      call ga_inquire(g_a,nsz,ii,jj)
+      if (ii.ne.jj) then
+        call errquit(pname//" non-square global array",UERR)
+      endif
+      nsz=ii*(ii-1)/2
+      pwr=1.0d0/nsz
+      call ga_distribution(g_a,iproc,ilo,ihi,jlo,jhi)
+      call ga_access(g_a,ilo,ihi,jlo,jhi,idx,ldx)
+      nsz = (ihi-ilo+1)*(jhi-jlo+1)
+      ptr(ilo:ihi,jlo:jhi) => dbl_mb(idx:idx+nsz-1)
+      volume = 1.0d0
+      do jj = jlo, jhi
+        do ii = max(ilo,jj+1), ihi
+          volume = volume * (ptr(ii,jj) ** pwr)
+        enddo
+      enddo
+      buf = 0.0d0
+      buf(iproc) = volume
+      call ga_dgop(2000,buf,nproc,"+")
+      volume = 1.0d0
+      do ii = 0, nproc-1
+        volume = volume * buf(ii)
+      enddo
+!
+      deallocate(buf)
+      end function wfn1_volroot_array
+!
+!-----------------------------------------------------------------------
+!
+!> \brief calculate the root of the volume of the Monte Carlo box
+!>
+      function wfn1_volroot_box(wfn1_box) result(volume)
+      implicit none
+#include "mafdecls.fh"
+#include "global.fh"
+#include "errquit.fh"
+!>    The Monte Carlo box
+      type(wfn1_bx), intent(in) :: wfn1_box
+!>    The box volume
+      real(kind=8) :: volume
+!>    The power 
+      real(kind=8) :: pwr
+!
+      pwr    = 0.25d0
+      volume =           wfn1_volroot_array(wfn1_box%g_na) ** pwr
+      volume = volume * (wfn1_volroot_array(wfn1_box%g_nb) ** pwr)
+      volume = volume * (wfn1_volroot_array(wfn1_box%g_ca) ** pwr)
+      volume = volume * (wfn1_volroot_array(wfn1_box%g_cb) ** pwr)
+      end function wfn1_volroot_box
+!
+!-----------------------------------------------------------------------
+!
 !> \brief normalize box volume
 !>
       subroutine wfn1_normalize_box(wfn1_param,wfn1_box)
@@ -285,15 +371,164 @@
       real(kind=8) :: volume
       real(kind=8) :: scalef
 !
-      nmo = wfn1_param%nmo
-      numdims = 4*(nmo*(nmo-1)/2)
-      volume = wfn1_vol_box(wfn1_box)
-      scalef = (1.0d0/volume)**(1.0d0/dble(numdims))
+!     nmo = wfn1_param%nmo
+!     numdims = 4*(nmo*(nmo-1)/2)
+!     volume = wfn1_vol_box(wfn1_box)
+!     scalef = (1.0d0/volume)**(1.0d0/dble(numdims))
+      volume = wfn1_volroot_box(wfn1_box)
+!DEBUG
+      if (volume.lt.1.0d-10) then
+        call wfn1_print_box(wfn1_box)
+      endif
+!DEBUG
+      scalef = (1.0d0/volume)
       call ga_scale(wfn1_box%g_na,scalef)
       call ga_scale(wfn1_box%g_nb,scalef)
       call ga_scale(wfn1_box%g_ca,scalef)
       call ga_scale(wfn1_box%g_cb,scalef)
       end subroutine wfn1_normalize_box
+!
+!-----------------------------------------------------------------------
+!
+!> \brief fix the known redundant rotations
+!>
+!> Mixing the unoccupied correlation functions is not going to change
+!> the total energy. We want to suppress these rotations from playing
+!> a role in the algorithm. Here we fix the corresponding box size to 1.
+!>
+      subroutine wfn1_redundant_box(wfn1_param,wfn1_box)
+      implicit none
+!>    Wavefunction parameters
+      type(wfn1_prm), intent(in)    :: wfn1_param
+!>    The Monte Carlo box
+      type(wfn1_bx),  intent(inout) :: wfn1_box
+!
+      integer :: numdims
+      integer :: nmo
+      integer :: nea
+      integer :: neb
+      integer :: itype
+!
+      nmo = wfn1_param%nmo
+      nea = wfn1_param%nea
+      neb = wfn1_param%neb
+      call ga_fill_patch(wfn1_box%g_ca,nea+1,nmo,nea+1,nmo,1.0d0)
+      call ga_fill_patch(wfn1_box%g_cb,neb+1,nmo,neb+1,nmo,1.0d0)
+      end subroutine wfn1_redundant_box
+!
+!-----------------------------------------------------------------------
+!
+!> \brief rebalance box
+!>
+!> We cannot suppress all redundant rotations as they are case specific.
+!> To avoid redundant dimensions growing limitlessly we cap the largest
+!> box dimensions to some factor relative to the smallest dimension.
+!>
+      subroutine wfn1_rebalance_box(wfn1_param,wfn1_box)
+      implicit none
+#include "mafdecls.fh"
+#include "global.fh"
+      target :: dbl_mb
+!>    Wavefunction parameters
+      type(wfn1_prm), intent(in)    :: wfn1_param
+!>    The Monte Carlo box
+      type(wfn1_bx),  intent(inout) :: wfn1_box
+!
+      real(kind=8) :: sizemin
+      real(kind=8) :: capfactor
+!
+      integer :: nproc
+      integer :: iproc
+      integer :: ilo_na, ihi_na, jlo_na, jhi_na
+      integer :: ilo_nb, ihi_nb, jlo_nb, jhi_nb
+      integer :: ilo_ca, ihi_ca, jlo_ca, jhi_ca
+      integer :: ilo_cb, ihi_cb, jlo_cb, jhi_cb
+      integer :: nn, ld, ii, jj
+!
+      integer :: idx_na
+      integer :: idx_nb
+      integer :: idx_ca
+      integer :: idx_cb
+!
+      double precision, pointer :: gna(:,:)
+      double precision, pointer :: gnb(:,:)
+      double precision, pointer :: gca(:,:)
+      double precision, pointer :: gcb(:,:)
+!
+      capfactor = 10000.0d0
+      nproc = ga_nnodes()
+      iproc = ga_nodeid()
+!
+      call ga_sync()
+      call ga_distribution(wfn1_box%g_na,iproc,ilo_na,ihi_na,
+     &                                         jlo_na,jhi_na)
+      call ga_distribution(wfn1_box%g_nb,iproc,ilo_nb,ihi_nb,
+     &                                         jlo_nb,jhi_nb)
+      call ga_distribution(wfn1_box%g_ca,iproc,ilo_ca,ihi_ca,
+     &                                         jlo_ca,jhi_ca)
+      call ga_distribution(wfn1_box%g_cb,iproc,ilo_cb,ihi_cb,
+     &                                         jlo_cb,jhi_cb)
+      call ga_access(wfn1_box%g_na,ilo_na,ihi_na,jlo_na,jhi_na,
+     &                             idx_na,ld)
+      call ga_access(wfn1_box%g_nb,ilo_nb,ihi_nb,jlo_nb,jhi_nb,
+     &                             idx_nb,ld)
+      call ga_access(wfn1_box%g_ca,ilo_ca,ihi_ca,jlo_ca,jhi_ca,
+     &                             idx_ca,ld)
+      call ga_access(wfn1_box%g_cb,ilo_cb,ihi_cb,jlo_cb,jhi_cb,
+     &                             idx_cb,ld)
+      nn = (ihi_na-ilo_na+1)*(jhi_na-jlo_na+1)-1
+      gna(ilo_na:ihi_na,jlo_na:jhi_na) => dbl_mb(idx_na:idx_na+nn)
+      nn = (ihi_nb-ilo_nb+1)*(jhi_nb-jlo_nb+1)-1
+      gnb(ilo_nb:ihi_nb,jlo_nb:jhi_nb) => dbl_mb(idx_nb:idx_nb+nn)
+      nn = (ihi_ca-ilo_ca+1)*(jhi_ca-jlo_ca+1)-1
+      gca(ilo_ca:ihi_ca,jlo_ca:jhi_ca) => dbl_mb(idx_ca:idx_ca+nn)
+      nn = (ihi_cb-ilo_cb+1)*(jhi_cb-jlo_cb+1)-1
+      gcb(ilo_cb:ihi_cb,jlo_cb:jhi_cb) => dbl_mb(idx_cb:idx_cb+nn)
+      sizemin = 1.0d100
+      do jj = jlo_na, jhi_na
+        do ii = ilo_na, ihi_na
+          sizemin = min(sizemin,gna(ii,jj))
+        enddo
+      enddo
+      do jj = jlo_nb, jhi_nb
+        do ii = ilo_nb, ihi_nb
+          sizemin = min(sizemin,gnb(ii,jj))
+        enddo
+      enddo
+      do jj = jlo_ca, jhi_ca
+        do ii = ilo_ca, ihi_ca
+          sizemin = min(sizemin,gca(ii,jj))
+        enddo
+      enddo
+      do jj = jlo_cb, jhi_cb
+        do ii = ilo_cb, ihi_cb
+          sizemin = min(sizemin,gcb(ii,jj))
+        enddo
+      enddo
+      call ga_dgop(234,sizemin,1,"min")
+      sizemin = capfactor*sizemin
+      do jj = jlo_na, jhi_na
+        do ii = ilo_na, ihi_na
+          gna(ii,jj) = min(sizemin,gna(ii,jj))
+        enddo
+      enddo
+      do jj = jlo_nb, jhi_nb
+        do ii = ilo_nb, ihi_nb
+          gnb(ii,jj) = min(sizemin,gnb(ii,jj))
+        enddo
+      enddo
+      do jj = jlo_ca, jhi_ca
+        do ii = ilo_ca, ihi_ca
+          gca(ii,jj) = min(sizemin,gca(ii,jj))
+        enddo
+      enddo
+      do jj = jlo_cb, jhi_cb
+        do ii = ilo_cb, ihi_cb
+          gcb(ii,jj) = min(sizemin,gcb(ii,jj))
+        enddo
+      enddo
+      call ga_sync()
+      end subroutine wfn1_rebalance_box
 !
 !-----------------------------------------------------------------------
 !
@@ -328,6 +563,8 @@
      &                        wfn1_accept%g_ca)
       call wfn1_reshape_array(wfn1_box%g_cb,wfn1_rejects%g_cb,
      &                        wfn1_accept%g_cb)
+      call wfn1_redundant_box(wfn1_param,wfn1_box)
+      call wfn1_rebalance_box(wfn1_param,wfn1_box)
       call wfn1_normalize_box(wfn1_param,wfn1_box)
 !
       end subroutine wfn1_reshape_box
@@ -437,5 +674,26 @@
         enddo
       enddo
       end subroutine wfn1_resquare_array
+!
+!-----------------------------------------------------------------------
+!>
+!> \brief Print box global arrays
+!>
+      subroutine wfn1_print_box(wfn1_box)
+      implicit none
+#include "global.fh"
+#include "errquit.fh"
+!>    The Monte Carlo box
+      type(wfn1_bx),  intent(inout) :: wfn1_box
+!>
+      character(len=20), parameter :: pname = "wfn1_print_box:"
+!>
+      call util_flush(6)
+      call ga_print(wfn1_box%g_na)
+      call ga_print(wfn1_box%g_nb)
+      call ga_print(wfn1_box%g_ca)
+      call ga_print(wfn1_box%g_cb)
+      call util_flush(6)
+      end subroutine wfn1_print_box
 !
 !-----------------------------------------------------------------------

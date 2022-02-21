@@ -27,7 +27,7 @@ c
       type(wfn1_prm),     intent(in)    :: wfn1_param
       type(wfn1_prminst), intent(in)    :: wfn1_inst
       type(wfn1_matcnst), intent(in)    :: wfn1_mat
-      type(wfn1_wfn),     intent(in)    :: wfn1_wave
+      type(wfn1_wfn),     intent(inout) :: wfn1_wave
 !     type(wfn1_drv),     intent(inout) :: wfn1_deriv
 !     type(wfn1_drv),     intent(inout) :: wfn1_part_drv
       type(wfn1_en),      intent(out)   :: wfn1_energy
@@ -113,6 +113,10 @@ c
       wfn1_energy%E_dft    = 0.0d0
 c
       nmo = wfn1_param%nmo
+c
+c     Reorthonormalize the wavefunction just to be sure
+c
+      call wfn1_ortho(wfn1_mat,wfn1_wave)
 c
 c     Arrange memory for the diagonal correlation function Fock
 c     matrices in natural orbital basis
@@ -269,6 +273,22 @@ c
      &                       g_momo,g_momo2,
      &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
         call wfn1_e_g_2el_corr12(wfn1_param,wfn1_inst,wfn1_mat,
+     &                           wfn1_wave,
+     &                           g_momo,g_momo2,
+     &                           wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c13") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       g_momo,g_momo2,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr13(wfn1_param,wfn1_inst,wfn1_mat,
+     &                           wfn1_wave,
+     &                           g_momo,g_momo2,
+     &                           wfn1_energy%E_corr)
+      else if (wfn1_param%corr_expr == "wfn1c14") then
+        call wfn1_e_g_2el_mx(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
+     &                       g_momo,g_momo2,
+     &                       wfn1_energy%E_2el,wfn1_energy%E_2el_hf)
+        call wfn1_e_g_2el_corr14(wfn1_param,wfn1_inst,wfn1_mat,
      &                           wfn1_wave,
      &                           g_momo,g_momo2,
      &                           wfn1_energy%E_corr)

@@ -81,6 +81,7 @@ C>
          integer          :: ncoreb      ! number of beta core orbitals
          integer          :: nvirta      ! number of alpha virtual orbitals
          integer          :: nvirtb      ! number of beta virtual orbitals
+         integer          :: ndir        ! number of search directions
       end type wfn1_prm
 C>
 C> \brief The parameter instance data type

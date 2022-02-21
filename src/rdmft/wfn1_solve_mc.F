@@ -102,6 +102,8 @@ c
       logical :: oprerr
 !     The current iteration count
       integer :: curit
+!     The fock build count
+      integer :: fock_count
 c
 !     double precision, intent(out) :: v_dna(1:wfn1_param%nmo)
 !     double precision, intent(out) :: v_dnb(1:wfn1_param%nmo)
@@ -130,14 +132,17 @@ c
       wfn1_solve_mc = .false.
       if (iproc.eq.0) then
         if (.not.oprerr) then
-          write(luout,'(a10,a20,a16)')"iteration","energy","error"
-          write(luout,'(a10,a20,a16)')"---------","------","-----"
+          write(luout,'(2a10,a20,a16)')"iteration","fock",
+     &                                 "energy","error"
+          write(luout,'(2a10,a20,a16)')"---------","----",
+     &                                 "------","-----"
         else
-          write(luout,'(a10,a20,a16,4a16)')"iteration","energy","error",
-     &          "err Na","err Nb","err Ca","err Cb"
-          write(luout,'(a10,a20,a16,4a16)')"---------","------","-----",
-     &          "------","------","------","------"
+          write(luout,'(2a10,a20,a16,4a16)')"iteration","fock","energy",
+     &          "error","err Na","err Nb","err Ca","err Cb"
+          write(luout,'(2a10,a20,a16,4a16)')"---------","----","------",
+     &          "-----","------","------","------","------"
         endif
+        call util_flush(luout)
       endif
       call wfn1_e_g(wfn1_param,wfn1_inst,wfn1_mat,wfn1_wave,
 !    &              wfn1_deriv,wfn1_part_drv,
@@ -158,17 +163,21 @@ c
 c     error%total = 2.0d0*rlimo*nmo
       error%total = 2.0d0*rlimo
       curit       = 0
+      fock_count  = 0
       if (iproc.eq.0) then
         if (.not.oprerr) then
-          write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
-     &                                    error%total
+          write(luout,'(2i10,f20.8,f16.6)')curit,fock_count,
+     &                                     wfn1_energy%E_tot,
+     &                                     error%total
         else
-          write(luout,'(i10,f20.8,5f16.6)')curit,wfn1_energy%E_tot,
-     &                                     error%total,
-     &                                     error%errna,error%errnb,
-     &                                     abs(error%errca),
-     &                                     abs(error%errcb)
+          write(luout,'(2i10,f20.8,5f16.6)')curit,fock_count,
+     &                                      wfn1_energy%E_tot,
+     &                                      error%total,
+     &                                      error%errna,error%errnb,
+     &                                      abs(error%errca),
+     &                                      abs(error%errcb)
         endif
+        call util_flush(luout)
       endif
       do while (curit.lt.maxit.and.
      &          error%total.gt.wfn1_param%convergence)
@@ -183,7 +192,8 @@ c     error%total = 2.0d0*rlimo*nmo
      &                     g_bfmo,g_momo1,g_momo2,g_momo3,g_momo4,
      &                     g_momo5,g_momo6,
      &                     g_4t1,g_4t2,
-     &                     gz_momo1,gz_momo2,gz_momo3,gz_momo4)
+     &                     gz_momo1,gz_momo2,gz_momo3,gz_momo4,
+     &                     fock_count)
 !    &                     v_dna,v_dnb,v_dca,v_dcb,
 !    &                     v_dnna,v_dnnb,v_dcna,v_dcnb)
 c
@@ -205,15 +215,17 @@ c
 c
         if (iproc.eq.0) then
           if (.not.oprerr) then
-            write(luout,'(i10,f20.8,f16.6)')curit,wfn1_energy%E_tot,
-     &                                      error%total
+            write(luout,'(2i10,f20.8,f16.6)')curit,fock_count,
+     &                                       wfn1_energy%E_tot,
+     &                                       error%total
           else
-            write(luout,'(i10,f20.8,5f16.6)')
-     &            curit,wfn1_energy%E_tot,
+            write(luout,'(2i10,f20.8,5f16.6)')
+     &            curit,fock_count,wfn1_energy%E_tot,
      &            error%total,
      &            error%errna,error%errnb,
      &            abs(error%errca),abs(error%errcb)
           endif
+          call util_flush(luout)
         endif
       enddo
       wfn1_solve_mc = .true.

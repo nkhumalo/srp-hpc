@@ -66,11 +66,11 @@ c
         map(ii,1) = 1+(ii-1)*nfnc
       enddo
 c
-      if (.not.ga_create_irreg(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create_irreg(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
      &                         'Ca',map(:,2),nblock(2),
      &                         map(:,1),nblock(1),wfn1_wave%g_ca))
      &  call errquit(pname//" could not allocate g_na",0,MA_ERR)
-      if (.not.ga_create_irreg(MT_DCPL,wfn1_param%nmo,wfn1_param%nmo,
+      if (.not.ga_create_irreg(MT_DBL,wfn1_param%nmo,wfn1_param%nmo,
      &                         'Cb',map(:,2),nblock(2),
      &                         map(:,1),nblock(1),wfn1_wave%g_cb))
      &  call errquit(pname//" could not allocate g_nb",0,MA_ERR)

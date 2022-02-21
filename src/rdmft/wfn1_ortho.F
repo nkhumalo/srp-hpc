@@ -21,10 +21,10 @@ c
       integer :: idum  ! dummy variable
 c
       idum = 0
-      call wfn1_orthog(wfn1_wave%g_ca,idum,.false.)
-      call wfn1_orthog(wfn1_wave%g_cb,idum,.false.)
-      call wfn1_orthog(wfn1_wave%g_na,wfn1_mat%g_s,.true.)
-      call wfn1_orthog(wfn1_wave%g_nb,wfn1_mat%g_s,.true.)
+      call wfn1_orthog_vecs(wfn1_wave%g_ca,idum,.false.)
+      call wfn1_orthog_vecs(wfn1_wave%g_cb,idum,.false.)
+      call wfn1_orthog_vecs(wfn1_wave%g_na,wfn1_mat%g_s,.true.)
+      call wfn1_orthog_vecs(wfn1_wave%g_nb,wfn1_mat%g_s,.true.)
 c
       end subroutine wfn1_ortho
 c
@@ -42,7 +42,7 @@ c
 !> - if `g_vecs` is real then g_over is also real
 !> - if `g_vecs` is complex then g_over is also complex and Hermitian
 !>
-      subroutine wfn1_orthog(g_vecs, g_over, ometric)
+      subroutine wfn1_orthog_vecs(g_vecs, g_over, ometric)
       implicit none
 #include "errquit.fh"
 #include "mafdecls.fh"
@@ -79,8 +79,8 @@ c
       if (ometric) then
         call ga_inquire(g_over, ityps, mu, mv)
         if (itypv.ne.ityps) then
-          call errquit('wfn1_orthog: vectors and overlap not of same '//
-     &                 'type',UERR)
+          call errquit('wfn1_orthog_vecs: vectors and overlap not '//
+     &                 'of same type',UERR)
         endif
       endif
       uchunk = max(8, (nu+ga_nnodes()-1)/ga_nnodes())
@@ -119,7 +119,7 @@ c
           allocate(zw(1:nu))
         endif
       else
-        call errquit("wfn1_orthog: unsupported type",UERR)
+        call errquit("wfn1_orthog_vecs: unsupported type",UERR)
       endif
 c
       call ga_sync()
@@ -131,7 +131,7 @@ c
           call ga_get(g_vecs, ulo, uhi, 1, ni, zvec, ld)
           if (ometric) call ga_get(g_over, 1, nu, ulo, uhi, zovl, nu)
         else
-          call errquit("wfn1_orthog: unsupported type",UERR)
+          call errquit("wfn1_orthog_vecs: unsupported type",UERR)
         endif
       endif
 c
@@ -144,7 +144,7 @@ c
         call wfn1_orthog_zvecs(zvec, ld, ni, ulo, uhi, zsij,
      &       zovl, nu, zw, ometric)
       else
-        call errquit("wfn1_orthog: unsupported type",UERR)
+        call errquit("wfn1_orthog_vecs: unsupported type",UERR)
       endif
 c
 c     Put results back
@@ -158,7 +158,7 @@ c
           call ga_put(g_vecs, ulo, uhi, 1, ni, zvec, ld)
         endif
       else
-        call errquit("wfn1_orthog: unsupported type",UERR)
+        call errquit("wfn1_orthog_vecs: unsupported type",UERR)
       endif
 c
 c     Tidy up memory
@@ -182,15 +182,23 @@ c
           deallocate(zw)
         endif
       else
-        call errquit("wfn1_orthog: unsupported type",UERR)
+        call errquit("wfn1_orthog_vecs: unsupported type",UERR)
       endif
 c
       call ga_sync
 c
-      end subroutine wfn1_orthog
+      end subroutine wfn1_orthog_vecs
 c
 c-----------------------------------------------------------------------
 c
+!> \brief Orthonormalize a set of vectors using local memory
+!>
+!> The vectors are stored in local memory. Each vector is distributed
+!> across multiple processors. Each processor holds the same rows of 
+!> all vectors. The vectors are real.
+!>
+!> The repeated Gramm-Schmidt algorithm is used.
+!>
       subroutine wfn1_orthog_dvecs(vecs, ld, ni, ulo, uhi, s,
      &                                    o, nu, w, ometric)
       implicit none
@@ -239,7 +247,7 @@ c
         endif
         call ga_dgop(msg_orthog_2, s, i, '+')
 c
-c       Apply the rotation
+c       Apply the projection
 c     
         if ((uhi-ulo+1).gt.0 .and. i.gt.1) then
           call dgemv('n', (uhi-ulo+1), i-1, -1.0d0,
@@ -252,12 +260,20 @@ c
         do j = 1, i-1
           si = si - s(j)*s(j)
         end do
-c     
-c       If the vector norm changed a lot then repeat
-c     
         if (si .eq. 0.0d0) then
           call errquit('wfn1_orthog_dvecs: hard zero', i, GA_ERR)
         endif
+        if (si .lt. 0.0d0) then
+          write(6,*) 'Negative value orthog: ',si
+          call errquit('wfn1_orthog_dvecs: negative', i, 0)
+        endif
+        scale = 1.0d0/sqrt(si)
+        do u = ulo, uhi
+          vecs(u,i) = vecs(u,i) * scale
+        end do
+c     
+c       If the vector norm changed a lot then repeat
+c     
         if (i .gt. 1) then
           scale = si/s(i)
           if (scale .lt. 0.9d0) then
@@ -270,21 +286,20 @@ c
           end if
         end if
 c
-        if (si .lt. 0.0d0) then
-          write(6,*) 'Negative value orthog: ',si
-          call errquit('wfn1_orthog_dvecs: negative', i, 0)
-        endif
-        scale = 1.0d0/sqrt(si)
-        do u = ulo, uhi
-          vecs(u,i) = vecs(u,i) * scale
-        end do
-c     
       end do
 c
       end subroutine wfn1_orthog_dvecs
 c
 c-----------------------------------------------------------------------
 c
+!> \brief Orthonormalize a set of vectors using local memory
+!>
+!> The vectors are stored in local memory. Each vector is distributed
+!> across multiple processors. Each processor holds the same rows of 
+!> all vectors. The vectors are complex.
+!>
+!> The repeated Gramm-Schmidt algorithm is used.
+!>
       subroutine wfn1_orthog_zvecs(vecs, ld, ni, ulo, uhi, s,
      &                                    o, nu, w, ometric)
       implicit none
@@ -335,7 +350,7 @@ c
         endif
         call ga_zgop(msg_orthog_2, s, i, '+')
 c
-c       Apply the rotation
+c       Apply the projection
 c     
         if ((uhi-ulo+1).gt.0 .and. i.gt.1) then
           call zgemv('n', (uhi-ulo+1), i-1, -one,
@@ -349,11 +364,16 @@ c
           si = si - s(j)*conjg(s(j))
         end do
 c     
-c       If the vector norm changed a lot then repeat
-c     
         if (abs(si) .eq. 0.0d0) then
           call errquit('wfn1_orthog_zvecs: hard zero', i, GA_ERR)
         endif
+        scale = one/sqrt(si)
+        do u = ulo, uhi
+          vecs(u,i) = vecs(u,i) * scale
+        end do
+c     
+c       If the vector norm changed a lot then repeat
+c     
         if (i .gt. 1) then
           scale = si/s(i)
           if (abs(scale) .lt. 0.9d0) then
@@ -366,11 +386,6 @@ c
           end if
         end if
 c
-        scale = one/sqrt(si)
-        do u = ulo, uhi
-          vecs(u,i) = vecs(u,i) * scale
-        end do
-c     
       end do
 c
       end subroutine wfn1_orthog_zvecs
@@ -538,7 +553,7 @@ c
         call errquit("wfn1_tst_orthog: invalid type",itypv,MA_ERR)
       endif
 c
-      call wfn1_orthog(g_vecs,g_over,ometric)
+      call wfn1_orthog_vecs(g_vecs,g_over,ometric)
 c
       if (.not.ga_create(itypv,nbf,nmo,"g_bfmo",-1,-1,g_bfmo)) then
         call errquit("wfn1_tst_orthog: g_bfmo create failed",0,MA_ERR)
@@ -564,5 +579,62 @@ c
       endif
 c
       end subroutine wfn1_tst_orthog
+c
+c-----------------------------------------------------------------------
+c
+!> \brief Orthogonalize 1 vector from X against nvec vectors from M
+!>
+!> The global arrays X and M may be the same, but neither need to have
+!> normalized vectors. Also the resulting orthogonalized vector in 
+!> X is not normalized.
+!>
+!> The modified Gramm-Schmidt algorithm is used. The performance can
+!> be improved by implementing the Gramm-Schmidt algorithm as in
+!> wfn1_orthog_vecs.
+!>
+!> Orthogonalize X(:,j) to M(:,1:nvec).
+!>
+      subroutine wfn1_orthog_vec(g_m,nvec,g_x,j)
+      implicit none
+#include "global.fh"
+#include "errquit.fh"
+!>    Global array g_m
+      integer, intent(in) :: g_m
+!>    The number of vectors in g_m
+      integer, intent(in) :: nvec
+!>    Global array g_x
+      integer, intent(in) :: g_x
+!>    The index of the vector in g_x
+      integer, intent(in) :: j
+!
+      integer :: nn ! vector length
+      integer :: nm ! vector length
+      integer :: nx ! vector length
+      integer :: ii ! counter
+!
+      double precision :: xm ! overlap X(j).M(ii)
+      double precision :: mm ! norm    M(ii).M(ii)
+!
+      call ga_inquire(g_m,ii,nm,nn)
+      call ga_inquire(g_x,ii,nx,nn)
+      if (nm.ne.nx) then
+        call errquit("wfn1_orthog_vec: g_m and g_x have "//
+     &               "different lengths",0,UERR)
+      endif
+      nn = nm
+      do ii = 1, nvec
+        xm = ga_ddot_patch(
+     &       g_x, 'n', 1, nn, j,  j,
+     &       g_m, 'n', 1, nn, ii, ii)
+        mm = ga_ddot_patch(
+     &       g_m, 'n', 1, nn, ii, ii,
+     &       g_m, 'n', 1, nn, ii, ii)
+        call ga_dadd_patch(
+     &       1.0d0,  g_x, 1, nn, j,  j,
+     &       -xm/mm, g_m, 1, nn, ii, ii,
+     &               g_x, 1, nn, j,  j)
+      enddo
+!
+      end subroutine wfn1_orthog_vec
 c
 c-----------------------------------------------------------------------

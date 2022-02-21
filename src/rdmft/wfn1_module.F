@@ -5,6 +5,7 @@ c-----------------------------------------------------------------------
 #include "wfn1_param.fh"
 #include "wfn1_wfn.fh"
 #include "wfn1_box.fh"
+#include "wfn1_directions.fh"
 #include "wfn1_error.fh"
 #include "wfn1_matcnst.fh"
 #include "wfn1_en.fh"
@@ -33,6 +34,8 @@ c-----------------------------------------------------------------------
 #include "wfn1_e_g_2el_corr10.F"
 #include "wfn1_e_g_2el_corr11.F"
 #include "wfn1_e_g_2el_corr12.F"
+#include "wfn1_e_g_2el_corr13.F"
+#include "wfn1_e_g_2el_corr14.F"
 !include "wfn1_e_g_2el_hf.F"
 #include "wfn1_e_g_2el_mx.F"
 !include "wfn1_e_g_2el_vx.F"
@@ -63,5 +66,6 @@ c-----------------------------------------------------------------------
 #include "wfn1_transform.F"
 #include "wfn1_vectors.F"
 #include "wfn1_write_movecs.F"
+#include "wfn1_write_random.F"
       end module wfn1
 c-----------------------------------------------------------------------

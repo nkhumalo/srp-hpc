@@ -1,0 +1,491 @@
+ argument  1 = /home/hvandam/nwchem-1-wfn1/QA/tests/wfn1-h2-6-31g-wfn1c14e/input-wf-sto-3g-1.138692.nw
+
+
+
+============================== echo of input deck ==============================
+echo
+start wfn1_dat
+geometry units au noautoz
+  H 0 0 -.56934600000000000000
+  H 0 0  .56934600000000000000
+  symmetry cs
+end
+basis
+  H library sto-3g
+end
+set wfn1:input_vectors "atomic"
+set wfn1:solver "monte-carlo"
+set wfn1:print_error F
+set wfn1:t_initial 0.1
+#set wfn1:corr_expr "wfn1_mx"
+set wfn1:corr_expr "wfn1c14"
+#
+set wfn1:fcd00  0.198826
+set wfn1:fcd01  0.294438
+set wfn1:fcd11  0.247007
+set wfn1:fcd05  0.020225
+set wfn1:fcd51  -0.098842
+set wfn1:fcd55  -0.201236
+#
+set wfn1:rcd00  0.884548
+set wfn1:rcd01  1.211432
+set wfn1:rcd11  0.255064
+set wfn1:rcd05  0.988291
+set wfn1:rcd51  0.535281
+set wfn1:rcd55  0.701049
+#
+set wfn1:fco00  -0.005884
+set wfn1:fco01  0.063203
+set wfn1:fco11  0.357171
+set wfn1:fco05  0.019518
+set wfn1:fco51  0.871725
+set wfn1:fco55  1.051801
+#
+set wfn1:rco00  1.033050
+set wfn1:rco01  0.850461
+set wfn1:rco11  0.110139
+set wfn1:rco05  0.985630
+set wfn1:rco51  0.139729
+set wfn1:rco55  0.918333
+#
+set wfn1:t_bath 0.0
+set wfn1:maxit  20000
+task wfn1 energy
+================================================================================
+
+
+                                         
+                                         
+
+
+              Northwest Computational Chemistry Package (NWChem) 6.8
+              ------------------------------------------------------
+
+
+                    Environmental Molecular Sciences Laboratory
+                       Pacific Northwest National Laboratory
+                                Richland, WA 99352
+
+                              Copyright (c) 1994-2015
+                       Pacific Northwest National Laboratory
+                            Battelle Memorial Institute
+
+             NWChem is an open-source computational chemistry package
+                        distributed under the terms of the
+                      Educational Community License (ECL) 2.0
+             A copy of the license is included with this distribution
+                              in the LICENSE.TXT file
+
+                                  ACKNOWLEDGMENT
+                                  --------------
+
+            This software and its documentation were developed at the
+            EMSL at Pacific Northwest National Laboratory, a multiprogram
+            national laboratory, operated for the U.S. Department of Energy
+            by Battelle under Contract Number DE-AC05-76RL01830. Support
+            for this work was provided by the Department of Energy Office
+            of Biological and Environmental Research, Office of Basic
+            Energy Sciences, and the Office of Advanced Scientific Computing.
+
+
+           Job information
+           ---------------
+
+    hostname        = node023
+    program         = /home/hvandam/nwchem-1-wfn1/bin/LINUX64/nwchem
+    date            = Thu Jun 17 23:54:25 2021
+
+    compiled        = Sun_Jun_13_23:38:55_2021
+    source          = /home/hvandam/nwchem-1-wfn1
+    nwchem branch   = Development
+    nwchem revision = nwchem_on_git-124-gad72d19fff205e319ffbbf2bca37a04ded6ad57b
+    ga revision     = nwchem_on_git-124-gad72d19
+    use scalapack   = F
+    input           = /home/hvandam/nwchem-1-wfn1/QA/tests/wfn1-h2-6-31g-wfn1c14e/input-wf-sto-3g-1.138692.nw
+    prefix          = wfn1_dat.
+    data base       = ./wfn1_dat.db
+    status          = startup
+    nproc           =        1
+    time left       =     -1s
+
+
+
+           Memory information
+           ------------------
+
+    heap     =   13107200 doubles =    100.0 Mbytes
+    stack    =   13107197 doubles =    100.0 Mbytes
+    global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
+    total    =   52428797 doubles =    400.0 Mbytes
+    verify   = yes
+    hardfail = no 
+
+
+           Directory information
+           ---------------------
+
+  0 permanent = .
+  0 scratch   = .
+
+
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Turning off AUTOSYM since
+ SYMMETRY directive was detected!
+
+
+
+                             Geometry "geometry" -> ""
+                             -------------------------
+
+ Output coordinates in a.u. (scale by  1.000000000 to convert to a.u.)
+
+  No.       Tag          Charge          X              Y              Z
+ ---- ---------------- ---------- -------------- -------------- --------------
+    1 H                    1.0000     0.00000000     0.00000000    -0.56934600
+    2 H                    1.0000     0.00000000     0.00000000     0.56934600
+
+      Atomic Mass 
+      ----------- 
+
+      H                  1.007825
+
+
+ Effective nuclear repulsion energy (a.u.)       0.8782006021
+
+            Nuclear Dipole moment (a.u.) 
+            ----------------------------
+        X                 Y               Z
+ ---------------- ---------------- ----------------
+     0.0000000000     0.0000000000     0.0000000000
+
+      Symmetry information
+      --------------------
+
+ Group name             Cs        
+ Group number              2
+ Group order               2
+ No. of unique centers     1
+
+      Symmetry unique atoms
+
+     1
+
+
+            XYZ format geometry
+            -------------------
+     2
+ geometry
+ H                     0.00000000     0.00000000    -0.30128495
+ H                     0.00000000     0.00000000     0.30128495
+
+ ==============================================================================
+                                internuclear distances
+ ------------------------------------------------------------------------------
+       center one      |      center two      | atomic units |       a.u.
+ ------------------------------------------------------------------------------
+    2 H                |   1 H                |     1.13869  |     1.13869
+ ------------------------------------------------------------------------------
+                         number of included internuclear distances:          1
+ ==============================================================================
+
+
+
+                      Basis "ao basis" -> "" (cartesian)
+                      -----
+  H (Hydrogen)
+  ------------
+            Exponent  Coefficients 
+       -------------- ---------------------------------------------------------
+  1 S  3.42525091E+00  0.154329
+  1 S  6.23913730E-01  0.535328
+  1 S  1.68855400E-01  0.444635
+
+
+
+ Summary of "ao basis" -> "" (cartesian)
+ ------------------------------------------------------------------------------
+       Tag                 Description            Shells   Functions and Types
+ ---------------- ------------------------------  ------  ---------------------
+ H                           sto-3g                  1        1   1s
+
+
+
+                                NWChem WFN1 Module
+                                ------------------
+
+
+
+          No. of electrons :     2
+           Alpha electrons :     1
+            Beta electrons :     1
+          Charge           :     0
+          Spin multiplicity:     1
+
+ HvD: wfn1_inpdft
+ HvD: nquad_task =                     1
+ HvD: iangquad   =                     0
+ HvD: gridtype   = user      
+ HvD: leb        =  T
+ HvD: radgrid    = murakn    
+ HvD: trunc_neigh=  T
+ HvD: lssw       =  T
+ HvD: whichssw   = erf1    
+ HvD: mxnrad     =                     0
+ HvD: mxnang     =                     0
+ HVD: wfn1: movecs_in  = atomic                                                                                                                                                                                                                                                          
+ HVD: wfn1: movecs_out = ./wfn1_dat.movecs                                                                                                                                                                                                                                               
+
+      Superposition of Atomic Density Guess
+      -------------------------------------
+
+ Sum of atomic energies:          -0.93316370
+
+      Non-variational initial energy
+      ------------------------------
+
+ Total energy =      -0.748374
+ 1-e energy   =      -2.437687
+ 2-e energy   =       0.811112
+ HOMO         =      -0.576847
+ LUMO         =       0.774670
+
+ iteration              energy           error
+ ---------              ------           -----
+         0         -1.10231365        0.020000
+         1         -1.10427705        0.020000
+         2         -1.10665705        0.020000
+         3         -1.10929562        0.020000
+         4         -1.11139631        0.020000
+         5         -1.11194683        0.020000
+         6         -1.11310839        0.020000
+         7         -1.11329960        0.020000
+         8         -1.11403141        0.020000
+         9         -1.11467790        0.020000
+        10         -1.11481561        0.020000
+        11         -1.11534567        0.020000
+        12         -1.11602963        0.020000
+        13         -1.11607667        0.020000
+        14         -1.11655279        0.020000
+        15         -1.11692699        0.020000
+        16         -1.11740381        0.020000
+        17         -1.11765096        0.020000
+        18         -1.11769123        0.020000
+        19         -1.11770380        0.020000
+        20         -1.11770965        0.020000
+        21         -1.11771304        0.020000
+        22         -1.11772624        0.020000
+        23         -1.11772634        0.020000
+        24         -1.11772647        0.015566
+        25         -1.11772667        0.006672
+        26         -1.11772667        0.004809
+        27         -1.11772667        0.000867
+        28         -1.11772667        0.000371
+        29         -1.11772667        0.000225
+        30         -1.11772667        0.000193
+        31         -1.11772667        0.000165
+        32         -1.11772667        0.000100
+        33         -1.11772667        0.000061
+        34         -1.11772667        0.000044
+        35         -1.11772667        0.000032
+        36         -1.11772667        0.000019
+        37         -1.11772667        0.000016
+        38         -1.11772667        0.000016
+        39         -1.11772667        0.000012
+        40         -1.11772667        0.000012
+        41         -1.11772667        0.000005
+        42         -1.11772667        0.000005
+        43         -1.11772667        0.000004
+        44         -1.11772667        0.000003
+        45         -1.11772667        0.000003
+        46         -1.11772667        0.000003
+        47         -1.11772667        0.000003
+        48         -1.11772667        0.000001
+
+ Reached Convergence
+
+ WFN1                     :
+ --------------------------
+ Total WFN1 energy  =          -1.1177266737
+ 1-Electron energy  =          -2.6624420389
+ 2-Electron energy  =           0.7006207595
+ Correlation energy =          -0.0341059964
+ DFT XC energy      =           0.0000000000
+ Entropy energy     =           0.0000000000
+ Nuclear energy     =           0.8782006021
+
+ conventional Hartree-Fock:
+ --------------------------
+ Total SCF energy  =          -1.1079924004
+ 2-Electron energy =           0.7103550328
+
+                WFN1 Final Natural orbital energies and occupations
+                ---------------------------------------------------
+
+              Alpha       Beta            Alpha       Beta  
+            --------    --------        --------    --------
+       1      0.0000      0.0000          0.9904      0.9904
+       2      0.0000      0.0000          0.0096      0.0096
+
+             WFN1 Final Correlation function energies and occupations
+             --------------------------------------------------------
+
+              Alpha       Beta            Alpha       Beta  
+            --------    --------        --------    --------
+       1      0.0000      0.0000          1.0000      1.0000
+       2      0.0000      0.0000          0.0000      0.0000
+
+                WFN1 Final alpha-alpha 2-matrix occupation numbers
+                --------------------------------------------------
+
+
+ global array: g_momo1[1:2,1:2],  handle: -990 
+
+            1           2  
+       ----------- -----------
+   1       0.00000    -0.00000
+   2       0.00000    -0.00000
+
+                 WFN1 Final beta-beta 2-matrix occupation numbers
+                 ------------------------------------------------
+
+
+ global array: g_momo2[1:2,1:2],  handle: -989 
+
+            1           2  
+       ----------- -----------
+   1       0.00000    -0.00000
+   2       0.00000    -0.00000
+
+                  WFN1 Final alpha Correlation Function Analysis
+                  ----------------------------------------------
+
+
+ global array: Ca[1:2,1:2],  handle: -976 
+
+                     1                       2  
+       ----------------------- -----------------------
+   1       0.73225,    0.67399    -0.04083,   -0.08879
+   2      -0.09503,    0.02285    -0.98253,   -0.15840
+
+                   WFN1 Final beta Correlation Function Analysis
+                   ---------------------------------------------
+
+
+ global array: Cb[1:2,1:2],  handle: -975 
+
+                     1                       2  
+       ----------------------- -----------------------
+   1       0.73225,    0.67399    -0.04083,   -0.08879
+   2      -0.09503,    0.02285    -0.98253,   -0.15840
+
+                     WFN1 Final Alpha Natural Orbital Analysis
+                     -----------------------------------------
+
+ Vector    1  Occ=9.904481D-01  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00, -2.6D-08, r^2= 6.3D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1     -0.534562  1 H  s                  2     -0.534562  2 H  s          
+
+ Vector    2  Occ=9.551862D-03  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00,  2.6D-08, r^2= 6.9D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1      1.413479  1 H  s                  2     -1.413479  2 H  s          
+
+
+                     WFN1 Final Beta Natural Orbital Analysis
+                     ----------------------------------------
+
+ Vector    1  Occ=9.904481D-01  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00, -2.6D-08, r^2= 6.3D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1     -0.534562  1 H  s                  2     -0.534562  2 H  s          
+
+ Vector    2  Occ=9.551862D-03  E= 0.000000D+00
+              MO Center=  0.0D+00,  0.0D+00,  2.6D-08, r^2= 6.9D-01
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+     1      1.413479  1 H  s                  2     -1.413479  2 H  s          
+
+
+ Task  times  cpu:        2.2s     wall:        2.8s
+ Summary of allocated global arrays
+-----------------------------------
+  No active global arrays
+
+
+
+                         GA Statistics for process    0
+                         ------------------------------
+
+       create   destroy   get      put      acc     scatter   gather  read&inc
+calls:   61       61     7.94e+05 3.99e+04 3.08e+04    0        0       11     
+number of processes/call 1.00e+00 1.00e+00 1.00e+00 0.00e+00 0.00e+00
+bytes total:             2.75e+07 1.82e+06 1.28e+06 0.00e+00 0.00e+00 8.80e+01
+bytes remote:            0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
+Max memory consumed for GA by this process: 1888 bytes
+MA_summarize_allocated_blocks: starting scan ...
+MA_summarize_allocated_blocks: scan completed: 0 heap blocks, 0 stack blocks
+MA usage statistics:
+
+	allocation statistics:
+					      heap	     stack
+					      ----	     -----
+	current number of blocks	         0	         0
+	maximum number of blocks	        19	        17
+	current total bytes		         0	         0
+	maximum total bytes		   3203624	  22508616
+	maximum total K-bytes		      3204	     22509
+	maximum total M-bytes		         4	        23
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+
+
+
+                                     CITATION
+                                     --------
+                Please cite the following reference when publishing
+                           results obtained with NWChem:
+
+                 M. Valiev, E.J. Bylaska, N. Govind, K. Kowalski,
+              T.P. Straatsma, H.J.J. van Dam, D. Wang, J. Nieplocha,
+                        E. Apra, T.L. Windus, W.A. de Jong
+                 "NWChem: a comprehensive and scalable open-source
+                  solution for large scale molecular simulations"
+                      Comput. Phys. Commun. 181, 1477 (2010)
+                           doi:10.1016/j.cpc.2010.04.018
+
+                                      AUTHORS
+                                      -------
+          E. Apra, E. J. Bylaska, W. A. de Jong, N. Govind, K. Kowalski,
+       T. P. Straatsma, M. Valiev, H. J. J. van Dam, D. Wang, T. L. Windus,
+        J. Hammond, J. Autschbach, K. Bhaskaran-Nair, J. Brabec, K. Lopata,
+    S. A. Fischer, S. Krishnamoorthy, M. Jacquelin, W. Ma, M. Klemm, O. Villa,
+      Y. Chen, V. Anisimov, F. Aquino, S. Hirata, M. T. Hackler, V. Konjkov,
+      T. Risthaus, M. Malagoli, A. Marenich, A. Otero-de-la-Roza, J. Mullin,
+        P. Nichols, R. Peverati, J. Pittner, Y. Zhao, P.-D. Fan, A. Fonari,
+       M. Williamson, R. J. Harrison, J. R. Rehr, M. Dupuis, D. Silverstein,
+    D. M. A. Smith, J. Nieplocha, V. Tipparaju, M. Krishnan, B. E. Van Kuiken,
+        A. Vazquez-Mayagoitia, L. Jensen, M. Swart, Q. Wu, T. Van Voorhis,
+     A. A. Auer, M. Nooijen, L. D. Crosby, E. Brown, G. Cisneros, G. I. Fann,
+   H. Fruchtl, J. Garza, K. Hirao, R. A. Kendall, J. A. Nichols, K. Tsemekhman,
+    K. Wolinski, J. Anchell, D. E. Bernholdt, P. Borowski, T. Clark, D. Clerc,
+   H. Dachsel, M. J. O. Deegan, K. Dyall, D. Elwood, E. Glendening, M. Gutowski,
+   A. C. Hess, J. Jaffe, B. G. Johnson, J. Ju, R. Kobayashi, R. Kutteh, Z. Lin,
+   R. Littlefield, X. Long, B. Meng, T. Nakajima, S. Niu, L. Pollack, M. Rosing,
+   K. Glaesemann, G. Sandrone, M. Stave, H. Taylor, G. Thomas, J. H. van Lenthe,
+                               A. T. Wong, Z. Zhang.
+
+ Total times  cpu:        2.2s     wall:        2.8s
+        0.990448        0.009552        0.990448        0.009552

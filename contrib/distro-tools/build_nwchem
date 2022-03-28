@@ -2376,7 +2376,7 @@ if [ ${#MRCC_METHODS} -ne 0 ] ; then
 fi
 
 if [ "x$option" = "xrealclean" ]; then
-  rm -f nwchem_make_env.* nwchem_make_unenv.*
+  rm -f nwchem_make_env.sh nwchem_make_env.csh nwchem_make_unenv.*
 fi
 
 if [ ${#OLD_GA} -ne 0 ] ; then

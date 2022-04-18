@@ -109,6 +109,9 @@ C-------------------------local variables-----------------------------
       logical oij, okl, oikjl, ouhf, orohf, omcscf, omore, exso
       logical intbd_init4c, intbd_2e4c
       external intbd_init4c, intbd_2e4c
+cDEBUG
+      integer icart
+cDEBUG
 c     
       smax  = schwarz_max()
       q4max = 8.0d0*(sym_number_ops(geom) + 1)*10000.0d0 ! 10000 for max(psum)
@@ -369,6 +372,30 @@ c
 c
       next = nxtask(-nproc,task_size)
       call ga_sync()
+cDEBUG
+      write(*,'("tensor_t eri_nuc(TA::World& world) {")')
+      write(*,'("    TA::detail::tensor2_il<double> il{")')
+      do iat = 1, nat
+        write(*,'("      {")')
+        do icart = 1, 3
+          if (icart.ne.3) then
+            write(*,'(f30.16,", // iat,icrd=",i3,i2)')
+     &            frc(icart,iat),iat,icart
+          else
+            write(*,'(f30.16,"  // iat,icrd=",i3,i2)')
+     &            frc(icart,iat),iat,icart
+          endif
+        enddo
+        if (iat.ne.nat) then
+          write(*,'("        },")')
+        else
+          write(*,'("        }")')
+        endif
+      enddo
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("}")')
+cDEBUG
 c     
 *      write(6,*) ' numq ', numq
 c     

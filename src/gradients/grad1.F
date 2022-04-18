@@ -224,10 +224,10 @@ C               idatom(1).ge.0 <=> idatom(2).ge.0 (no check necessary)
                     dE = dE * qfac
                     frc_kin1(icart,idatom(1))
      $                       = frc_kin1(icart,idatom(1)) 
-     $                       - dE - dE
+     $                       + dE + dE
                     frc_kin1(icart,idatom(2))
      $                       = frc_kin1(icart,idatom(2)) 
-     $                       + dE + dE
+     $                       - dE - dE
                   enddo
                 endif
 cDEBUG End
@@ -336,6 +336,12 @@ C               no forces between point charges (for John Nicholas)
  90   continue
       next = nxtask(-nproc,task_size)
 cDEBUG
+      do iat3 = 1, nat
+        do icart = 1, 3
+          frc_kin(icart,iat3)  =  frc_kin1(icart,iat3)
+     &                         +  frc_pot1(icart,iat3)
+        enddo
+      enddo
       write(*,'("tensor_t overlap_nuc(TA::World& world) {")')
       write(*,'("    TA::detail::tensor2_il<double> il{")')
       do iat = 1, nat

@@ -30,7 +30,7 @@ endif
           int_mpole.o    int_nint.o     int_pgen1e.o \
           int_projpole.o int_term.o \
           intd_1eh1.o    intd_1eov.o    intd_1eke.o \
-	  intd_1et.o     intd_1ev.o \
+	  intd_1ev.o \
           int_1er.o \
           intd_2e2c.o \
           intd_2e3c.o    intd_2e4c.o    intd_init.o \

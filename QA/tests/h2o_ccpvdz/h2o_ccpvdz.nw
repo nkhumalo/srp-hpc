@@ -1,0 +1,21 @@
+echo
+
+start h2o_ccpvdz_dat
+
+geometry units au noautoz nocenter noautosym
+  symmetry cs
+  O   0.0               -0.143222342980786  0.0
+  H1  1.638033502034240  1.136556880358410  0.0
+  H2 -1.638033502034240  1.136556880358410  0.0
+end
+
+basis
+  * library cc-pvdz
+end
+
+scf
+  thresh 1.0e-10
+  tol2e 1.0e-25
+end
+
+task scf gradient

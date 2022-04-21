@@ -374,7 +374,7 @@ c
       call ga_sync()
 cDEBUG
       write(*,'("tensor_t eri_nuc(TA::World& world) {")')
-      write(*,'("    TA::detail::tensor2_il<double> il{")')
+      write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')
         do icart = 1, 3

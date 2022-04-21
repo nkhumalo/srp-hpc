@@ -342,8 +342,23 @@ cDEBUG
      &                         +  frc_pot1(icart,iat3)
         enddo
       enddo
+c
+c     TiledArray is a tensor library. Hence it considers most arrays
+c     to be tensors, but not all. Depending on the number of dimensions
+c     it defines the following data types:
+c
+c     - 1D: vector_il
+c     - 2D: matrix_il
+c     - 3D: tensor3_il
+c     - 4D: tensor4_il
+c     - 5D: tensor5_il
+c     - 6D: tensor6_il
+c
+c     Below we write the gradient terms as 2D data structures, and
+c     therefore they have to be of data type matrix_il (not tensor2_il).
+c
       write(*,'("tensor_t overlap_nuc(TA::World& world) {")')
-      write(*,'("    TA::detail::tensor2_il<double> il{")')
+      write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')
         do icart = 1, 3
@@ -369,7 +384,7 @@ cDEBUG
       write(*,*)
       write(*,*)
       write(*,'("tensor_t nuclear_nuc(TA::World& world) {")')
-      write(*,'("    TA::detail::tensor2_il<double> il{")')
+      write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')
         do icart = 1, 3
@@ -395,7 +410,7 @@ cDEBUG
       write(*,*)
       write(*,*)
       write(*,'("tensor_t kinetic_nuc(TA::World& world) {")')
-      write(*,'("    TA::detail::tensor2_il<double> il{")')
+      write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')
         do icart = 1, 3
@@ -421,7 +436,7 @@ cDEBUG
       write(*,*)
       write(*,*)
       write(*,'("tensor_t nuclear_attraction_nuc(TA::World& world) {")')
-      write(*,'("    TA::detail::tensor2_il<double> il{")')
+      write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')
         do icart = 1, 3

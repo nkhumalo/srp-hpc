@@ -373,7 +373,7 @@ c
       next = nxtask(-nproc,task_size)
       call ga_sync()
 cDEBUG
-      write(*,'("tensor_t eri_nuc(TA::World& world) {")')
+      write(*,'("tensor_t eri_nuclear(TA::World& world) {")')
       write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')

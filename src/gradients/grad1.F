@@ -357,7 +357,7 @@ c
 c     Below we write the gradient terms as 2D data structures, and
 c     therefore they have to be of data type matrix_il (not tensor2_il).
 c
-      write(*,'("tensor_t overlap_nuc(TA::World& world) {")')
+      write(*,'("tensor_t overlap_nuclear(TA::World& world) {")')
       write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')
@@ -383,7 +383,7 @@ c
       write(*,*)
       write(*,*)
       write(*,*)
-      write(*,'("tensor_t nuclear_nuc(TA::World& world) {")')
+      write(*,'("tensor_t nre_nuclear(TA::World& world) {")')
       write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')
@@ -409,7 +409,7 @@ c
       write(*,*)
       write(*,*)
       write(*,*)
-      write(*,'("tensor_t kinetic_nuc(TA::World& world) {")')
+      write(*,'("tensor_t kinetic_nuclear(TA::World& world) {")')
       write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')
@@ -435,7 +435,7 @@ c
       write(*,*)
       write(*,*)
       write(*,*)
-      write(*,'("tensor_t nuclear_attraction_nuc(TA::World& world) {")')
+      write(*,'("tensor_t nuclear_nuclear(TA::World& world) {")')
       write(*,'("    TA::detail::matrix_il<double> il{")')
       do iat = 1, nat
         write(*,'("      {")')

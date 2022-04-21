@@ -65,10 +65,10 @@ task scf gradient
            ---------------
 
     hostname        = erato
-    program         = ../..//../bin/LINUX64/nwchem
-    date            = Mon Apr 18 16:24:54 2022
+    program         = ../../../bin/LINUX64/nwchem
+    date            = Thu Apr 21 16:48:08 2022
 
-    compiled        = Mon_Apr_18_16:24:48_2022
+    compiled        = Thu_Apr_21_16:47:56_2022
     source          = /home/hvandam/nwchem-1-mokup
     nwchem branch   = 7.0.0
     nwchem revision = nwchem_on_git-2028-gf3ab5e5fb5
@@ -295,7 +295,7 @@ task scf gradient
 
  Integral file          = ./h2o_sto3g_dat.aoints.0
  Record size in doubles =    65536    No. of integs per rec  =    43688
- Max. records in memory =        2    Max. records in file   =  2724798
+ Max. records in memory =        2    Max. records in file   =  2509641
  No. of bits per label  =        8    No. of bits per value  =       64
 
 
@@ -306,9 +306,9 @@ task scf gradient
  Warning: symmetry breaking in RHF:    1.1036183763070306E-016
                  2      -74.9409903790  1.35D-01  9.79D-02      0.0
  Warning: symmetry breaking in RHF:    1.1897550866453238E-016
-                 3      -74.9420771806  4.28D-03  3.96D-03      0.0
+                 3      -74.9420771806  4.28D-03  3.96D-03      0.1
  Warning: symmetry breaking in RHF:    1.1937838879665873E-016
-                 4      -74.9420800579  1.22D-06  7.48D-07      0.0
+                 4      -74.9420800579  1.22D-06  7.48D-07      0.1
  Warning: symmetry breaking in RHF:    1.1937863637656487E-016
                  5      -74.9420800579  1.68D-13  1.54D-13      0.1
 
@@ -441,8 +441,94 @@ task scf gradient
   wavefunction    =   RHF     
 
   Using symmetry
-tensor_t overlap_nuc(TA::World& world) {
-    TA::detail::tensor2_il<double> il{
+
+
+tensor_t evals(TA::World& world) {
+    TA::detail::matrix_il<double> il{
+          -20.2628920357738735, // ii=  1
+           -1.2096976167910904, // ii=  2
+           -0.5479641896236684, // ii=  3
+           -0.4365278884878353, // ii=  4
+           -0.3875869421335356, // ii=  5
+            0.4776192485471453, // ii=  6
+            0.5881383802823366  // ii=  7
+    };
+};
+
+
+
+
+tensor_t evecs(TA::World& world) {
+    TA::detail::matrix_il<double> il{
+        {
+            0.9944345908385830, // ii,jj=  1  1
+           -0.2391588457849149, // ii,jj=  1  2
+           -0.0000000000000007, // ii,jj=  1  3
+            0.0936833741762626, // ii,jj=  1  4
+            0.0000000000000000, // ii,jj=  1  5
+           -0.1116397970381905, // ii,jj=  1  6
+            0.0000000000000002  // ii,jj=  1  7
+        },
+        {
+            0.0240970377177525, // ii,jj=  2  1
+            0.8857356118001972, // ii,jj=  2  2
+            0.0000000000000027, // ii,jj=  2  3
+           -0.4795864576826616, // ii,jj=  2  4
+           -0.0000000000000003, // ii,jj=  2  5
+            0.6695783848891803, // ii,jj=  2  6
+           -0.0000000000000001  // ii,jj=  2  7
+        },
+        {
+           -0.0000000000000001, // ii,jj=  3  1
+           -0.0000000000000004, // ii,jj=  3  2
+            0.6072853779891636, // ii,jj=  3  3
+            0.0000000000000030, // ii,jj=  3  4
+            0.0000000000000002, // ii,jj=  3  5
+            0.0000000000000003, // ii,jj=  3  6
+            0.9192334496899537  // ii,jj=  3  7
+        },
+        {
+            0.0031615542497391, // ii,jj=  4  1
+            0.0858963619200139, // ii,jj=  4  2
+           -0.0000000000000056, // ii,jj=  4  3
+            0.7474304803968591, // ii,jj=  4  4
+            0.0000000000000005, // ii,jj=  4  5
+            0.7384899744294401, // ii,jj=  4  6
+            0.0000000000000011  // ii,jj=  4  7
+        },
+        {
+           -0.0000000000000000, // ii,jj=  5  1
+           -0.0000000000000000, // ii,jj=  5  2
+           -0.0000000000000003, // ii,jj=  5  3
+           -0.0000000000000006, // ii,jj=  5  4
+            1.0000000000000002, // ii,jj=  5  5
+           -0.0000000000000000, // ii,jj=  5  6
+           -0.0000000000000000  // ii,jj=  5  7
+        },
+        {
+           -0.0045937405133047, // ii,jj=  6  1
+            0.1440394971406169, // ii,jj=  6  2
+            0.4529978095789935, // ii,jj=  6  3
+            0.3294714736787445, // ii,jj=  6  4
+            0.0000000000000003, // ii,jj=  6  5
+           -0.7098490970972939, // ii,jj=  6  6
+           -0.7324608749850489  // ii,jj=  6  7
+        },
+        {
+           -0.0045937405133048, // ii,jj=  7  1
+            0.1440394971406193, // ii,jj=  7  2
+           -0.4529978095789937, // ii,jj=  7  3
+            0.3294714736787387, // ii,jj=  7  4
+            0.0000000000000001, // ii,jj=  7  5
+           -0.7098490970972975, // ii,jj=  7  6
+            0.7324608749850474  // ii,jj=  7  7
+        }
+    };
+};
+
+
+tensor_t overlap_nuclear(TA::World& world) {
+    TA::detail::matrix_il<double> il{
       {
            -0.0000000000000025, // iat,icrd=  1 1
             0.2876204808758941, // iat,icrd=  1 2
@@ -465,8 +551,8 @@ tensor_t overlap_nuc(TA::World& world) {
 
 
 
-tensor_t nuclear_nuc(TA::World& world) {
-    TA::detail::tensor2_il<double> il{
+tensor_t nre_nuclear(TA::World& world) {
+    TA::detail::matrix_il<double> il{
       {
             0.0000000000000000, // iat,icrd=  1 1
             2.2797139408827602, // iat,icrd=  1 2
@@ -489,8 +575,8 @@ tensor_t nuclear_nuc(TA::World& world) {
 
 
 
-tensor_t kinetic_nuc(TA::World& world) {
-    TA::detail::tensor2_il<double> il{
+tensor_t kinetic_nuclear(TA::World& world) {
+    TA::detail::matrix_il<double> il{
       {
            -0.0000000000000010, // iat,icrd=  1 1
             0.5363444324921028, // iat,icrd=  1 2
@@ -513,8 +599,8 @@ tensor_t kinetic_nuc(TA::World& world) {
 
 
 
-tensor_t nuclear_attraction_nuc(TA::World& world) {
-    TA::detail::tensor2_il<double> il{
+tensor_t nuclear_nuclear(TA::World& world) {
+    TA::detail::matrix_il<double> il{
       {
             0.0000000000000119, // iat,icrd=  1 1
            -6.1240530725507423, // iat,icrd=  1 2
@@ -537,8 +623,8 @@ tensor_t nuclear_attraction_nuc(TA::World& world) {
 
 
 
-tensor_t eri_nuc(TA::World& world) {
-    TA::detail::tensor2_il<double> il{
+tensor_t eri_nuclear(TA::World& world) {
+    TA::detail::matrix_il<double> il{
       {
            -0.0000000000000090, // iat,icrd=  1 1
             2.9229313245154382, // iat,icrd=  1 2
@@ -592,7 +678,7 @@ tensor_t eri_nuc(TA::World& world) {
                          ------------------------------
 
        create   destroy   get      put      acc     scatter   gather  read&inc
-calls:  370      370     1980      843      965        0        0      312     
+calls:  370      370     1987      843      965        0        0      312     
 number of processes/call 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
 bytes total:             1.79e+05 1.11e+05 4.83e+04 0.00e+00 0.00e+00 2.50e+03
 bytes remote:            0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00

@@ -74,6 +74,17 @@ C     get MO vectors from file (taken from Roberts scf_movecs_read)
          enddo
       end if
 c
+cDEBUG
+      call nwchemexify_evals(evals,nbf)
+      if (scftype .eq. 'UHF' ) then
+        call nwchemexify_evals(evals(nbf+1),nbf)
+      endif
+      call nwchemexify_vectors(g_vecs)
+      if (scftype .eq. 'UHF' ) then
+        call nwchemexify_vectors(g_vecs2)
+      endif
+cDEBUG
+c
       if (scftype .eq. 'RHF') then
 c
 C        energy-weighted density
@@ -539,3 +550,68 @@ c
       endif
       return
       end
+
+      subroutine nwchemexify_vectors(g_vec)
+      implicit none
+#include "global.fh"
+      integer g_vec
+      integer ndim, mdim
+      integer itype
+      integer ii, jj
+      double precision, allocatable :: row(:)
+      call ga_inquire(g_vec,itype,ndim,mdim)
+      allocate(row(1:mdim))
+      write(*,*)
+      write(*,*)
+      write(*,'("tensor_t evecs(TA::World& world) {")')
+      write(*,'("    TA::detail::matrix_il<double> il{")')
+      do ii = 1, ndim
+        write(*,'("        {")')
+        call ga_get(g_vec,ii,ii,1,mdim,row,1)
+        do jj = 1, mdim
+          if (jj.ne.mdim) then
+            write(*,'(f30.16,", // ii,jj=",i3,i3)')
+     &            row(jj),ii,jj
+          else
+            write(*,'(f30.16,"  // ii,jj=",i3,i3)')
+     &            row(jj),ii,jj
+          endif
+        enddo
+        if (ii.ne.ndim) then
+          write(*,'("        },")')
+        else
+          write(*,'("        }")')
+        endif
+      enddo
+      write(*,'("    };")')
+      write(*,'("};")')
+      write(*,*)
+      write(*,*)
+      deallocate(row)
+      end
+
+      subroutine nwchemexify_evals(eval,nbf)
+      implicit none
+#include "global.fh"
+      integer nbf
+      integer ii
+      double precision :: eval(1:nbf)
+      write(*,*)
+      write(*,*)
+      write(*,'("tensor_t evals(TA::World& world) {")')
+      write(*,'("    TA::detail::matrix_il<double> il{")')
+      do ii = 1, nbf
+        if (ii.ne.nbf) then
+          write(*,'(f30.16,", // ii=",i3)')
+     &          eval(ii),ii
+        else
+          write(*,'(f30.16,"  // ii=",i3)')
+     &          eval(ii),ii
+        endif
+      enddo
+      write(*,'("    };")')
+      write(*,'("};")')
+      write(*,*)
+      write(*,*)
+      end
+

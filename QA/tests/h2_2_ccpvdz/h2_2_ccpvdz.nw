@@ -1,0 +1,22 @@
+echo
+
+start h2_ccpvdz_dat
+
+geometry units au noautoz nocenter noautosym
+  symmetry c1
+  H1  0.0  0.0  0.0
+  H2  0.0  0.0  1.6818473865225443
+  H3  0.0  0.0 41.6818473865225443
+  H4  0.0  0.0 43.3636947730450886
+end
+
+basis
+  * library cc-pvdz
+end
+
+scf
+  thresh 1.0e-10
+  tol2e 1.0e-25
+end
+
+task scf gradient

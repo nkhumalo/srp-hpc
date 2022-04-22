@@ -75,13 +75,13 @@ C     get MO vectors from file (taken from Roberts scf_movecs_read)
       end if
 c
 cDEBUG
-      call nwchemexify_evals(evals,nbf)
+      call nwchemexify_evals(evals,nbf,nclosed+nopen)
       if (scftype .eq. 'UHF' ) then
-        call nwchemexify_evals(evals(nbf+1),nbf)
+        call nwchemexify_evals(evals(nbf+1),nbf,nclosed)
       endif
-      call nwchemexify_vectors(g_vecs)
+      call nwchemexify_vectors(g_vecs,nclosed+nopen)
       if (scftype .eq. 'UHF' ) then
-        call nwchemexify_vectors(g_vecs2)
+        call nwchemexify_vectors(g_vecs2,nclosed)
       endif
 cDEBUG
 c
@@ -550,12 +550,21 @@ c
       endif
       return
       end
-
-      subroutine nwchemexify_vectors(g_vec)
+!>
+!> @brief Write out vectors for NWChemEx
+!>
+!> NWChemEx separates the orbitals into two classes:
+!> - occupied orbitals
+!> - virtual orbitals
+!> To make this separation we need to know the number of
+!> occupied orbitals.
+!>
+      subroutine nwchemexify_vectors(g_vec,nocc)
       implicit none
 #include "global.fh"
       integer g_vec
       integer ndim, mdim
+      integer nocc
       integer itype
       integer ii, jj
       double precision, allocatable :: row(:)
@@ -563,12 +572,39 @@ c
       allocate(row(1:mdim))
       write(*,*)
       write(*,*)
-      write(*,'("tensor_t evecs(TA::World& world) {")')
+      write(*,'("tensor_t occ(TA::World& world) {")')
       write(*,'("    TA::detail::matrix_il<double> il{")')
       do ii = 1, ndim
         write(*,'("        {")')
-        call ga_get(g_vec,ii,ii,1,mdim,row,1)
-        do jj = 1, mdim
+        call ga_get(g_vec,ii,ii,1,nocc,row,1)
+        do jj = 1, nocc
+          if (jj.ne.nocc) then
+            write(*,'(f30.16,", // ii,jj=",i3,i3)')
+     &            row(jj),ii,jj
+          else
+            write(*,'(f30.16,"  // ii,jj=",i3,i3)')
+     &            row(jj),ii,jj
+          endif
+        enddo
+        if (ii.ne.ndim) then
+          write(*,'("        },")')
+        else
+          write(*,'("        }")')
+        endif
+      enddo
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("};")')
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,'("tensor_t vir(TA::World& world) {")')
+      write(*,'("    TA::detail::matrix_il<double> il{")')
+      do ii = 1, ndim
+        write(*,'("        {")')
+        call ga_get(g_vec,ii,ii,nocc+1,mdim,row(nocc+1:mdim),1)
+        do jj = nocc+1, mdim
           if (jj.ne.mdim) then
             write(*,'(f30.16,", // ii,jj=",i3,i3)')
      &            row(jj),ii,jj
@@ -584,23 +620,51 @@ c
         endif
       enddo
       write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
       write(*,'("};")')
       write(*,*)
       write(*,*)
       deallocate(row)
       end
-
-      subroutine nwchemexify_evals(eval,nbf)
+!>
+!> @brief Write out orbital energies for NWChemEx
+!>
+!> NWChemEx separates the orbitals into two classes:
+!> - occupied orbitals
+!> - virtual orbitals
+!> To make this separation we need to know the number of
+!> occupied orbitals.
+!>
+      subroutine nwchemexify_evals(eval,nbf,nocc)
       implicit none
 #include "global.fh"
       integer nbf
       integer ii
+      integer nocc
       double precision :: eval(1:nbf)
       write(*,*)
       write(*,*)
-      write(*,'("tensor_t evals(TA::World& world) {")')
+      write(*,'("tensor_t occ_e(TA::World& world) {")')
       write(*,'("    TA::detail::matrix_il<double> il{")')
-      do ii = 1, nbf
+      do ii = 1, nocc
+        if (ii.ne.nocc) then
+          write(*,'(f30.16,", // ii=",i3)')
+     &          eval(ii),ii
+        else
+          write(*,'(f30.16,"  // ii=",i3)')
+     &          eval(ii),ii
+        endif
+      enddo
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("};")')
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,'("tensor_t vir_e(TA::World& world) {")')
+      write(*,'("    TA::detail::matrix_il<double> il{")')
+      do ii = nocc+1, nbf
         if (ii.ne.nbf) then
           write(*,'(f30.16,", // ii=",i3)')
      &          eval(ii),ii
@@ -610,6 +674,7 @@ c
         endif
       enddo
       write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
       write(*,'("};")')
       write(*,*)
       write(*,*)

@@ -76,9 +76,12 @@ cc AJL/Begin/SPIN ECPs
       double precision H_beta (lbuf)
       double precision dens_beta (max_at_bf,max_at_bf)
 cDEBUG
-      integer iat
+      integer nao, iat
       real(kind=8), allocatable :: frc_kin1(:,:)
       real(kind=8), allocatable :: frc_pot1(:,:)
+      real(kind=8), allocatable :: dS(:,:,:,:)
+      real(kind=8), allocatable :: dT(:,:,:,:)
+      real(kind=8), allocatable :: dV(:,:,:,:)
 cDEBUG
 #ifdef NO_BQGEM
 #include "inp.fh"
@@ -108,8 +111,19 @@ c        call ga_print(g_dens(2))
 c      end if   
 cc AJL/End
 cDEBUG
+      nao = 0
+      do iat1 = 1, nat
+        status = bas_ce2bfr(basis,iat1,iab1f,iab1l)
+        nao = max(nao,iab1l)
+      enddo
       allocate(frc_kin1(1:3,1:nat))
       allocate(frc_pot1(1:3,1:nat))
+      allocate(dS(1:nao,1:nao,1:3,1:nat))
+      allocate(dT(1:nao,1:nao,1:3,1:nat))
+      allocate(dV(1:nao,1:nao,1:3,1:nat))
+      dS = 0.0d0
+      dT = 0.0d0
+      dV = 0.0d0
       frc_kin1 = 0.0d0
       frc_pot1 = 0.0d0
 cDEBUG
@@ -196,6 +210,20 @@ C               idatom(1).ge.0 <=> idatom(2).ge.0 (no check necessary)
                     do 22, ip1 = if1, il1
                       do 20, ip2 = if2, il2
                         dE = dE + wdens(ip1,ip2) * H(ic)
+cDEBUG
+                        dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1)) 
+     &                  = dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1))
+     &                  - H(ic)
+                        dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1)) 
+     &                  = dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1))
+     &                  - H(ic)
+                        dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2)) 
+     &                  = dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2))
+     &                  + H(ic)
+                        dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2)) 
+     &                  = dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2))
+     &                  + H(ic)
+cDEBUG
                         ic = ic + 1
  20                   continue
  22                 continue
@@ -218,6 +246,18 @@ C               idatom(1).ge.0 <=> idatom(2).ge.0 (no check necessary)
                     do ip1 = if1, il1
                       do ip2 = if2, il2
                         dE = dE + dens(ip1,ip2) * H(ic)
+                        dT(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1)) 
+     &                  = dT(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1))
+     &                  - H(ic)
+                        dT(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1)) 
+     &                  = dT(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1))
+     &                  - H(ic)
+                        dT(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2)) 
+     &                  = dT(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2))
+     &                  + H(ic)
+                        dT(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2)) 
+     &                  = dT(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2))
+     &                  + H(ic)
                         ic = ic + 1
                       enddo
                     enddo
@@ -241,6 +281,14 @@ cDEBUG Nuclear attraction energy integrals
                     do ip1 = if1, il1
                       do ip2 = if2, il2
                         dE = dE + dens(ip1,ip2)*H(ic)
+                        dV(iab1f-1+ip1,iab2f-1+ip2,icart,iat3) 
+     &                  = dV(iab1f-1+ip1,iab2f-1+ip2,icart,iat3)
+     &                  + H(ic)
+                        if ( iat1.ne.iat2 .or. ish1.ne.ish2 ) then
+                          dV(iab2f-1+ip2,iab1f-1+ip1,icart,iat3) 
+     &                    = dV(iab2f-1+ip2,iab1f-1+ip1,icart,iat3)
+     &                    + H(ic)
+                        endif
                         ic = ic + 1
                       enddo ! ip2
                     enddo ! ip1
@@ -354,6 +402,135 @@ c     - 4D: tensor4_il
 c     - 5D: tensor5_il
 c     - 6D: tensor6_il
 c
+c     Below we write the derivative integrals as 4D data structures
+c
+      write(*,'("tensor_t overlap_nuc_int(TA::World& world) {")')
+      write(*,'("    TA::detail::tensor4_il<double> il{")')
+      do iat = 1, nat
+        write(*,'("      {")')
+        do icart = 1, 3
+          write(*,'("        {")')
+          do ip1 = 1, nao
+            write(*,'("          {")')
+            do ip2 = 1, nao
+              if (ip2.ne.nao) then
+                write(*,'(f30.16,", // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dS(ip2,ip1,icart,iat),ip2,ip1,icart,iat
+              else
+                write(*,'(f30.16,"  // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dS(ip2,ip1,icart,iat),ip2,ip1,icart,iat
+              endif
+            enddo ! ip2
+            if (ip1.ne.nao) then
+              write(*,'("          },")')
+            else
+              write(*,'("          }")')
+            endif
+          enddo ! ip1
+          if (icart.ne.3) then
+            write(*,'("        },")')
+          else
+            write(*,'("        }")')
+          endif
+        enddo ! icart
+        if (iat.ne.nat) then
+          write(*,'("      },")')
+        else
+          write(*,'("      }")')
+        endif
+      enddo ! iat
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("}")')
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,'("tensor_t kinetic_nuc_int(TA::World& world) {")')
+      write(*,'("    TA::detail::tensor4_il<double> il{")')
+      do iat = 1, nat
+        write(*,'("      {")')
+        do icart = 1, 3
+          write(*,'("        {")')
+          do ip1 = 1, nao
+            write(*,'("          {")')
+            do ip2 = 1, nao
+              if (ip2.ne.nao) then
+                write(*,'(f30.16,", // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dT(ip2,ip1,icart,iat),ip2,ip1,icart,iat
+              else
+                write(*,'(f30.16,"  // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dT(ip2,ip1,icart,iat),ip2,ip1,icart,iat
+              endif
+            enddo ! ip2
+            if (ip1.ne.nao) then
+              write(*,'("          },")')
+            else
+              write(*,'("          }")')
+            endif
+          enddo ! ip1
+          if (icart.ne.3) then
+            write(*,'("        },")')
+          else
+            write(*,'("        }")')
+          endif
+        enddo ! icart
+        if (iat.ne.nat) then
+          write(*,'("      },")')
+        else
+          write(*,'("      }")')
+        endif
+      enddo ! iat
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("}")')
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,'("tensor_t nuclear_nuc_int(TA::World& world) {")')
+      write(*,'("    TA::detail::tensor4_il<double> il{")')
+      do iat = 1, nat
+        write(*,'("      {")')
+        do icart = 1, 3
+          write(*,'("        {")')
+          do ip1 = 1, nao
+            write(*,'("          {")')
+            do ip2 = 1, nao
+              if (ip2.ne.nao) then
+                write(*,'(f30.16,", // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dV(ip2,ip1,icart,iat),ip2,ip1,icart,iat
+              else
+                write(*,'(f30.16,"  // iao,jao,icrd,iat=",i3,i3,i2,i3)')
+     &                dV(ip2,ip1,icart,iat),ip2,ip1,icart,iat
+              endif
+            enddo ! ip2
+            if (ip1.ne.nao) then
+              write(*,'("          },")')
+            else
+              write(*,'("          }")')
+            endif
+          enddo ! ip1
+          if (icart.ne.3) then
+            write(*,'("        },")')
+          else
+            write(*,'("        }")')
+          endif
+        enddo ! icart
+        if (iat.ne.nat) then
+          write(*,'("      },")')
+        else
+          write(*,'("      }")')
+        endif
+      enddo ! iat
+      write(*,'("    };")')
+      write(*,'("    return tensor_t(TA::TSpArrayD(world, il));")')
+      write(*,'("}")')
+      write(*,*)
+      write(*,*)
+      write(*,*)
+      write(*,*)
+c
 c     Below we write the gradient terms as 2D data structures, and
 c     therefore they have to be of data type matrix_il (not tensor2_il).
 c
@@ -461,6 +638,9 @@ c
       write(*,*)
       write(*,*)
       write(*,*)
+      deallocate(dV)
+      deallocate(dT)
+      deallocate(dS)
       deallocate(frc_kin1)
       deallocate(frc_pot1)
 cDEBUG

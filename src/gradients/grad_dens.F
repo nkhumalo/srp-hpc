@@ -645,7 +645,7 @@ c
       write(*,*)
       write(*,*)
       write(*,'("tensor_t occ_e(TA::World& world) {")')
-      write(*,'("    TA::detail::matrix_il<double> il{")')
+      write(*,'("    TA::detail::vector_il<double> il{")')
       do ii = 1, nocc
         if (ii.ne.nocc) then
           write(*,'(f30.16,", // ii=",i3)')
@@ -663,7 +663,7 @@ c
       write(*,*)
       write(*,*)
       write(*,'("tensor_t vir_e(TA::World& world) {")')
-      write(*,'("    TA::detail::matrix_il<double> il{")')
+      write(*,'("    TA::detail::vector_il<double> il{")')
       do ii = nocc+1, nbf
         if (ii.ne.nbf) then
           write(*,'(f30.16,", // ii=",i3)')

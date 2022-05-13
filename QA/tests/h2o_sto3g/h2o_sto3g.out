@@ -66,9 +66,9 @@ task scf gradient
 
     hostname        = erato
     program         = ../../../bin/LINUX64/nwchem
-    date            = Thu Apr 21 16:48:08 2022
+    date            = Thu May 12 23:09:09 2022
 
-    compiled        = Thu_Apr_21_16:47:56_2022
+    compiled        = Thu_May_12_23:08:51_2022
     source          = /home/hvandam/nwchem-1-mokup
     nwchem branch   = 7.0.0
     nwchem revision = nwchem_on_git-2028-gf3ab5e5fb5
@@ -86,8 +86,8 @@ task scf gradient
            Memory information
            ------------------
 
-    heap     =   13107200 doubles =    100.0 Mbytes
-    stack    =   13107197 doubles =    100.0 Mbytes
+    heap     =   13107196 doubles =    100.0 Mbytes
+    stack    =   13107201 doubles =    100.0 Mbytes
     global   =   26214400 doubles =    200.0 Mbytes (distinct from heap & stack)
     total    =   52428797 doubles =    400.0 Mbytes
     verify   = yes
@@ -295,7 +295,7 @@ task scf gradient
 
  Integral file          = ./h2o_sto3g_dat.aoints.0
  Record size in doubles =    65536    No. of integs per rec  =    43688
- Max. records in memory =        2    Max. records in file   =  2509641
+ Max. records in memory =        2    Max. records in file   =  1885276
  No. of bits per label  =        8    No. of bits per value  =       64
 
 
@@ -306,9 +306,9 @@ task scf gradient
  Warning: symmetry breaking in RHF:    1.1036183763070306E-016
                  2      -74.9409903790  1.35D-01  9.79D-02      0.0
  Warning: symmetry breaking in RHF:    1.1897550866453238E-016
-                 3      -74.9420771806  4.28D-03  3.96D-03      0.1
+                 3      -74.9420771806  4.28D-03  3.96D-03      0.0
  Warning: symmetry breaking in RHF:    1.1937838879665873E-016
-                 4      -74.9420800579  1.22D-06  7.48D-07      0.1
+                 4      -74.9420800579  1.22D-06  7.48D-07      0.0
  Warning: symmetry breaking in RHF:    1.1937863637656487E-016
                  5      -74.9420800579  1.68D-13  1.54D-13      0.1
 
@@ -443,88 +443,1922 @@ task scf gradient
   Using symmetry
 
 
-tensor_t evals(TA::World& world) {
-    TA::detail::matrix_il<double> il{
+tensor_t occ_e(TA::World& world) {
+    TA::detail::vector_il<double> il{
           -20.2628920357738735, // ii=  1
            -1.2096976167910904, // ii=  2
            -0.5479641896236684, // ii=  3
            -0.4365278884878353, // ii=  4
-           -0.3875869421335356, // ii=  5
-            0.4776192485471453, // ii=  6
-            0.5881383802823366  // ii=  7
+           -0.3875869421335356  // ii=  5
     };
+    return tensor_t(TA::TSpArrayD(world, il));
 };
 
 
 
 
-tensor_t evecs(TA::World& world) {
+tensor_t vir_e(TA::World& world) {
+    TA::detail::vector_il<double> il{
+            0.4776192485471453, // ii=  6
+            0.5881383802823366  // ii=  7
+    };
+    return tensor_t(TA::TSpArrayD(world, il));
+};
+
+
+
+
+tensor_t occ(TA::World& world) {
     TA::detail::matrix_il<double> il{
         {
             0.9944345908385830, // ii,jj=  1  1
            -0.2391588457849149, // ii,jj=  1  2
            -0.0000000000000007, // ii,jj=  1  3
             0.0936833741762626, // ii,jj=  1  4
-            0.0000000000000000, // ii,jj=  1  5
-           -0.1116397970381905, // ii,jj=  1  6
-            0.0000000000000002  // ii,jj=  1  7
+            0.0000000000000000  // ii,jj=  1  5
         },
         {
             0.0240970377177525, // ii,jj=  2  1
             0.8857356118001972, // ii,jj=  2  2
             0.0000000000000027, // ii,jj=  2  3
            -0.4795864576826616, // ii,jj=  2  4
-           -0.0000000000000003, // ii,jj=  2  5
-            0.6695783848891803, // ii,jj=  2  6
-           -0.0000000000000001  // ii,jj=  2  7
+           -0.0000000000000003  // ii,jj=  2  5
         },
         {
            -0.0000000000000001, // ii,jj=  3  1
            -0.0000000000000004, // ii,jj=  3  2
             0.6072853779891636, // ii,jj=  3  3
             0.0000000000000030, // ii,jj=  3  4
-            0.0000000000000002, // ii,jj=  3  5
-            0.0000000000000003, // ii,jj=  3  6
-            0.9192334496899537  // ii,jj=  3  7
+            0.0000000000000002  // ii,jj=  3  5
         },
         {
             0.0031615542497391, // ii,jj=  4  1
             0.0858963619200139, // ii,jj=  4  2
            -0.0000000000000056, // ii,jj=  4  3
             0.7474304803968591, // ii,jj=  4  4
-            0.0000000000000005, // ii,jj=  4  5
-            0.7384899744294401, // ii,jj=  4  6
-            0.0000000000000011  // ii,jj=  4  7
+            0.0000000000000005  // ii,jj=  4  5
         },
         {
            -0.0000000000000000, // ii,jj=  5  1
            -0.0000000000000000, // ii,jj=  5  2
            -0.0000000000000003, // ii,jj=  5  3
            -0.0000000000000006, // ii,jj=  5  4
-            1.0000000000000002, // ii,jj=  5  5
-           -0.0000000000000000, // ii,jj=  5  6
-           -0.0000000000000000  // ii,jj=  5  7
+            1.0000000000000002  // ii,jj=  5  5
         },
         {
            -0.0045937405133047, // ii,jj=  6  1
             0.1440394971406169, // ii,jj=  6  2
             0.4529978095789935, // ii,jj=  6  3
             0.3294714736787445, // ii,jj=  6  4
-            0.0000000000000003, // ii,jj=  6  5
-           -0.7098490970972939, // ii,jj=  6  6
-           -0.7324608749850489  // ii,jj=  6  7
+            0.0000000000000003  // ii,jj=  6  5
         },
         {
            -0.0045937405133048, // ii,jj=  7  1
             0.1440394971406193, // ii,jj=  7  2
            -0.4529978095789937, // ii,jj=  7  3
             0.3294714736787387, // ii,jj=  7  4
-            0.0000000000000001, // ii,jj=  7  5
+            0.0000000000000001  // ii,jj=  7  5
+        }
+    };
+    return tensor_t(TA::TSpArrayD(world, il));
+};
+
+
+
+
+tensor_t vir(TA::World& world) {
+    TA::detail::matrix_il<double> il{
+        {
+           -0.1116397970381905, // ii,jj=  1  6
+            0.0000000000000002  // ii,jj=  1  7
+        },
+        {
+            0.6695783848891803, // ii,jj=  2  6
+           -0.0000000000000001  // ii,jj=  2  7
+        },
+        {
+            0.0000000000000003, // ii,jj=  3  6
+            0.9192334496899537  // ii,jj=  3  7
+        },
+        {
+            0.7384899744294401, // ii,jj=  4  6
+            0.0000000000000011  // ii,jj=  4  7
+        },
+        {
+           -0.0000000000000000, // ii,jj=  5  6
+           -0.0000000000000000  // ii,jj=  5  7
+        },
+        {
+           -0.7098490970972939, // ii,jj=  6  6
+           -0.7324608749850489  // ii,jj=  6  7
+        },
+        {
            -0.7098490970972975, // ii,jj=  7  6
             0.7324608749850474  // ii,jj=  7  7
         }
     };
+    return tensor_t(TA::TSpArrayD(world, il));
 };
+
+
+tensor_t overlap_nuc_int(TA::World& world) {
+    TA::detail::tensor4_il<double> il{
+      {
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  1
+           -0.0381198221642141, // iao,jao,icrd,iat=  6  1 1  1
+            0.0381198221642141  // iao,jao,icrd,iat=  7  1 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  1
+           -0.2431653159521778, // iao,jao,icrd,iat=  6  2 1  1
+            0.2431653159521778  // iao,jao,icrd,iat=  7  2 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  1
+           -0.0637270069214003, // iao,jao,icrd,iat=  6  3 1  1
+           -0.0637270069214003  // iao,jao,icrd,iat=  7  3 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  1
+           -0.1778255136323591, // iao,jao,icrd,iat=  6  4 1  1
+            0.1778255136323591  // iao,jao,icrd,iat=  7  4 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 1  1
+          },
+          {
+           -0.0381198221642141, // iao,jao,icrd,iat=  1  6 1  1
+           -0.2431653159521778, // iao,jao,icrd,iat=  2  6 1  1
+           -0.0637270069214003, // iao,jao,icrd,iat=  3  6 1  1
+           -0.1778255136323591, // iao,jao,icrd,iat=  4  6 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 1  1
+          },
+          {
+            0.0381198221642141, // iao,jao,icrd,iat=  1  7 1  1
+            0.2431653159521778, // iao,jao,icrd,iat=  2  7 1  1
+           -0.0637270069214003, // iao,jao,icrd,iat=  3  7 1  1
+            0.1778255136323591, // iao,jao,icrd,iat=  4  7 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 1  1
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  1
+           -0.0297826365227336, // iao,jao,icrd,iat=  6  1 2  1
+           -0.0297826365227336  // iao,jao,icrd,iat=  7  1 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  1
+           -0.1899826339362645, // iao,jao,icrd,iat=  6  2 2  1
+           -0.1899826339362645  // iao,jao,icrd,iat=  7  2 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  1
+           -0.1778255136323591, // iao,jao,icrd,iat=  6  3 2  1
+            0.1778255136323591  // iao,jao,icrd,iat=  7  3 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  1
+            0.0249446934333873, // iao,jao,icrd,iat=  6  4 2  1
+            0.0249446934333873  // iao,jao,icrd,iat=  7  4 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 2  1
+          },
+          {
+           -0.0297826365227336, // iao,jao,icrd,iat=  1  6 2  1
+           -0.1899826339362645, // iao,jao,icrd,iat=  2  6 2  1
+           -0.1778255136323591, // iao,jao,icrd,iat=  3  6 2  1
+            0.0249446934333873, // iao,jao,icrd,iat=  4  6 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 2  1
+          },
+          {
+           -0.0297826365227336, // iao,jao,icrd,iat=  1  7 2  1
+           -0.1899826339362645, // iao,jao,icrd,iat=  2  7 2  1
+            0.1778255136323591, // iao,jao,icrd,iat=  3  7 2  1
+            0.0249446934333873, // iao,jao,icrd,iat=  4  7 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  1
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  1
+            0.1638779920769684, // iao,jao,icrd,iat=  6  5 3  1
+            0.1638779920769684  // iao,jao,icrd,iat=  7  5 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  1
+            0.1638779920769684, // iao,jao,icrd,iat=  5  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 3  1
+            0.1638779920769684, // iao,jao,icrd,iat=  5  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  1
+          }
+        }
+      },
+      {
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  2
+            0.0381198221642141, // iao,jao,icrd,iat=  6  1 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  2
+            0.2431653159521778, // iao,jao,icrd,iat=  6  2 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  2
+            0.0637270069214003, // iao,jao,icrd,iat=  6  3 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  2
+            0.1778255136323591, // iao,jao,icrd,iat=  6  4 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 1  2
+          },
+          {
+            0.0381198221642141, // iao,jao,icrd,iat=  1  6 1  2
+            0.2431653159521778, // iao,jao,icrd,iat=  2  6 1  2
+            0.0637270069214003, // iao,jao,icrd,iat=  3  6 1  2
+            0.1778255136323591, // iao,jao,icrd,iat=  4  6 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 1  2
+            0.1468568647577873  // iao,jao,icrd,iat=  7  6 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 1  2
+            0.1468568647577873, // iao,jao,icrd,iat=  6  7 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 1  2
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  2
+            0.0297826365227336, // iao,jao,icrd,iat=  6  1 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  2
+            0.1899826339362645, // iao,jao,icrd,iat=  6  2 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  2
+            0.1778255136323591, // iao,jao,icrd,iat=  6  3 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  2
+           -0.0249446934333873, // iao,jao,icrd,iat=  6  4 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 2  2
+          },
+          {
+            0.0297826365227336, // iao,jao,icrd,iat=  1  6 2  2
+            0.1899826339362645, // iao,jao,icrd,iat=  2  6 2  2
+            0.1778255136323591, // iao,jao,icrd,iat=  3  6 2  2
+           -0.0249446934333873, // iao,jao,icrd,iat=  4  6 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  2
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  2
+           -0.1638779920769684, // iao,jao,icrd,iat=  6  5 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  2
+           -0.1638779920769684, // iao,jao,icrd,iat=  5  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  2
+          }
+        }
+      },
+      {
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 1  3
+           -0.0381198221642141  // iao,jao,icrd,iat=  7  1 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 1  3
+           -0.2431653159521778  // iao,jao,icrd,iat=  7  2 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 1  3
+            0.0637270069214003  // iao,jao,icrd,iat=  7  3 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 1  3
+           -0.1778255136323591  // iao,jao,icrd,iat=  7  4 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 1  3
+           -0.1468568647577873  // iao,jao,icrd,iat=  7  6 1  3
+          },
+          {
+           -0.0381198221642141, // iao,jao,icrd,iat=  1  7 1  3
+           -0.2431653159521778, // iao,jao,icrd,iat=  2  7 1  3
+            0.0637270069214003, // iao,jao,icrd,iat=  3  7 1  3
+           -0.1778255136323591, // iao,jao,icrd,iat=  4  7 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 1  3
+           -0.1468568647577873, // iao,jao,icrd,iat=  6  7 1  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 1  3
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 2  3
+            0.0297826365227336  // iao,jao,icrd,iat=  7  1 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 2  3
+            0.1899826339362645  // iao,jao,icrd,iat=  7  2 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 2  3
+           -0.1778255136323591  // iao,jao,icrd,iat=  7  3 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 2  3
+           -0.0249446934333873  // iao,jao,icrd,iat=  7  4 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 2  3
+          },
+          {
+            0.0297826365227336, // iao,jao,icrd,iat=  1  7 2  3
+            0.1899826339362645, // iao,jao,icrd,iat=  2  7 2  3
+           -0.1778255136323591, // iao,jao,icrd,iat=  3  7 2  3
+           -0.0249446934333873, // iao,jao,icrd,iat=  4  7 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  3
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 3  3
+           -0.1638779920769684  // iao,jao,icrd,iat=  7  5 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 3  3
+           -0.1638779920769684, // iao,jao,icrd,iat=  5  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  3
+          }
+        }
+      }
+    };
+    return tensor_t(TA::TSpArrayD(world, il));
+}
+
+
+
+
+tensor_t kinetic_nuc_int(TA::World& world) {
+    TA::detail::tensor4_il<double> il{
+      {
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  1
+           -0.0067458706916498, // iao,jao,icrd,iat=  6  1 1  1
+            0.0067458706916498  // iao,jao,icrd,iat=  7  1 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  1
+           -0.1407343222260799, // iao,jao,icrd,iat=  6  2 1  1
+            0.1407343222260799  // iao,jao,icrd,iat=  7  2 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  1
+           -0.1614591151303085, // iao,jao,icrd,iat=  6  3 1  1
+           -0.1614591151303085  // iao,jao,icrd,iat=  7  3 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  1
+           -0.1963039222458384, // iao,jao,icrd,iat=  6  4 1  1
+            0.1963039222458384  // iao,jao,icrd,iat=  7  4 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 1  1
+          },
+          {
+           -0.0067458706916498, // iao,jao,icrd,iat=  1  6 1  1
+           -0.1407343222260799, // iao,jao,icrd,iat=  2  6 1  1
+           -0.1614591151303085, // iao,jao,icrd,iat=  3  6 1  1
+           -0.1963039222458384, // iao,jao,icrd,iat=  4  6 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 1  1
+          },
+          {
+            0.0067458706916498, // iao,jao,icrd,iat=  1  7 1  1
+            0.1407343222260799, // iao,jao,icrd,iat=  2  7 1  1
+           -0.1614591151303085, // iao,jao,icrd,iat=  3  7 1  1
+            0.1963039222458384, // iao,jao,icrd,iat=  4  7 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 1  1
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  1
+           -0.0052704814301935, // iao,jao,icrd,iat=  6  1 2  1
+           -0.0052704814301935  // iao,jao,icrd,iat=  7  1 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  1
+           -0.1099543210636335, // iao,jao,icrd,iat=  6  2 2  1
+           -0.1099543210636335  // iao,jao,icrd,iat=  7  2 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  1
+           -0.1963039222458384, // iao,jao,icrd,iat=  6  3 2  1
+            0.1963039222458384  // iao,jao,icrd,iat=  7  3 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  1
+           -0.0635732594041200, // iao,jao,icrd,iat=  6  4 2  1
+           -0.0635732594041200  // iao,jao,icrd,iat=  7  4 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 2  1
+          },
+          {
+           -0.0052704814301935, // iao,jao,icrd,iat=  1  6 2  1
+           -0.1099543210636335, // iao,jao,icrd,iat=  2  6 2  1
+           -0.1963039222458384, // iao,jao,icrd,iat=  3  6 2  1
+           -0.0635732594041200, // iao,jao,icrd,iat=  4  6 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 2  1
+          },
+          {
+           -0.0052704814301935, // iao,jao,icrd,iat=  1  7 2  1
+           -0.1099543210636335, // iao,jao,icrd,iat=  2  7 2  1
+            0.1963039222458384, // iao,jao,icrd,iat=  3  7 2  1
+           -0.0635732594041200, // iao,jao,icrd,iat=  4  7 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  1
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  1
+            0.0897970354269838, // iao,jao,icrd,iat=  6  5 3  1
+            0.0897970354269838  // iao,jao,icrd,iat=  7  5 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  1
+            0.0897970354269838, // iao,jao,icrd,iat=  5  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 3  1
+            0.0897970354269838, // iao,jao,icrd,iat=  5  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  1
+          }
+        }
+      },
+      {
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  2
+            0.0067458706916498, // iao,jao,icrd,iat=  6  1 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  2
+            0.1407343222260799, // iao,jao,icrd,iat=  6  2 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  2
+            0.1614591151303085, // iao,jao,icrd,iat=  6  3 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  2
+            0.1963039222458384, // iao,jao,icrd,iat=  6  4 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 1  2
+          },
+          {
+            0.0067458706916498, // iao,jao,icrd,iat=  1  6 1  2
+            0.1407343222260799, // iao,jao,icrd,iat=  2  6 1  2
+            0.1614591151303085, // iao,jao,icrd,iat=  3  6 1  2
+            0.1963039222458384, // iao,jao,icrd,iat=  4  6 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 1  2
+            0.0197544828512051  // iao,jao,icrd,iat=  7  6 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 1  2
+            0.0197544828512051, // iao,jao,icrd,iat=  6  7 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 1  2
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  2
+            0.0052704814301935, // iao,jao,icrd,iat=  6  1 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  2
+            0.1099543210636335, // iao,jao,icrd,iat=  6  2 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  2
+            0.1963039222458384, // iao,jao,icrd,iat=  6  3 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  2
+            0.0635732594041200, // iao,jao,icrd,iat=  6  4 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 2  2
+          },
+          {
+            0.0052704814301935, // iao,jao,icrd,iat=  1  6 2  2
+            0.1099543210636335, // iao,jao,icrd,iat=  2  6 2  2
+            0.1963039222458384, // iao,jao,icrd,iat=  3  6 2  2
+            0.0635732594041200, // iao,jao,icrd,iat=  4  6 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  2
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  2
+           -0.0897970354269838, // iao,jao,icrd,iat=  6  5 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  2
+           -0.0897970354269838, // iao,jao,icrd,iat=  5  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  2
+          }
+        }
+      },
+      {
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 1  3
+           -0.0067458706916498  // iao,jao,icrd,iat=  7  1 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 1  3
+           -0.1407343222260799  // iao,jao,icrd,iat=  7  2 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 1  3
+            0.1614591151303085  // iao,jao,icrd,iat=  7  3 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 1  3
+           -0.1963039222458384  // iao,jao,icrd,iat=  7  4 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 1  3
+           -0.0197544828512051  // iao,jao,icrd,iat=  7  6 1  3
+          },
+          {
+           -0.0067458706916498, // iao,jao,icrd,iat=  1  7 1  3
+           -0.1407343222260799, // iao,jao,icrd,iat=  2  7 1  3
+            0.1614591151303085, // iao,jao,icrd,iat=  3  7 1  3
+           -0.1963039222458384, // iao,jao,icrd,iat=  4  7 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 1  3
+           -0.0197544828512051, // iao,jao,icrd,iat=  6  7 1  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 1  3
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 2  3
+            0.0052704814301935  // iao,jao,icrd,iat=  7  1 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 2  3
+            0.1099543210636335  // iao,jao,icrd,iat=  7  2 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 2  3
+           -0.1963039222458384  // iao,jao,icrd,iat=  7  3 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 2  3
+            0.0635732594041200  // iao,jao,icrd,iat=  7  4 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 2  3
+          },
+          {
+            0.0052704814301935, // iao,jao,icrd,iat=  1  7 2  3
+            0.1099543210636335, // iao,jao,icrd,iat=  2  7 2  3
+           -0.1963039222458384, // iao,jao,icrd,iat=  3  7 2  3
+            0.0635732594041200, // iao,jao,icrd,iat=  4  7 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  3
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 3  3
+           -0.0897970354269838  // iao,jao,icrd,iat=  7  5 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 3  3
+           -0.0897970354269838, // iao,jao,icrd,iat=  5  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  3
+          }
+        }
+      }
+    };
+    return tensor_t(TA::TSpArrayD(world, il));
+}
+
+
+
+
+tensor_t nuclear_nuc_int(TA::World& world) {
+    TA::detail::tensor4_il<double> il{
+      {
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 1  1
+           -0.0097588325062343, // iao,jao,icrd,iat=  3  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  1
+           -1.2358367616726613, // iao,jao,icrd,iat=  6  1 1  1
+            1.2358367616726613  // iao,jao,icrd,iat=  7  1 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 1  1
+           -0.1018516185328595, // iao,jao,icrd,iat=  3  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  1
+           -2.2444191465794847, // iao,jao,icrd,iat=  6  2 1  1
+            2.2444191465794843  // iao,jao,icrd,iat=  7  2 1  1
+          },
+          {
+           -0.0097588325062343, // iao,jao,icrd,iat=  1  3 1  1
+           -0.1018516185328595, // iao,jao,icrd,iat=  2  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 1  1
+           -0.0954633265346905, // iao,jao,icrd,iat=  4  3 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  1
+           -0.7376505495692418, // iao,jao,icrd,iat=  6  3 1  1
+           -0.7376505495692418  // iao,jao,icrd,iat=  7  3 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 1  1
+           -0.0954633265346905, // iao,jao,icrd,iat=  3  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  1
+           -1.4670198370722121, // iao,jao,icrd,iat=  6  4 1  1
+            1.4670198370722121  // iao,jao,icrd,iat=  7  4 1  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 1  1
+          },
+          {
+           -1.2358367616726613, // iao,jao,icrd,iat=  1  6 1  1
+           -2.2444191465794847, // iao,jao,icrd,iat=  2  6 1  1
+           -0.7376505495692418, // iao,jao,icrd,iat=  3  6 1  1
+           -1.4670198370722121, // iao,jao,icrd,iat=  4  6 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  1
+           -1.2973710254121318, // iao,jao,icrd,iat=  6  6 1  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 1  1
+          },
+          {
+            1.2358367616726613, // iao,jao,icrd,iat=  1  7 1  1
+            2.2444191465794843, // iao,jao,icrd,iat=  2  7 1  1
+           -0.7376505495692418, // iao,jao,icrd,iat=  3  7 1  1
+            1.4670198370722121, // iao,jao,icrd,iat=  4  7 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 1  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 1  1
+            1.2973710254121318  // iao,jao,icrd,iat=  7  7 1  1
+          }
+        },
+        {
+          {
+           -0.2849642426102228, // iao,jao,icrd,iat=  1  1 2  1
+           -0.0674521579906719, // iao,jao,icrd,iat=  2  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 2  1
+           -0.0015508398822721, // iao,jao,icrd,iat=  4  1 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  1
+           -0.9758185286977230, // iao,jao,icrd,iat=  6  1 2  1
+           -0.9758185286977230  // iao,jao,icrd,iat=  7  1 2  1
+          },
+          {
+           -0.0674521579906719, // iao,jao,icrd,iat=  1  2 2  1
+           -0.2723472117634180, // iao,jao,icrd,iat=  2  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 2  1
+           -0.0083231748349233, // iao,jao,icrd,iat=  4  2 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  1
+           -1.7947586281665222, // iao,jao,icrd,iat=  6  2 2  1
+           -1.7947586281665222  // iao,jao,icrd,iat=  7  2 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 2  1
+           -0.3762532196569564, // iao,jao,icrd,iat=  3  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  1
+           -1.4670198370722121, // iao,jao,icrd,iat=  6  3 2  1
+            1.4670198370722121  // iao,jao,icrd,iat=  7  3 2  1
+          },
+          {
+           -0.0015508398822721, // iao,jao,icrd,iat=  1  4 2  1
+           -0.0083231748349233, // iao,jao,icrd,iat=  2  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 2  1
+           -0.2117809344150415, // iao,jao,icrd,iat=  4  4 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  1
+           -0.0367132123861631, // iao,jao,icrd,iat=  6  4 2  1
+           -0.0367132123861631  // iao,jao,icrd,iat=  7  4 2  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  1
+           -0.2275249663556619, // iao,jao,icrd,iat=  5  5 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 2  1
+          },
+          {
+           -0.9758185286977230, // iao,jao,icrd,iat=  1  6 2  1
+           -1.7947586281665222, // iao,jao,icrd,iat=  2  6 2  1
+           -1.4670198370722121, // iao,jao,icrd,iat=  3  6 2  1
+           -0.0367132123861631, // iao,jao,icrd,iat=  4  6 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  1
+           -1.0136230310447021, // iao,jao,icrd,iat=  6  6 2  1
+           -0.2941681489045423  // iao,jao,icrd,iat=  7  6 2  1
+          },
+          {
+           -0.9758185286977230, // iao,jao,icrd,iat=  1  7 2  1
+           -1.7947586281665222, // iao,jao,icrd,iat=  2  7 2  1
+            1.4670198370722121, // iao,jao,icrd,iat=  3  7 2  1
+           -0.0367132123861631, // iao,jao,icrd,iat=  4  7 2  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 2  1
+           -0.2941681489045423, // iao,jao,icrd,iat=  6  7 2  1
+           -1.0136230310447021  // iao,jao,icrd,iat=  7  7 2  1
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  1
+            0.0113096723885651, // iao,jao,icrd,iat=  5  1 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  1
+            0.1382198050330929, // iao,jao,icrd,iat=  5  2 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  1
+            0.0532649267666039, // iao,jao,icrd,iat=  5  4 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 3  1
+          },
+          {
+            0.0113096723885651, // iao,jao,icrd,iat=  1  5 3  1
+            0.1382198050330929, // iao,jao,icrd,iat=  2  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 3  1
+            0.0532649267666039, // iao,jao,icrd,iat=  4  5 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  1
+            1.1500369062732843, // iao,jao,icrd,iat=  6  5 3  1
+            1.1500369062732843  // iao,jao,icrd,iat=  7  5 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  1
+            1.1500369062732843, // iao,jao,icrd,iat=  5  6 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 3  1
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 3  1
+            1.1500369062732843, // iao,jao,icrd,iat=  5  7 3  1
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 3  1
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  1
+          }
+        }
+      },
+      {
+        {
+          {
+            0.1823677739741057, // iao,jao,icrd,iat=  1  1 1  2
+            0.0431671699923913, // iao,jao,icrd,iat=  2  1 1  2
+            0.0048794162531166, // iao,jao,icrd,iat=  3  1 1  2
+            0.0082303062781386, // iao,jao,icrd,iat=  4  1 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  2
+            1.2428827387180721, // iao,jao,icrd,iat=  6  1 1  2
+            0.0070459770454109  // iao,jao,icrd,iat=  7  1 1  2
+          },
+          {
+            0.0431671699923913, // iao,jao,icrd,iat=  1  2 1  2
+            0.1742932878258852, // iao,jao,icrd,iat=  2  2 1  2
+            0.0509258092664295, // iao,jao,icrd,iat=  3  2 1  2
+            0.0937827033499671, // iao,jao,icrd,iat=  4  2 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  2
+            2.3021540081742327, // iao,jao,icrd,iat=  6  2 1  2
+            0.0577348615947480  // iao,jao,icrd,iat=  7  2 1  2
+          },
+          {
+            0.0048794162531166, // iao,jao,icrd,iat=  1  3 1  2
+            0.0509258092664295, // iao,jao,icrd,iat=  2  3 1  2
+            0.1726141126277088, // iao,jao,icrd,iat=  3  3 1  2
+            0.0477316632673453, // iao,jao,icrd,iat=  4  3 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  2
+            0.7553320467951342, // iao,jao,icrd,iat=  6  3 1  2
+           -0.0176814972258924  // iao,jao,icrd,iat=  7  3 1  2
+          },
+          {
+            0.0082303062781386, // iao,jao,icrd,iat=  1  4 1  2
+            0.0937827033499671, // iao,jao,icrd,iat=  2  4 1  2
+            0.0477316632673453, // iao,jao,icrd,iat=  3  4 1  2
+            0.2037084698709611, // iao,jao,icrd,iat=  4  4 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  2
+            1.5172278906847021, // iao,jao,icrd,iat=  6  4 1  2
+            0.0502080536124901  // iao,jao,icrd,iat=  7  4 1  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  2
+            0.1456085200646393, // iao,jao,icrd,iat=  5  5 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 1  2
+          },
+          {
+            1.2428827387180721, // iao,jao,icrd,iat=  1  6 1  2
+            2.3021540081742327, // iao,jao,icrd,iat=  2  6 1  2
+            0.7553320467951342, // iao,jao,icrd,iat=  3  6 1  2
+            1.5172278906847021, // iao,jao,icrd,iat=  4  6 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  2
+            1.3893360256759231, // iao,jao,icrd,iat=  6  6 1  2
+            0.9606957363864581  // iao,jao,icrd,iat=  7  6 1  2
+          },
+          {
+            0.0070459770454109, // iao,jao,icrd,iat=  1  7 1  2
+            0.0577348615947480, // iao,jao,icrd,iat=  2  7 1  2
+           -0.0176814972258924, // iao,jao,icrd,iat=  3  7 1  2
+            0.0502080536124901, // iao,jao,icrd,iat=  4  7 1  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 1  2
+            0.9606957363864581, // iao,jao,icrd,iat=  6  7 1  2
+            0.0919650002637910  // iao,jao,icrd,iat=  7  7 1  2
+          }
+        },
+        {
+          {
+            0.1424821213051114, // iao,jao,icrd,iat=  1  1 2  2
+            0.0337260789953360, // iao,jao,icrd,iat=  2  1 2  2
+            0.0082303062781386, // iao,jao,icrd,iat=  3  1 2  2
+            0.0007754199411361, // iao,jao,icrd,iat=  4  1 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  2
+            0.9706827268767375, // iao,jao,icrd,iat=  6  1 2  2
+            0.0051358018209855  // iao,jao,icrd,iat=  7  1 2  2
+          },
+          {
+            0.0337260789953360, // iao,jao,icrd,iat=  1  2 2  2
+            0.1361736058817090, // iao,jao,icrd,iat=  2  2 2  2
+            0.0937827033499671, // iao,jao,icrd,iat=  3  2 2  2
+            0.0041615874174622, // iao,jao,icrd,iat=  4  2 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  2
+            1.7741504511479145, // iao,jao,icrd,iat=  6  2 2  2
+            0.0206081770186076  // iao,jao,icrd,iat=  7  2 2  2
+          },
+          {
+            0.0082303062781386, // iao,jao,icrd,iat=  1  3 2  2
+            0.0937827033499671, // iao,jao,icrd,iat=  2  3 2  2
+            0.1881266098284782, // iao,jao,icrd,iat=  3  3 2  2
+            0.0240121427315024, // iao,jao,icrd,iat=  4  3 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  2
+            1.4709256011656522, // iao,jao,icrd,iat=  6  3 2  2
+            0.0039057640934403  // iao,jao,icrd,iat=  7  3 2  2
+          },
+          {
+            0.0007754199411361, // iao,jao,icrd,iat=  1  4 2  2
+            0.0041615874174622, // iao,jao,icrd,iat=  2  4 2  2
+            0.0240121427315024, // iao,jao,icrd,iat=  3  4 2  2
+            0.1058904672075208, // iao,jao,icrd,iat=  4  4 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  2
+            0.0352135856618110, // iao,jao,icrd,iat=  6  4 2  2
+            0.0014996267243520  // iao,jao,icrd,iat=  7  4 2  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  2
+            0.1137624831778309, // iao,jao,icrd,iat=  5  5 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 2  2
+          },
+          {
+            0.9706827268767375, // iao,jao,icrd,iat=  1  6 2  2
+            1.7741504511479145, // iao,jao,icrd,iat=  2  6 2  2
+            1.4709256011656522, // iao,jao,icrd,iat=  3  6 2  2
+            0.0352135856618110, // iao,jao,icrd,iat=  4  6 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  2
+            1.0136230310447021, // iao,jao,icrd,iat=  6  6 2  2
+            0.1470840744522711  // iao,jao,icrd,iat=  7  6 2  2
+          },
+          {
+            0.0051358018209855, // iao,jao,icrd,iat=  1  7 2  2
+            0.0206081770186076, // iao,jao,icrd,iat=  2  7 2  2
+            0.0039057640934403, // iao,jao,icrd,iat=  3  7 2  2
+            0.0014996267243520, // iao,jao,icrd,iat=  4  7 2  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 2  2
+            0.1470840744522711, // iao,jao,icrd,iat=  6  7 2  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 2  2
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  2
+           -0.0056548361942843, // iao,jao,icrd,iat=  5  1 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  2
+           -0.0691099025165466, // iao,jao,icrd,iat=  5  2 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  2
+           -0.0340878070748194, // iao,jao,icrd,iat=  5  3 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  2
+           -0.0266324633833020, // iao,jao,icrd,iat=  5  4 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 3  2
+          },
+          {
+           -0.0056548361942843, // iao,jao,icrd,iat=  1  5 3  2
+           -0.0691099025165466, // iao,jao,icrd,iat=  2  5 3  2
+           -0.0340878070748194, // iao,jao,icrd,iat=  3  5 3  2
+           -0.0266324633833020, // iao,jao,icrd,iat=  4  5 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  2
+           -1.1312454506988736, // iao,jao,icrd,iat=  6  5 3  2
+           -0.0187914555744109  // iao,jao,icrd,iat=  7  5 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  2
+           -1.1312454506988736, // iao,jao,icrd,iat=  5  6 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 3  2
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 3  2
+           -0.0187914555744109, // iao,jao,icrd,iat=  5  7 3  2
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 3  2
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  2
+          }
+        }
+      },
+      {
+        {
+          {
+           -0.1823677739741057, // iao,jao,icrd,iat=  1  1 1  3
+           -0.0431671699923913, // iao,jao,icrd,iat=  2  1 1  3
+            0.0048794162531166, // iao,jao,icrd,iat=  3  1 1  3
+           -0.0082303062781386, // iao,jao,icrd,iat=  4  1 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 1  3
+           -0.0070459770454109, // iao,jao,icrd,iat=  6  1 1  3
+           -1.2428827387180721  // iao,jao,icrd,iat=  7  1 1  3
+          },
+          {
+           -0.0431671699923913, // iao,jao,icrd,iat=  1  2 1  3
+           -0.1742932878258852, // iao,jao,icrd,iat=  2  2 1  3
+            0.0509258092664295, // iao,jao,icrd,iat=  3  2 1  3
+           -0.0937827033499671, // iao,jao,icrd,iat=  4  2 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 1  3
+           -0.0577348615947480, // iao,jao,icrd,iat=  6  2 1  3
+           -2.3021540081742327  // iao,jao,icrd,iat=  7  2 1  3
+          },
+          {
+            0.0048794162531166, // iao,jao,icrd,iat=  1  3 1  3
+            0.0509258092664295, // iao,jao,icrd,iat=  2  3 1  3
+           -0.1726141126277088, // iao,jao,icrd,iat=  3  3 1  3
+            0.0477316632673453, // iao,jao,icrd,iat=  4  3 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 1  3
+           -0.0176814972258924, // iao,jao,icrd,iat=  6  3 1  3
+            0.7553320467951342  // iao,jao,icrd,iat=  7  3 1  3
+          },
+          {
+           -0.0082303062781386, // iao,jao,icrd,iat=  1  4 1  3
+           -0.0937827033499671, // iao,jao,icrd,iat=  2  4 1  3
+            0.0477316632673453, // iao,jao,icrd,iat=  3  4 1  3
+           -0.2037084698709611, // iao,jao,icrd,iat=  4  4 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 1  3
+           -0.0502080536124901, // iao,jao,icrd,iat=  6  4 1  3
+           -1.5172278906847021  // iao,jao,icrd,iat=  7  4 1  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 1  3
+           -0.1456085200646393, // iao,jao,icrd,iat=  5  5 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 1  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 1  3
+          },
+          {
+           -0.0070459770454109, // iao,jao,icrd,iat=  1  6 1  3
+           -0.0577348615947480, // iao,jao,icrd,iat=  2  6 1  3
+           -0.0176814972258924, // iao,jao,icrd,iat=  3  6 1  3
+           -0.0502080536124901, // iao,jao,icrd,iat=  4  6 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 1  3
+           -0.0919650002637910, // iao,jao,icrd,iat=  6  6 1  3
+           -0.9606957363864581  // iao,jao,icrd,iat=  7  6 1  3
+          },
+          {
+           -1.2428827387180721, // iao,jao,icrd,iat=  1  7 1  3
+           -2.3021540081742327, // iao,jao,icrd,iat=  2  7 1  3
+            0.7553320467951342, // iao,jao,icrd,iat=  3  7 1  3
+           -1.5172278906847021, // iao,jao,icrd,iat=  4  7 1  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 1  3
+           -0.9606957363864581, // iao,jao,icrd,iat=  6  7 1  3
+           -1.3893360256759231  // iao,jao,icrd,iat=  7  7 1  3
+          }
+        },
+        {
+          {
+            0.1424821213051114, // iao,jao,icrd,iat=  1  1 2  3
+            0.0337260789953360, // iao,jao,icrd,iat=  2  1 2  3
+           -0.0082303062781386, // iao,jao,icrd,iat=  3  1 2  3
+            0.0007754199411361, // iao,jao,icrd,iat=  4  1 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  1 2  3
+            0.0051358018209855, // iao,jao,icrd,iat=  6  1 2  3
+            0.9706827268767375  // iao,jao,icrd,iat=  7  1 2  3
+          },
+          {
+            0.0337260789953360, // iao,jao,icrd,iat=  1  2 2  3
+            0.1361736058817090, // iao,jao,icrd,iat=  2  2 2  3
+           -0.0937827033499671, // iao,jao,icrd,iat=  3  2 2  3
+            0.0041615874174622, // iao,jao,icrd,iat=  4  2 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  2 2  3
+            0.0206081770186076, // iao,jao,icrd,iat=  6  2 2  3
+            1.7741504511479145  // iao,jao,icrd,iat=  7  2 2  3
+          },
+          {
+           -0.0082303062781386, // iao,jao,icrd,iat=  1  3 2  3
+           -0.0937827033499671, // iao,jao,icrd,iat=  2  3 2  3
+            0.1881266098284782, // iao,jao,icrd,iat=  3  3 2  3
+           -0.0240121427315024, // iao,jao,icrd,iat=  4  3 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  3 2  3
+           -0.0039057640934403, // iao,jao,icrd,iat=  6  3 2  3
+           -1.4709256011656522  // iao,jao,icrd,iat=  7  3 2  3
+          },
+          {
+            0.0007754199411361, // iao,jao,icrd,iat=  1  4 2  3
+            0.0041615874174622, // iao,jao,icrd,iat=  2  4 2  3
+           -0.0240121427315024, // iao,jao,icrd,iat=  3  4 2  3
+            0.1058904672075208, // iao,jao,icrd,iat=  4  4 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  4 2  3
+            0.0014996267243520, // iao,jao,icrd,iat=  6  4 2  3
+            0.0352135856618109  // iao,jao,icrd,iat=  7  4 2  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  5 2  3
+            0.1137624831778309, // iao,jao,icrd,iat=  5  5 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  5 2  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  5 2  3
+          },
+          {
+            0.0051358018209855, // iao,jao,icrd,iat=  1  6 2  3
+            0.0206081770186076, // iao,jao,icrd,iat=  2  6 2  3
+           -0.0039057640934403, // iao,jao,icrd,iat=  3  6 2  3
+            0.0014996267243520, // iao,jao,icrd,iat=  4  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  6 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 2  3
+            0.1470840744522712  // iao,jao,icrd,iat=  7  6 2  3
+          },
+          {
+            0.9706827268767375, // iao,jao,icrd,iat=  1  7 2  3
+            1.7741504511479145, // iao,jao,icrd,iat=  2  7 2  3
+           -1.4709256011656522, // iao,jao,icrd,iat=  3  7 2  3
+            0.0352135856618109, // iao,jao,icrd,iat=  4  7 2  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  7 2  3
+            0.1470840744522712, // iao,jao,icrd,iat=  6  7 2  3
+            1.0136230310447021  // iao,jao,icrd,iat=  7  7 2  3
+          }
+        },
+        {
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  1 3  3
+           -0.0056548361942843, // iao,jao,icrd,iat=  5  1 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  1 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  1 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  2 3  3
+           -0.0691099025165466, // iao,jao,icrd,iat=  5  2 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  2 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  2 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  3 3  3
+            0.0340878070748194, // iao,jao,icrd,iat=  5  3 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  3 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  3 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  4 3  3
+           -0.0266324633833020, // iao,jao,icrd,iat=  5  4 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  4 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  4 3  3
+          },
+          {
+           -0.0056548361942843, // iao,jao,icrd,iat=  1  5 3  3
+           -0.0691099025165466, // iao,jao,icrd,iat=  2  5 3  3
+            0.0340878070748194, // iao,jao,icrd,iat=  3  5 3  3
+           -0.0266324633833020, // iao,jao,icrd,iat=  4  5 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  5  5 3  3
+           -0.0187914555744109, // iao,jao,icrd,iat=  6  5 3  3
+           -1.1312454506988736  // iao,jao,icrd,iat=  7  5 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  6 3  3
+           -0.0187914555744109, // iao,jao,icrd,iat=  5  6 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  6 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  6 3  3
+          },
+          {
+            0.0000000000000000, // iao,jao,icrd,iat=  1  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  2  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  3  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  4  7 3  3
+           -1.1312454506988736, // iao,jao,icrd,iat=  5  7 3  3
+            0.0000000000000000, // iao,jao,icrd,iat=  6  7 3  3
+            0.0000000000000000  // iao,jao,icrd,iat=  7  7 3  3
+          }
+        }
+      }
+    };
+    return tensor_t(TA::TSpArrayD(world, il));
+}
+
+
 
 
 tensor_t overlap_nuclear(TA::World& world) {
@@ -678,7 +2512,7 @@ tensor_t eri_nuclear(TA::World& world) {
                          ------------------------------
 
        create   destroy   get      put      acc     scatter   gather  read&inc
-calls:  370      370     1987      843      965        0        0      312     
+calls:  370      370     1994      843      965        0        0      312     
 number of processes/call 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
 bytes total:             1.79e+05 1.11e+05 4.83e+04 0.00e+00 0.00e+00 2.50e+03
 bytes remote:            0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00 0.00e+00
@@ -694,7 +2528,7 @@ MA usage statistics:
 	current number of blocks	         0	         0
 	maximum number of blocks	        19	        29
 	current total bytes		         0	         0
-	maximum total bytes		   1054120	  22509256
+	maximum total bytes		   1054152	  22509224
 	maximum total K-bytes		      1055	     22510
 	maximum total M-bytes		         2	        23
 

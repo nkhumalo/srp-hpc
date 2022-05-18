@@ -9,7 +9,7 @@ geometry units au noautoz nocenter noautosym
   H2 -1.638033502034240  1.136556880358410  0.0
 end
 
-basis
+basis spherical
   * library sto-3g
 end
 

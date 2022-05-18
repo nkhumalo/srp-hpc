@@ -77,6 +77,9 @@ cc AJL/Begin/SPIN ECPs
       double precision dens_beta (max_at_bf,max_at_bf)
 cDEBUG
       integer nao, iat
+      integer nf1, nf2
+      integer iq1, iq2
+      integer iro_p(3)
       real(kind=8), allocatable :: frc_kin1(:,:)
       real(kind=8), allocatable :: frc_pot1(:,:)
       real(kind=8), allocatable :: dS(:,:,:,:)
@@ -87,6 +90,12 @@ cDEBUG
 #include "inp.fh"
       character*2 bqchar
 #endif
+cDEBUG
+c     Libint orders spherical harmonic p-functions p_y, p_z, p_x
+      iro_p(1) = 3
+      iro_p(2) = 1
+      iro_p(3) = 2
+cDEBUG
 
 cc    Read this value from rtdb vvvv
       if (.not.rtdb_get(rtdb, 'dft:spin_polarised_ecps',
@@ -194,7 +203,10 @@ C               shell block in atomic (D/Dw)-matrix block
                 if2 = if2 - iab2f + 1
                 il2 = il2 - iab2f + 1
 
-                nint = ( il1 - if1 + 1 ) * ( il2 - if2 + 1 )
+                nf1 = ( il1 - if1 + 1 )
+                nf2 = ( il2 - if2 + 1 )
+
+                nint = nf1 * nf2
 
 C               overlap derivatives
                 call intd_1eov(basis,ish1,basis,ish2,lscr,scr,
@@ -211,17 +223,27 @@ C               idatom(1).ge.0 <=> idatom(2).ge.0 (no check necessary)
                       do 20, ip2 = if2, il2
                         dE = dE + wdens(ip1,ip2) * H(ic)
 cDEBUG
-                        dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1)) 
-     &                  = dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1))
+                        if (nf1.eq.3) then ! p-shell
+                          iq1 = iro_p(ip1-if1+1)+if1-1
+                        else
+                          iq1 = ip1
+                        endif
+                        if (nf2.eq.3) then ! p-shell
+                          iq2 = iro_p(ip2-if2+1)+if2-1
+                        else
+                          iq2 = ip2
+                        endif
+                        dS(iab1f-1+iq1,iab2f-1+iq2,icart,idatom(1)) 
+     &                  = dS(iab1f-1+iq1,iab2f-1+iq2,icart,idatom(1))
      &                  - H(ic)
-                        dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1)) 
-     &                  = dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1))
+                        dS(iab2f-1+iq2,iab1f-1+iq1,icart,idatom(1)) 
+     &                  = dS(iab2f-1+iq2,iab1f-1+iq1,icart,idatom(1))
      &                  - H(ic)
-                        dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2)) 
-     &                  = dS(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2))
+                        dS(iab1f-1+iq1,iab2f-1+iq2,icart,idatom(2)) 
+     &                  = dS(iab1f-1+iq1,iab2f-1+iq2,icart,idatom(2))
      &                  + H(ic)
-                        dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2)) 
-     &                  = dS(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2))
+                        dS(iab2f-1+iq2,iab1f-1+iq1,icart,idatom(2)) 
+     &                  = dS(iab2f-1+iq2,iab1f-1+iq1,icart,idatom(2))
      &                  + H(ic)
 cDEBUG
                         ic = ic + 1
@@ -246,18 +268,28 @@ C               idatom(1).ge.0 <=> idatom(2).ge.0 (no check necessary)
                     do ip1 = if1, il1
                       do ip2 = if2, il2
                         dE = dE + dens(ip1,ip2) * H(ic)
-                        dT(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1)) 
-     &                  = dT(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(1))
-     &                  - H(ic)
-                        dT(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1)) 
-     &                  = dT(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(1))
-     &                  - H(ic)
-                        dT(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2)) 
-     &                  = dT(iab1f-1+ip1,iab2f-1+ip2,icart,idatom(2))
+                        if (nf1.eq.3) then ! p-shell
+                          iq1 = iro_p(ip1-if1+1)+if1-1
+                        else
+                          iq1 = ip1
+                        endif
+                        if (nf2.eq.3) then ! p-shell
+                          iq2 = iro_p(ip2-if2+1)+if2-1
+                        else
+                          iq2 = ip2
+                        endif
+                        dT(iab1f-1+iq1,iab2f-1+iq2,icart,idatom(1)) 
+     &                  = dT(iab1f-1+iq1,iab2f-1+iq2,icart,idatom(1))
      &                  + H(ic)
-                        dT(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2)) 
-     &                  = dT(iab2f-1+ip2,iab1f-1+ip1,icart,idatom(2))
+                        dT(iab2f-1+iq2,iab1f-1+iq1,icart,idatom(1)) 
+     &                  = dT(iab2f-1+iq2,iab1f-1+iq1,icart,idatom(1))
      &                  + H(ic)
+                        dT(iab1f-1+iq1,iab2f-1+iq2,icart,idatom(2)) 
+     &                  = dT(iab1f-1+iq1,iab2f-1+iq2,icart,idatom(2))
+     &                  - H(ic)
+                        dT(iab2f-1+iq2,iab1f-1+iq1,icart,idatom(2)) 
+     &                  = dT(iab2f-1+iq2,iab1f-1+iq1,icart,idatom(2))
+     &                  - H(ic)
                         ic = ic + 1
                       enddo
                     enddo
@@ -281,12 +313,22 @@ cDEBUG Nuclear attraction energy integrals
                     do ip1 = if1, il1
                       do ip2 = if2, il2
                         dE = dE + dens(ip1,ip2)*H(ic)
-                        dV(iab1f-1+ip1,iab2f-1+ip2,icart,iat3) 
-     &                  = dV(iab1f-1+ip1,iab2f-1+ip2,icart,iat3)
+                        if (nf1.eq.3) then ! p-shell
+                          iq1 = iro_p(ip1-if1+1)+if1-1
+                        else
+                          iq1 = ip1
+                        endif
+                        if (nf2.eq.3) then ! p-shell
+                          iq2 = iro_p(ip2-if2+1)+if2-1
+                        else
+                          iq2 = ip2
+                        endif
+                        dV(iab1f-1+iq1,iab2f-1+iq2,icart,iat3) 
+     &                  = dV(iab1f-1+iq1,iab2f-1+iq2,icart,iat3)
      &                  + H(ic)
                         if ( iat1.ne.iat2 .or. ish1.ne.ish2 ) then
-                          dV(iab2f-1+ip2,iab1f-1+ip1,icart,iat3) 
-     &                    = dV(iab2f-1+ip2,iab1f-1+ip1,icart,iat3)
+                          dV(iab2f-1+iq2,iab1f-1+iq1,icart,iat3) 
+     &                    = dV(iab2f-1+iq2,iab1f-1+iq1,icart,iat3)
      &                    + H(ic)
                         endif
                         ic = ic + 1

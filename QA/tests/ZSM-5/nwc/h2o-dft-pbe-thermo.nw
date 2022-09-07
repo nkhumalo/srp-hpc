@@ -4,8 +4,7 @@ start h2o-dat
 memory heap 100 mb stack 500 mb global 1024 mb
 
 geometry
-  #load ../xyz/h2o.xyz
-  load h2o.xyz
+  load ../xyz/h2o.xyz
 end
 
 basis "cc-pvdz" spherical

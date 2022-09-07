@@ -4,8 +4,7 @@ start 1-propanol-dat
 memory heap 100 mb stack 500 mb global 1024 mb
 
 geometry
-  #load ../xyz/1-propanol.xyz
-  load 1-propanol.xyz
+  load ../xyz/1-propanol.xyz
 end
 
 basis "cc-pvdz" spherical

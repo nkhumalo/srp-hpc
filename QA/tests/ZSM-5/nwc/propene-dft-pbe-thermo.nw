@@ -4,8 +4,7 @@ start propene-dat
 memory heap 100 mb stack 500 mb global 1024 mb
 
 geometry
-  #load ../xyz/propene.xyz
-  load propene.xyz
+  load ../xyz/propene.xyz
 end
 
 basis "cc-pvdz" spherical

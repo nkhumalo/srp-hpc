@@ -72,6 +72,7 @@ foreach $filename (@FILES_TO_PARSE) {
     $selcipt_block = 0;
     $gradient_block = 0;
     $dirdyv_block = 0;
+    $thermo_block = 0;
     $lines = 0 ;
     while (<FILE_TO_PARSE>){
 	$lines ++;
@@ -181,10 +182,29 @@ foreach $filename (@FILES_TO_PARSE) {
 	    @coords = ();
 	    @grads  = ();
 	}
+	if ($thermo_block) {
+           @line_tokens = split(' ');
+           $num_line_tokens = @line_tokens;
+           if ($num_line_tokens > 0) {
+               printf FILE_OUTPUT "%s ", $_;
+           }
+           $thermo_line++;
+           if ($thermo_line < 16) {
+               $thermo_block = 1;
+           } else {
+               $thermo_block = 0;
+           }
+        }
 	next if /^\s*$/;
 	if (/failed/i || /warning/i) {
 	    print $_;
 	}
+        if (/^ Temperature                      =/) {
+           $thermo_line  = 1;
+           $thermo_block = 1;
+           @line_tokens = split(' ');
+           printf FILE_OUTPUT "%s", $_;
+        }
         if (/^ Creating groups/) {
            # This calculation used GA subgroups. As a result the output will
            # be messy (the root processes of each subgroup write to stdout).
@@ -270,7 +290,7 @@ foreach $filename (@FILES_TO_PARSE) {
 	    printf FILE_OUTPUT " %0.3f %s", set_to_digits(@line_tokens[3],3), @line_tokens[4];
 	    printf FILE_OUTPUT " %0.2f %s\n", set_to_digits(@line_tokens[5],2), @line_tokens[6];
 	}
-	if (/Zero-Point correction to Energy/) {
+	if ((! $thermo_block) && /Zero-Point correction to Energy/) {
 	    if ($debug) {print "\ndebug: $_";}
 	    @line_tokens = split(' ');
 	    $num_line_tokens = @line_tokens;
